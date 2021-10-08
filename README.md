@@ -1,5 +1,6 @@
-# bgc_argo_r_argodata
+In this repo we present our ongoing ambition XXX
 
-A [workflowr][] project.
+Results can be accessed under:
+https://jens-daniel-mueller.github.io/bgc_argo_r_argodata/
 
-[workflowr]: https://github.com/jdblischak/workflowr
+Dr. Jens Daniel Müller, 2021
