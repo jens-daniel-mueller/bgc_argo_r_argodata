@@ -7,11 +7,26 @@ editor_options:
   chunk_output_type: console
 ---
 
+# Load libraries
+
+```{r load_libraries}
+
+library(tidyverse)
+
+```
+
+
 # Download data
 
 Descriptive text
 
-```{r}
+```{r plot_mtcars}
+
+mtcars %>% 
+  mutate(cyl = as.factor(cyl)) %>% 
+  ggplot(aes(mpg, disp, col=cyl)) +
+  geom_point()
+
 
 ```
 
