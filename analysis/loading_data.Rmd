@@ -1,0 +1,76 @@
+---
+title: "loading_data"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata 
+
+```{r loading_libraries}
+
+library(tidyverse)
+# remotes::install_github("ArgoCanada/argodata")
+library(argodata)
+library(ggplot2)
+library(lubridate)
+
+```
+
+Set the cache directory for the argo data. 
+The cache directory stores previously downlaoded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. 
+If you use a persistent cache, you should update the index files regularly by using argo_update_global() (data files are also updated occasionally; update these using argo_update_data())
+
+```{r set_cache_directory}
+argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
+argo_update_global(max_global_cache_age = Inf)  # argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+argo_update_data(max_data_cache_age = Inf)
+
+```
+
+Load in the synthetic (core and bgc merged) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data (quality checked by PIs)
+
+```{r load_indeces} 
+bgc_subset = argo_global_synthetic_prof() %>%
+  argo_filter_data_mode(data_mode = 'delayed') %>%
+  argo_filter_date(date_min = '2013-01-01',
+                   date_max = '2015-12-31')
+
+# check the dates 
+# max(bgc_subset$date, na.rm = TRUE)
+# min(bgc_subset$date, na.rm = TRUE)
+```
+
+Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. 
+(can take a while)
+
+```{r load_data}
+bgc_data = argo_prof_levels(bgc_subset, 
+                            vars = c('PRES_ADJUSTED','PRES_ADJUSTED_QC',
+                                     'PSAL_ADJUSTED', 'PSAL_ADJUSTED_QC',
+                                     'TEMP_ADJUSTED','TEMP_ADJUSTED_QC',
+                                     'DOXY_ADJUSTED', 'DOXY_ADJUSTED_QC',
+                                     'NITRATE_ADJUSTED', 'NITRATE_ADJUSTED_QC',
+                                     'PH_IN_SITU_TOTAL_ADJUSTED', 'PH_IN_SITU_TOTAL_ADJUSTED_QC')) 
+# read in the profiles (takes a while)
+```
+
+The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, '/nfs/kryo/work/updata/bgc_argo_r_argodata'). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download each time.
+
+Read in the corresponding metadata:
+```{r load_metadata}
+
+bgc_metadata = argo_prof_prof(bgc_subset) 
+
+```
+
+Join the metadata and data together into one dataset 
+
+```{r create_dataset}
+
+full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof'))
+
+```
+
