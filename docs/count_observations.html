@@ -12,7 +12,7 @@
 <meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
 
 
-<title>Plot timeseries</title>
+<title>count_observations</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -388,7 +388,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Plot timeseries</h1>
+<h1 class="title toc-ignore">count_observations</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
 <h4 class="date">12 October, 2021</h4>
 
@@ -545,7 +545,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/plot_timeseries.Rmd</code>) and HTML (<code>docs/plot_timeseries.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/count_observations.Rmd</code>) and HTML (<code>docs/count_observations.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -571,53 +571,19 @@ Message
 <tbody>
 <tr>
 <td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ff925ab19bbc9f3bc6931854ebb5412b9c390acc/docs/plot_timeseries.html" target="_blank">ff925ab</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/481a8f021c3d561f9c15affcc61af59dbe6bcc6b/docs/plot_timeseries.html" target="_blank">481a8f0</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
 Rmd
 </td>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/580185263eb6e577d47316140842d97b3804103a/analysis/plot_timeseries.Rmd" target="_blank">5801852</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2fb35f7e08ec8188b74cff0807f01e80917dc474/analysis/count_observations.Rmd" target="_blank">2fb35f7</a>
 </td>
 <td>
 pasqualina-vonlanthendinenna
 </td>
 <td>
-2021-10-08
+2021-10-12
 </td>
 <td>
-added timeseries page
+added reading data in page
 </td>
 </tr>
 </tbody>
@@ -627,54 +593,233 @@ added timeseries page
 </div>
 </div>
 </div>
-<div id="load-libraries" class="section level1">
-<h1>Load libraries</h1>
-</div>
-<div id="download-data" class="section level1">
-<h1>Download data</h1>
-<p>Descriptive text</p>
-<pre class="r"><code>mtcars %&gt;% 
-  mutate(cyl = as.factor(cyl)) %&gt;% 
-  ggplot(aes(mpg, disp, col=cyl)) +
-  geom_point()</code></pre>
-<p><img src="figure/plot_timeseries.Rmd/plot_mtcars-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_mtcars-1">
-Past versions of plot_mtcars-1.png
-</button>
-</p>
-<div id="fig-plot_mtcars-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/481a8f021c3d561f9c15affcc61af59dbe6bcc6b/docs/figure/plot_timeseries.Rmd/plot_mtcars-1.png" target="_blank">481a8f0</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-08
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p>Count the number of bgc-argo observations, and plot the evolution over time.</p>
+<p>Use the same process as in loading_data.Rmd to load in bgc-argo data and the corresponding metadata:</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>✓ ggplot2 3.3.5     ✓ purrr   0.3.4
+✓ tibble  3.1.3     ✓ dplyr   1.0.5
+✓ tidyr   1.1.3     ✓ stringr 1.4.0
+✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
+<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code># remotes::install_github(&quot;ArgoCanada/argodata&quot;)
+library(argodata)
+library(ggplot2)
+library(lubridate)</code></pre>
+<pre><code>
+Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    date, intersect, setdiff, union</code></pre>
+<pre class="r"><code>argo_set_cache_dir(&#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;)
+
+argo_update_global(max_global_cache_age = Inf)  
+argo_update_data(max_data_cache_age = Inf) # the arguments max_global_cache_age and max_data_cache_age indicate the age of the cached files to update (in hours) (Inf means always use the cached file, and -Inf means always download from the server) 
+# e.g. if max_global_cache_age = 5, then files older than 5 hours will be updated 
+
+
+bgc_subset = argo_global_synthetic_prof() %&gt;%     
+  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%
+  argo_filter_date(date_min = &#39;2013-01-01&#39;,
+                   date_max = &#39;2015-12-31&#39;) # download bgc-argo files containing delayed-mode data (recommended for bgc variables) between January 1, 2013 and December 31, 2015 (selects this specific subset of the cached files) </code></pre>
+<pre><code>Loading argo_global_synthetic_prof()</code></pre>
+<pre class="r"><code># check the dates 
+# max(bgc_subset$date, na.rm = TRUE)
+# min(bgc_subset$date, na.rm = TRUE)
+
+bgc_data = argo_prof_levels(bgc_subset, 
+                            vars = c(&#39;PRES_ADJUSTED&#39;,&#39;PRES_ADJUSTED_QC&#39;,
+                                     &#39;PSAL_ADJUSTED&#39;, &#39;PSAL_ADJUSTED_QC&#39;,
+                                     &#39;TEMP_ADJUSTED&#39;,&#39;TEMP_ADJUSTED_QC&#39;,
+                                     &#39;DOXY_ADJUSTED&#39;, &#39;DOXY_ADJUSTED_QC&#39;,
+                                     &#39;NITRATE_ADJUSTED&#39;, &#39;NITRATE_ADJUSTED_QC&#39;,
+                                     &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;, &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;), quiet = TRUE) 
+# read in the profiles of the delayed-mode data from 01/01/2013 to 31/12/2015 (takes a while)
+
+bgc_metadata = argo_prof_prof(bgc_subset) # read in the metadata corresponding to these profiles </code></pre>
+<pre><code>Extracting from 54117 files</code></pre>
+<pre class="r"><code>full_data = left_join(bgc_data, bgc_metadata, by = c(&#39;file&#39;, &#39;n_prof&#39;)) # join data and metadata together </code></pre>
+<p>Create a separate dataframe for each BGC variable (oxygen, pH and nitrate), with longitude, latitude, value, qc flag, date, time, year, month, day, cycle number, float ID, and profile qc flag, and look at the evolution of the number of observations (any depth levels) and the number of profiles (depth levels 0-2000 m) over time.</p>
+<p>QC flags for values (‘flag’ column) are between 1 and 8, where: 1 is ‘good’ data, 2 is ‘probably good’ data, 3 is ‘probably bad’ data, 4 is ‘bad’ data, 5 is ‘value changed’, 6 is not used, 7 is not used, 8 is ‘estimated value’, 9 is ‘missing value’.</p>
+<p>Profile QC flags (‘profile_flag’ column) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):<br />
+‘A’ means 100% of profile levels contain good data, ‘B’ means 75-&lt;100% of profile levels contain good data, ‘C’ means 50-75% of profile levels contain good data, ‘D’ means 25-50% of profile levels contain good data, ‘E’ means &gt;0-50% of profile levels contain good data, ‘F’ means 0% of profile levels contain good data.</p>
+<ol style="list-style-type: decimal">
+<li>NUMBER OF OBSERVATIONS</li>
+</ol>
+<p>1.1 Oxygen</p>
+<pre class="r"><code>oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$doxy_adjusted, full_data$doxy_adjusted_qc) # extract desired variables from the combined data/metadata dataframe
+
+colnames(oxy) = c(&#39;longitude&#39;,&#39;latitude&#39;,&#39;date&#39;, &#39;doxy_adjusted&#39;, &#39;flag&#39;) # add column names 
+oxy$date.simple = as.Date(oxy$date)        # separate the date and time into two columns
+oxy$time = format(oxy$date, &#39;%H:%M:%S&#39;)
+
+oxy = oxy %&gt;%                             # separate the date into year, month and day
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,   
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_doxy_qc) # add cycle number, float ID and profile qc flag to the dataframe 
+
+oxy.no.na = oxy %&gt;%
+  filter(!is.na(doxy_adjusted)) # remove NA values
+
+num_obs_oxy = oxy.no.na %&gt;%
+  group_by(year, month, flag) %&gt;%     
+  summarise(Count = n()) # count the number of oxygen observations by month</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>The number of observations can then be plotted as a timeseries. Different colored lines are plotted for different quality control flags</p>
+<pre class="r"><code># plot the number of oxygen observations per day 
+ggplot(num_obs_oxy, aes(x = month, y = Count, group = flag, col = flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year) +
+  labs(title = &#39;number of adjusted oxygen observations&#39;,
+       y = &#39;number of observations&#39;,
+       x = &#39;date&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/oxygen_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>1.2 pH</p>
+<pre class="r"><code>ph = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$ph_in_situ_total_adjusted, full_data$ph_in_situ_total_adjusted_qc)
+# extract the variables from the combined data/metadata frame
+
+colnames(ph) = c(&#39;longitude&#39;,&#39;latitude&#39;,&#39;date&#39;, &#39;ph_in_situ_total&#39;, &#39;flag&#39;)
+# rename columns 
+
+ph$date.simple = as.Date(ph$date)
+ph$time = format(ph$date, &#39;%H:%M:%S&#39;) # separate date and time into two separate columns
+
+ph = ph %&gt;%
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_ph_in_situ_total_qc) # separate year, month and day, and add cycle number, float ID and profile qc flag 
+
+ph.no.na = ph %&gt;%
+  filter(!is.na(ph_in_situ_total)) # remove NA values 
+
+num_obs_ph = ph.no.na %&gt;%
+  group_by(year, month, flag) %&gt;%
+  summarise(Count = n())   # count the number of observations per month </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>We can then plot the number of pH observations in a timeseries. Different lines are plotted for different quality control flags</p>
+<pre class="r"><code>ggplot(num_obs_ph, aes(x = month, y = Count, group = flag, col = flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~year) +
+  labs(title = &#39;number of adjusted pH observations&#39;,
+       y = &#39;number of observations&#39;,
+       x = &#39;date&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/pH_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>1.3 Nitrate</p>
+<pre class="r"><code>nitrate = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$nitrate_adjusted, full_data$nitrate_adjusted_qc) # extract nitrate from the combined data/metadata dataframe
+
+colnames(nitrate) = c(&#39;longitude&#39;,&#39;latitude&#39;, &#39;date&#39;, &#39;nitrate_adjusted&#39;, &#39;flag&#39;)
+# rename columns 
+
+nitrate$date.simple = as.Date(nitrate$date)
+nitrate$time = format(nitrate$date, &#39;%H:%M:%S&#39;) # separate the date into date and time columns
+
+nitrate = nitrate %&gt;%
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_nitrate_qc) # separate year, month, and day, and add cycle number, float ID, and the profile qc flag 
+
+nitrate.no.na = nitrate %&gt;%
+  filter(!is.na(nitrate_adjusted)) # remove NA values
+
+num_obs_nitrate = nitrate.no.na %&gt;%
+  group_by(year, month, flag) %&gt;%
+  summarise(Count = n())   # count the number of nitrate observations per month </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>Plot the number of nitrate observations per month as a timeseries. Different lines are plotted for different qc flags</p>
+<pre class="r"><code>ggplot(num_obs_nitrate, aes(x = month, y = Count, group = flag, col = flag))+
+  geom_line()+
+  geom_point()+
+  facet_wrap(~ year)+
+  labs(title = &#39;number of adjusted nitrate observations&#39;,
+       y = &#39;number of observations&#39;,
+       x = &#39;date&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/nitrate_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>NUMBER OF PROFILES</li>
+</ol>
+<p>Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the number of profiles over time for each variable. (One profile has multiple depth levels, between 0-2000 m)</p>
+<p>2.1 Oxygen</p>
+<pre class="r"><code>prof_oxy = oxy.no.na %&gt;%
+  group_by(float_ID, cycle, profile_flag, year, month) %&gt;%     
+  summarise(num_obs = n())  # count the number of oxygen observations for each float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;profile_flag&#39;, &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>prof_oxy = prof_oxy %&gt;%
+  mutate(prof = rep(1, length(cycle)))   # repeat a vector of 1s for each individual cycle (one cycle corresponds to one profile)
+
+num_prof_oxy = prof_oxy %&gt;%
+  group_by(year, month, profile_flag) %&gt;%
+  summarise(count_prof = n())       # count the number of 1s (profiles)</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>Plot the evolution of the number of oxygen profiles over time</p>
+<pre class="r"><code>ggplot(num_prof_oxy, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = &#39;number of oxygen profiles&#39;,
+       y = &#39;number of profiles&#39;,
+       x = &#39;month&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/oxygen_profile_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>2.2 pH</p>
+<pre class="r"><code>prof_ph = ph.no.na %&gt;%
+  group_by(float_ID, cycle, profile_flag, year, month) %&gt;%     
+  summarise(num_obs = n()) # count the number of ph observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;profile_flag&#39;, &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>prof_ph = prof_ph %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s over the length of the cycles (one cycle corresponds to one pH profile)
+
+num_prof_ph = prof_ph %&gt;%
+  group_by(year, month, profile_flag) %&gt;%
+  summarise(count_prof = n()) # count the number of 1s (profiles)</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>Plot the number of pH profiles over time</p>
+<pre class="r"><code>ggplot(num_prof_ph, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = &#39;number of pH profiles&#39;,
+       y = &#39;number of profiles&#39;,
+       x = &#39;month&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/pH_profile_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>2.3 Nitrate</p>
+<pre class="r"><code>prof_nitrate = nitrate.no.na %&gt;%
+  group_by(float_ID, cycle, profile_flag, year, month) %&gt;%  
+  summarise(num_obs = n()) # count the number of nitrate observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;profile_flag&#39;, &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>prof_nitrate = prof_nitrate %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s over the length of cycle numbers (one cycle is one profile)
+
+num_prof_nitrate = prof_nitrate %&gt;%
+  group_by(year, month, profile_flag) %&gt;%
+  summarise(count_prof = n()) # count the number of 1s (profiles)</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
+<p>Plot the number of nitrate profiles over time</p>
+<pre class="r"><code>ggplot(num_prof_nitrate, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = &#39;number of nitrate profiles&#39;,
+       y = &#39;number of profiles&#39;,
+       x = &#39;month&#39;) +
+  theme_bw()</code></pre>
+<p><img src="figure/count_observations.Rmd/nitrate_profile_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -703,28 +848,30 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] forcats_0.5.0   stringr_1.4.0   dplyr_1.0.5     purrr_0.3.4    
- [5] readr_1.4.0     tidyr_1.1.3     tibble_3.1.3    ggplot2_3.3.5  
- [9] tidyverse_1.3.0 workflowr_1.6.2
+ [1] lubridate_1.7.9     argodata_0.0.0.9000 forcats_0.5.0      
+ [4] stringr_1.4.0       dplyr_1.0.5         purrr_0.3.4        
+ [7] readr_1.4.0         tidyr_1.1.3         tibble_3.1.3       
+[10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7        lubridate_1.7.9   assertthat_0.2.1  rprojroot_2.0.2  
+ [1] Rcpp_1.0.7        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
  [5] digest_0.6.27     utf8_1.2.2        R6_2.5.1          cellranger_1.1.0 
  [9] backports_1.1.10  reprex_0.3.0      evaluate_0.14     highr_0.8        
-[13] httr_1.4.2        pillar_1.6.2      rlang_0.4.11      readxl_1.3.1     
-[17] rstudioapi_0.13   whisker_0.4       jquerylib_0.1.4   blob_1.2.1       
-[21] rmarkdown_2.10    labeling_0.4.2    munsell_0.5.0     broom_0.7.9      
-[25] compiler_4.0.3    httpuv_1.6.2      modelr_0.1.8      xfun_0.25        
-[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0      
-[33] crayon_1.4.1      dbplyr_1.4.4      withr_2.4.2       later_1.3.0      
-[37] grid_4.0.3        jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0  
-[41] DBI_1.1.1         git2r_0.27.1      magrittr_2.0.1    scales_1.1.1     
-[45] cli_3.0.1         stringi_1.5.3     farver_2.1.0      fs_1.5.0         
-[49] promises_1.2.0.1  xml2_1.3.2        bslib_0.2.5.1     ellipsis_0.3.2   
-[53] generics_0.1.0    vctrs_0.3.8       tools_4.0.3       glue_1.4.2       
-[57] hms_0.5.3         yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      
-[61] knitr_1.33        haven_2.3.1       sass_0.4.0       </code></pre>
-</div>
+[13] httr_1.4.2        pillar_1.6.2      progress_1.2.2    rlang_0.4.11     
+[17] readxl_1.3.1      rstudioapi_0.13   whisker_0.4       jquerylib_0.1.4  
+[21] blob_1.2.1        rmarkdown_2.10    labeling_0.4.2    bit_4.0.4        
+[25] munsell_0.5.0     broom_0.7.9       compiler_4.0.3    httpuv_1.6.2     
+[29] modelr_0.1.8      xfun_0.25         pkgconfig_2.0.3   htmltools_0.5.1.1
+[33] tidyselect_1.1.0  fansi_0.5.0       tzdb_0.1.2        crayon_1.4.1     
+[37] dbplyr_1.4.4      withr_2.4.2       later_1.3.0       grid_4.0.3       
+[41] jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.1        
+[45] git2r_0.27.1      magrittr_2.0.1    scales_1.1.1      vroom_1.5.5      
+[49] cli_3.0.1         stringi_1.5.3     farver_2.1.0      fs_1.5.0         
+[53] promises_1.2.0.1  xml2_1.3.2        bslib_0.2.5.1     ellipsis_0.3.2   
+[57] generics_0.1.0    vctrs_0.3.8       tools_4.0.3       bit64_4.0.5      
+[61] glue_1.4.2        RNetCDF_2.4-2     hms_0.5.3         parallel_4.0.3   
+[65] yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6       knitr_1.33       
+[69] haven_2.3.1       sass_0.4.0       </code></pre>
 </div>
 
 
