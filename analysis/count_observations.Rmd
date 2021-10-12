@@ -1,0 +1,298 @@
+---
+title: "count_observations"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+Count the number of bgc-argo observations, and plot the evolution over time. 
+
+Use the same process as in loading_data.Rmd to load in bgc-argo data and the corresponding metadata: 
+
+```{r loading_data}
+
+library(tidyverse)
+# remotes::install_github("ArgoCanada/argodata")
+library(argodata)
+library(ggplot2)
+library(lubridate)
+
+argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
+
+argo_update_global(max_global_cache_age = Inf)  
+argo_update_data(max_data_cache_age = Inf) # the arguments max_global_cache_age and max_data_cache_age indicate the age of the cached files to update (in hours) (Inf means always use the cached file, and -Inf means always download from the server) 
+# e.g. if max_global_cache_age = 5, then files older than 5 hours will be updated 
+
+
+bgc_subset = argo_global_synthetic_prof() %>%     
+  argo_filter_data_mode(data_mode = 'delayed') %>%
+  argo_filter_date(date_min = '2013-01-01',
+                   date_max = '2015-12-31') # download bgc-argo files containing delayed-mode data (recommended for bgc variables) between January 1, 2013 and December 31, 2015 (selects this specific subset of the cached files) 
+
+# check the dates 
+# max(bgc_subset$date, na.rm = TRUE)
+# min(bgc_subset$date, na.rm = TRUE)
+
+bgc_data = argo_prof_levels(bgc_subset, 
+                            vars = c('PRES_ADJUSTED','PRES_ADJUSTED_QC',
+                                     'PSAL_ADJUSTED', 'PSAL_ADJUSTED_QC',
+                                     'TEMP_ADJUSTED','TEMP_ADJUSTED_QC',
+                                     'DOXY_ADJUSTED', 'DOXY_ADJUSTED_QC',
+                                     'NITRATE_ADJUSTED', 'NITRATE_ADJUSTED_QC',
+                                     'PH_IN_SITU_TOTAL_ADJUSTED', 'PH_IN_SITU_TOTAL_ADJUSTED_QC'), quiet = TRUE) 
+# read in the profiles of the delayed-mode data from 01/01/2013 to 31/12/2015 (takes a while)
+
+bgc_metadata = argo_prof_prof(bgc_subset) # read in the metadata corresponding to these profiles 
+
+full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof')) # join data and metadata together 
+
+```
+
+Create a separate dataframe for each BGC variable (oxygen, pH and nitrate), with longitude, latitude, value, qc flag, date, time, year, month, day, cycle number, float ID, and profile qc flag, and look at the evolution of the number of observations (any depth levels) and the number of profiles (depth levels 0-2000 m) over time.
+
+QC flags for values ('flag' column) are between 1 and 8, where:
+1 is 'good' data,
+2 is 'probably good' data,
+3 is 'probably bad' data, 
+4 is 'bad' data, 
+5 is 'value changed',
+6 is not used,
+7 is not used,
+8 is 'estimated value',
+9 is 'missing value'.
+
+Profile QC flags ('profile_flag' column) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):   
+'A' means 100% of profile levels contain good data,
+'B' means 75-<100% of profile levels contain good data,
+'C' means 50-75% of profile levels contain good data,
+'D' means 25-50% of profile levels contain good data, 
+'E' means >0-50% of profile levels contain good data, 
+'F' means 0% of profile levels contain good data. 
+
+1. NUMBER OF OBSERVATIONS
+
+1.1 Oxygen 
+```{r create_oxygen_dataframe}
+
+oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$doxy_adjusted, full_data$doxy_adjusted_qc) # extract desired variables from the combined data/metadata dataframe
+
+colnames(oxy) = c('longitude','latitude','date', 'doxy_adjusted', 'flag') # add column names 
+oxy$date.simple = as.Date(oxy$date)        # separate the date and time into two columns
+oxy$time = format(oxy$date, '%H:%M:%S')
+
+oxy = oxy %>%                             # separate the date into year, month and day
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,   
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_doxy_qc) # add cycle number, float ID and profile qc flag to the dataframe 
+
+oxy.no.na = oxy %>%
+  filter(!is.na(doxy_adjusted)) # remove NA values
+
+num_obs_oxy = oxy.no.na %>%
+  group_by(year, month, flag) %>%     
+  summarise(Count = n()) # count the number of oxygen observations by month
+
+```
+
+The number of observations can then be plotted as a timeseries. Different colored lines are plotted for different quality control flags 
+
+```{r oxygen_timeseries}
+# plot the number of oxygen observations per day 
+ggplot(num_obs_oxy, aes(x = month, y = Count, group = flag, col = flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year) +
+  labs(title = 'number of adjusted oxygen observations',
+       y = 'number of observations',
+       x = 'date') +
+  theme_bw()
+```
+
+1.2 pH 
+
+```{r create_pH_dataframe}
+
+ph = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$ph_in_situ_total_adjusted, full_data$ph_in_situ_total_adjusted_qc)
+# extract the variables from the combined data/metadata frame
+
+colnames(ph) = c('longitude','latitude','date', 'ph_in_situ_total', 'flag')
+# rename columns 
+
+ph$date.simple = as.Date(ph$date)
+ph$time = format(ph$date, '%H:%M:%S') # separate date and time into two separate columns
+
+ph = ph %>%
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_ph_in_situ_total_qc) # separate year, month and day, and add cycle number, float ID and profile qc flag 
+
+ph.no.na = ph %>%
+  filter(!is.na(ph_in_situ_total)) # remove NA values 
+
+num_obs_ph = ph.no.na %>%
+  group_by(year, month, flag) %>%
+  summarise(Count = n())   # count the number of observations per month 
+
+```
+
+We can then plot the number of pH observations in a timeseries. Different lines are plotted for different quality control flags 
+
+```{r pH_timeseries}
+
+ggplot(num_obs_ph, aes(x = month, y = Count, group = flag, col = flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~year) +
+  labs(title = 'number of adjusted pH observations',
+       y = 'number of observations',
+       x = 'date') +
+  theme_bw()
+
+```
+
+1.3 Nitrate 
+
+```{r create_nitrate_dataframe}
+
+nitrate = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$nitrate_adjusted, full_data$nitrate_adjusted_qc) # extract nitrate from the combined data/metadata dataframe
+
+colnames(nitrate) = c('longitude','latitude', 'date', 'nitrate_adjusted', 'flag')
+# rename columns 
+
+nitrate$date.simple = as.Date(nitrate$date)
+nitrate$time = format(nitrate$date, '%H:%M:%S') # separate the date into date and time columns
+
+nitrate = nitrate %>%
+  mutate(year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple),
+         cycle = full_data$cycle_number,
+         float_ID = full_data$float_serial_no,
+         profile_flag = full_data$profile_nitrate_qc) # separate year, month, and day, and add cycle number, float ID, and the profile qc flag 
+
+nitrate.no.na = nitrate %>%
+  filter(!is.na(nitrate_adjusted)) # remove NA values
+
+num_obs_nitrate = nitrate.no.na %>%
+  group_by(year, month, flag) %>%
+  summarise(Count = n())   # count the number of nitrate observations per month 
+
+```
+Plot the number of nitrate observations per month as a timeseries. Different lines are plotted for different qc flags 
+
+```{r nitrate_timeseries}
+
+ggplot(num_obs_nitrate, aes(x = month, y = Count, group = flag, col = flag))+
+  geom_line()+
+  geom_point()+
+  facet_wrap(~ year)+
+  labs(title = 'number of adjusted nitrate observations',
+       y = 'number of observations',
+       x = 'date') +
+  theme_bw()
+```
+
+ 2. NUMBER OF PROFILES
+ 
+Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the number of profiles over time for each variable.
+(One profile has multiple depth levels, between 0-2000 m)
+
+ 2.1 Oxygen 
+ 
+```{r number_of_oxygen_profiles}
+prof_oxy = oxy.no.na %>%
+  group_by(float_ID, cycle, profile_flag, year, month) %>%     
+  summarise(num_obs = n())  # count the number of oxygen observations for each float and cycle
+
+prof_oxy = prof_oxy %>%
+  mutate(prof = rep(1, length(cycle)))   # repeat a vector of 1s for each individual cycle (one cycle corresponds to one profile)
+
+num_prof_oxy = prof_oxy %>%
+  group_by(year, month, profile_flag) %>%
+  summarise(count_prof = n())       # count the number of 1s (profiles)
+```
+
+Plot the evolution of the number of oxygen profiles over time
+
+```{r oxygen_profile_timeseries}
+
+ggplot(num_prof_oxy, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = 'number of oxygen profiles',
+       y = 'number of profiles',
+       x = 'month') +
+  theme_bw()
+
+```
+
+
+2.2 pH 
+
+```{r number_of_pH_profiles}
+
+prof_ph = ph.no.na %>%
+  group_by(float_ID, cycle, profile_flag, year, month) %>%     
+  summarise(num_obs = n()) # count the number of ph observations by float and cycle
+
+prof_ph = prof_ph %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s over the length of the cycles (one cycle corresponds to one pH profile)
+
+num_prof_ph = prof_ph %>%
+  group_by(year, month, profile_flag) %>%
+  summarise(count_prof = n()) # count the number of 1s (profiles)
+
+```
+
+Plot the number of pH profiles over time 
+
+```{r pH_profile_timeseries}
+ggplot(num_prof_ph, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = 'number of pH profiles',
+       y = 'number of profiles',
+       x = 'month') +
+  theme_bw()
+
+```
+
+2.3 Nitrate 
+
+```{r number_of_nitrate_profiles}
+prof_nitrate = nitrate.no.na %>%
+  group_by(float_ID, cycle, profile_flag, year, month) %>%  
+  summarise(num_obs = n()) # count the number of nitrate observations by float and cycle
+
+prof_nitrate = prof_nitrate %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s over the length of cycle numbers (one cycle is one profile)
+
+num_prof_nitrate = prof_nitrate %>%
+  group_by(year, month, profile_flag) %>%
+  summarise(count_prof = n()) # count the number of 1s (profiles)
+```
+
+Plot the number of nitrate profiles over time 
+
+```{r nitrate_profile_timeseries}
+
+ggplot(num_prof_nitrate, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year, ncol = 3) +
+  labs(title = 'number of nitrate profiles',
+       y = 'number of profiles',
+       x = 'month') +
+  theme_bw()
+
+```
+
