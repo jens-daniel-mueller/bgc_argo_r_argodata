@@ -199,6 +199,62 @@ ggplot(num_obs_nitrate, aes(x = month, y = Count, group = flag, col = flag))+
   theme_bw()
 ```
 
+1.4 All BGC variables (oxygen, pH, and nitrate)
+We can count the number of observations for which all three BGC variables exist.
+(QC flags cannot be included since they are specific to one variable)
+
+```{r creating_bgc_dataframe}
+# create a dataframe which contains all three variables, with longitude, latitude, date, cycle number and float ID 
+bgc_co_located = data.frame(full_data$longitude, full_data$latitude,
+                            full_data$date,
+                            full_data$cycle_number,
+                            full_data$float_serial_no,
+                            full_data$doxy_adjusted,
+                            full_data$ph_in_situ_total_adjusted,
+                            full_data$nitrate_adjusted)
+
+colnames(bgc_co_located) = c('longitude', 'latitude',
+                             'date',
+                             'cycle',
+                             'float_ID',
+                             'doxy_adjusted',
+                             'ph_in_situ_total_adjusted',
+                             'nitrate_adjusted') # rename the columns 
+
+bgc_co_located = bgc_co_located %>%     # change the date and time format
+  mutate(date.simple = as.Date(date),
+         time = format(date, '%H:%M:%S'),
+         year = year(date.simple),
+         month = month(date.simple),
+         day = day(date.simple))
+
+bgc_co_located.no.na = bgc_co_located %>%  # remove NA values for each variable
+  filter(!is.na(doxy_adjusted)) %>%
+  filter(!is.na(ph_in_situ_total_adjusted)) %>%
+  filter(!is.na(nitrate_adjusted))
+# removes rows of pH and nitrate for which there is no oxygen, rows of oxygen and nitrate for which there is no pH, and rows of oxygen and pH for which there is no nitrate 
+
+# count the number of observations left for each year and month 
+num_obs_bgc = bgc_co_located.no.na %>%
+  group_by(year, month) %>%
+  summarise(Count = n())  
+```
+
+We can then plot the evolution over time of the number of BGC observations containing all three variables 
+
+```{r timeseries_bgc_observations}
+ggplot(num_obs_bgc, aes(x = month, y = Count))+
+  geom_line()+
+  geom_point()+
+  facet_wrap(~ year)+
+  labs(title = 'number of adjusted BGC observations',
+       y = 'number of observations',
+       x = 'date') +
+  theme_bw()
+
+```
+
+
  2. NUMBER OF PROFILES
  
 Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the number of profiles over time for each variable.
@@ -294,5 +350,36 @@ ggplot(num_prof_nitrate, aes(x = month, y = count_prof, group = profile_flag, co
        x = 'month') +
   theme_bw()
 
+```
+
+2.4 All BGC variables (oxygen, pH, and nitrate)
+We can count the number of profiles which contain all three variables.
+( Profile QC flags cannot be included since they are specific to one variable)
+
+```{r number_of_bgc_profiles}
+# count the number of profiles for which all three variables exist
+prof_bgc = bgc_co_located.no.na %>% 
+  group_by(float_ID, cycle, year, month) %>%
+  summarise(num_obs = n()) # count the number of observations by float and cycle number
+
+prof_bgc = prof_bgc %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s over the number of cycles
+
+num_prof_bgc = prof_bgc %>%
+  group_by(year, month) %>%
+  summarise(count_prof = n())  # count the number of 1s 
+
+```
+
+Plot the number of BGC profiles for which all three variables exist over time
+```{r}
+ggplot(num_prof_bgc, aes(x = month, y = count_prof)) +
+  geom_line() +
+  geom_point() +
+  facet_wrap(~ year) +
+  labs(title = 'number of BGC profiles',
+       y = 'number of profiles',
+       x = 'month') +
+  theme_bw()
 ```
 
