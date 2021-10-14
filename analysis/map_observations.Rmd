@@ -1,0 +1,377 @@
+---
+title: "Map BGC Argo observations"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo floats 
+
+```{r loading_packages}
+
+library(tidyverse)
+# remotes::install_github("ArgoCanada/argodata")
+library(argodata)
+library(argoFloats)
+library(ggplot2)
+library(lubridate)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+# load in coastline data (uses sf and rnaturalearthdata packages)
+world = ne_coastline(scale = 'medium', returnclass = 'sf')
+
+```
+
+Load in the data (the process is the same as in loading_data.html)
+
+```{r loading_data}
+# Set the cache directory using argo_set_cache_dir():
+argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
+argo_update_global(max_global_cache_age = Inf)
+argo_update_data(max_data_cache_age = Inf)
+
+bgc_subset = argo_global_synthetic_prof() %>%
+  argo_filter_data_mode(data_mode = 'delayed') %>%
+  argo_filter_date(date_min = '2013-01-01',
+                   date_max = '2015-12-31') # download the indexes of synthetic files of delayed-mode data (BGC and core argo data)
+
+# check the dates 
+# max(bgc_subset$date, na.rm = TRUE)
+# min(bgc_subset$date, na.rm = TRUE)
+
+
+bgc_data = argo_prof_levels(bgc_subset, vars = c('PRES_ADJUSTED','PRES_ADJUSTED_QC',
+                                                 'PSAL_ADJUSTED', 'PSAL_ADJUSTED_QC',
+                                                 'TEMP_ADJUSTED','TEMP_ADJUSTED_QC',
+                                                 'DOXY_ADJUSTED', 'DOXY_ADJUSTED_QC',
+                                                 'NITRATE_ADJUSTED', 'NITRATE_ADJUSTED_QC',
+                                                 'PH_IN_SITU_TOTAL_ADJUSTED', 'PH_IN_SITU_TOTAL_ADJUSTED_QC'), quiet = TRUE)
+# read in the profiles (takes a while)
+
+bgc_metadata = argo_prof_prof(bgc_subset)  # load in the corresponding metadata
+
+full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof'))
+# joins the metadata to the data and creates one data frame
+```
+
+1. MAP OBSERVATIONS  
+
+Create separate dataframes for each variable, with longitude, latitude, date, value, cycle number, and float ID 
+
+1.1 Oxygen 
+
+```{r create_oxygen_dataframe}
+
+oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                 full_data$doxy_adjusted) # add longitude, latitude, date and oxygen to the dataframe 
+colnames(oxy) = c('longitude','latitude','date', 'doxy_adjusted') # rename columns 
+
+oxy = oxy %>%
+  mutate(date.simple = as.Date(date),    # create one date and one time column
+         time = format(date, '%H:%M:%S'),
+         cycle = full_data$cycle_number, # add cycle number and float ID 
+         float_ID = full_data$float_serial_no)
+
+oxy.no.na = oxy %>%
+  filter(!is.na(doxy_adjusted)) # remove the NA values
+
+location_obs_oxy = oxy.no.na %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>% 
+  summarise(Count = n()) # count the number of data points per longitude/latitude pair, rounded to the nearest integer 
+
+colnames(location_obs_oxy) = c('longitude', 'latitude', 'Count') # rename columns
+```
+
+Map the location of the oxygen observations 
+
+```{r map_oxygen_observations}
+
+ggplot() +
+  geom_tile(data = location_obs_oxy, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of obs',
+       title = 'location of delayed-mode adjusted oxygen observations')
+
+```
+
+1.2 pH 
+
+```{r create_pH_dataframe}
+
+ph = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                full_data$ph_in_situ_total_adjusted) # add longitude, latitude, date, and pH to a dataframe 
+
+colnames(ph) = c('longitude','latitude','date', 'ph_in_situ_total') #rename columns
+
+ph = ph %>%
+  mutate(date.simple = as.Date(date),  # create one date and one time columns
+         time = format(date, '%H:%M:%S'),
+         cycle = full_data$cycle_number,  # add cycle number and float ID
+         float_ID = full_data$float_serial_no)
+
+ph.no.na = ph %>%
+  filter(!is.na(ph_in_situ_total)) # remove NA values 
+
+location_obs_ph = ph.no.na %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(Count = n()) # count the number of pH observations for each longitude/latitude pair rounded to the nearest integer 
+
+colnames(location_obs_ph) = c('longitude', 'latitude', 'Count') # rename columns 
+```
+
+Map the location of pH observations 
+
+```{r map_pH_observations}
+
+ggplot() +
+  geom_sf(data = world, fill = 'grey')+
+  geom_tile(data = location_obs_ph, aes(x = longitude, y = latitude, fill = Count))+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of obs',
+       title = 'location of delayed-mode adjusted pH observations')
+
+```
+
+1.3 Nitrate 
+
+```{r create_nitrate_dataframe}
+
+nitrate = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                     full_data$nitrate_adjusted) # create a dataframe with longitude, latitude, date, and nitrate values 
+
+colnames(nitrate) = c('longitude','latitude', 'date', 'nitrate_adjusted') # rename columns
+
+nitrate = nitrate %>%
+  mutate(date.simple = as.Date(date),  # separate date and time into two columns 
+         time = format(date, '%H:%M:%S'),
+         cycle = full_data$cycle_number,  # add cycle number and float ID 
+         float_ID = full_data$float_serial_no)
+
+nitrate.no.na = nitrate %>%
+  filter(!is.na(nitrate_adjusted)) # remove NA values 
+
+location_obs_nitrate = nitrate.no.na %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(Count = n()) # count the number of nitrate observations for each longitude/latitude pair rounded to the nearest integer 
+
+colnames(location_obs_nitrate) = c('longitude', 'latitude', 'Count') # rename columns 
+
+```
+
+Map the location of nitrate observations 
+
+```{r map_nitrate_observations}
+
+ggplot() +
+  geom_tile(data = location_obs_nitrate, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of obs',
+       title = 'location of delayed-mode adjusted nitrate observations')
+
+```
+
+1.4 All three BGC variables 
+
+Map the location of observations for which a measurement of all three variables exists 
+
+```{r create_all_bgc_dataframe}
+# create a dataframe which contains longitude, latitude, date, cycle number, float ID, and all three bgc variables 
+bgc_co_located = data.frame(full_data$longitude, full_data$latitude,
+                            full_data$date,
+                            full_data$cycle_number,
+                            full_data$float_serial_no,
+                            full_data$doxy_adjusted,
+                            full_data$ph_in_situ_total_adjusted,
+                            full_data$nitrate_adjusted)
+
+# rename columns:
+colnames(bgc_co_located) = c('longitude', 'latitude',
+                             'date',
+                             'cycle',
+                             'float_ID',
+                             'doxy_adjusted',
+                             'ph_in_situ_total_adjusted',
+                             'nitrate_adjusted')
+
+bgc_co_located = bgc_co_located %>%    # change the date and time format
+  mutate(date.simple = as.Date(date),
+         time = format(date, '%H:%M:%S'))
+
+bgc_co_located.no.na = bgc_co_located %>%  # remove NA values for each variable
+  filter(!is.na(doxy_adjusted)) %>%
+  filter(!is.na(ph_in_situ_total_adjusted)) %>%
+  filter(!is.na(nitrate_adjusted))
+
+location_obs_bgc = bgc_co_located.no.na %>% 
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(Count = n()) # count the number of observations for each longitude/latitude pair, rounded to the nearest integer
+
+colnames(location_obs_bgc) = c('longitude', 'latitude', 'Count') # rename columns 
+```
+
+Map the locations of BGC observations 
+
+```{r map_bgc_observations}
+
+ggplot() +
+  geom_tile(data = location_obs_bgc, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of obs',
+       title = 'location of delayed-mode adjusted BGC observations (oxygen, pH, and nitrate)')
+
+```
+
+2. MAP PROFILE LOCATIONS
+
+2.1 Oxygen 
+
+```{r count_oxygen_profiles}
+
+# count the number of oxygen profiles
+prof_oxy = oxy.no.na %>%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %>%    
+  summarise(num_obs = n())  # count the number of oxygen observations by float and cycle
+
+colnames(prof_oxy) = c('float_ID', 'cycle', 'longitude', 'latitude', 'num_obs') # rename columns
+
+prof_oxy = prof_oxy %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_oxy = prof_oxy %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer 
+
+colnames(location_prof_oxy) = c('longitude', 'latitude', 'Count')
+
+```
+
+Map the location of oxygen profiles 
+
+```{r map_oxygen_profiles}
+
+ggplot() +
+  geom_tile(data = location_prof_oxy, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
+       title = 'location of delayed-mode adjusted oxygen profiles')
+
+```
+
+2.2 pH 
+
+```{r count_pH_profiles}
+
+# count the number of pH profiles
+prof_ph = ph.no.na %>%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %>%    
+  summarise(num_obs = n())  # count the number of ph observations by float and cycle
+
+colnames(prof_ph) = c('float_ID', 'cycle', 'longitude', 'latitude', 'num_obs') # rename columns
+
+prof_ph = prof_ph %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_ph = prof_ph %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer 
+
+colnames(location_prof_ph) = c('longitude', 'latitude', 'Count') # rename columns 
+
+```
+
+Map the location of pH profiles 
+
+```{r map_pH_profiles}
+
+ggplot() +
+  geom_tile(data = location_prof_ph, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
+       title = 'location of delayed-mode adjusted pH profiles')
+
+```
+
+
+2.3 Nitrate 
+
+```{r count_nitrate_profiles}
+
+# count the number of nitrate profiles
+prof_nitrate = nitrate.no.na %>%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %>%    
+  summarise(num_obs = n())  # count the number of nitrate observations by float and cycle
+
+colnames(prof_nitrate) = c('float_ID', 'cycle', 'longitude', 'latitude', 'num_obs') # rename columns
+
+prof_nitrate = prof_nitrate %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_nitrate = prof_nitrate %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer 
+
+colnames(location_prof_nitrate) = c('longitude', 'latitude', 'Count') # rename columns
+
+```
+
+Map the location of nitrate profiles 
+
+```{r map_nitrate_profiles}
+
+ggplot() +
+  geom_tile(data = location_prof_nitrate, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
+       title = 'location of delayed-mode adjusted nitrate profiles')
+
+```
+
+2.4 Profiles which contain all three BGC variables 
+
+```{r count_bgc_profiles}
+# count the number of bgc profiles
+prof_bgc = bgc_co_located.no.na %>%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %>%    
+  summarise(num_obs = n())  # count the number of nitrate observations by float and cycle
+
+colnames(prof_bgc) = c('float_ID', 'cycle', 'longitude', 'latitude', 'num_obs') # rename columns
+
+prof_bgc = prof_bgc %>%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_bgc = prof_bgc %>%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %>%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer 
+
+colnames(location_prof_bgc) = c('longitude', 'latitude', 'Count') # rename columns
+```
+
+Map the location of profiles containing all three BGC variables 
+
+```{r map_bgc_profiles}
+
+ggplot() +
+  geom_tile(data = location_prof_bgc, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = 'grey')+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
+       title = 'location of delayed-mode adjusted BGC profiles')
+
+```
+
