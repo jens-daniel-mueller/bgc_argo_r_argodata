@@ -12,7 +12,7 @@
 <meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
 
 
-<title>loading_data</title>
+<title>Map BGC Argo observations</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -385,7 +385,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">loading_data</h1>
+<h1 class="title toc-ignore">Map BGC Argo observations</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
 <h4 class="date">14 October, 2021</h4>
 
@@ -543,7 +543,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/loading_data.Rmd</code>) and HTML (<code>docs/loading_data.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/map_observations.Rmd</code>) and HTML (<code>docs/map_observations.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -569,70 +569,19 @@ Message
 <tbody>
 <tr>
 <td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4840e498ba7ee84ab1c7b9fa3d23742c84e2de48/docs/loading_data.html" target="_blank">4840e49</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-12
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
 Rmd
 </td>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2fb35f7e08ec8188b74cff0807f01e80917dc474/analysis/loading_data.Rmd" target="_blank">2fb35f7</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a2a26613340f3420bf7b53655fabcd5b6fb272e/analysis/map_observations.Rmd" target="_blank">6a2a266</a>
 </td>
 <td>
 pasqualina-vonlanthendinenna
 </td>
 <td>
-2021-10-12
+2021-10-14
 </td>
 <td>
-added reading data in page
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ff925ab19bbc9f3bc6931854ebb5412b9c390acc/docs/loading_data.html" target="_blank">ff925ab</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7e0cf3450f7da0df6a83b2c34a1fe48698dde97f/analysis/loading_data.Rmd" target="_blank">7e0cf34</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-11
-</td>
-<td>
-added reading data in page
+added map observations page
 </td>
 </tr>
 </tbody>
@@ -642,7 +591,7 @@ added reading data in page
 </div>
 </div>
 </div>
-<p>Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata</p>
+<p>Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo floats</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>✓ ggplot2 3.3.5     ✓ purrr   0.3.4
@@ -654,6 +603,7 @@ x dplyr::filter() masks stats::filter()
 x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code># remotes::install_github(&quot;ArgoCanada/argodata&quot;)
 library(argodata)
+library(argoFloats)
 library(ggplot2)
 library(lubridate)</code></pre>
 <pre><code>
@@ -661,34 +611,280 @@ Attaching package: &#39;lubridate&#39;</code></pre>
 <pre><code>The following objects are masked from &#39;package:base&#39;:
 
     date, intersect, setdiff, union</code></pre>
-<p>Set the cache directory for the argo data. The cache directory stores previously downlaoded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using argo_update_global() (data files are also updated occasionally; update these using argo_update_data())</p>
-<pre class="r"><code>argo_set_cache_dir(&#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;)
-argo_update_global(max_global_cache_age = Inf)  # argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
-argo_update_data(max_data_cache_age = Inf)</code></pre>
-<p>Load in the synthetic (core and bgc merged) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data (quality checked by PIs)</p>
-<pre class="r"><code>bgc_subset = argo_global_synthetic_prof() %&gt;%
+<pre class="r"><code>library(sf)</code></pre>
+<pre><code>Linking to GEOS 3.6.2, GDAL 3.0.4, PROJ 7.0.0</code></pre>
+<pre class="r"><code>library(rnaturalearth)
+library(rnaturalearthdata)
+# load in coastline data (uses sf and rnaturalearthdata packages)
+world = ne_coastline(scale = &#39;medium&#39;, returnclass = &#39;sf&#39;)</code></pre>
+<p>Load in the data (the process is the same as in loading_data.html)</p>
+<pre class="r"><code># Set the cache directory using argo_set_cache_dir():
+argo_set_cache_dir(&#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;)
+argo_update_global(max_global_cache_age = Inf)
+argo_update_data(max_data_cache_age = Inf)
+
+bgc_subset = argo_global_synthetic_prof() %&gt;%
   argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%
   argo_filter_date(date_min = &#39;2013-01-01&#39;,
-                   date_max = &#39;2015-12-31&#39;)</code></pre>
+                   date_max = &#39;2015-12-31&#39;) # download the indexes of synthetic files of delayed-mode data (BGC and core argo data)</code></pre>
 <pre><code>Loading argo_global_synthetic_prof()</code></pre>
 <pre class="r"><code># check the dates 
 # max(bgc_subset$date, na.rm = TRUE)
-# min(bgc_subset$date, na.rm = TRUE)</code></pre>
-<p>Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)</p>
-<pre class="r"><code>bgc_data = argo_prof_levels(bgc_subset, 
-                            vars = c(&#39;PRES_ADJUSTED&#39;,&#39;PRES_ADJUSTED_QC&#39;,
-                                     &#39;PSAL_ADJUSTED&#39;, &#39;PSAL_ADJUSTED_QC&#39;,
-                                     &#39;TEMP_ADJUSTED&#39;,&#39;TEMP_ADJUSTED_QC&#39;,
-                                     &#39;DOXY_ADJUSTED&#39;, &#39;DOXY_ADJUSTED_QC&#39;,
-                                     &#39;NITRATE_ADJUSTED&#39;, &#39;NITRATE_ADJUSTED_QC&#39;,
-                                     &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;, &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;), quiet = TRUE) 
-# read in the profiles (takes a while)</code></pre>
-<p>The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, ‘/nfs/kryo/work/updata/bgc_argo_r_argodata’). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download each time.</p>
-<p>Read in the corresponding metadata:</p>
-<pre class="r"><code>bgc_metadata = argo_prof_prof(bgc_subset) </code></pre>
+# min(bgc_subset$date, na.rm = TRUE)
+
+
+bgc_data = argo_prof_levels(bgc_subset, vars = c(&#39;PRES_ADJUSTED&#39;,&#39;PRES_ADJUSTED_QC&#39;,
+                                                 &#39;PSAL_ADJUSTED&#39;, &#39;PSAL_ADJUSTED_QC&#39;,
+                                                 &#39;TEMP_ADJUSTED&#39;,&#39;TEMP_ADJUSTED_QC&#39;,
+                                                 &#39;DOXY_ADJUSTED&#39;, &#39;DOXY_ADJUSTED_QC&#39;,
+                                                 &#39;NITRATE_ADJUSTED&#39;, &#39;NITRATE_ADJUSTED_QC&#39;,
+                                                 &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;, &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;), quiet = TRUE)
+# read in the profiles (takes a while)
+
+bgc_metadata = argo_prof_prof(bgc_subset)  # load in the corresponding metadata</code></pre>
 <pre><code>Extracting from 54117 files</code></pre>
-<p>Join the metadata and data together into one dataset</p>
-<pre class="r"><code>full_data = left_join(bgc_data, bgc_metadata, by = c(&#39;file&#39;, &#39;n_prof&#39;))</code></pre>
+<pre class="r"><code>full_data = left_join(bgc_data, bgc_metadata, by = c(&#39;file&#39;, &#39;n_prof&#39;))
+# joins the metadata to the data and creates one data frame</code></pre>
+<ol style="list-style-type: decimal">
+<li>MAP OBSERVATIONS</li>
+</ol>
+<p>Create separate dataframes for each variable, with longitude, latitude, date, value, cycle number, and float ID</p>
+<p>1.1 Oxygen</p>
+<pre class="r"><code>oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                 full_data$doxy_adjusted) # add longitude, latitude, date and oxygen to the dataframe 
+colnames(oxy) = c(&#39;longitude&#39;,&#39;latitude&#39;,&#39;date&#39;, &#39;doxy_adjusted&#39;) # rename columns 
+
+oxy = oxy %&gt;%
+  mutate(date.simple = as.Date(date),    # create one date and one time column
+         time = format(date, &#39;%H:%M:%S&#39;),
+         cycle = full_data$cycle_number, # add cycle number and float ID 
+         float_ID = full_data$float_serial_no)
+
+oxy.no.na = oxy %&gt;%
+  filter(!is.na(doxy_adjusted)) # remove the NA values
+
+location_obs_oxy = oxy.no.na %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;% 
+  summarise(Count = n()) # count the number of data points per longitude/latitude pair, rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_obs_oxy) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns</code></pre>
+<p>Map the location of the oxygen observations</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_obs_oxy, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of obs&#39;,
+       title = &#39;location of delayed-mode adjusted oxygen observations&#39;)</code></pre>
+<pre><code>Warning: Removed 1 rows containing missing values (geom_tile).</code></pre>
+<p><img src="figure/map_observations.Rmd/map_oxygen_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>1.2 pH</p>
+<pre class="r"><code>ph = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                full_data$ph_in_situ_total_adjusted) # add longitude, latitude, date, and pH to a dataframe 
+
+colnames(ph) = c(&#39;longitude&#39;,&#39;latitude&#39;,&#39;date&#39;, &#39;ph_in_situ_total&#39;) #rename columns
+
+ph = ph %&gt;%
+  mutate(date.simple = as.Date(date),  # create one date and one time columns
+         time = format(date, &#39;%H:%M:%S&#39;),
+         cycle = full_data$cycle_number,  # add cycle number and float ID
+         float_ID = full_data$float_serial_no)
+
+ph.no.na = ph %&gt;%
+  filter(!is.na(ph_in_situ_total)) # remove NA values 
+
+location_obs_ph = ph.no.na %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(Count = n()) # count the number of pH observations for each longitude/latitude pair rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_obs_ph) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns </code></pre>
+<p>Map the location of pH observations</p>
+<pre class="r"><code>ggplot() +
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  geom_tile(data = location_obs_ph, aes(x = longitude, y = latitude, fill = Count))+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of obs&#39;,
+       title = &#39;location of delayed-mode adjusted pH observations&#39;)</code></pre>
+<p><img src="figure/map_observations.Rmd/map_pH_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>1.3 Nitrate</p>
+<pre class="r"><code>nitrate = data.frame(full_data$longitude, full_data$latitude, full_data$date,
+                     full_data$nitrate_adjusted) # create a dataframe with longitude, latitude, date, and nitrate values 
+
+colnames(nitrate) = c(&#39;longitude&#39;,&#39;latitude&#39;, &#39;date&#39;, &#39;nitrate_adjusted&#39;) # rename columns
+
+nitrate = nitrate %&gt;%
+  mutate(date.simple = as.Date(date),  # separate date and time into two columns 
+         time = format(date, &#39;%H:%M:%S&#39;),
+         cycle = full_data$cycle_number,  # add cycle number and float ID 
+         float_ID = full_data$float_serial_no)
+
+nitrate.no.na = nitrate %&gt;%
+  filter(!is.na(nitrate_adjusted)) # remove NA values 
+
+location_obs_nitrate = nitrate.no.na %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(Count = n()) # count the number of nitrate observations for each longitude/latitude pair rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_obs_nitrate) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns </code></pre>
+<p>Map the location of nitrate observations</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_obs_nitrate, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of obs&#39;,
+       title = &#39;location of delayed-mode adjusted nitrate observations&#39;)</code></pre>
+<pre><code>Warning: Removed 1 rows containing missing values (geom_tile).</code></pre>
+<p><img src="figure/map_observations.Rmd/map_nitrate_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>1.4 All three BGC variables</p>
+<p>Map the location of observations for which a measurement of all three variables exists</p>
+<pre class="r"><code># create a dataframe which contains longitude, latitude, date, cycle number, float ID, and all three bgc variables 
+bgc_co_located = data.frame(full_data$longitude, full_data$latitude,
+                            full_data$date,
+                            full_data$cycle_number,
+                            full_data$float_serial_no,
+                            full_data$doxy_adjusted,
+                            full_data$ph_in_situ_total_adjusted,
+                            full_data$nitrate_adjusted)
+
+# rename columns:
+colnames(bgc_co_located) = c(&#39;longitude&#39;, &#39;latitude&#39;,
+                             &#39;date&#39;,
+                             &#39;cycle&#39;,
+                             &#39;float_ID&#39;,
+                             &#39;doxy_adjusted&#39;,
+                             &#39;ph_in_situ_total_adjusted&#39;,
+                             &#39;nitrate_adjusted&#39;)
+
+bgc_co_located = bgc_co_located %&gt;%    # change the date and time format
+  mutate(date.simple = as.Date(date),
+         time = format(date, &#39;%H:%M:%S&#39;))
+
+bgc_co_located.no.na = bgc_co_located %&gt;%  # remove NA values for each variable
+  filter(!is.na(doxy_adjusted)) %&gt;%
+  filter(!is.na(ph_in_situ_total_adjusted)) %&gt;%
+  filter(!is.na(nitrate_adjusted))
+
+location_obs_bgc = bgc_co_located.no.na %&gt;% 
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(Count = n()) # count the number of observations for each longitude/latitude pair, rounded to the nearest integer</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_obs_bgc) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns </code></pre>
+<p>Map the locations of BGC observations</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_obs_bgc, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of obs&#39;,
+       title = &#39;location of delayed-mode adjusted BGC observations (oxygen, pH, and nitrate)&#39;)</code></pre>
+<p><img src="figure/map_observations.Rmd/map_bgc_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>MAP PROFILE LOCATIONS</li>
+</ol>
+<p>2.1 Oxygen</p>
+<pre class="r"><code># count the number of oxygen profiles
+prof_oxy = oxy.no.na %&gt;%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%    
+  summarise(num_obs = n())  # count the number of oxygen observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(prof_oxy) = c(&#39;float_ID&#39;, &#39;cycle&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;num_obs&#39;) # rename columns
+
+prof_oxy = prof_oxy %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_oxy = prof_oxy %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_prof_oxy) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;)</code></pre>
+<p>Map the location of oxygen profiles</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_prof_oxy, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of profiles&#39;,
+       title = &#39;location of delayed-mode adjusted oxygen profiles&#39;)</code></pre>
+<pre><code>Warning: Removed 1 rows containing missing values (geom_tile).</code></pre>
+<p><img src="figure/map_observations.Rmd/map_oxygen_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>2.2 pH</p>
+<pre class="r"><code># count the number of pH profiles
+prof_ph = ph.no.na %&gt;%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%    
+  summarise(num_obs = n())  # count the number of ph observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(prof_ph) = c(&#39;float_ID&#39;, &#39;cycle&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;num_obs&#39;) # rename columns
+
+prof_ph = prof_ph %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_ph = prof_ph %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_prof_ph) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns </code></pre>
+<p>Map the location of pH profiles</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_prof_ph, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of profiles&#39;,
+       title = &#39;location of delayed-mode adjusted pH profiles&#39;)</code></pre>
+<p><img src="figure/map_observations.Rmd/map_pH_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>2.3 Nitrate</p>
+<pre class="r"><code># count the number of nitrate profiles
+prof_nitrate = nitrate.no.na %&gt;%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%    
+  summarise(num_obs = n())  # count the number of nitrate observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(prof_nitrate) = c(&#39;float_ID&#39;, &#39;cycle&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;num_obs&#39;) # rename columns
+
+prof_nitrate = prof_nitrate %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_nitrate = prof_nitrate %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_prof_nitrate) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns</code></pre>
+<p>Map the location of nitrate profiles</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_prof_nitrate, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of profiles&#39;,
+       title = &#39;location of delayed-mode adjusted nitrate profiles&#39;)</code></pre>
+<pre><code>Warning: Removed 1 rows containing missing values (geom_tile).</code></pre>
+<p><img src="figure/map_observations.Rmd/map_nitrate_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>2.4 Profiles which contain all three BGC variables</p>
+<pre class="r"><code># count the number of bgc profiles
+prof_bgc = bgc_co_located.no.na %&gt;%
+  group_by(float_ID, cycle, round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%    
+  summarise(num_obs = n())  # count the number of nitrate observations by float and cycle</code></pre>
+<pre><code>`summarise()` has grouped output by &#39;float_ID&#39;, &#39;cycle&#39;, &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(prof_bgc) = c(&#39;float_ID&#39;, &#39;cycle&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;num_obs&#39;) # rename columns
+
+prof_bgc = prof_bgc %&gt;%
+  mutate(prof = rep(1, length(cycle))) # repeat a vector of 1s for each individual cycle 
+
+location_prof_bgc = prof_bgc %&gt;%
+  group_by(round(longitude, digits = 0), round(latitude, digits = 0)) %&gt;%
+  summarise(count_prof = n())       # count the number of 1s (profiles) for each longitude/latitude pair, rounded to the nearest integer </code></pre>
+<pre><code>`summarise()` has grouped output by &#39;round(longitude, digits = 0)&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>colnames(location_prof_bgc) = c(&#39;longitude&#39;, &#39;latitude&#39;, &#39;Count&#39;) # rename columns</code></pre>
+<p>Map the location of profiles containing all three BGC variables</p>
+<pre class="r"><code>ggplot() +
+  geom_tile(data = location_prof_bgc, aes(x = longitude, y = latitude, fill = Count))+
+  geom_sf(data = world, fill = &#39;grey&#39;)+
+  scale_fill_gradientn(colors = rev(rainbow(10)))+
+  theme_bw()+
+  labs(x = &#39;longitude&#39;, y = &#39;latitude&#39;, fill = &#39;number of profiles&#39;,
+       title = &#39;location of delayed-mode adjusted BGC profiles&#39;)</code></pre>
+<p><img src="figure/map_observations.Rmd/map_bgc_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -717,29 +913,36 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] lubridate_1.7.9     argodata_0.0.0.9000 forcats_0.5.0      
- [4] stringr_1.4.0       dplyr_1.0.5         purrr_0.3.4        
- [7] readr_1.4.0         tidyr_1.1.3         tibble_3.1.3       
-[10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
+ [1] rnaturalearthdata_0.1.0 rnaturalearth_0.1.0     sf_1.0-2               
+ [4] lubridate_1.7.9         argoFloats_0.2.0        argodata_0.0.0.9000    
+ [7] forcats_0.5.0           stringr_1.4.0           dplyr_1.0.5            
+[10] purrr_0.3.4             readr_1.4.0             tidyr_1.1.3            
+[13] tibble_3.1.3            ggplot2_3.3.5           tidyverse_1.3.0        
+[16] workflowr_1.6.2        
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
- [5] digest_0.6.27     utf8_1.2.2        R6_2.5.1          cellranger_1.1.0 
- [9] backports_1.1.10  reprex_0.3.0      evaluate_0.14     httr_1.4.2       
-[13] pillar_1.6.2      progress_1.2.2    rlang_0.4.11      readxl_1.3.1     
-[17] rstudioapi_0.13   whisker_0.4       jquerylib_0.1.4   blob_1.2.1       
-[21] rmarkdown_2.10    bit_4.0.4         munsell_0.5.0     broom_0.7.9      
-[25] compiler_4.0.3    httpuv_1.6.2      modelr_0.1.8      xfun_0.25        
-[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0      
-[33] tzdb_0.1.2        crayon_1.4.1      dbplyr_1.4.4      withr_2.4.2      
-[37] later_1.3.0       grid_4.0.3        jsonlite_1.7.2    gtable_0.3.0     
-[41] lifecycle_1.0.0   DBI_1.1.1         git2r_0.27.1      magrittr_2.0.1   
-[45] scales_1.1.1      vroom_1.5.5       cli_3.0.1         stringi_1.5.3    
-[49] fs_1.5.0          promises_1.2.0.1  xml2_1.3.2        bslib_0.2.5.1    
-[53] ellipsis_0.3.2    generics_0.1.0    vctrs_0.3.8       tools_4.0.3      
-[57] bit64_4.0.5       glue_1.4.2        RNetCDF_2.4-2     hms_0.5.3        
-[61] parallel_4.0.3    yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      
-[65] knitr_1.33        haven_2.3.1       sass_0.4.0       </code></pre>
+ [1] fs_1.5.0           bit64_4.0.5        gsw_1.0-6          progress_1.2.2    
+ [5] httr_1.4.2         rprojroot_2.0.2    tools_4.0.3        backports_1.1.10  
+ [9] bslib_0.2.5.1      utf8_1.2.2         R6_2.5.1           KernSmooth_2.23-17
+[13] DBI_1.1.1          colorspace_2.0-2   withr_2.4.2        sp_1.4-4          
+[17] prettyunits_1.1.1  tidyselect_1.1.0   bit_4.0.4          compiler_4.0.3    
+[21] git2r_0.27.1       cli_3.0.1          rvest_0.3.6        RNetCDF_2.4-2     
+[25] xml2_1.3.2         labeling_0.4.2     sass_0.4.0         scales_1.1.1      
+[29] classInt_0.4-3     proxy_0.4-26       digest_0.6.27      rmarkdown_2.10    
+[33] oce_1.4-0          pkgconfig_2.0.3    htmltools_0.5.1.1  highr_0.8         
+[37] dbplyr_1.4.4       fastmap_1.1.0      rlang_0.4.11       readxl_1.3.1      
+[41] rstudioapi_0.13    shiny_1.6.0        farver_2.1.0       jquerylib_0.1.4   
+[45] generics_0.1.0     jsonlite_1.7.2     vroom_1.5.5        magrittr_2.0.1    
+[49] s2_1.0.6           Rcpp_1.0.7         munsell_0.5.0      fansi_0.5.0       
+[53] lifecycle_1.0.0    stringi_1.5.3      whisker_0.4        yaml_2.2.1        
+[57] grid_4.0.3         blob_1.2.1         parallel_4.0.3     promises_1.2.0.1  
+[61] crayon_1.4.1       lattice_0.20-41    haven_2.3.1        hms_0.5.3         
+[65] knitr_1.33         pillar_1.6.2       wk_0.5.0           reprex_0.3.0      
+[69] glue_1.4.2         evaluate_0.14      modelr_0.1.8       tzdb_0.1.2        
+[73] vctrs_0.3.8        httpuv_1.6.2       testthat_3.0.4     cellranger_1.1.0  
+[77] gtable_0.3.0       assertthat_0.2.1   xfun_0.25          mime_0.11         
+[81] xtable_1.8-4       broom_0.7.9        e1071_1.7-8        later_1.3.0       
+[85] class_7.3-17       units_0.7-2        ellipsis_0.3.2    </code></pre>
 </div>
 
 
