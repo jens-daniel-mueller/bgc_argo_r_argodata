@@ -1,22 +1,22 @@
 ---
-title: "count_observations"
+title: "Number of BGC-Argo observations"
 author: "Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 ---
-Count the number of bgc-argo observations, and plot the evolution over time. 
+<font size = "4">Count the number of bgc-argo observations, and plot the evolution over time</font> 
 
-Use the same process as in loading_data.Rmd to load in bgc-argo data and the corresponding metadata: 
+Use the same process as in loading_data.html to load in bgc-argo data and the corresponding metadata: 
 
 ```{r loading_data}
 
-library(tidyverse)
+library(tidyverse, quiet = TRUE)
 # remotes::install_github("ArgoCanada/argodata")
-library(argodata)
-library(ggplot2)
-library(lubridate)
+library(argodata, quiet = TRUE)
+library(ggplot2, quiet = TRUE)
+library(lubridate, quiet = TRUE)
 
 argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
 
@@ -52,27 +52,26 @@ full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof')) # join d
 Create a separate dataframe for each BGC variable (oxygen, pH and nitrate), with longitude, latitude, value, qc flag, date, time, year, month, day, cycle number, float ID, and profile qc flag, and look at the evolution of the number of observations (any depth levels) and the number of profiles (depth levels 0-2000 m) over time.
 
 QC flags for values ('flag' column) are between 1 and 8, where:
-1 is 'good' data,
-2 is 'probably good' data,
-3 is 'probably bad' data, 
-4 is 'bad' data, 
-5 is 'value changed',
-6 is not used,
-7 is not used,
-8 is 'estimated value',
-9 is 'missing value'.
+* 1 is 'good' data,
+* 2 is 'probably good' data,
+* 3 is 'probably bad' data, 
+* 4 is 'bad' data, 
+* 5 is 'value changed',
+* 8 is 'estimated value',
+* 9 is 'missing value'.
+(6 and 7 are not used)
 
 Profile QC flags ('profile_flag' column) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):   
-'A' means 100% of profile levels contain good data,
-'B' means 75-<100% of profile levels contain good data,
-'C' means 50-75% of profile levels contain good data,
-'D' means 25-50% of profile levels contain good data, 
-'E' means >0-50% of profile levels contain good data, 
-'F' means 0% of profile levels contain good data. 
+* 'A' means 100% of profile levels contain good data,
+* 'B' means 75-<100% of profile levels contain good data,
+* 'C' means 50-75% of profile levels contain good data,
+* 'D' means 25-50% of profile levels contain good data, 
+* 'E' means >0-50% of profile levels contain good data, 
+* 'F' means 0% of profile levels contain good data. 
 
-1. NUMBER OF OBSERVATIONS
+## **1. NUMBER OF OBSERVATIONS**
 
-1.1 Oxygen 
+### **1.1 Oxygen**
 ```{r create_oxygen_dataframe}
 
 oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$doxy_adjusted, full_data$doxy_adjusted_qc) # extract desired variables from the combined data/metadata dataframe
@@ -112,7 +111,7 @@ ggplot(num_obs_oxy, aes(x = month, y = Count, group = flag, col = flag)) +
   theme_bw()
 ```
 
-1.2 pH 
+### **1.2 pH** 
 
 ```{r create_pH_dataframe}
 
@@ -157,7 +156,7 @@ ggplot(num_obs_ph, aes(x = month, y = Count, group = flag, col = flag)) +
 
 ```
 
-1.3 Nitrate 
+### **1.3 Nitrate** 
 
 ```{r create_nitrate_dataframe}
 
@@ -199,7 +198,7 @@ ggplot(num_obs_nitrate, aes(x = month, y = Count, group = flag, col = flag))+
   theme_bw()
 ```
 
-1.4 All BGC variables (oxygen, pH, and nitrate)
+### **1.4 All BGC variables (oxygen, pH, and nitrate)**
 We can count the number of observations for which all three BGC variables exist.
 (QC flags cannot be included since they are specific to one variable)
 
@@ -255,12 +254,12 @@ ggplot(num_obs_bgc, aes(x = month, y = Count))+
 ```
 
 
- 2. NUMBER OF PROFILES
+## **2. NUMBER OF PROFILES**
  
-Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the number of profiles over time for each variable.
+Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the evolution of the number of profiles over time for each variable.
 (One profile has multiple depth levels, between 0-2000 m)
 
- 2.1 Oxygen 
+### **2.1 Oxygen** 
  
 ```{r number_of_oxygen_profiles}
 prof_oxy = oxy.no.na %>%
@@ -291,7 +290,7 @@ ggplot(num_prof_oxy, aes(x = month, y = count_prof, group = profile_flag, col = 
 ```
 
 
-2.2 pH 
+### **2.2 pH** 
 
 ```{r number_of_pH_profiles}
 
@@ -322,7 +321,7 @@ ggplot(num_prof_ph, aes(x = month, y = count_prof, group = profile_flag, col = p
 
 ```
 
-2.3 Nitrate 
+### **2.3 Nitrate**
 
 ```{r number_of_nitrate_profiles}
 prof_nitrate = nitrate.no.na %>%
@@ -352,9 +351,10 @@ ggplot(num_prof_nitrate, aes(x = month, y = count_prof, group = profile_flag, co
 
 ```
 
-2.4 All BGC variables (oxygen, pH, and nitrate)
+### **2.4 All BGC variables (oxygen, pH, and nitrate)**
+
 We can count the number of profiles which contain all three variables.
-( Profile QC flags cannot be included since they are specific to one variable)
+(Profile QC flags cannot be included since they are specific to one variable)
 
 ```{r number_of_bgc_profiles}
 # count the number of profiles for which all three variables exist
