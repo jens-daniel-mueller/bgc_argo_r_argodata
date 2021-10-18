@@ -1,5 +1,5 @@
 ---
-title: "loading_data"
+title: "Loading BGC-Argo Data"
 author: "Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -11,11 +11,11 @@ Using the argodata package to load in bgc argo data from the server and store it
 
 ```{r loading_libraries}
 
-library(tidyverse)
+library(tidyverse, quiet = TRUE)
 # remotes::install_github("ArgoCanada/argodata")
-library(argodata)
-library(ggplot2)
-library(lubridate)
+library(argodata, quiet = TRUE)
+library(ggplot2, quiet = TRUE)
+library(lubridate, quiet = TRUE)
 
 ```
 
@@ -25,7 +25,8 @@ If you use a persistent cache, you should update the index files regularly by us
 
 ```{r set_cache_directory}
 argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
-argo_update_global(max_global_cache_age = Inf)  # argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+# ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
 argo_update_data(max_data_cache_age = Inf)
 
 ```
@@ -48,16 +49,23 @@ Read in the adjusted bgc and core variables corresponding to the index files dow
 
 ```{r load_data}
 bgc_data = argo_prof_levels(bgc_subset, 
-                            vars = c('PRES_ADJUSTED','PRES_ADJUSTED_QC',
-                                     'PSAL_ADJUSTED', 'PSAL_ADJUSTED_QC',
-                                     'TEMP_ADJUSTED','TEMP_ADJUSTED_QC',
-                                     'DOXY_ADJUSTED', 'DOXY_ADJUSTED_QC',
-                                     'NITRATE_ADJUSTED', 'NITRATE_ADJUSTED_QC',
-                                     'PH_IN_SITU_TOTAL_ADJUSTED', 'PH_IN_SITU_TOTAL_ADJUSTED_QC'), quiet = TRUE) 
+                            vars = 
+                            c('PRES_ADJUSTED','PRES_ADJUSTED_QC','PRES_ADJUSTED_ERROR',
+                              'PSAL_ADJUSTED', 'PSAL_ADJUSTED_QC',
+                              'PSAL_ADJUSTED_ERROR',
+                              'TEMP_ADJUSTED','TEMP_ADJUSTED_QC', 'TEMP_ADJUSTED_ERROR',
+                              'DOXY_ADJUSTED', 'DOXY_ADJUSTED_QC',
+                              'DOXY_ADJUSTED_ERROR',
+                              'NITRATE_ADJUSTED', 'NITRATE_ADJUSTED_QC', 
+                              'NITRATE_ADJUSTED_ERROR',
+                              'PH_IN_SITU_TOTAL_ADJUSTED',
+                              'PH_IN_SITU_TOTAL_ADJUSTED_QC',
+                              'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'), 
+                            quiet = TRUE) 
 # read in the profiles (takes a while)
 ```
 
-The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, '/nfs/kryo/work/updata/bgc_argo_r_argodata'). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download each time.
+The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, '/nfs/kryo/work/updata/bgc_argo_r_argodata'). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download.
 
 Read in the corresponding metadata:
 ```{r load_metadata}
@@ -74,3 +82,48 @@ full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof'))
 
 ```
 
+<font size = "4"> The resulting dataframe contains:</font>  
+
+the file name ('file' column),     
+the sampling level ('n_level' column),    
+the number of profiles per file ('n_prof' column),    
+an adjusted value for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) ('<param>_adjusted' columns),    
+a quality control flag associated with these adjusted values ('<param>_adjusted_qc' columns),       
+an error estimate on the adjustment of the measurement ('<param>_adjusted_error' columns),     
+WMO float identifier ('platform_number' column),      
+name of the project in charge of the float ('project_name' column),      
+name of principal investigator in charge of the float ('pi_name' column),     
+float cycle number ('cycle_number' column; *cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle*),      
+descending (D) or ascending (A) profile ('direction' column),       
+code for the data centre in charge of the float data management ('data_centre' column),    the type of float ('platform_type' column),     
+firmware version of the float ('firmware_version' column),    
+instrument type from the WMO code table 1770 ('wmo_inst_type' column),    
+the date and time at which the measurement was taken ('date' column),    
+a quality control flag for the date and time value ('date_qc' column),    
+the date and time of the profile location ('date_location' column),     
+latitude in degrees N ('latitude' column),   
+longitude in degrees E ('longitude' column),   
+quality control flag on the position ('position_qc' column),   
+name of the system in charge of positioning the float locations ('positioning_system' columns),   
+unique number of the mission to which this float belongs ('config_mission_number' column),   
+and a quality control flag on the profile of the parameter ('profile_<param>_qc' column)
+
+<font size = "4"> Quality control flags:</font>
+
+QC flags for values ('<param>_adjusted_qc' columns) are between 1 and 8, where:     
+1 is 'good' data,   
+2 is 'probably good' data,   
+3 is 'probably bad' data,   
+4 is 'bad' data,    
+5 is 'value changed',   
+8 is 'estimated value',   
+9 is 'missing value',   
+(6 and 7 are not used). 
+
+Profile QC flags ('profile_<param>_qc' columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):      
+'A' means 100% of profile levels contain good data,   
+'B' means 75-<100% of profile levels contain good data,   
+'C' means 50-75% of profile levels contain good data,    
+'D' means 25-50% of profile levels contain good data,    
+'E' means >0-50% of profile levels contain good data,    
+'F' means 0% of profile levels contain good data. 
