@@ -87,15 +87,16 @@ full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof'))
 the file name ('file' column),     
 the sampling level ('n_level' column),    
 the number of profiles per file ('n_prof' column),    
-an adjusted value for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) ('<param>_adjusted' columns),    
-a quality control flag associated with these adjusted values ('<param>_adjusted_qc' columns),       
-an error estimate on the adjustment of the measurement ('<param>_adjusted_error' columns),     
+adjusted values for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) ('parameter_adjusted' columns),    
+a quality control flag associated with these adjusted values ('parameter_adjusted_qc' columns),       
+an error estimate on the adjustment of the measurement ('parameter_adjusted_error' columns),   
 WMO float identifier ('platform_number' column),      
 name of the project in charge of the float ('project_name' column),      
 name of principal investigator in charge of the float ('pi_name' column),     
-float cycle number ('cycle_number' column; *cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle*),      
+float cycle number ('cycle_number' column; _cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle_),      
 descending (D) or ascending (A) profile ('direction' column),       
-code for the data centre in charge of the float data management ('data_centre' column),    the type of float ('platform_type' column),     
+code for the data centre in charge of the float data management ('data_centre' column),     
+the type of float ('platform_type' column),     
 firmware version of the float ('firmware_version' column),    
 instrument type from the WMO code table 1770 ('wmo_inst_type' column),    
 the date and time at which the measurement was taken ('date' column),    
@@ -110,7 +111,7 @@ and a quality control flag on the profile of the parameter ('profile_<param>_qc'
 
 <font size = "4"> Quality control flags:</font>
 
-QC flags for values ('<param>_adjusted_qc' columns) are between 1 and 8, where:     
+QC flags for values ('parameter_adjusted_qc' columns) are between 1 and 8, where:     
 1 is 'good' data,   
 2 is 'probably good' data,   
 3 is 'probably bad' data,   
@@ -120,7 +121,7 @@ QC flags for values ('<param>_adjusted_qc' columns) are between 1 and 8, where:
 9 is 'missing value',   
 (6 and 7 are not used). 
 
-Profile QC flags ('profile_<param>_qc' columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):      
+Profile QC flags ('profile_parameter_qc' columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):      
 'A' means 100% of profile levels contain good data,   
 'B' means 75-<100% of profile levels contain good data,   
 'C' means 50-75% of profile levels contain good data,    
