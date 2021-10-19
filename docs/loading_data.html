@@ -387,7 +387,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">18 October, 2021</h4>
+<h4 class="date">19 October, 2021</h4>
 
 </div>
 
@@ -412,7 +412,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-10-18
+<strong>Last updated:</strong> 2021-10-19
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -503,16 +503,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8cc01067e540c741fbd3a92508ce2c51d0ece392targetblank8cc0106a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8cc01067e540c741fbd3a92508ce2c51d0ece392" target="_blank">8cc0106</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef460b9a807a27234bddb4ecc218ef967a8ad555atargetblankf460b9aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f460b9a807a27234bddb4ecc218ef967a8ad555a" target="_blank">f460b9a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8cc01067e540c741fbd3a92508ce2c51d0ece392targetblank8cc0106a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef460b9a807a27234bddb4ecc218ef967a8ad555atargetblankf460b9aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8cc01067e540c741fbd3a92508ce2c51d0ece392" target="_blank">8cc0106</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f460b9a807a27234bddb4ecc218ef967a8ad555a" target="_blank">f460b9a</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -522,9 +522,8 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
-Untracked files:
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
+Unstaged changes:
+    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -563,6 +562,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f460b9a807a27234bddb4ecc218ef967a8ad555a/analysis/loading_data.Rmd" target="_blank">f460b9a</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-19
+</td>
+<td>
+code review jens
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c5e1577239684009bbbc7ba58671da87fd4a8f15/docs/loading_data.html" target="_blank">c5e1577</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -706,87 +739,250 @@ added reading data in page
 </div>
 </div>
 </div>
+<div id="task" class="section level1">
+<h1>Task</h1>
 <p>Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata</p>
-<pre class="r"><code>library(tidyverse, quiet = TRUE)</code></pre>
-<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>✓ ggplot2 3.3.5     ✓ purrr   0.3.4
-✓ tibble  3.1.3     ✓ dplyr   1.0.5
-✓ tidyr   1.1.3     ✓ stringr 1.4.0
-✓ readr   1.4.0     ✓ forcats 0.5.0</code></pre>
-<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-x dplyr::filter() masks stats::filter()
-x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code># remotes::install_github(&quot;ArgoCanada/argodata&quot;)
-library(argodata, quiet = TRUE)
-library(ggplot2, quiet = TRUE)
-library(lubridate, quiet = TRUE)</code></pre>
-<pre><code>
-Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>The following objects are masked from &#39;package:base&#39;:
+</div>
+<div id="set-cache-directory" class="section level1">
+<h1>Set cache directory</h1>
+<p>The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using argo_update_global() (data files are also updated occasionally; update these using argo_update_data())</p>
+<pre class="r"><code># set cache directory
+argo_set_cache_dir(cache_dir = path_argo)
 
-    date, intersect, setdiff, union</code></pre>
-<p>Set the cache directory for the argo data. The cache directory stores previously downlaoded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using argo_update_global() (data files are also updated occasionally; update these using argo_update_data())</p>
-<pre class="r"><code>argo_set_cache_dir(&#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;)
-argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+# check cache directory
+argo_cache_dir()</code></pre>
+<pre><code>[1] &quot;/nfs/kryo/work/updata/bgc_argo_r_argodata&quot;</code></pre>
+<pre class="r"><code># check argo mirror
+argo_mirror()</code></pre>
+<pre><code>[1] &quot;https://data-argo.ifremer.fr&quot;</code></pre>
+<pre class="r"><code>argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
 # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
 argo_update_data(max_data_cache_age = Inf)</code></pre>
+</div>
+<div id="load-index-files" class="section level1">
+<h1>Load index files</h1>
 <p>Load in the synthetic (core and bgc merged) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data (quality checked by PIs)</p>
-<pre class="r"><code>bgc_subset = argo_global_synthetic_prof() %&gt;%
+<pre class="r"><code>bgc_subset &lt;- argo_global_synthetic_prof() %&gt;%
   argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%
   argo_filter_date(date_min = &#39;2013-01-01&#39;,
                    date_max = &#39;2015-12-31&#39;)</code></pre>
 <pre><code>Loading argo_global_synthetic_prof()</code></pre>
 <pre class="r"><code># check the dates 
 # max(bgc_subset$date, na.rm = TRUE)
-# min(bgc_subset$date, na.rm = TRUE)</code></pre>
+# min(bgc_subset$date, na.rm = TRUE)
+
+# checking alternative functions
+argo_global_meta(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_meta()</code></pre>
+<pre><code>[38;5;246m# A tibble: 16,781 × 4[39m
+   file                     profiler_type institution date_update        
+   [3m[38;5;246m&lt;chr&gt;[39m[23m                            [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m       [3m[38;5;246m&lt;dttm&gt;[39m[23m             
+[38;5;250m 1[39m aoml/13857/13857_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:14[39m
+[38;5;250m 2[39m aoml/13858/13858_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:15[39m
+[38;5;250m 3[39m aoml/13859/13859_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:25[39m
+[38;5;250m 4[39m aoml/15819/15819_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:16[39m
+[38;5;250m 5[39m aoml/15820/15820_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:18[39m
+[38;5;250m 6[39m aoml/15851/15851_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:26[39m
+[38;5;250m 7[39m aoml/15852/15852_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:28[39m
+[38;5;250m 8[39m aoml/15853/15853_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:29[39m
+[38;5;250m 9[39m aoml/15854/15854_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:30[39m
+[38;5;250m10[39m aoml/15855/15855_meta.nc           845 AO          2018-10-11 [38;5;246m20:00:34[39m
+[38;5;246m# … with 16,771 more rows[39m</code></pre>
+<pre class="r"><code>argo_global_prof(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_prof()</code></pre>
+<pre><code>[38;5;246m# A tibble: 2,523,178 × 8[39m
+   file   date                latitude longitude ocean profiler_type institution
+   [3m[38;5;246m&lt;chr&gt;[39m[23m  [3m[38;5;246m&lt;dttm&gt;[39m[23m                 [3m[38;5;246m&lt;dbl&gt;[39m[23m     [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m      
+[38;5;250m 1[39m aoml/… 1997-07-29 [38;5;246m20:03:00[39m    0.267     -[31m16[39m[31m.[39m[31m0[39m A               845 AO         
+[38;5;250m 2[39m aoml/… 1997-08-09 [38;5;246m19:21:12[39m    0.072     -[31m17[39m[31m.[39m[31m7[39m A               845 AO         
+[38;5;250m 3[39m aoml/… 1997-08-20 [38;5;246m18:45:45[39m    0.543     -[31m19[39m[31m.[39m[31m6[39m A               845 AO         
+[38;5;250m 4[39m aoml/… 1997-08-31 [38;5;246m19:39:05[39m    1.26      -[31m20[39m[31m.[39m[31m5[39m A               845 AO         
+[38;5;250m 5[39m aoml/… 1997-09-11 [38;5;246m18:58:08[39m    0.72      -[31m20[39m[31m.[39m[31m8[39m A               845 AO         
+[38;5;250m 6[39m aoml/… 1997-09-22 [38;5;246m19:57:02[39m    1.76      -[31m21[39m[31m.[39m[31m6[39m A               845 AO         
+[38;5;250m 7[39m aoml/… 1997-10-03 [38;5;246m19:15:49[39m    2.60      -[31m21[39m[31m.[39m[31m6[39m A               845 AO         
+[38;5;250m 8[39m aoml/… 1997-10-14 [38;5;246m18:39:35[39m    1.76      -[31m21[39m[31m.[39m[31m6[39m A               845 AO         
+[38;5;250m 9[39m aoml/… 1997-10-25 [38;5;246m19:32:34[39m    1.80      -[31m21[39m[31m.[39m[31m8[39m A               845 AO         
+[38;5;250m10[39m aoml/… 1997-11-05 [38;5;246m18:51:42[39m    1.64      -[31m21[39m[31m.[39m[31m4[39m A               845 AO         
+[38;5;246m# … with 2,523,168 more rows, and 1 more variable: date_update &lt;dttm&gt;[39m</code></pre>
+<pre class="r"><code>argo_global_tech(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_tech()</code></pre>
+<pre><code>[38;5;246m# A tibble: 16,245 × 3[39m
+   file                     institution date_update        
+   [3m[38;5;246m&lt;chr&gt;[39m[23m                    [3m[38;5;246m&lt;chr&gt;[39m[23m       [3m[38;5;246m&lt;dttm&gt;[39m[23m             
+[38;5;250m 1[39m aoml/13857/13857_tech.nc AO          2021-04-28 [38;5;246m20:03:35[39m
+[38;5;250m 2[39m aoml/13858/13858_tech.nc AO          2021-04-28 [38;5;246m20:03:37[39m
+[38;5;250m 3[39m aoml/13859/13859_tech.nc AO          2018-10-11 [38;5;246m20:00:25[39m
+[38;5;250m 4[39m aoml/15819/15819_tech.nc AO          2021-04-28 [38;5;246m20:03:42[39m
+[38;5;250m 5[39m aoml/15820/15820_tech.nc AO          2021-04-28 [38;5;246m20:03:46[39m
+[38;5;250m 6[39m aoml/15851/15851_tech.nc AO          2018-10-11 [38;5;246m20:00:26[39m
+[38;5;250m 7[39m aoml/15852/15852_tech.nc AO          2021-04-28 [38;5;246m20:03:54[39m
+[38;5;250m 8[39m aoml/15853/15853_tech.nc AO          2021-04-28 [38;5;246m20:03:58[39m
+[38;5;250m 9[39m aoml/15854/15854_tech.nc AO          2021-04-28 [38;5;246m20:03:59[39m
+[38;5;250m10[39m aoml/15855/15855_tech.nc AO          2021-04-28 [38;5;246m20:04:05[39m
+[38;5;246m# … with 16,235 more rows[39m</code></pre>
+<pre class="r"><code>argo_global_traj(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_traj()</code></pre>
+<pre><code>[38;5;246m# A tibble: 17,842 × 8[39m
+   file      latitude_max latitude_min longitude_max longitude_min profiler_type
+   [3m[38;5;246m&lt;chr&gt;[39m[23m            [3m[38;5;246m&lt;dbl&gt;[39m[23m        [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m
+[38;5;250m 1[39m aoml/138…         6.93        0.008        -[31m15[39m[31m.[39m[31m0[39m         -[31m33[39m[31m.[39m[31m8[39m            845
+[38;5;250m 2[39m aoml/138…         5.21       -[31m0[39m[31m.[39m[31m363[39m         -[31m9[39m[31m.[39m[31m50[39m        -[31m17[39m[31m.[39m[31m8[39m            845
+[38;5;250m 3[39m aoml/138…         5.93       -[31m0[39m[31m.[39m[31m939[39m        -[31m18[39m[31m.[39m[31m6[39m         -[31m33[39m[31m.[39m[31m7[39m            845
+[38;5;250m 4[39m aoml/158…        -[31m2[39m[31m.[39m[31m66[39m       -[31m9[39m[31m.[39m[31m19[39m         -[31m16[39m[31m.[39m[31m4[39m         -[31m40[39m[31m.[39m[31m0[39m            845
+[38;5;250m 5[39m aoml/158…        -[31m1[39m[31m.[39m[31m98[39m       -[31m7[39m[31m.[39m[31m14[39m          -[31m9[39m[31m.[39m[31m90[39m        -[31m35[39m[31m.[39m[31m8[39m            845
+[38;5;250m 6[39m aoml/158…        -[31m2[39m[31m.[39m[31m73[39m       -[31m6[39m[31m.[39m[31m22[39m           3.33        -[31m21[39m[31m.[39m[31m1[39m            845
+[38;5;250m 7[39m aoml/158…        -[31m5[39m[31m.[39m[31m0[39m[31m4[39m       -[31m8[39m[31m.[39m[31m44[39m          -[31m1[39m[31m.[39m[31m49[39m        -[31m18[39m[31m.[39m[31m9[39m            845
+[38;5;250m 8[39m aoml/158…        -[31m4[39m[31m.[39m[31m70[39m       -[31m8[39m[31m.[39m[31m25[39m          -[31m4[39m[31m.[39m[31m40[39m        -[31m18[39m[31m.[39m[31m0[39m            845
+[38;5;250m 9[39m aoml/158…        -[31m4[39m[31m.[39m[31m81[39m       -[31m7[39m[31m.[39m[31m20[39m          -[31m6[39m[31m.[39m[31m41[39m        -[31m12[39m[31m.[39m[31m7[39m            845
+[38;5;250m10[39m aoml/158…        -[31m1[39m[31m.[39m[31m79[39m       -[31m6[39m[31m.[39m[31m00[39m           7            -[31m5[39m[31m.[39m[31m45[39m           845
+[38;5;246m# … with 17,832 more rows, and 2 more variables: institution &lt;chr&gt;,[39m
+[38;5;246m#   date_update &lt;dttm&gt;[39m</code></pre>
+<pre class="r"><code>argo_global_bio_traj(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_bio_traj()</code></pre>
+<pre><code>[38;5;246m# A tibble: 657 × 9[39m
+   file      latitude_max latitude_min longitude_max longitude_min profiler_type
+   [3m[38;5;246m&lt;chr&gt;[39m[23m            [3m[38;5;246m&lt;dbl&gt;[39m[23m        [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m
+[38;5;250m 1[39m bodc/390…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 2[39m bodc/390…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 3[39m bodc/390…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 4[39m bodc/390…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 5[39m bodc/390…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 6[39m bodc/690…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 7[39m bodc/690…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 8[39m bodc/690…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m 9[39m bodc/690…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;250m10[39m bodc/690…           [31mNA[39m           [31mNA[39m            [31mNA[39m            [31mNA[39m           836
+[38;5;246m# … with 647 more rows, and 3 more variables: institution &lt;chr&gt;,[39m
+[38;5;246m#   parameters &lt;chr&gt;, date_update &lt;dttm&gt;[39m</code></pre>
+<pre class="r"><code>argo_global_bio_prof(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>Loading argo_global_bio_prof()</code></pre>
+<pre><code>[38;5;246m# A tibble: 247,164 × 10[39m
+   file   date                latitude longitude ocean profiler_type institution
+   [3m[38;5;246m&lt;chr&gt;[39m[23m  [3m[38;5;246m&lt;dttm&gt;[39m[23m                 [3m[38;5;246m&lt;dbl&gt;[39m[23m     [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m      
+[38;5;250m 1[39m aoml/… 2006-10-22 [38;5;246m02:16:24[39m    -[31m40[39m[31m.[39m[31m3[39m      73.4 I               846 AO         
+[38;5;250m 2[39m aoml/… 2006-11-01 [38;5;246m06:44:23[39m    -[31m40[39m[31m.[39m[31m4[39m      73.5 I               846 AO         
+[38;5;250m 3[39m aoml/… 2006-11-11 [38;5;246m10:12:22[39m    -[31m40[39m[31m.[39m[31m5[39m      73.3 I               846 AO         
+[38;5;250m 4[39m aoml/… 2006-11-21 [38;5;246m07:50:21[39m    -[31m40[39m[31m.[39m[31m1[39m      73.1 I               846 AO         
+[38;5;250m 5[39m aoml/… 2006-12-01 [38;5;246m18:33:00[39m    -[31m39[39m[31m.[39m[31m6[39m      73.2 I               846 AO         
+[38;5;250m 6[39m aoml/… 2006-12-11 [38;5;246m22:27:04[39m    -[31m39[39m[31m.[39m[31m4[39m      73.5 I               846 AO         
+[38;5;250m 7[39m aoml/… 2006-12-22 [38;5;246m05:20:18[39m    -[31m39[39m[31m.[39m[31m8[39m      74.0 I               846 AO         
+[38;5;250m 8[39m aoml/… 2007-01-01 [38;5;246m06:34:17[39m    -[31m40[39m[31m.[39m[31m0[39m      74.2 I               846 AO         
+[38;5;250m 9[39m aoml/… 2007-01-11 [38;5;246m12:14:56[39m    -[31m39[39m[31m.[39m[31m4[39m      75.3 I               846 AO         
+[38;5;250m10[39m aoml/… 2007-01-21 [38;5;246m04:22:15[39m    -[31m38[39m[31m.[39m[31m5[39m      76.0 I               846 AO         
+[38;5;246m# … with 247,154 more rows, and 3 more variables: parameters &lt;chr&gt;,[39m
+[38;5;246m#   parameter_data_mode &lt;chr&gt;, date_update &lt;dttm&gt;[39m</code></pre>
+<pre class="r"><code>argo_global_synthetic_prof(download = NULL, quiet = FALSE)</code></pre>
+<pre><code>[38;5;246m# A tibble: 246,717 × 10[39m
+   file   date                latitude longitude ocean profiler_type institution
+   [3m[38;5;246m&lt;chr&gt;[39m[23m  [3m[38;5;246m&lt;dttm&gt;[39m[23m                 [3m[38;5;246m&lt;dbl&gt;[39m[23m     [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m         [3m[38;5;246m&lt;dbl&gt;[39m[23m [3m[38;5;246m&lt;chr&gt;[39m[23m      
+[38;5;250m 1[39m aoml/… 2006-10-22 [38;5;246m02:16:24[39m    -[31m40[39m[31m.[39m[31m3[39m      73.4 I               846 AO         
+[38;5;250m 2[39m aoml/… 2006-11-01 [38;5;246m06:44:23[39m    -[31m40[39m[31m.[39m[31m4[39m      73.5 I               846 AO         
+[38;5;250m 3[39m aoml/… 2006-11-11 [38;5;246m10:12:22[39m    -[31m40[39m[31m.[39m[31m5[39m      73.3 I               846 AO         
+[38;5;250m 4[39m aoml/… 2006-11-21 [38;5;246m07:50:21[39m    -[31m40[39m[31m.[39m[31m1[39m      73.1 I               846 AO         
+[38;5;250m 5[39m aoml/… 2006-12-01 [38;5;246m18:33:00[39m    -[31m39[39m[31m.[39m[31m6[39m      73.2 I               846 AO         
+[38;5;250m 6[39m aoml/… 2006-12-11 [38;5;246m22:27:04[39m    -[31m39[39m[31m.[39m[31m4[39m      73.5 I               846 AO         
+[38;5;250m 7[39m aoml/… 2006-12-22 [38;5;246m05:20:18[39m    -[31m39[39m[31m.[39m[31m8[39m      74.0 I               846 AO         
+[38;5;250m 8[39m aoml/… 2007-01-01 [38;5;246m06:34:17[39m    -[31m40[39m[31m.[39m[31m0[39m      74.2 I               846 AO         
+[38;5;250m 9[39m aoml/… 2007-01-11 [38;5;246m12:14:56[39m    -[31m39[39m[31m.[39m[31m4[39m      75.3 I               846 AO         
+[38;5;250m10[39m aoml/… 2007-01-21 [38;5;246m04:22:15[39m    -[31m38[39m[31m.[39m[31m5[39m      76.0 I               846 AO         
+[38;5;246m# … with 246,707 more rows, and 3 more variables: parameters &lt;chr&gt;,[39m
+[38;5;246m#   parameter_data_mode &lt;chr&gt;, date_update &lt;dttm&gt;[39m</code></pre>
+</div>
+<div id="read-data" class="section level1">
+<h1>Read data</h1>
 <p>Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)</p>
-<pre class="r"><code>bgc_data = argo_prof_levels(bgc_subset, 
-                            vars = 
-                            c(&#39;PRES_ADJUSTED&#39;,&#39;PRES_ADJUSTED_QC&#39;,&#39;PRES_ADJUSTED_ERROR&#39;,
-                              &#39;PSAL_ADJUSTED&#39;, &#39;PSAL_ADJUSTED_QC&#39;,
-                              &#39;PSAL_ADJUSTED_ERROR&#39;,
-                              &#39;TEMP_ADJUSTED&#39;,&#39;TEMP_ADJUSTED_QC&#39;, &#39;TEMP_ADJUSTED_ERROR&#39;,
-                              &#39;DOXY_ADJUSTED&#39;, &#39;DOXY_ADJUSTED_QC&#39;,
-                              &#39;DOXY_ADJUSTED_ERROR&#39;,
-                              &#39;NITRATE_ADJUSTED&#39;, &#39;NITRATE_ADJUSTED_QC&#39;, 
-                              &#39;NITRATE_ADJUSTED_ERROR&#39;,
-                              &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
-                              &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
-                              &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;), 
-                            quiet = TRUE) 
+<pre class="r"><code>bgc_data &lt;- argo_prof_levels(
+  path = bgc_subset,
+  vars =
+    c(
+      &#39;PRES_ADJUSTED&#39;,
+      &#39;PRES_ADJUSTED_QC&#39;,
+      &#39;PRES_ADJUSTED_ERROR&#39;,
+      &#39;PSAL_ADJUSTED&#39;,
+      &#39;PSAL_ADJUSTED_QC&#39;,
+      &#39;PSAL_ADJUSTED_ERROR&#39;,
+      &#39;TEMP_ADJUSTED&#39;,
+      &#39;TEMP_ADJUSTED_QC&#39;,
+      &#39;TEMP_ADJUSTED_ERROR&#39;,
+      &#39;DOXY_ADJUSTED&#39;,
+      &#39;DOXY_ADJUSTED_QC&#39;,
+      &#39;DOXY_ADJUSTED_ERROR&#39;,
+      &#39;NITRATE_ADJUSTED&#39;,
+      &#39;NITRATE_ADJUSTED_QC&#39;,
+      &#39;NITRATE_ADJUSTED_ERROR&#39;,
+      &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
+      &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
+      &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
+    ),
+  quiet = TRUE
+) 
 # read in the profiles (takes a while)</code></pre>
-<p>The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, ‘/nfs/kryo/work/updata/bgc_argo_r_argodata’). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download.</p>
+<p>The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, /nfs/kryo/work/updata/bgc_argo_r_argodata). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download.</p>
+</div>
+<div id="read-meta-data" class="section level1">
+<h1>Read meta data</h1>
 <p>Read in the corresponding metadata:</p>
-<pre class="r"><code>bgc_metadata = argo_prof_prof(bgc_subset) </code></pre>
+<pre class="r"><code>bgc_metadata &lt;- argo_prof_prof(path = bgc_subset)</code></pre>
 <pre><code>Extracting from 54117 files</code></pre>
+</div>
+<div id="join-data" class="section level1">
+<h1>Join data</h1>
 <p>Join the metadata and data together into one dataset</p>
-<pre class="r"><code>full_data = left_join(bgc_data, bgc_metadata, by = c(&#39;file&#39;, &#39;n_prof&#39;))</code></pre>
-<p><font size = "4"> The resulting dataframe contains:</font></p>
-<p>the file name (‘file’ column),<br />
-the sampling level (‘n_level’ column),<br />
-the number of profiles per file (‘n_prof’ column),<br />
-adjusted values for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) (‘parameter_adjusted’ columns),<br />
-a quality control flag associated with these adjusted values (‘parameter_adjusted_qc’ columns),<br />
-an error estimate on the adjustment of the measurement (‘parameter_adjusted_error’ columns),<br />
-WMO float identifier (‘platform_number’ column),<br />
-name of the project in charge of the float (‘project_name’ column),<br />
-name of principal investigator in charge of the float (‘pi_name’ column),<br />
-float cycle number (‘cycle_number’ column; <em>cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle</em>),<br />
-descending (D) or ascending (A) profile (‘direction’ column),<br />
-code for the data centre in charge of the float data management (‘data_centre’ column),<br />
-the type of float (‘platform_type’ column),<br />
-firmware version of the float (‘firmware_version’ column),<br />
-instrument type from the WMO code table 1770 (‘wmo_inst_type’ column),<br />
-the date and time at which the measurement was taken (‘date’ column),<br />
-a quality control flag for the date and time value (‘date_qc’ column),<br />
-the date and time of the profile location (‘date_location’ column),<br />
-latitude in degrees N (‘latitude’ column),<br />
-longitude in degrees E (‘longitude’ column),<br />
-quality control flag on the position (‘position_qc’ column),<br />
-name of the system in charge of positioning the float locations (‘positioning_system’ columns),<br />
-unique number of the mission to which this float belongs (‘config_mission_number’ column),<br />
-and a quality control flag on the profile of the parameter (’profile_<param>_qc’ column)</p>
-<p><font size = "4"> Quality control flags:</font></p>
+<pre class="r"><code># this does the same, but is more intuitive to read, imo
+bgc_merge &lt;-
+  full_join(bgc_data, bgc_metadata)</code></pre>
+<pre><code>Joining, by = c(&quot;file&quot;, &quot;n_prof&quot;)</code></pre>
+</div>
+<div id="write-data" class="section level1">
+<h1>Write data</h1>
+<pre class="r"><code>path_argo_preprocessed &lt;- paste0(path_argo,&quot;/preprocessed_bgc_data&quot;)
+
+bgc_subset %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_subset.rds&quot;))
+
+bgc_metadata %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+
+bgc_data %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
+
+bgc_merge %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))</code></pre>
+</div>
+<div id="data-set-description" class="section level1">
+<h1>Data set description</h1>
+<div id="colums" class="section level2">
+<h2>Colums</h2>
+<p>The resulting dataframe contains:</p>
+<ul>
+<li><p>the file name (‘file’ column)</p></li>
+<li><p>the sampling level (‘n_level’ column)</p></li>
+<li><p>the number of profiles per file (‘n_prof’ column)</p></li>
+<li><p>adjusted values for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) (‘parameter_adjusted’ columns)</p></li>
+<li><p>a quality control flag associated with these adjusted values (‘parameter_adjusted_qc’ columns)</p></li>
+<li><p>an error estimate on the adjustment of the measurement (‘parameter_adjusted_error’ columns)</p></li>
+<li><p>WMO float identifier (‘platform_number’ column)</p></li>
+<li><p>name of the project in charge of the float (‘project_name’ column)</p></li>
+<li><p>name of principal investigator in charge of the float (‘pi_name’ column)</p></li>
+<li><p>float cycle number (‘cycle_number’ column; <em>cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle</em>)</p></li>
+<li><p>descending (D) or ascending (A) profile (‘direction’ column)</p></li>
+<li><p>code for the data centre in charge of the float data management (‘data_centre’ column),<br />
+the type of float (‘platform_type’ column)</p></li>
+<li><p>firmware version of the float (‘firmware_version’ column)</p></li>
+<li><p>instrument type from the WMO code table 1770 (‘wmo_inst_type’ column)</p></li>
+<li><p>the date and time at which the measurement was taken (‘date’ column)</p></li>
+<li><p>a quality control flag for the date and time value (‘date_qc’ column)</p></li>
+<li><p>the date and time of the profile location (‘date_location’ column)</p></li>
+<li><p>latitude in degrees N (‘latitude’ column)</p></li>
+<li><p>longitude in degrees E (‘longitude’ column)</p></li>
+<li><p>quality control flag on the position (‘position_qc’ column)</p></li>
+<li><p>name of the system in charge of positioning the float locations (‘positioning_system’ columns)</p></li>
+<li><p>unique number of the mission to which this float belongs (‘config_mission_number’ column)</p></li>
+<li><p>and a quality control flag on the profile of the parameter (‘profile_<param>_qc’ column)</p></li>
+</ul>
+</div>
+<div id="qc-flags" class="section level2">
+<h2>QC flags</h2>
 <p>QC flags for values (‘parameter_adjusted_qc’ columns) are between 1 and 8, where:<br />
 1 is ‘good’ data,<br />
 2 is ‘probably good’ data,<br />
@@ -837,23 +1033,25 @@ other attached packages:
 [10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
- [5] digest_0.6.27     utf8_1.2.2        R6_2.5.1          cellranger_1.1.0 
+ [1] Rcpp_1.0.5        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
+ [5] digest_0.6.27     utf8_1.1.4        R6_2.5.0          cellranger_1.1.0 
  [9] backports_1.1.10  reprex_0.3.0      evaluate_0.14     httr_1.4.2       
 [13] pillar_1.6.2      progress_1.2.2    rlang_0.4.11      readxl_1.3.1     
 [17] rstudioapi_0.13   whisker_0.4       jquerylib_0.1.4   blob_1.2.1       
 [21] rmarkdown_2.10    bit_4.0.4         munsell_0.5.0     broom_0.7.9      
-[25] compiler_4.0.3    httpuv_1.6.2      modelr_0.1.8      xfun_0.25        
-[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0      
-[33] tzdb_0.1.2        crayon_1.4.1      dbplyr_1.4.4      withr_2.4.2      
-[37] later_1.3.0       grid_4.0.3        jsonlite_1.7.2    gtable_0.3.0     
-[41] lifecycle_1.0.0   DBI_1.1.1         git2r_0.27.1      magrittr_2.0.1   
+[25] compiler_4.0.3    httpuv_1.5.4      modelr_0.1.8      xfun_0.25        
+[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.4.1      
+[33] tzdb_0.1.2        crayon_1.3.4      dbplyr_1.4.4      withr_2.3.0      
+[37] later_1.2.0       grid_4.0.3        jsonlite_1.7.1    gtable_0.3.0     
+[41] lifecycle_1.0.0   DBI_1.1.0         git2r_0.27.1      magrittr_1.5     
 [45] scales_1.1.1      vroom_1.5.5       cli_3.0.1         stringi_1.5.3    
-[49] fs_1.5.0          promises_1.2.0.1  xml2_1.3.2        bslib_0.2.5.1    
+[49] fs_1.5.0          promises_1.1.1    xml2_1.3.2        bslib_0.2.5.1    
 [53] ellipsis_0.3.2    generics_0.1.0    vctrs_0.3.8       tools_4.0.3      
 [57] bit64_4.0.5       glue_1.4.2        RNetCDF_2.4-2     hms_0.5.3        
 [61] parallel_4.0.3    yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      
 [65] knitr_1.33        haven_2.3.1       sass_0.4.0       </code></pre>
+</div>
+</div>
 </div>
 
 
