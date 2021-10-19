@@ -6,17 +6,32 @@ output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 ---
-<font size = "4">Count the number of bgc-argo observations, and plot the evolution over time</font> 
 
-Use the same process as in loading_data.html to load in bgc-argo data and the corresponding metadata: 
+# Task
 
-```{r loading_data}
+Count the number of bgc-argo observations, and plot the evolution over time.
 
-library(tidyverse, quiet = TRUE)
-# remotes::install_github("ArgoCanada/argodata")
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
 library(argodata, quiet = TRUE)
 library(ggplot2, quiet = TRUE)
 library(lubridate, quiet = TRUE)
+
+```
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+
+```
+
+
+# Load data
+
+Read the files created in loading_data.html: 
+
+```{r loading_data, eval=FALSE}
 
 argo_set_cache_dir('/nfs/kryo/work/updata/bgc_argo_r_argodata')
 
@@ -45,11 +60,31 @@ bgc_data = argo_prof_levels(bgc_subset,
 
 bgc_metadata = argo_prof_prof(bgc_subset) # read in the metadata corresponding to these profiles 
 
-full_data = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof')) # join data and metadata together 
+bgc_merge = left_join(bgc_data, bgc_metadata, by = c('file', 'n_prof')) # join data and metadata together 
+
+```
+
+```{r load_preprpocessed_data}
+
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+bgc_subset <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
+
+bgc_metadata <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+
+bgc_data <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+
+bgc_merge <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
 
 ```
 
 Create a separate dataframe for each BGC variable (oxygen, pH and nitrate), with longitude, latitude, value, qc flag, date, time, year, month, day, cycle number, float ID, and profile qc flag, and look at the evolution of the number of observations (any depth levels) and the number of profiles (depth levels 0-2000 m) over time.
+
+# QC flags
 
 QC flags for values ('flag' column) are between 1 and 8, where:   
 1 is 'good' data,   
@@ -69,12 +104,13 @@ Profile QC flags ('profile_flag' column) are QC codes attributed to the entire p
 'E' means >0-50% of profile levels contain good data,    
 'F' means 0% of profile levels contain good data.   
 
-## **1. NUMBER OF OBSERVATIONS**
+# NUMBER OF OBSERVATIONS
 
-### **1.1 Oxygen**
+## Oxygen
+
 ```{r create_oxygen_dataframe}
 
-oxy = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$doxy_adjusted, full_data$doxy_adjusted_qc) # extract desired variables from the combined data/metadata dataframe
+oxy = data.frame(bgc_merge$longitude, bgc_merge$latitude, bgc_merge$date, bgc_merge$doxy_adjusted, bgc_merge$doxy_adjusted_qc) # extract desired variables from the combined data/metadata dataframe
 
 colnames(oxy) = c('longitude','latitude','date', 'doxy_adjusted', 'flag') # add column names 
 oxy$date.simple = as.Date(oxy$date)        # separate the date and time into two columns
@@ -84,9 +120,9 @@ oxy = oxy %>%                             # separate the date into year, month a
   mutate(year = year(date.simple),
          month = month(date.simple),
          day = day(date.simple),
-         cycle = full_data$cycle_number,   
-         float_ID = full_data$float_serial_no,
-         profile_flag = full_data$profile_doxy_qc) # add cycle number, float ID and profile qc flag to the dataframe 
+         cycle = bgc_merge$cycle_number,   
+         float_ID = bgc_merge$float_serial_no,
+         profile_flag = bgc_merge$profile_doxy_qc) # add cycle number, float ID and profile qc flag to the dataframe 
 
 oxy.no.na = oxy %>%
   filter(!is.na(doxy_adjusted)) # remove NA values
@@ -112,11 +148,11 @@ ggplot(num_obs_oxy, aes(x = month, y = Count, group = flag, col = flag)) +
   theme_bw()
 ```
 
-### **1.2 pH** 
+## pH
 
 ```{r create_pH_dataframe}
 
-ph = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$ph_in_situ_total_adjusted, full_data$ph_in_situ_total_adjusted_qc)
+ph = data.frame(bgc_merge$longitude, bgc_merge$latitude, bgc_merge$date, bgc_merge$ph_in_situ_total_adjusted, bgc_merge$ph_in_situ_total_adjusted_qc)
 # extract the variables from the combined data/metadata frame
 
 colnames(ph) = c('longitude','latitude','date', 'ph_in_situ_total', 'flag')
@@ -129,9 +165,9 @@ ph = ph %>%
   mutate(year = year(date.simple),
          month = month(date.simple),
          day = day(date.simple),
-         cycle = full_data$cycle_number,
-         float_ID = full_data$float_serial_no,
-         profile_flag = full_data$profile_ph_in_situ_total_qc) # separate year, month and day, and add cycle number, float ID and profile qc flag 
+         cycle = bgc_merge$cycle_number,
+         float_ID = bgc_merge$float_serial_no,
+         profile_flag = bgc_merge$profile_ph_in_situ_total_qc) # separate year, month and day, and add cycle number, float ID and profile qc flag 
 
 ph.no.na = ph %>%
   filter(!is.na(ph_in_situ_total)) # remove NA values 
@@ -158,11 +194,11 @@ ggplot(num_obs_ph, aes(x = month, y = Count, group = flag, col = flag)) +
 
 ```
 
-### **1.3 Nitrate** 
+## Nitrate
 
 ```{r create_nitrate_dataframe}
 
-nitrate = data.frame(full_data$longitude, full_data$latitude, full_data$date, full_data$nitrate_adjusted, full_data$nitrate_adjusted_qc) # extract nitrate from the combined data/metadata dataframe
+nitrate = data.frame(bgc_merge$longitude, bgc_merge$latitude, bgc_merge$date, bgc_merge$nitrate_adjusted, bgc_merge$nitrate_adjusted_qc) # extract nitrate from the combined data/metadata dataframe
 
 colnames(nitrate) = c('longitude','latitude', 'date', 'nitrate_adjusted', 'flag')
 # rename columns 
@@ -174,9 +210,9 @@ nitrate = nitrate %>%
   mutate(year = year(date.simple),
          month = month(date.simple),
          day = day(date.simple),
-         cycle = full_data$cycle_number,
-         float_ID = full_data$float_serial_no,
-         profile_flag = full_data$profile_nitrate_qc) # separate year, month, and day, and add cycle number, float ID, and the profile qc flag 
+         cycle = bgc_merge$cycle_number,
+         float_ID = bgc_merge$float_serial_no,
+         profile_flag = bgc_merge$profile_nitrate_qc) # separate year, month, and day, and add cycle number, float ID, and the profile qc flag 
 
 nitrate.no.na = nitrate %>%
   filter(!is.na(nitrate_adjusted)) # remove NA values
@@ -186,6 +222,7 @@ num_obs_nitrate = nitrate.no.na %>%
   summarise(Count = n())   # count the number of nitrate observations per month 
 
 ```
+
 Plot the number of nitrate observations per month as a timeseries. 
 Different lines are plotted for different qc flags 
 
@@ -201,19 +238,19 @@ ggplot(num_obs_nitrate, aes(x = month, y = Count, group = flag, col = flag))+
   theme_bw()
 ```
 
-### **1.4 All BGC variables (oxygen, pH, and nitrate)**
+## All BGC variables
 We can count the number of observations for which all three BGC variables exist.
 (QC flags cannot be included since they are specific to one variable)
 
 ```{r creating_bgc_dataframe}
 # create a dataframe which contains all three variables, with longitude, latitude, date, cycle number and float ID 
-bgc_co_located = data.frame(full_data$longitude, full_data$latitude,
-                            full_data$date,
-                            full_data$cycle_number,
-                            full_data$float_serial_no,
-                            full_data$doxy_adjusted,
-                            full_data$ph_in_situ_total_adjusted,
-                            full_data$nitrate_adjusted)
+bgc_co_located = data.frame(bgc_merge$longitude, bgc_merge$latitude,
+                            bgc_merge$date,
+                            bgc_merge$cycle_number,
+                            bgc_merge$float_serial_no,
+                            bgc_merge$doxy_adjusted,
+                            bgc_merge$ph_in_situ_total_adjusted,
+                            bgc_merge$nitrate_adjusted)
 
 colnames(bgc_co_located) = c('longitude', 'latitude',
                              'date',
@@ -257,20 +294,17 @@ ggplot(num_obs_bgc, aes(x = month, y = Count))+
 ```
 
 
-## **2. NUMBER OF PROFILES**
+# NUMBER OF PROFILES
  
 Using the dataframes created above for oxygen, pH, and nitrate, we can also look at the evolution of the number of profiles over time for each variable.
 (One profile has multiple depth levels, between 0-2000 m)
 
-### **2.1 Oxygen** 
+## Oxygen
  
 ```{r number_of_oxygen_profiles}
 prof_oxy = oxy.no.na %>%
   group_by(float_ID, cycle, profile_flag, year, month) %>%     
   summarise(num_obs = n())  # count the number of oxygen observations for each float and cycle
-
-prof_oxy = prof_oxy %>%
-  mutate(prof = rep(1, length(cycle)))   # repeat a vector of 1s for each individual cycle (one cycle corresponds to one profile)
 
 num_prof_oxy = prof_oxy %>%
   group_by(year, month, profile_flag) %>%
@@ -281,19 +315,24 @@ Plot the evolution of the number of oxygen profiles over time
 
 ```{r oxygen_profile_timeseries}
 
-ggplot(num_prof_oxy, aes(x = month, y = count_prof, group = profile_flag, col = profile_flag)) +
+
+ggplot(num_prof_oxy,
+       aes(
+         x = month,
+         y = count_prof,
+         group = profile_flag,
+         col = profile_flag
+       )) +
   geom_line() +
   geom_point() +
-  facet_wrap(~ year, ncol = 3) +
+  facet_wrap( ~ year, ncol = 3) +
   labs(title = 'number of oxygen profiles',
        y = 'number of profiles',
        x = 'month') +
   theme_bw()
 
 ```
-
-
-### **2.2 pH** 
+## pH
 
 ```{r number_of_pH_profiles}
 
@@ -324,7 +363,7 @@ ggplot(num_prof_ph, aes(x = month, y = count_prof, group = profile_flag, col = p
 
 ```
 
-### **2.3 Nitrate**
+## Nitrate
 
 ```{r number_of_nitrate_profiles}
 prof_nitrate = nitrate.no.na %>%
@@ -354,7 +393,7 @@ ggplot(num_prof_nitrate, aes(x = month, y = count_prof, group = profile_flag, co
 
 ```
 
-### **2.4 All BGC variables (oxygen, pH, and nitrate)**
+## All BGC variables
 
 We can count the number of profiles which contain all three variables.
 (Profile QC flags cannot be included since they are specific to one variable)
@@ -386,3 +425,89 @@ ggplot(num_prof_bgc, aes(x = month, y = count_prof)) +
   theme_bw()
 ```
 
+
+# Number of profiles revised
+ 
+```{r number_profiles_per_parameter}
+
+bgc_profile_counts <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "profile_qc",
+               values_to = "flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(year, month, profile_qc, flag) %>% 
+  filter(!is.na(flag),
+         flag != "")
+
+```
+
+Plot the evolution of the number of profiles over time
+
+```{r profiles_timeseries}
+
+bgc_profile_counts %>% 
+  ggplot(aes(x = month, y = n, col = flag)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(profile_qc ~ year,
+             scales = "free_y") +
+  theme_bw()
+
+```
+
+```{r profiles_timeseries_per_parameter}
+
+bgc_profile_counts %>%
+  group_split(profile_qc) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(
+               x = month, y = n, col = flag
+             )) +
+      geom_line() +
+      geom_point() +
+      facet_grid(. ~ year,
+                 scales = "free_y") +
+      labs(title = paste("Parameter: ", unique(.x$profile_qc))) +
+      theme_bw()
+  )
+
+
+```
+
+
+```{r number_profiles_total_A}
+
+bgc_profile_counts_total_A <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "profile_qc",
+               values_to = "flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  filter(flag == "A") %>% 
+  distinct(platform_number, cycle_number, year, month) %>% 
+  count(year, month)
+  
+  
+```
+
+
+```{r profiles_timeseries_total_A}
+
+bgc_profile_counts_total_A %>% 
+  ggplot(aes(x = month, y = n)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = "free_y") +
+  scale_x_continuous(breaks = seq(1,12,2)) +
+  theme_bw()
+
+```
