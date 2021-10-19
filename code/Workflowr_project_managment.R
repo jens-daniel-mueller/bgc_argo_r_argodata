@@ -16,7 +16,7 @@ wflow_publish(here::here(
     'map_observations.Rmd'
   )
 ),
-message = "added map observations page",
+message = "code review jens",
 republish = TRUE)
 
 
