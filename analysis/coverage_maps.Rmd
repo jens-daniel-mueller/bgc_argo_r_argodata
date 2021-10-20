@@ -1,0 +1,172 @@
+---
+title: "Spatial data coverage"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task
+
+Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo floats
+
+```{r loading_packages}
+
+library(tidyverse)
+library(argodata)
+library(ggplot2)
+library(lubridate)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
+# load in coastline data (uses sf and rnaturalearthdata packages)
+world = ne_coastline(scale = 'medium', returnclass = 'sf')
+
+```
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+
+```
+
+# Load data
+
+Read the files created in loading_data.html:
+
+```{r load_preprpocessed_data}
+
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+bgc_subset <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
+
+bgc_metadata <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+
+bgc_data <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+
+bgc_merge <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+
+```
+
+# Spatial data coverage
+
+### Count the number of profiles per year
+
+```{r number_profiles_revised}
+
+bgc_profile_counts_year <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date, longitude, latitude,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         latitude = round(latitude, digits = 0),
+         longitude = round(longitude, digits = 0)) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag != "") %>% 
+  count(latitude, longitude, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
+
+bgc_profile_counts_flag <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date, longitude, latitude,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         latitude = round(latitude, digits = 0),
+         longitude = round(longitude, digits = 0)) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag != "") %>% 
+  count(latitude, longitude, parameter, profile_flag)  # count the number of profiles for each profile QC flag in each lon/lat area and for each parameter 
+
+```
+
+### Map the profile locations
+
+Map of profile locations for each parameter, per year
+
+```{r profiles_maps_year, eval = FALSE}
+
+bgc_profile_counts_year %>%
+  ggplot() +
+  geom_sf(data = ne_countries(returnclass = "sf"),
+          fill = "gray90",
+          color = NA) +
+  geom_sf(data = ne_coastline(returnclass = "sf")) +
+  geom_tile(aes(x = longitude, y = latitude, fill = n)) +
+  scale_fill_gradient(low="blue", high="red",
+                      trans = "log10") +
+  theme_bw() +
+  facet_grid(year ~ parameter)
+
+```
+
+```{r profile_maps_year_separate}
+
+bgc_profile_counts_year %>%
+  group_split(parameter) %>% 
+  map( 
+  ~ ggplot() +
+  geom_sf(data = ne_countries(returnclass = "sf"),
+          fill = "gray90",
+          color = NA) +
+  geom_sf(data = ne_coastline(returnclass = "sf")) +
+  geom_tile(data = .x, aes(x = longitude, y = latitude, fill = n)) +
+  scale_fill_gradient(low="blue", high="red",
+                      trans = "log10") +
+  theme_bw() +
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles', 
+       title = paste('Parameter:', unique(.x$parameter)))+
+  facet_grid(. ~ year)
+  )
+
+```
+
+Map the profile locations for each profile QC flag of each parameter
+
+```{r profiles_maps_flag, fig.asp=1.2, eval = FALSE}
+
+bgc_profile_counts_flag %>%
+  ggplot() +
+  geom_sf(data = ne_countries(returnclass = "sf"),
+          fill = "gray90",
+          color = NA) +
+  geom_sf(data = ne_coastline(returnclass = "sf")) +
+  geom_tile(aes(x = longitude, y = latitude, fill = n)) +
+  scale_fill_gradient(low="blue", high="red",
+                      trans = "log10") +
+  theme_bw() +
+  facet_grid(profile_flag ~ parameter)
+
+```
+
+```{r profiles_maps_flag_separate}
+
+# create a separate plot for each QC flag (instead of multiple panels in one plot) 
+
+bgc_profile_counts_flag %>%
+  group_split(profile_flag) %>% 
+  map(
+  ~ ggplot() +
+  geom_sf(data = ne_countries(returnclass = "sf"),
+          fill = "gray90",
+          color = NA) +
+  geom_sf(data = ne_coastline(returnclass = "sf")) +
+  geom_tile(data = .x, aes(x = longitude, y = latitude, fill = n)) +
+  scale_fill_gradient(low="blue", high="red",
+                      trans = "log10") +
+  theme_bw() +
+  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
+       title = paste('Profile QC flag', unique(.x$profile_flag)))+
+  facet_grid(. ~ parameter)
+  )
+
+```
