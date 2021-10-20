@@ -122,7 +122,8 @@ bgc_profile_counts %>%
       geom_point() +
       facet_grid(. ~ year,
                  scales = "free_y") +
-      labs(title = paste("Parameter: ", unique(.x$parameter))) +
+      labs(title = paste("Parameter: ", unique(.x$parameter)), 
+           x = 'month', y = 'number of profiles') +
       scale_x_continuous(breaks = seq(1,12,2))+
       theme_bw()
   )
@@ -132,9 +133,10 @@ bgc_profile_counts %>%
 
 ```{r number_profiles_total_A}
 
-# count the number of profiles which contain all three parameters with a QC flag of A 
+# count the number of profiles with a QC flag of A for at least one BGC parameter 
+# (not plotted)
 
-bgc_profile_counts_total_A <- bgc_metadata %>% 
+bgc_profile_counts_A <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
@@ -150,6 +152,30 @@ bgc_profile_counts_total_A <- bgc_metadata %>%
   
 ```
 
+```{r test_chunk_filtering_A_flag}
+
+# count the number of profiles which have a QC flag of A for all three BGC parameters 
+# (plotted below)
+
+bgc_profile_counts_total_A <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  filter(!is.na(profile_doxy_qc),
+         !is.na(profile_ph_in_situ_total_qc),
+         !is.na(profile_nitrate_qc)) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  filter(profile_flag == "A") %>% 
+  distinct(platform_number, cycle_number, year, month) %>% 
+  count(year, month)
+
+
+```
+
 ```{r profiles_timeseries_total_A}
 
 bgc_profile_counts_total_A %>% 
@@ -159,7 +185,7 @@ bgc_profile_counts_total_A %>%
   facet_grid(. ~ year,
              scales = "free_y") +
   scale_x_continuous(breaks = seq(1,12,2)) +
-  labs(x = 'month', y = 'number of profiles', title = 'number of oxygen, pH, and nitrate profiles')+
+  labs(x = 'month', y = 'number of profiles', title = 'number of profiles with all three BGC parameters (QC flag A)')+
   theme_bw()
 
 ```
