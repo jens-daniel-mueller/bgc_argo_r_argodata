@@ -131,7 +131,7 @@ bgc_profile_counts %>%
 
 ```
 
-```{r number_profiles_total_A}
+```{r number_profiles_total_A, eval = FALSE}
 
 # count the number of profiles with a QC flag of A for at least one BGC parameter 
 # (not plotted)
@@ -160,16 +160,15 @@ bgc_profile_counts_A <- bgc_metadata %>%
 bgc_profile_counts_total_A <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  filter(!is.na(profile_doxy_qc),
-         !is.na(profile_ph_in_situ_total_qc),
-         !is.na(profile_nitrate_qc)) %>% 
+  filter(profile_doxy_qc == 'A' &
+         profile_ph_in_situ_total_qc == 'A' &
+         profile_nitrate_qc == 'A') %>% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
                names_prefix = "profile_") %>% 
   mutate(year = year(date),
          month = month(date)) %>% 
-  filter(profile_flag == "A") %>% 
   distinct(platform_number, cycle_number, year, month) %>% 
   count(year, month)
 

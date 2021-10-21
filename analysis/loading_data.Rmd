@@ -29,7 +29,7 @@ path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 
 # Set cache directory
 
-The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using argo_update_global() (data files are also updated occasionally; update these using argo_update_data())
+The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using `argo_update_global()` (data files are also updated occasionally; update these using `argo_update_data()`)
 
 ```{r set_cache_directory}
 
@@ -50,7 +50,29 @@ argo_update_data(max_data_cache_age = Inf)
 
 # Load index files
 
-Load in the synthetic (core and bgc merged) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data (quality checked by PIs)
+Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.
+
+### File Types
+
+A core-Argo profile contains the CTD sensor parameters (pressure, temperature, salinity) that are measured with the same vertical sampling scheme and at the same location and time. Additional parameters from other sensors are stored in the b-Argo profile files.
+
+A b-Argo profile contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a b-Argo file. The vertical level `PRES` is the simple and unambiguous link between the parameters in the core-Argo and b-Argo files. The same `PRES` is recorded in the core-Argo and b-Argo files. PRES is the only parameter duplicated in core-Argo and b-Argo profile files.
+
+To facilitate the use of BGC-Argo data, the regional data centers merge each b-Argo file with its corresponding core-Argo file into one synthetic (s-Argo) file. The goal of a simplified s-Argo file is to co-locate as many BGC observations as possible while preserving the character of the sampling pattern, i.e., sample interval, number of samples, and approximate pressure locations. Data come from the single c- and b-Argo files. The synthetic pressure axis is constructed from the BGC sampling levels from each cycle. This means that there is no fixed vertical grid for all floats and all cycles.
+
+The co-location takes different vertical attachments of BGC sensors into account by displacing the pressure location, which is not the case in the c- and b-files. The single-cycle s--file profiles contain all the c-file parameter observations in their original location and resolution.
+
+The adjusted pressure parameter (`pres_adjusted`) is only available in the core- and s-Argo profile files. The variables `profile_pres_qc`, `pres_adjusted`, and `pres_adjusted_error`, are not duplicated in the b-Argo files.
+
+### Data Modes
+
+Delayed-mode data are denoted by `data_mode = 'D'`, and are quality-checked by PIs, who apply any necessary adjustments. For the core CTD data, delayed-mode data is generally available 12 months after the transmission of raw data, because the raw data is usually of good quality. Their delayed-mode assessment involves evaluation of the long-term sensor stability, which typically requires a float record of 12 months. Incorrect QC flag attribution and erroneous raw data not flagged during real-time procedures are corrected in delayed-mode.
+
+Delayed-mode BGC data may be available as early as 5-6 cycles after initial data transmission as the raw data are typically unfit for scientific usage. Adjustments significantly increase the accuracy of these data. In b- and s-Argo profile files, the variable `parameter_data_mode` indicates the mode of each parameter. Biogeochemical parameters in the same file may receive their delayed-mode adjustments at different times.
+
+*Synthetic files info: <https://archimer.ifremer.fr/doc/00445/55637/80863.pdf>*
+
+*Argo User Manual: <https://archimer.ifremer.fr/doc/00187/29825/86414.pdf>*
 
 ```{r load_indeces}
 bgc_subset <- argo_global_synthetic_prof() %>%
@@ -67,13 +89,15 @@ argo_global_meta(download = NULL, quiet = FALSE)
 
 argo_global_prof(download = NULL, quiet = FALSE)
 
-argo_global_tech(download = NULL, quiet = FALSE)
+# argo_global_tech(download = NULL, quiet = FALSE)
+# An argo technical file contains technical information from an Argo float. This information is registered for each cycle performed by the float. 
 
-argo_global_traj(download = NULL, quiet = FALSE)
+# argo_global_traj(download = NULL, quiet = FALSE)
+# argo_global_bio_traj(download = NULL, quiet = FALSE)
+# load the trajectory files, which contain all received Argos and GPS locations of Argo floats. A trajectory file often contains core and BGC measurements performed at various intermediate times during the cycle and outside the vertical profiles. The full profiles collected upon ascent are not included and are stored in the profile files. 
 
-argo_global_bio_traj(download = NULL, quiet = FALSE)
-
-argo_global_bio_prof(download = NULL, quiet = FALSE)
+# argo_global_bio_prof(download = NULL, quiet = FALSE)
+# A B-Argo profile file contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a B-Argo file
 
 argo_global_synthetic_prof(download = NULL, quiet = FALSE)
 
@@ -113,7 +137,7 @@ bgc_data <- argo_prof_levels(
 # read in the profiles (takes a while)
 ```
 
-The data is read in from the cached files stored in the path specified in set_argo_cache_dir() (in this case, `r path_argo`). To download data directly from the files stored on the ifremer server, set max_global_cache_age and max_data_cache_age to -Inf, which will force a new download.
+The data is read in from the cached files stored in the path specified in `set_argo_cache_dir()` (in this case, `r path_argo`). To download data directly from the files stored on the ifremer server, set `max_global_cache_age` and `max_data_cache_age` to `-Inf`, which will force a new download.
 
 # Read meta data
 
@@ -145,7 +169,8 @@ path_argo_preprocessed <- paste0(path_argo,"/preprocessed_bgc_data")
 bgc_subset %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
 
-bgc_metadata %>%
+bgc_metadata %>% select(-c(profile_cndc_qc:profile_bbp700_qc),  
+                        -c(profile_doxy2_qc:profile_up_radiance555_qc)) %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
 bgc_data %>%
@@ -162,69 +187,72 @@ bgc_merge %>%
 
 The resulting dataframe contains:
 
--   the file name ('file' column)
+-   the file name (`file` column)
 
--   the sampling level ('n_level' column)
+-   the sampling level (`n_level` column)
 
--   the number of profiles per file ('n_prof' column)
+-   the number of profiles per file (`n_prof` column; Each single-cycle synthetic profile has the dimension `n_prof = 1`).
 
--   adjusted values for pressure (PRES), salinity (PSAL), temperature (TEMP), dissolved oxygen (DOXY), pH (PH_IN_SITU_TOTAL), and nitrate (NITRATE) ('parameter_adjusted' columns)
+-   adjusted values for pressure (`PRES`, in dbar), salinity (`PSAL`, in psu), temperature (`TEMP`, in degrees C), dissolved oxygen (`DOXY`, in µmol kg^-1^), pH (`PH_IN_SITU_TOTAL`), and nitrate (`NITRATE`, in µmol kg^-1^) (`parameter_adjusted` columns). This column is mandatory, so if no adjustment was performed (i.e. `parameter_adjusted` does not exist), FillValue is inserted (e.g., `temp_adjusted:FillValue = 99999.f`).
 
--   a quality control flag associated with these adjusted values ('parameter_adjusted_qc' columns)
+-   a quality control flag associated with these adjusted values (`parameter_adjusted_qc` columns). If an adjusted value does not exist (e.g., `temp_adjusted = 99999.f`), then FillValue is inserted (e.g., `temp_adjusted_qc = " "`).
 
--   an error estimate on the adjustment of the measurement ('parameter_adjusted_error' columns)
+-   an error estimate on the adjustment of the measurement (`parameter_adjusted_error` columns). If no adjusted value exists (e.g., `temp_adjusted = 99999.f`), then FillValue is inserted (e.g., `temp_adjusted_error = 99999.f`)
 
--   WMO float identifier ('platform_number' column)
+-   WMO float identifier (`platform_number` column)
 
--   name of the project in charge of the float ('project_name' column)
+-   name of the project in charge of the float (`project_name` column)
 
--   name of principal investigator in charge of the float ('pi_name' column)
+-   name of principal investigator in charge of the float (`pi_name` column)
 
--   float cycle number ('cycle_number' column; *cycle number 0 is the launch cycle and may not be complete, cycle number 1 is the first complete cycle*)
+-   float cycle number (`cycle_number` column; *cycle 0 is the launch cycle during which technical data or configuration information is transmitted; cycle 1 is the first complete cycle*)
 
--   descending (D) or ascending (A) profile ('direction' column)
+-   descending (D) or ascending (A) profile (`direction` column). *Profile measurements are taken on ascent, occasionally during descent (rarely both).*
 
--   code for the data centre in charge of the float data management ('data_centre' column),\
-    the type of float ('platform_type' column)
+-   code for the data centre in charge of the float data management (`data_centre` column)
 
--   firmware version of the float ('firmware_version' column)
+-   the type of float (`platform_type` column)
 
--   instrument type from the WMO code table 1770 ('wmo_inst_type' column)
+-   firmware version of the float (`firmware_version` column)
 
--   the date and time at which the measurement was taken ('date' column)
+-   instrument type from the WMO code table 1770 (`wmo_inst_type` column)
 
--   a quality control flag for the date and time value ('date_qc' column)
+-   the date and time at which the measurement was taken, in UTC (`date` column)
 
--   the date and time of the profile location ('date_location' column)
+-   a quality control flag for the date and time value (`date_qc` column)
 
--   latitude in degrees N ('latitude' column)
+-   the date and time of the profile location (`date_location` column)
 
--   longitude in degrees E ('longitude' column)
+-   latitude in degrees N (`latitude` column)
 
--   quality control flag on the position ('position_qc' column)
+-   longitude in degrees E (`longitude` column)
 
--   name of the system in charge of positioning the float locations ('positioning_system' columns)
+-   quality control flag on the position (`position_qc` column)
 
--   unique number of the mission to which this float belongs ('config_mission_number' column)
+-   name of the system in charge of positioning the float locations (`positioning_system` column)
 
--   and a quality control flag on the profile of the parameter ('profile\_<param>\_qc' column)
+-   unique number of the mission to which this float belongs (`config_mission_number` column,
+
+-   a global quality control flag on the profile of the parameter (`profile_parameter_qc` column; FillValue = " ")
 
 ## QC flags
 
-QC flags for values ('parameter_adjusted_qc' columns) are between 1 and 8, where:\
+QC flags for values ('`parameter_adjusted_qc`' columns) are between 1 and 8, where:\
 1 is 'good' data,\
 2 is 'probably good' data,\
 3 is 'probably bad' data,\
 4 is 'bad' data,\
 5 is 'value changed',\
 8 is 'estimated value',\
-9 is 'missing value',\
+9 is 'missing value' (data parameter will record FillValue)\
 (6 and 7 are not used).
 
-Profile QC flags ('profile_parameter_qc' columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):\
+Profile QC flags ('`profile_parameter_qc`' columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8; QC flags of 9 or " " are not used in the computation):\
 'A' means 100% of profile levels contain good data,\
 'B' means 75-\<100% of profile levels contain good data,\
 'C' means 50-75% of profile levels contain good data,\
 'D' means 25-50% of profile levels contain good data,\
 'E' means \>0-50% of profile levels contain good data,\
 'F' means 0% of profile levels contain good data.
+
+During delayed-mode processing, the QC flags assigned by the real-time process can be reassigned if needed.

@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "added description in loading_data")
+wflow_publish(all = TRUE, message = "timeseries attempt 2, added description")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -12,11 +12,11 @@ wflow_publish(here::here(
   c(
     "index.Rmd",
     'loading_data.Rmd',
-    'count_observations.Rmd',
-    'map_observations.Rmd'
+    'coverage_timeseries.Rmd',
+    'coverage_maps.Rmd'
   )
 ),
-message = "code review jens",
+message = "adding revised code",
 republish = TRUE)
 
 
