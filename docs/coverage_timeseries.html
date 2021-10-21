@@ -387,7 +387,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temporal data coverage</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">20 October, 2021</h4>
+<h4 class="date">21 October, 2021</h4>
 
 </div>
 
@@ -412,7 +412,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-10-20
+<strong>Last updated:</strong> 2021-10-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -503,16 +503,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb8feac29ec771727a75245c8768ac90d7d1eb65atargetblankb8feac2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b8feac29ec771727a75245c8768ac90d7d1eb65a" target="_blank">b8feac2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree58c24b6dae36f930ce1ac06aaca24d5099faf6dctargetblank58c24b6a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/58c24b6dae36f930ce1ac06aaca24d5099faf6dc" target="_blank">58c24b6</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb8feac29ec771727a75245c8768ac90d7d1eb65atargetblankb8feac2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree58c24b6dae36f930ce1ac06aaca24d5099faf6dctargetblank58c24b6a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b8feac29ec771727a75245c8768ac90d7d1eb65a" target="_blank">b8feac2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/58c24b6dae36f930ce1ac06aaca24d5099faf6dc" target="_blank">58c24b6</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -525,12 +525,6 @@ Ignored files:
 Untracked files:
     Untracked:  code/creating_dataframe.R
     Untracked:  code/creating_map.R
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Deleted:    analysis/count_observations.Rmd
-    Deleted:    analysis/map_observations.Rmd
-    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -569,6 +563,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/58c24b6dae36f930ce1ac06aaca24d5099faf6dc/analysis/coverage_timeseries.Rmd" target="_blank">58c24b6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-21
+</td>
+<td>
+timeseries attempt 2, added description
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/62d85198283469ee853f0cf47ef780244958249d/docs/coverage_timeseries.html" target="_blank">62d8519</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -907,16 +935,15 @@ bgc_profile_counts_A &lt;- bgc_metadata %&gt;%
 bgc_profile_counts_total_A &lt;- bgc_metadata %&gt;% 
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  filter(!is.na(profile_doxy_qc),
-         !is.na(profile_ph_in_situ_total_qc),
-         !is.na(profile_nitrate_qc)) %&gt;% 
+  filter(profile_doxy_qc == &#39;A&#39; &amp;
+         profile_ph_in_situ_total_qc == &#39;A&#39; &amp;
+         profile_nitrate_qc == &#39;A&#39;) %&gt;% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
                names_to = &quot;parameter&quot;,
                values_to = &quot;profile_flag&quot;,
                names_prefix = &quot;profile_&quot;) %&gt;% 
   mutate(year = year(date),
          month = month(date)) %&gt;% 
-  filter(profile_flag == &quot;A&quot;) %&gt;% 
   distinct(platform_number, cycle_number, year, month) %&gt;% 
   count(year, month)</code></pre>
 <pre class="r"><code>bgc_profile_counts_total_A %&gt;% 
