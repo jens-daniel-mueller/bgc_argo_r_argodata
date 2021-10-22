@@ -387,7 +387,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">21 October, 2021</h4>
+<h4 class="date">22 October, 2021</h4>
 
 </div>
 
@@ -412,7 +412,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-10-21
+<strong>Last updated:</strong> 2021-10-22
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -503,16 +503,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb55928d01e5a2a737b46bfe1b148b36fd394b097targetblankb55928da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b55928d01e5a2a737b46bfe1b148b36fd394b097" target="_blank">b55928d</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2b220998339ef7c2374575345f9566d4c99870fbtargetblank2b22099a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2b220998339ef7c2374575345f9566d4c99870fb" target="_blank">2b22099</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb55928d01e5a2a737b46bfe1b148b36fd394b097targetblankb55928da" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2b220998339ef7c2374575345f9566d4c99870fbtargetblank2b22099a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b55928d01e5a2a737b46bfe1b148b36fd394b097" target="_blank">b55928d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2b220998339ef7c2374575345f9566d4c99870fb" target="_blank">2b22099</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -566,6 +566,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2b220998339ef7c2374575345f9566d4c99870fb/analysis/loading_data.Rmd" target="_blank">2b22099</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+edited text
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c81f21cb0d38fc1b81acc0e621f1cfc5fbfbc3b5/docs/loading_data.html" target="_blank">c81f21c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -900,48 +934,21 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 <p><em>Synthetic files info: <a href="https://archimer.ifremer.fr/doc/00445/55637/80863.pdf" class="uri">https://archimer.ifremer.fr/doc/00445/55637/80863.pdf</a></em></p>
 <p><em>Argo User Manual: <a href="https://archimer.ifremer.fr/doc/00187/29825/86414.pdf" class="uri">https://archimer.ifremer.fr/doc/00187/29825/86414.pdf</a></em></p>
 <pre class="r"><code>bgc_subset &lt;- argo_global_synthetic_prof() %&gt;%
-  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%
+  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%  # load in delayed-mode data
   argo_filter_date(date_min = &#39;2013-01-01&#39;,
-                   date_max = &#39;2015-12-31&#39;)</code></pre>
+                   date_max = &#39;2015-12-31&#39;)  </code></pre>
 <pre><code>Loading argo_global_synthetic_prof()</code></pre>
 <pre class="r"><code># check the dates 
 # max(bgc_subset$date, na.rm = TRUE)
 # min(bgc_subset$date, na.rm = TRUE)
 
 # checking alternative functions
-argo_global_meta(download = NULL, quiet = FALSE)</code></pre>
-<pre><code>Loading argo_global_meta()</code></pre>
-<pre><code># A tibble: 16,781 × 4
-   file                     profiler_type institution date_update        
-   &lt;chr&gt;                            &lt;dbl&gt; &lt;chr&gt;       &lt;dttm&gt;             
- 1 aoml/13857/13857_meta.nc           845 AO          2018-10-11 20:00:14
- 2 aoml/13858/13858_meta.nc           845 AO          2018-10-11 20:00:15
- 3 aoml/13859/13859_meta.nc           845 AO          2018-10-11 20:00:25
- 4 aoml/15819/15819_meta.nc           845 AO          2018-10-11 20:00:16
- 5 aoml/15820/15820_meta.nc           845 AO          2018-10-11 20:00:18
- 6 aoml/15851/15851_meta.nc           845 AO          2018-10-11 20:00:26
- 7 aoml/15852/15852_meta.nc           845 AO          2018-10-11 20:00:28
- 8 aoml/15853/15853_meta.nc           845 AO          2018-10-11 20:00:29
- 9 aoml/15854/15854_meta.nc           845 AO          2018-10-11 20:00:30
-10 aoml/15855/15855_meta.nc           845 AO          2018-10-11 20:00:34
-# … with 16,771 more rows</code></pre>
-<pre class="r"><code>argo_global_prof(download = NULL, quiet = FALSE)</code></pre>
-<pre><code>Loading argo_global_prof()</code></pre>
-<pre><code># A tibble: 2,523,178 × 8
-   file   date                latitude longitude ocean profiler_type institution
-   &lt;chr&gt;  &lt;dttm&gt;                 &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;      
- 1 aoml/… 1997-07-29 20:03:00    0.267     -16.0 A               845 AO         
- 2 aoml/… 1997-08-09 19:21:12    0.072     -17.7 A               845 AO         
- 3 aoml/… 1997-08-20 18:45:45    0.543     -19.6 A               845 AO         
- 4 aoml/… 1997-08-31 19:39:05    1.26      -20.5 A               845 AO         
- 5 aoml/… 1997-09-11 18:58:08    0.72      -20.8 A               845 AO         
- 6 aoml/… 1997-09-22 19:57:02    1.76      -21.6 A               845 AO         
- 7 aoml/… 1997-10-03 19:15:49    2.60      -21.6 A               845 AO         
- 8 aoml/… 1997-10-14 18:39:35    1.76      -21.6 A               845 AO         
- 9 aoml/… 1997-10-25 19:32:34    1.80      -21.8 A               845 AO         
-10 aoml/… 1997-11-05 18:51:42    1.64      -21.4 A               845 AO         
-# … with 2,523,168 more rows, and 1 more variable: date_update &lt;dttm&gt;</code></pre>
-<pre class="r"><code># argo_global_tech(download = NULL, quiet = FALSE)
+# argo_global_meta(download = NULL, quiet = FALSE)
+
+# argo_global_prof(download = NULL, quiet = FALSE)
+# laods in core-argo files (CTD data)
+
+# argo_global_tech(download = NULL, quiet = FALSE)
 # An argo technical file contains technical information from an Argo float. This information is registered for each cycle performed by the float. 
 
 # argo_global_traj(download = NULL, quiet = FALSE)
@@ -951,22 +958,7 @@ argo_global_meta(download = NULL, quiet = FALSE)</code></pre>
 # argo_global_bio_prof(download = NULL, quiet = FALSE)
 # A B-Argo profile file contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a B-Argo file
 
-argo_global_synthetic_prof(download = NULL, quiet = FALSE)</code></pre>
-<pre><code># A tibble: 246,717 × 10
-   file   date                latitude longitude ocean profiler_type institution
-   &lt;chr&gt;  &lt;dttm&gt;                 &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;      
- 1 aoml/… 2006-10-22 02:16:24    -40.3      73.4 I               846 AO         
- 2 aoml/… 2006-11-01 06:44:23    -40.4      73.5 I               846 AO         
- 3 aoml/… 2006-11-11 10:12:22    -40.5      73.3 I               846 AO         
- 4 aoml/… 2006-11-21 07:50:21    -40.1      73.1 I               846 AO         
- 5 aoml/… 2006-12-01 18:33:00    -39.6      73.2 I               846 AO         
- 6 aoml/… 2006-12-11 22:27:04    -39.4      73.5 I               846 AO         
- 7 aoml/… 2006-12-22 05:20:18    -39.8      74.0 I               846 AO         
- 8 aoml/… 2007-01-01 06:34:17    -40.0      74.2 I               846 AO         
- 9 aoml/… 2007-01-11 12:14:56    -39.4      75.3 I               846 AO         
-10 aoml/… 2007-01-21 04:22:15    -38.5      76.0 I               846 AO         
-# … with 246,707 more rows, and 3 more variables: parameters &lt;chr&gt;,
-#   parameter_data_mode &lt;chr&gt;, date_update &lt;dttm&gt;</code></pre>
+# argo_global_synthetic_prof(download = NULL, quiet = FALSE)</code></pre>
 </div>
 </div>
 <div id="read-data" class="section level1">
