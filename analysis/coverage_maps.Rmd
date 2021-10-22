@@ -11,23 +11,23 @@ editor_options:
 
 Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo floats
 
-```{r loading_packages}
+```{r loading_packages, include=FALSE}
 
 library(tidyverse)
 library(argodata)
-library(ggplot2)
 library(lubridate)
-library(sf)
-library(rnaturalearth)
-library(rnaturalearthdata)
-# load in coastline data (uses sf and rnaturalearthdata packages)
-world = ne_coastline(scale = 'medium', returnclass = 'sf')
+# library(sf)
+# library(rnaturalearth)
+# library(rnaturalearthdata)
+# # load in coastline data (uses sf and rnaturalearthdata packages)
+# world = ne_coastline(scale = 'medium', returnclass = 'sf')
 
 ```
 
 ```{r set_updata_root_directory, include=FALSE}
 
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 
 ```
 
@@ -39,96 +39,145 @@ Read the files created in loading_data.html:
 
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
-bgc_subset <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
-
 bgc_metadata <-
   read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
-bgc_data <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+```
 
-bgc_merge <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+```{r load_map_and_basin_mask}
+
+basinmask <-
+  read_csv(paste(path_emlr_utilities,
+                 "basin_mask_WOA18.csv",
+                 sep = ""),
+           col_types = cols("MLR_basins" = col_character()))
+
+basinmask <- basinmask %>% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(lon, lat, basin_AIP)
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
 
 ```
+
+```{r set_ggplot_theme_global, include = FALSE}
+theme_set(theme_bw())
+```
+
 
 # Spatial data coverage
 
-### Count the number of profiles per year
+### Count profiles
 
 ```{r number_profiles_revised}
 
+bgc_metadata <- inner_join(
+  bgc_metadata,
+  basinmask
+)
+
 bgc_profile_counts_year <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, longitude, latitude,
+  select(platform_number, cycle_number, date, lon, lat,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
   pivot_longer(profile_doxy_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
                names_prefix = "profile_") %>% 
-  mutate(year = year(date),
-         latitude = round(latitude, digits = 0),
-         longitude = round(longitude, digits = 0)) %>% 
+  mutate(year = year(date)) %>% 
   filter(!is.na(profile_flag),
          profile_flag != "") %>% 
-  count(latitude, longitude, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
+  count(lat, lon, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
 
 bgc_profile_counts_flag <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, longitude, latitude,
+  select(platform_number, cycle_number, date, lon, lat,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
   pivot_longer(profile_doxy_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
                names_prefix = "profile_") %>% 
-  mutate(year = year(date),
-         latitude = round(latitude, digits = 0),
-         longitude = round(longitude, digits = 0)) %>% 
+  mutate(year = year(date)) %>% 
   filter(!is.na(profile_flag),
          profile_flag != "") %>% 
-  count(latitude, longitude, parameter, profile_flag)  # count the number of profiles for each profile QC flag in each lon/lat area and for each parameter 
+  count(lat, lon, parameter, profile_flag)  # count the number of profiles for each profile QC flag in each lon/lat area and for each parameter 
 
 ```
 
-### Map the profile locations
+### by year
 
 Map of profile locations for each parameter, per year
 
 ```{r profiles_maps_year, eval = FALSE}
 
-bgc_profile_counts_year %>%
-  ggplot() +
-  geom_sf(data = ne_countries(returnclass = "sf"),
-          fill = "gray90",
-          color = NA) +
-  geom_sf(data = ne_coastline(returnclass = "sf")) +
-  geom_tile(aes(x = longitude, y = latitude, fill = n)) +
-  scale_fill_gradient(low="blue", high="red",
+map +
+  geom_raster(data = bgc_profile_counts_year,
+              aes(lon, lat, fill = n)) +
+  scale_fill_gradient(low = "blue", high = "red",
                       trans = "log10") +
-  theme_bw() +
   facet_grid(year ~ parameter)
 
+
+# bgc_profile_counts_year %>%
+#   ggplot() +
+#   geom_sf(data = ne_countries(returnclass = "sf"),
+#           fill = "gray90",
+#           color = NA) +
+#   geom_sf(data = ne_coastline(returnclass = "sf")) +
+#   geom_tile(aes(x = lon, y = lat, fill = n)) +
+#   scale_fill_gradient(low="blue", high="red",
+#                       trans = "log10") +
+#   theme_bw() +
+#   facet_grid(year ~ parameter)
+
 ```
 
-```{r profile_maps_year_separate}
+```{r profile_maps_year_separate, fig.asp=2}
 
 bgc_profile_counts_year %>%
-  group_split(parameter) %>% 
-  map( 
-  ~ ggplot() +
-  geom_sf(data = ne_countries(returnclass = "sf"),
-          fill = "gray90",
-          color = NA) +
-  geom_sf(data = ne_coastline(returnclass = "sf")) +
-  geom_tile(data = .x, aes(x = longitude, y = latitude, fill = n)) +
-  scale_fill_gradient(low="blue", high="red",
-                      trans = "log10") +
-  theme_bw() +
-  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles', 
-       title = paste('Parameter:', unique(.x$parameter)))+
-  facet_grid(. ~ year)
+  group_split(parameter) %>%
+  map(
+    ~ map +
+      geom_raster(data = .x, aes(
+        x = lon, y = lat, fill = n
+      )) +
+      scale_fill_gradient(low = "blue", high = "red",
+                          trans = "log10") +
+      labs(
+        x = 'lon',
+        y = 'lat',
+        fill = 'number of\nprofiles',
+        title = paste('Parameter:', unique(.x$parameter))
+      ) +
+      theme(
+        legend.position = "bottom",
+        axis.text = element_blank(),
+        axis.ticks = element_blank()
+      ) +
+      facet_grid(year ~ .)
   )
 
+# bgc_profile_counts_year %>%
+#   group_split(parameter) %>% 
+#   map( 
+#   ~ ggplot() +
+#   geom_sf(data = ne_countries(returnclass = "sf"),
+#           fill = "gray90",
+#           color = NA) +
+#   geom_sf(data = ne_coastline(returnclass = "sf")) +
+#   geom_tile(data = .x, aes(x = lon, y = lat, fill = n)) +
+#   scale_fill_gradient(low="blue", high="red",
+#                       trans = "log10") +
+#   theme_bw() +
+#   labs(x = 'lon', y = 'lat', fill = 'number of profiles', 
+#        title = paste('Parameter:', unique(.x$parameter)))+
+#   facet_grid(. ~ year)
+#   )
+
 ```
+
+### by qc flag
 
 Map the profile locations for each profile QC flag of each parameter
 
@@ -140,7 +189,7 @@ bgc_profile_counts_flag %>%
           fill = "gray90",
           color = NA) +
   geom_sf(data = ne_coastline(returnclass = "sf")) +
-  geom_tile(aes(x = longitude, y = latitude, fill = n)) +
+  geom_tile(aes(x = lon, y = lat, fill = n)) +
   scale_fill_gradient(low="blue", high="red",
                       trans = "log10") +
   theme_bw() +
@@ -148,25 +197,31 @@ bgc_profile_counts_flag %>%
 
 ```
 
-```{r profiles_maps_flag_separate}
+```{r profiles_maps_flag_separate, fig.asp=2}
 
 # create a separate plot for each QC flag (instead of multiple panels in one plot) 
 
 bgc_profile_counts_flag %>%
-  group_split(profile_flag) %>% 
+  group_split(profile_flag) %>%
   map(
-  ~ ggplot() +
-  geom_sf(data = ne_countries(returnclass = "sf"),
-          fill = "gray90",
-          color = NA) +
-  geom_sf(data = ne_coastline(returnclass = "sf")) +
-  geom_tile(data = .x, aes(x = longitude, y = latitude, fill = n)) +
-  scale_fill_gradient(low="blue", high="red",
-                      trans = "log10") +
-  theme_bw() +
-  labs(x = 'longitude', y = 'latitude', fill = 'number of profiles',
-       title = paste('Profile QC flag', unique(.x$profile_flag)))+
-  facet_grid(. ~ parameter)
+    ~ map +
+      geom_raster(data = .x, aes(
+        x = lon, y = lat, fill = n
+      )) +
+      scale_fill_gradient(low = "blue", high = "red",
+                          trans = "log10") +
+      labs(
+        x = 'lon',
+        y = 'lat',
+        fill = 'number of\nprofiles',
+        title = paste('Profile QC flag', unique(.x$profile_flag))
+      ) +
+      theme(
+        legend.position = "bottom",
+        axis.text = element_blank(),
+        axis.ticks = element_blank()
+      ) +
+      facet_grid(parameter ~ .)
   )
 
 ```

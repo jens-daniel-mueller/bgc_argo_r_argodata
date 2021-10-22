@@ -14,7 +14,6 @@ Using the argodata package to load in bgc argo data from the server and store it
 ```{r loading_libraries, include=FALSE}
 
 library(tidyverse)
-# remotes::install_github("ArgoCanada/argodata")
 library(argodata)
 library(ggplot2)
 library(lubridate)
@@ -161,17 +160,39 @@ bgc_merge <-
 
 ```
 
+
 # Write data
+
+
+```{r harmonize_variables}
+
+bgc_metadata <- bgc_metadata %>%
+  rename(lon = longitude,
+         lat = latitude) %>%
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  ) %>%
+  select(
+    -c(profile_cndc_qc:profile_bbp700_qc),
+    -c(profile_doxy2_qc:profile_up_radiance555_qc)
+  )
+
+```
+
+
 
 ```{r write_data_to_files}
 
-path_argo_preprocessed <- paste0(path_argo,"/preprocessed_bgc_data")
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 bgc_subset %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
 
-bgc_metadata %>% select(-c(profile_cndc_qc:profile_bbp700_qc),  
-                        -c(profile_doxy2_qc:profile_up_radiance555_qc)) %>% 
+bgc_metadata %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
 bgc_data %>%

@@ -15,7 +15,6 @@ Count the number of bgc-argo profiles, and plot their evolution over time.
 
 library(tidyverse)
 library(argodata)
-library(ggplot2)
 library(lubridate)
 
 ```
@@ -23,6 +22,7 @@ library(lubridate)
 ```{r set_updata_root_directory, include=FALSE}
 
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 
 ```
 
@@ -34,19 +34,34 @@ Read the files created in loading_data.html:
 
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
-bgc_subset <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
-
 bgc_metadata <-
   read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
-bgc_data <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+```
 
-bgc_merge <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+```{r load_map_and_basin_mask}
+
+basinmask <-
+  read_csv(paste(path_emlr_utilities,
+                 "basin_mask_WOA18.csv",
+                 sep = ""),
+           col_types = cols("MLR_basins" = col_character()))
+
+basinmask <- basinmask %>% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(lon, lat, basin_AIP)
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
 
 ```
+
+```{r set_ggplot_theme_global, include = FALSE}
+theme_set(theme_bw())
+```
+
 
 # QC flags
 
@@ -71,6 +86,8 @@ bgc_merge <-
 -   'F' means 0% of profile levels contain good data.
 
 # Number of profiles
+
+## Per parameter
 
 ```{r number_profiles_per_parameter}
 # count the number of profiles per parameter 
@@ -103,12 +120,11 @@ bgc_profile_counts %>%
   facet_grid(parameter ~ year,
              scales = "free_y") +
   scale_x_continuous(breaks = seq(1,12,2))+
-  labs(x = 'month', y = 'number of profiles', title = 'number of profiles per year')+
-  theme_bw()
+  labs(x = 'month', y = 'number of profiles', title = 'number of profiles per year')
 
 ```
 
-```{r profiles_timeseries_per_parameter}
+```{r profiles_timeseries_per_parameter, fig.asp=0.5}
 # draw separate plots for the separate parameters
 
 bgc_profile_counts %>%
@@ -124,45 +140,29 @@ bgc_profile_counts %>%
                  scales = "free_y") +
       labs(title = paste("Parameter: ", unique(.x$parameter)), 
            x = 'month', y = 'number of profiles') +
-      scale_x_continuous(breaks = seq(1,12,2))+
-      theme_bw()
+      scale_x_continuous(breaks = seq(1,12,2))
   )
 
 
 ```
 
-```{r number_profiles_A, eval = FALSE}
-
-# count the number of profiles with a QC flag of A for at least one BGC parameter 
-# (not plotted)
-
-bgc_profile_counts_A <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date),
-         month = month(date)) %>% 
-  filter(profile_flag == "A") %>% 
-  distinct(platform_number, cycle_number, year, month) %>% 
-  count(year, month)
-  
-  
-```
+## All flag A
 
 ```{r test_chunk_filtering_A_flag}
 
-# count the number of profiles which have a QC flag of A for all three BGC parameters 
+# count the number of profiles which have a QC flag of A for all three BGC parameters
+# the if_all(starts_with()) notation allows to filter over a range of columns simultanously
+# this new approach is identical to your previous solution
+# except that it filters also the pres, temp, and sal flags
 # (plotted below)
 
 bgc_profile_counts_total_A <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  filter(profile_doxy_qc == 'A' &
-         profile_ph_in_situ_total_qc == 'A' &
-         profile_nitrate_qc == 'A') %>% 
+  filter(if_all(starts_with("profile_"), ~. == 'A')) %>% 
+  # filter(profile_doxy_qc == 'A' &
+  #        profile_ph_in_situ_total_qc == 'A' &
+  #        profile_nitrate_qc == 'A') %>% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
@@ -184,7 +184,74 @@ bgc_profile_counts_total_A %>%
   facet_grid(. ~ year,
              scales = "free_y") +
   scale_x_continuous(breaks = seq(1,12,2)) +
-  labs(x = 'month', y = 'number of profiles', title = 'number of profiles with all three BGC parameters (QC flag A)')+
-  theme_bw()
+  labs(x = 'month', y = 'number of profiles',
+       title = "Number of profiles",
+       subtitle = "All three BGC + core parameters (QC flag A)")
+
+```
+
+## By region
+
+```{r plot_region_map}
+
+# bgc_metadata <- bgc_metadata %>%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+#     lon = as.numeric(as.character(lon))
+#   )
+
+bgc_grid <- bgc_metadata %>%
+  distinct(lat, lon)
+
+bgc_grid <- inner_join(
+  basinmask, bgc_grid
+)
+
+map +
+  geom_raster(data = basinmask,
+              aes(lon, lat, fill = basin_AIP)) +
+  geom_raster(data = bgc_grid,
+              aes(lon, lat)) +
+  scale_fill_brewer(palette = "Dark2")
+
+rm(bgc_grid)
+
+```
+
+```{r flag_A_per_region}
+
+bgc_profile_counts_total_A_region <-
+  inner_join(bgc_metadata,
+             basinmask) %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc,
+         basin_AIP) %>% 
+  filter(if_all(starts_with("profile_"), ~. == 'A')) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  distinct(platform_number, cycle_number, year, month, basin_AIP) %>% 
+  count(year, month, basin_AIP)
+
+```
+
+
+```{r profiles_timeseries_total_A_per_region}
+
+bgc_profile_counts_total_A_region %>% 
+  ggplot(aes(x = month, y = n, col = basin_AIP)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = "free_y") +
+  scale_x_continuous(breaks = seq(1,12,2)) +
+  labs(x = 'month', y = 'number of profiles',
+       title = "Number of profiles",
+       subtitle = "All three BGC + core parameters (QC flag A)")
 
 ```
