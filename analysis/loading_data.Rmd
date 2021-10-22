@@ -76,18 +76,19 @@ Delayed-mode BGC data may be available as early as 5-6 cycles after initial data
 
 ```{r load_indeces}
 bgc_subset <- argo_global_synthetic_prof() %>%
-  argo_filter_data_mode(data_mode = 'delayed') %>%
+  argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
   argo_filter_date(date_min = '2013-01-01',
-                   date_max = '2015-12-31')
+                   date_max = '2015-12-31')  
 
 # check the dates 
 # max(bgc_subset$date, na.rm = TRUE)
 # min(bgc_subset$date, na.rm = TRUE)
 
 # checking alternative functions
-argo_global_meta(download = NULL, quiet = FALSE)
+# argo_global_meta(download = NULL, quiet = FALSE)
 
-argo_global_prof(download = NULL, quiet = FALSE)
+# argo_global_prof(download = NULL, quiet = FALSE)
+# laods in core-argo files (CTD data)
 
 # argo_global_tech(download = NULL, quiet = FALSE)
 # An argo technical file contains technical information from an Argo float. This information is registered for each cycle performed by the float. 
@@ -99,7 +100,7 @@ argo_global_prof(download = NULL, quiet = FALSE)
 # argo_global_bio_prof(download = NULL, quiet = FALSE)
 # A B-Argo profile file contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a B-Argo file
 
-argo_global_synthetic_prof(download = NULL, quiet = FALSE)
+# argo_global_synthetic_prof(download = NULL, quiet = FALSE)
 
 ```
 
