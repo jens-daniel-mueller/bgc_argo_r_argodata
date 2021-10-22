@@ -112,7 +112,7 @@ Map of profile locations for each parameter, per year
 ```{r profiles_maps_year, eval = FALSE}
 
 map +
-  geom_raster(data = bgc_profile_counts_year,
+  geom_tile(data = bgc_profile_counts_year,
               aes(lon, lat, fill = n)) +
   scale_fill_gradient(low = "blue", high = "red",
                       trans = "log10") +
@@ -139,7 +139,7 @@ bgc_profile_counts_year %>%
   group_split(parameter) %>%
   map(
     ~ map +
-      geom_raster(data = .x, aes(
+      geom_tile(data = .x, aes(
         x = lon, y = lat, fill = n
       )) +
       scale_fill_gradient(low = "blue", high = "red",
@@ -205,7 +205,7 @@ bgc_profile_counts_flag %>%
   group_split(profile_flag) %>%
   map(
     ~ map +
-      geom_raster(data = .x, aes(
+      geom_tile(data = .x, aes(
         x = lon, y = lat, fill = n
       )) +
       scale_fill_gradient(low = "blue", high = "red",
