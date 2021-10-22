@@ -341,16 +341,22 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
   <a href="loading_data.html">Load data</a>
 </li>
-<li>
-  <a href="coverage_timeseries.html">Temporal data coverage</a>
-</li>
-<li>
-  <a href="coverage_maps.html">Spatial data coverage</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -503,16 +509,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ecdb433fb18a2930224a77e9cf507d4a43f13f3targetblank8ecdb43a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ecdb433fb18a2930224a77e9cf507d4a43f13f3" target="_blank">8ecdb43</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeca7ba6b436cbc62ecc638846ed4d3a123a368c94targetblankca7ba6ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ca7ba6b436cbc62ecc638846ed4d3a123a368c94" target="_blank">ca7ba6b</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ecdb433fb18a2930224a77e9cf507d4a43f13f3targetblank8ecdb43a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeca7ba6b436cbc62ecc638846ed4d3a123a368c94targetblankca7ba6ba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ecdb433fb18a2930224a77e9cf507d4a43f13f3" target="_blank">8ecdb43</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ca7ba6b436cbc62ecc638846ed4d3a123a368c94" target="_blank">ca7ba6b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -522,11 +528,8 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
-Untracked files:
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
-
 Unstaged changes:
+    Modified:   analysis/_site.yml
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -566,6 +569,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ca7ba6b436cbc62ecc638846ed4d3a123a368c94/analysis/loading_data.Rmd" target="_blank">ca7ba6b</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+adding revised code
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d84c9048f09b88eef5b79c4182113fe4089d0eb7/docs/loading_data.html" target="_blank">d84c904</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1024,13 +1061,26 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 </div>
 <div id="write-data" class="section level1">
 <h1>Write data</h1>
-<pre class="r"><code>path_argo_preprocessed &lt;- paste0(path_argo,&quot;/preprocessed_bgc_data&quot;)
+<pre class="r"><code>bgc_metadata &lt;- bgc_metadata %&gt;%
+  rename(lon = longitude,
+         lat = latitude) %&gt;%
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  ) %&gt;%
+  select(
+    -c(profile_cndc_qc:profile_bbp700_qc),
+    -c(profile_doxy2_qc:profile_up_radiance555_qc)
+  )</code></pre>
+<pre class="r"><code>path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 
 bgc_subset %&gt;%
   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_subset.rds&quot;))
 
-bgc_metadata %&gt;% select(-c(profile_cndc_qc:profile_bbp700_qc),  
-                        -c(profile_doxy2_qc:profile_up_radiance555_qc)) %&gt;% 
+bgc_metadata %&gt;%
   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
 
 bgc_data %&gt;%
@@ -1124,19 +1174,19 @@ other attached packages:
 [10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
- [5] digest_0.6.27     utf8_1.2.2        R6_2.5.1          cellranger_1.1.0 
+ [1] Rcpp_1.0.5        prettyunits_1.1.1 assertthat_0.2.1  rprojroot_2.0.2  
+ [5] digest_0.6.27     utf8_1.1.4        R6_2.5.0          cellranger_1.1.0 
  [9] backports_1.1.10  reprex_0.3.0      evaluate_0.14     httr_1.4.2       
 [13] pillar_1.6.2      progress_1.2.2    rlang_0.4.11      readxl_1.3.1     
 [17] rstudioapi_0.13   whisker_0.4       jquerylib_0.1.4   blob_1.2.1       
 [21] rmarkdown_2.10    bit_4.0.4         munsell_0.5.0     broom_0.7.9      
-[25] compiler_4.0.3    httpuv_1.6.2      modelr_0.1.8      xfun_0.25        
-[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0      
-[33] tzdb_0.1.2        crayon_1.4.1      dbplyr_1.4.4      withr_2.4.2      
-[37] later_1.3.0       grid_4.0.3        jsonlite_1.7.2    gtable_0.3.0     
-[41] lifecycle_1.0.0   DBI_1.1.1         git2r_0.27.1      magrittr_2.0.1   
+[25] compiler_4.0.3    httpuv_1.5.4      modelr_0.1.8      xfun_0.25        
+[29] pkgconfig_2.0.3   htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.4.1      
+[33] tzdb_0.1.2        crayon_1.3.4      dbplyr_1.4.4      withr_2.3.0      
+[37] later_1.2.0       grid_4.0.3        jsonlite_1.7.1    gtable_0.3.0     
+[41] lifecycle_1.0.0   DBI_1.1.0         git2r_0.27.1      magrittr_1.5     
 [45] scales_1.1.1      vroom_1.5.5       cli_3.0.1         stringi_1.5.3    
-[49] fs_1.5.0          promises_1.2.0.1  xml2_1.3.2        bslib_0.2.5.1    
+[49] fs_1.5.0          promises_1.1.1    xml2_1.3.2        bslib_0.2.5.1    
 [53] ellipsis_0.3.2    generics_0.1.0    vctrs_0.3.8       tools_4.0.3      
 [57] bit64_4.0.5       glue_1.4.2        RNetCDF_2.4-2     hms_0.5.3        
 [61] parallel_4.0.3    yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      

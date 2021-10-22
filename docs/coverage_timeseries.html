@@ -341,16 +341,22 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
-  <a href="index.html">Home</a>
-</li>
-<li>
   <a href="loading_data.html">Load data</a>
 </li>
-<li>
-  <a href="coverage_timeseries.html">Temporal data coverage</a>
-</li>
-<li>
-  <a href="coverage_maps.html">Spatial data coverage</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -503,16 +509,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ecdb433fb18a2930224a77e9cf507d4a43f13f3targetblank8ecdb43a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ecdb433fb18a2930224a77e9cf507d4a43f13f3" target="_blank">8ecdb43</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeca7ba6b436cbc62ecc638846ed4d3a123a368c94targetblankca7ba6ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ca7ba6b436cbc62ecc638846ed4d3a123a368c94" target="_blank">ca7ba6b</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ecdb433fb18a2930224a77e9cf507d4a43f13f3targetblank8ecdb43a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeca7ba6b436cbc62ecc638846ed4d3a123a368c94targetblankca7ba6ba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ecdb433fb18a2930224a77e9cf507d4a43f13f3" target="_blank">8ecdb43</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ca7ba6b436cbc62ecc638846ed4d3a123a368c94" target="_blank">ca7ba6b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -522,11 +528,8 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
 
-Untracked files:
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
-
 Unstaged changes:
+    Modified:   analysis/_site.yml
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -566,6 +569,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ca7ba6b436cbc62ecc638846ed4d3a123a368c94/analysis/coverage_timeseries.Rmd" target="_blank">ca7ba6b</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+adding revised code
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d84c9048f09b88eef5b79c4182113fe4089d0eb7/docs/coverage_timeseries.html" target="_blank">d84c904</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -752,17 +789,22 @@ adding revised code
 <p>Read the files created in loading_data.html:</p>
 <pre class="r"><code>path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 
-bgc_subset &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_subset.rds&quot;))
-
 bgc_metadata &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))</code></pre>
+<pre class="r"><code>basinmask &lt;-
+  read_csv(paste(path_emlr_utilities,
+                 &quot;basin_mask_WOA18.csv&quot;,
+                 sep = &quot;&quot;),
+           col_types = cols(&quot;MLR_basins&quot; = col_character()))
 
-bgc_data &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
+basinmask &lt;- basinmask %&gt;% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
+  select(lon, lat, basin_AIP)
 
-bgc_merge &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))</code></pre>
+map &lt;-
+  read_rds(paste(path_emlr_utilities,
+                 &quot;map_landmask_WOA18.rds&quot;,
+                 sep = &quot;&quot;))</code></pre>
 </div>
 <div id="qc-flags" class="section level1">
 <h1>QC flags</h1>
@@ -789,6 +831,8 @@ bgc_merge &lt;-
 </div>
 <div id="number-of-profiles" class="section level1">
 <h1>Number of profiles</h1>
+<div id="per-parameter" class="section level2">
+<h2>Per parameter</h2>
 <pre class="r"><code># count the number of profiles per parameter 
 
 bgc_profile_counts &lt;- bgc_metadata %&gt;% 
@@ -813,8 +857,7 @@ bgc_profile_counts &lt;- bgc_metadata %&gt;%
   facet_grid(parameter ~ year,
              scales = &quot;free_y&quot;) +
   scale_x_continuous(breaks = seq(1,12,2))+
-  labs(x = &#39;month&#39;, y = &#39;number of profiles&#39;, title = &#39;number of profiles per year&#39;)+
-  theme_bw()</code></pre>
+  labs(x = &#39;month&#39;, y = &#39;number of profiles&#39;, title = &#39;number of profiles per year&#39;)</code></pre>
 <pre class="r"><code># draw separate plots for the separate parameters
 
 bgc_profile_counts %&gt;%
@@ -830,8 +873,7 @@ bgc_profile_counts %&gt;%
                  scales = &quot;free_y&quot;) +
       labs(title = paste(&quot;Parameter: &quot;, unique(.x$parameter)), 
            x = &#39;month&#39;, y = &#39;number of profiles&#39;) +
-      scale_x_continuous(breaks = seq(1,12,2))+
-      theme_bw()
+      scale_x_continuous(breaks = seq(1,12,2))
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -985,30 +1027,22 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code># count the number of profiles with a QC flag of A for at least one BGC parameter 
-# (not plotted)
-
-bgc_profile_counts_A &lt;- bgc_metadata %&gt;% 
-  select(platform_number, cycle_number, date,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date),
-         month = month(date)) %&gt;% 
-  filter(profile_flag == &quot;A&quot;) %&gt;% 
-  distinct(platform_number, cycle_number, year, month) %&gt;% 
-  count(year, month)</code></pre>
-<pre class="r"><code># count the number of profiles which have a QC flag of A for all three BGC parameters 
+</div>
+<div id="all-flag-a" class="section level2">
+<h2>All flag A</h2>
+<pre class="r"><code># count the number of profiles which have a QC flag of A for all three BGC parameters
+# the if_all(starts_with()) notation allows to filter over a range of columns simultanously
+# this new approach is identical to your previous solution
+# except that it filters also the pres, temp, and sal flags
 # (plotted below)
 
 bgc_profile_counts_total_A &lt;- bgc_metadata %&gt;% 
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  filter(profile_doxy_qc == &#39;A&#39; &amp;
-         profile_ph_in_situ_total_qc == &#39;A&#39; &amp;
-         profile_nitrate_qc == &#39;A&#39;) %&gt;% 
+  filter(if_all(starts_with(&quot;profile_&quot;), ~. == &#39;A&#39;)) %&gt;% 
+  # filter(profile_doxy_qc == &#39;A&#39; &amp;
+  #        profile_ph_in_situ_total_qc == &#39;A&#39; &amp;
+  #        profile_nitrate_qc == &#39;A&#39;) %&gt;% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
                names_to = &quot;parameter&quot;,
                values_to = &quot;profile_flag&quot;,
@@ -1024,8 +1058,9 @@ bgc_profile_counts_total_A &lt;- bgc_metadata %&gt;%
   facet_grid(. ~ year,
              scales = &quot;free_y&quot;) +
   scale_x_continuous(breaks = seq(1,12,2)) +
-  labs(x = &#39;month&#39;, y = &#39;number of profiles&#39;, title = &#39;number of profiles with all three BGC parameters (QC flag A)&#39;)+
-  theme_bw()</code></pre>
+  labs(x = &#39;month&#39;, y = &#39;number of profiles&#39;,
+       title = &quot;Number of profiles&quot;,
+       subtitle = &quot;All three BGC + core parameters (QC flag A)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/profiles_timeseries_total_A-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_timeseries_total_A-1">
@@ -1086,6 +1121,64 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+</div>
+<div id="by-region" class="section level2">
+<h2>By region</h2>
+<pre class="r"><code># bgc_metadata &lt;- bgc_metadata %&gt;%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+#     lon = as.numeric(as.character(lon))
+#   )
+
+bgc_grid &lt;- bgc_metadata %&gt;%
+  distinct(lat, lon)
+
+bgc_grid &lt;- inner_join(
+  basinmask, bgc_grid
+)</code></pre>
+<pre><code>Joining, by = c(&quot;lon&quot;, &quot;lat&quot;)</code></pre>
+<pre class="r"><code>map +
+  geom_raster(data = basinmask,
+              aes(lon, lat, fill = basin_AIP)) +
+  geom_raster(data = bgc_grid,
+              aes(lon, lat)) +
+  scale_fill_brewer(palette = &quot;Dark2&quot;)</code></pre>
+<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
+shifted. Consider using geom_tile() instead.
+
+Warning: Raster pixels are placed at uneven vertical intervals and will be
+shifted. Consider using geom_tile() instead.</code></pre>
+<p><img src="figure/coverage_timeseries.Rmd/plot_region_map-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(bgc_grid)</code></pre>
+<pre class="r"><code>bgc_profile_counts_total_A_region &lt;-
+  inner_join(bgc_metadata,
+             basinmask) %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc,
+         basin_AIP) %&gt;% 
+  filter(if_all(starts_with(&quot;profile_&quot;), ~. == &#39;A&#39;)) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  distinct(platform_number, cycle_number, year, month, basin_AIP) %&gt;% 
+  count(year, month, basin_AIP)</code></pre>
+<pre><code>Joining, by = c(&quot;lat&quot;, &quot;lon&quot;)</code></pre>
+<pre class="r"><code>bgc_profile_counts_total_A_region %&gt;% 
+  ggplot(aes(x = month, y = n, col = basin_AIP)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = &quot;free_y&quot;) +
+  scale_x_continuous(breaks = seq(1,12,2)) +
+  labs(x = &#39;month&#39;, y = &#39;number of profiles&#39;,
+       title = &quot;Number of profiles&quot;,
+       subtitle = &quot;All three BGC + core parameters (QC flag A)&quot;)</code></pre>
+<p><img src="figure/coverage_timeseries.Rmd/profiles_timeseries_total_A_per_region-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1120,22 +1213,23 @@ other attached packages:
 [10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.7        assertthat_0.2.1  rprojroot_2.0.2   digest_0.6.27    
- [5] utf8_1.2.2        R6_2.5.1          cellranger_1.1.0  backports_1.1.10 
- [9] reprex_0.3.0      evaluate_0.14     highr_0.8         httr_1.4.2       
-[13] pillar_1.6.2      rlang_0.4.11      readxl_1.3.1      rstudioapi_0.13  
-[17] whisker_0.4       jquerylib_0.1.4   blob_1.2.1        rmarkdown_2.10   
-[21] labeling_0.4.2    munsell_0.5.0     broom_0.7.9       compiler_4.0.3   
-[25] httpuv_1.6.2      modelr_0.1.8      xfun_0.25         pkgconfig_2.0.3  
-[29] htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0       crayon_1.4.1     
-[33] dbplyr_1.4.4      withr_2.4.2       later_1.3.0       grid_4.0.3       
-[37] jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.1        
-[41] git2r_0.27.1      magrittr_2.0.1    scales_1.1.1      cli_3.0.1        
-[45] stringi_1.5.3     farver_2.1.0      fs_1.5.0          promises_1.2.0.1 
-[49] xml2_1.3.2        bslib_0.2.5.1     ellipsis_0.3.2    generics_0.1.0   
-[53] vctrs_0.3.8       tools_4.0.3       glue_1.4.2        RNetCDF_2.4-2    
-[57] hms_0.5.3         yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      
-[61] knitr_1.33        haven_2.3.1       sass_0.4.0       </code></pre>
+ [1] Rcpp_1.0.5         assertthat_0.2.1   rprojroot_2.0.2    digest_0.6.27     
+ [5] utf8_1.1.4         R6_2.5.0           cellranger_1.1.0   backports_1.1.10  
+ [9] reprex_0.3.0       evaluate_0.14      highr_0.8          httr_1.4.2        
+[13] pillar_1.6.2       rlang_0.4.11       readxl_1.3.1       rstudioapi_0.13   
+[17] whisker_0.4        jquerylib_0.1.4    blob_1.2.1         rmarkdown_2.10    
+[21] labeling_0.4.2     munsell_0.5.0      broom_0.7.9        compiler_4.0.3    
+[25] httpuv_1.5.4       modelr_0.1.8       xfun_0.25          pkgconfig_2.0.3   
+[29] htmltools_0.5.1.1  tidyselect_1.1.0   fansi_0.4.1        crayon_1.3.4      
+[33] dbplyr_1.4.4       withr_2.3.0        later_1.2.0        grid_4.0.3        
+[37] jsonlite_1.7.1     gtable_0.3.0       lifecycle_1.0.0    DBI_1.1.0         
+[41] git2r_0.27.1       magrittr_1.5       scales_1.1.1       cli_3.0.1         
+[45] stringi_1.5.3      farver_2.0.3       fs_1.5.0           promises_1.1.1    
+[49] xml2_1.3.2         bslib_0.2.5.1      ellipsis_0.3.2     generics_0.1.0    
+[53] vctrs_0.3.8        RColorBrewer_1.1-2 tools_4.0.3        glue_1.4.2        
+[57] RNetCDF_2.4-2      hms_0.5.3          yaml_2.2.1         colorspace_2.0-2  
+[61] rvest_0.3.6        knitr_1.33         haven_2.3.1        sass_0.4.0        </code></pre>
+</div>
 </div>
 </div>
 
