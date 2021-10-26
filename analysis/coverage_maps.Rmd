@@ -16,9 +16,9 @@ Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo fl
 library(tidyverse)
 library(argodata)
 library(lubridate)
-# library(sf)
+#library(sf)
 # library(rnaturalearth)
-# library(rnaturalearthdata)
+#library(rnaturalearthdata)
 # # load in coastline data (uses sf and rnaturalearthdata packages)
 # world = ne_coastline(scale = 'medium', returnclass = 'sf')
 
@@ -33,7 +33,7 @@ path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 
 # Load data
 
-Read the files created in loading_data.html:
+Read the metadata file created in loading_data.html:
 
 ```{r load_preprpocessed_data}
 
@@ -91,6 +91,7 @@ bgc_profile_counts_year <- bgc_metadata %>%
          profile_flag != "") %>% 
   count(lat, lon, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
 
+
 bgc_profile_counts_flag <- bgc_metadata %>% 
   select(platform_number, cycle_number, date, lon, lat,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
@@ -135,6 +136,7 @@ map +
 
 ```{r profile_maps_year_separate, fig.asp=2}
 
+# map the location of profiles for each parameter in each year 
 bgc_profile_counts_year %>%
   group_split(parameter) %>%
   map(
@@ -155,8 +157,12 @@ bgc_profile_counts_year %>%
         axis.text = element_blank(),
         axis.ticks = element_blank()
       ) +
-      facet_grid(year ~ .)
+      facet_wrap(~year, ncol = 3)
   )
+
+# ggsave("output/figures/maps_per_year.png",
+#        width = 7,
+#        height = 4)
 
 # bgc_profile_counts_year %>%
 #   group_split(parameter) %>% 
@@ -224,4 +230,53 @@ bgc_profile_counts_flag %>%
       facet_grid(parameter ~ .)
   )
 
+# ggsave("output/figures/maps_per_flag.png",
+#        width = 7,
+#        height = 4)
+
 ```
+
+
+```{r ph_profile_flag_A_location, fig.asp=2}
+
+ph_profile_counts_year <- bgc_metadata %>%      # count the number of A-flag pH profiles 
+  select(platform_number, cycle_number, date, lon, lat,
+        profile_ph_in_situ_total_qc) %>% 
+  pivot_longer(profile_ph_in_situ_total_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date)) %>% 
+  filter(profile_flag == "A") %>% 
+  count(lat, lon, year, parameter)
+
+# map the location of pH profiles with QC flag A each year
+ph_profile_counts_year %>%
+  group_split(parameter) %>%
+  map(
+    ~ map +
+      geom_tile(data = .x, aes(
+        x = lon, y = lat, fill = n
+      )) +
+      scale_fill_gradient(low = "blue", high = "red",
+                          trans = "log10") +
+      labs(
+        x = 'lon',
+        y = 'lat',
+        fill = 'number of\nprofiles',
+        title = paste('Parameter:', unique(.x$parameter), 'flag A')
+      ) +
+      theme(
+        legend.position = "bottom",
+        axis.text = element_blank(),
+        axis.ticks = element_blank()
+      ) +
+      facet_wrap(~year, ncol = 3)
+  )
+
+# ggsave("output/figures/map_pH_flag_A_per_year.png",
+#        width = 7,
+#        height = 4)
+
+```
+

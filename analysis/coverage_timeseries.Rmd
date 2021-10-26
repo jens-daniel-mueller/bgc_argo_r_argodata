@@ -119,7 +119,7 @@ bgc_profile_counts %>%
   geom_point() +
   facet_grid(parameter ~ year,
              scales = "free_y") +
-  scale_x_continuous(breaks = seq(1,12,2))+
+  scale_x_continuous(breaks = seq(1,12,4))+
   labs(x = 'month', y = 'number of profiles', title = 'number of profiles per year')
 
 ```
@@ -140,9 +140,12 @@ bgc_profile_counts %>%
                  scales = "free_y") +
       labs(title = paste("Parameter: ", unique(.x$parameter)), 
            x = 'month', y = 'number of profiles') +
-      scale_x_continuous(breaks = seq(1,12,2))
+      scale_x_continuous(breaks = seq(1,12,4))
   )
 
+#ggsave("output/figures/time_series_profiles_per_parameter.png",
+       #width = 7,
+       #height = 4)
 
 ```
 
@@ -151,7 +154,7 @@ bgc_profile_counts %>%
 ```{r count_A_flag_profiles}
 
 # count the number of profiles which have a QC flag of A for all three BGC parameters
-# the if_all(starts_with()) notation allows to filter over a range of columns simultanously
+# the if_all(starts_with()) notation allows to filter over a range of columns simultaneously
 # this new approach is identical to your previous solution
 # except that it filters also the pres, temp, and sal flags
 # (plotted below)
@@ -160,9 +163,6 @@ bgc_profile_counts_total_A <- bgc_metadata %>%
   select(platform_number, cycle_number, date,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
   filter(if_all(starts_with("profile_"), ~. == 'A')) %>% 
-  # filter(profile_doxy_qc == 'A' &
-  #        profile_ph_in_situ_total_qc == 'A' &
-  #        profile_nitrate_qc == 'A') %>% 
   pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
@@ -183,10 +183,14 @@ bgc_profile_counts_total_A %>%
   geom_point() +
   facet_grid(. ~ year,
              scales = "free_y") +
-  scale_x_continuous(breaks = seq(1,12,2)) +
+  scale_x_continuous(breaks = seq(1,12,4)) +
   labs(x = 'month', y = 'number of profiles',
        title = "Number of profiles",
        subtitle = "All three BGC + core parameters (QC flag A)")
+
+#ggsave("output/figures/time_series_flag_A_profiles.png",
+       #width = 7,
+       #height = 4)
 
 ```
 
@@ -254,9 +258,9 @@ bgc_profile_counts_total_A_region %>%
        title = "Number of profiles",
        subtitle = "All three BGC + core parameters (QC flag A)")
 
-ggsave("output/figures/time_series_profiles_per_region.png",
-       width = 7,
-       height = 4)
+# ggsave("output/figures/time_series_profiles_per_region.png",
+#        width = 7,
+#        height = 4)
 
 
 ```
