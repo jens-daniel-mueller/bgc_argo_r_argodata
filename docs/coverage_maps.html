@@ -393,7 +393,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Spatial data coverage</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">22 October, 2021</h4>
+<h4 class="date">26 October, 2021</h4>
 
 </div>
 
@@ -418,7 +418,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-10-22
+<strong>Last updated:</strong> 2021-10-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -509,16 +509,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeee2b3f32c9c3fab9f811ab31ce2572254554bb17targetblankee2b3f3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ee2b3f32c9c3fab9f811ab31ce2572254554bb17" target="_blank">ee2b3f3</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4bc1859e3dd407ee2ada433bf9169dd622052cbftargetblank4bc1859a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4bc1859e3dd407ee2ada433bf9169dd622052cbf" target="_blank">4bc1859</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeee2b3f32c9c3fab9f811ab31ce2572254554bb17targetblankee2b3f3a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4bc1859e3dd407ee2ada433bf9169dd622052cbftargetblank4bc1859a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ee2b3f32c9c3fab9f811ab31ce2572254554bb17" target="_blank">ee2b3f3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4bc1859e3dd407ee2ada433bf9169dd622052cbf" target="_blank">4bc1859</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -528,6 +528,14 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/figures/
+
+Untracked files:
+    Untracked:  code/creating_dataframe.R
+    Untracked:  code/creating_map.R
+
+Unstaged changes:
+    Modified:   code/Workflowr_project_managment.R
+    Deleted:    output/README.md
 
 </code></pre>
 <p>
@@ -566,6 +574,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4bc1859e3dd407ee2ada433bf9169dd622052cbf/analysis/coverage_maps.Rmd" target="_blank">4bc1859</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-10-26
+</td>
+<td>
+run with full data
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/coverage_maps.html" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -749,7 +791,7 @@ adding revised code
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<p>Read the files created in loading_data.html:</p>
+<p>Read the metadata file created in loading_data.html:</p>
 <pre class="r"><code>path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 
 bgc_metadata &lt;-
@@ -790,6 +832,7 @@ map &lt;-
          profile_flag != &quot;&quot;) %&gt;% 
   count(lat, lon, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
 
+
 bgc_profile_counts_flag &lt;- bgc_metadata %&gt;% 
   select(platform_number, cycle_number, date, lon, lat,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
@@ -824,7 +867,8 @@ bgc_profile_counts_flag &lt;- bgc_metadata %&gt;%
 #                       trans = &quot;log10&quot;) +
 #   theme_bw() +
 #   facet_grid(year ~ parameter)</code></pre>
-<pre class="r"><code>bgc_profile_counts_year %&gt;%
+<pre class="r"><code># map the location of profiles for each parameter in each year 
+bgc_profile_counts_year %&gt;%
   group_split(parameter) %&gt;%
   map(
     ~ map +
@@ -844,7 +888,7 @@ bgc_profile_counts_flag &lt;- bgc_metadata %&gt;%
         axis.text = element_blank(),
         axis.ticks = element_blank()
       ) +
-      facet_grid(year ~ .)
+      facet_wrap(~year, ncol = 3)
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
@@ -872,6 +916,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">aa7280d</a>
@@ -927,6 +982,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -980,6 +1046,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -1004,7 +1081,11 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code># bgc_profile_counts_year %&gt;%
+<pre class="r"><code># ggsave(&quot;output/figures/maps_per_year.png&quot;,
+#        width = 7,
+#        height = 4)
+
+# bgc_profile_counts_year %&gt;%
 #   group_split(parameter) %&gt;% 
 #   map( 
 #   ~ ggplot() +
@@ -1087,6 +1168,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-1.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-1.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -1138,6 +1230,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-2.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-2.png" target="_blank">aa7280d</a>
@@ -1193,6 +1296,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-3.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-3.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -1244,6 +1358,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-4.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-4.png" target="_blank">aa7280d</a>
@@ -1299,6 +1424,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-5.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-5.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -1352,6 +1488,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-6.png" target="_blank">f7ef44f</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2021-10-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profiles_maps_flag_separate-6.png" target="_blank">aa7280d</a>
 </td>
 <td>
@@ -1376,6 +1523,50 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre class="r"><code># ggsave(&quot;output/figures/maps_per_flag.png&quot;,
+#        width = 7,
+#        height = 4)</code></pre>
+<pre class="r"><code>ph_profile_counts_year &lt;- bgc_metadata %&gt;%      # count the number of A-flag pH profiles 
+  select(platform_number, cycle_number, date, lon, lat,
+        profile_ph_in_situ_total_qc) %&gt;% 
+  pivot_longer(profile_ph_in_situ_total_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date)) %&gt;% 
+  filter(profile_flag == &quot;A&quot;) %&gt;% 
+  count(lat, lon, year, parameter)
+
+# map the location of pH profiles with QC flag A each year
+ph_profile_counts_year %&gt;%
+  group_split(parameter) %&gt;%
+  map(
+    ~ map +
+      geom_tile(data = .x, aes(
+        x = lon, y = lat, fill = n
+      )) +
+      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
+                          trans = &quot;log10&quot;) +
+      labs(
+        x = &#39;lon&#39;,
+        y = &#39;lat&#39;,
+        fill = &#39;number of\nprofiles&#39;,
+        title = paste(&#39;Parameter:&#39;, unique(.x$parameter), &#39;flag A&#39;)
+      ) +
+      theme(
+        legend.position = &quot;bottom&quot;,
+        axis.text = element_blank(),
+        axis.ticks = element_blank()
+      ) +
+      facet_wrap(~year, ncol = 3)
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
+shifted. Consider using geom_tile() instead.</code></pre>
+<p><img src="figure/coverage_maps.Rmd/ph_profile_flag_A_location-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># ggsave(&quot;output/figures/map_pH_flag_A_per_year.png&quot;,
+#        width = 7,
+#        height = 4)</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1410,18 +1601,18 @@ other attached packages:
 [10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.5        assertthat_0.2.1  rprojroot_2.0.2   digest_0.6.27    
- [5] utf8_1.1.4        R6_2.5.0          cellranger_1.1.0  backports_1.1.10 
+ [1] Rcpp_1.0.7        assertthat_0.2.1  rprojroot_2.0.2   digest_0.6.27    
+ [5] utf8_1.2.2        R6_2.5.1          cellranger_1.1.0  backports_1.1.10 
  [9] reprex_0.3.0      evaluate_0.14     highr_0.8         httr_1.4.2       
 [13] pillar_1.6.2      rlang_0.4.11      readxl_1.3.1      rstudioapi_0.13  
 [17] whisker_0.4       jquerylib_0.1.4   blob_1.2.1        rmarkdown_2.10   
 [21] labeling_0.4.2    munsell_0.5.0     broom_0.7.9       compiler_4.0.3   
-[25] httpuv_1.5.4      modelr_0.1.8      xfun_0.25         pkgconfig_2.0.3  
-[29] htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.4.1       crayon_1.3.4     
-[33] dbplyr_1.4.4      withr_2.3.0       later_1.2.0       grid_4.0.3       
-[37] jsonlite_1.7.1    gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.0        
-[41] git2r_0.27.1      magrittr_1.5      scales_1.1.1      cli_3.0.1        
-[45] stringi_1.5.3     farver_2.0.3      fs_1.5.0          promises_1.1.1   
+[25] httpuv_1.6.2      modelr_0.1.8      xfun_0.25         pkgconfig_2.0.3  
+[29] htmltools_0.5.1.1 tidyselect_1.1.0  fansi_0.5.0       crayon_1.4.1     
+[33] dbplyr_1.4.4      withr_2.4.2       later_1.3.0       grid_4.0.3       
+[37] jsonlite_1.7.2    gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.1        
+[41] git2r_0.27.1      magrittr_2.0.1    scales_1.1.1      cli_3.0.1        
+[45] stringi_1.5.3     farver_2.1.0      fs_1.5.0          promises_1.2.0.1 
 [49] xml2_1.3.2        bslib_0.2.5.1     ellipsis_0.3.2    generics_0.1.0   
 [53] vctrs_0.3.8       tools_4.0.3       glue_1.4.2        RNetCDF_2.4-2    
 [57] hms_0.5.3         yaml_2.2.1        colorspace_2.0-2  rvest_0.3.6      
