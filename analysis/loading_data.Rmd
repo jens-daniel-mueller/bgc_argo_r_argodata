@@ -149,6 +149,27 @@ bgc_metadata <- argo_prof_prof(path = bgc_subset)
 
 ```
 
+```{r load_calibration_information}
+
+# bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
+# ?????
+# returns blank output (0 observations of 0 variables)
+# the same occurs if HISTORY_PARAMETER, HISTORY_ACTION, and HISTORY_QCTEST are added into the vars argument when loading the data 
+# HISTORY_ACTION : Name of the action (either 'QCP$' for QC test performed, or 'QCF$' for QC test failed)
+# HISTORY_PARAMETER : name of the parameter on which the action is performed 
+# HISTORY_QCTEST : this field records the code of the QC test performed when ACTION is 'QCP$' or the QC test failed when ACTION is 'QCF$'
+
+# bgc_calibration <- argo_prof_calib(path = bgc_subset, quiet = TRUE)
+# contains the variables: 
+# PARAMETER: name of the calibrated parameter(s) 
+# SCIENTIFIC_CALIB_EQUATION : calibration equation applied to the parameter (if no adjustment is necessary or the data is not adjustable, this field records 'none')
+# SCIENTIFIC_CALIB_COEFFICIENT : calibration coefficients for this equation (if no adjustment is necessary or the data is not adjustable, this field records 'none')
+# SCIENTIFIC_CALIB_COMMENT : comment about this calibration
+# if the delayed-mode adjusted value is the same as the raw value (CTD data) the comment records 'no adjustment necessary'; if the delayed-mode adjusted value has a QC flag of '4', the comment records 'bad data; not adjustable'. 
+# SCIENTIFIC_CALIB_DATE : date when the calibration was performed
+
+```
+
 # Join data
 
 Join the metadata and data together into one dataset
@@ -157,6 +178,8 @@ Join the metadata and data together into one dataset
 
 bgc_merge <-
   full_join(bgc_data, bgc_metadata)
+
+# bgc_merge_test <- full_join(bgc_data, bgc_calibration) (not sure why but it crashes R every time)
 
 ```
 
@@ -206,6 +229,9 @@ bgc_subset %>%
 bgc_metadata %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
+# bgc_calibration %>%
+#  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
+
 bgc_data %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
 
@@ -226,7 +252,7 @@ The resulting dataframe contains:
 
 -   the number of profiles per file (`n_prof` column; Each single-cycle synthetic profile has the dimension `n_prof = 1`).
 
--   adjusted values for pressure (`PRES`, in dbar), salinity (`PSAL`, in psu), temperature (`TEMP`, in degrees C), dissolved oxygen (`DOXY`, in µmol kg^-1^), pH (`PH_IN_SITU_TOTAL`), and nitrate (`NITRATE`, in µmol kg^-1^) (`parameter_adjusted` columns). This column is mandatory, so if no adjustment was performed (i.e. `parameter_adjusted` does not exist), FillValue is inserted (e.g., `temp_adjusted:FillValue = 99999.f`).
+-   adjusted values for pressure (`PRES`, in dbar), salinity (`PSAL`, in psu), temperature (`TEMP`, in degrees C), dissolved oxygen (`DOXY`, in µmol kg^-1^), pH (`PH_IN_SITU_TOTAL`), and nitrate (`NITRATE`, in µmol kg^-1^) (`parameter_adjusted` columns). This column is mandatory, so if no adjustment was performed (i.e. `parameter_adjusted` does not exist), FillValue is inserted (e.g., `temp_adjusted:FillValue = 99999.f`). If the raw value did not require adjustment in delayed-mode, then `parameter_adjusted` = `parameter`.
 
 -   a quality control flag associated with these adjusted values (`parameter_adjusted_qc` columns). If an adjusted value does not exist (e.g., `temp_adjusted = 99999.f`), then FillValue is inserted (e.g., `temp_adjusted_qc = " "`).
 
@@ -288,4 +314,366 @@ Profile QC flags ('`profile_parameter_qc`' columns) are QC codes attributed to t
 'E' means \>0-50% of profile levels contain good data,\
 'F' means 0% of profile levels contain good data.
 
-During delayed-mode processing, the QC flags assigned by the real-time process can be reassigned if needed.
+### Quality Control Tests
+
+There are two levels of Argo data quality control:
+
+-   The first level is the real-time system that performs a set of agreed automatic checks
+-   The second level is the delayed-mode quality control system.
+
+#### Real-time QC tests
+
+1.  **Platform identification test**
+
+If a float WMO ID cannot be matched to the correct float platform then none of the data will be distributed.
+
+2.  **Impossible date test**
+
+This test requires that the Julian Day of the float be later than 1st January 1997 and earlier than the current date of the check (in UTC time). If the date of a profile fails this test, the date of the profile should be flagged as bad data ('4') and none of the profile data is distributed.
+
+3.  **Impossible location test**
+
+This test requires that the observation latitude and longitude of a float be sensible, with latitude in the range -90 to 90º, and longitude in the range -180 to 180º.
+
+If either latitude or longitude fails this test, the position is flagged as bad data ('4') and none of the profile data is distributed.
+
+4.  **Position on land test**
+
+This test requires that the observation latitude and longitude be located in an ocean. If a position cannot be located in an ocean, the position is flagged as bad data ('4') and none of the profile data is distributed.
+
+5.  **Impossible speed test**
+
+Drift speeds for floats can be generated given the positions and times of the floats when they are at the sea surface and between profiles. In all cases, we would not expect the drift speed to exceed 3 ms^-1^. If it does, it means either the positions or times are bad data, or a float is mislabeled. Using the multiple positions and times that are normally available for a float while at the sea surface, it is often possible to isolate the one position or time that is an error.
+
+If an acceptable position and time can be used from the available suite, then the data can be distributed. Otherwise, the position, the time, or both, are flagged as bad data ('4') and the profile data is not distributed.
+
+6.  **Global range test**
+
+This test applies a gross filter on the values of `TEMP`, `PRES`, and `PSAL`. The ranges need to accommodate all of the expected extremes in the ocean.
+
+-   Pressure cannot be less than -5 dbar. If `PRES` \< -5, then `PRES_QC` = '4', `TEMP_QC` = '4', and `PSAL_QC` = '4'.
+-   Pressure in the range -5 to -2.4 dbar should be considered 'probably bad' data. If -5 ≤ `PRES` ≤ -2.4, then `PRES_QC` = '3', `TEMP_QC` = '3', `PSAL_QC` = '3'.
+-   Temperature should be in the range -2.5 to 40.0 ºC. Outside of this range `TEMP_QC` = '4'.
+-   Salinity should be in the range 2 to 41.0 PSU. Outside of this range, `PSAL_QC` = '4'.
+-   `DOXY` should be in the range -5 to 600 µmol kg^-1^. Outside of this range, `DOXY_QC = '4'`.
+-   `PH_IN_SITU_TOTAL` should be in the range 7.3 to 8.5. Outside of this range, `PH_IN_SITU_TOTAL_QC = '4'`.
+
+7.  **Regional range test** (CTD data)
+
+This test applies to certain regions of the world where conditions can be further qualified. In this case, specific ranges for observations from the Mediterranean Sea and the Red Sea further restrict what can be accepted as reasonable values.
+
+If a value fails this test, it is flagged as bad data ('4') and removed from the initial distribution. If temperature and salinity at the same pressure level both fail this test, both values are flagged as bad data ('4') and values for pressure, temperature, and salinity are removed from the distribution.
+
+8.  **Pressure increasing test** (CTD data)
+
+This test requires that the vertical profile has pressures that are monotonically increasing (assuming the pressure levels are ordered from smallest to largest).
+
+If there is a region of constant pressure, all but the first of the consecutive constant pressure levels is flagged as bad data ('4'). If there is a region where pressure reverses, all of the pressures in the reversed part of the profile are flagged as bad data ('4'). All pressures flagged as bad data and associated temperatures and salinities are removed.
+
+9.  **Spike test**
+
+The difference between sequential measurements, where one measurement is significantly different from adjacent ones, is a spike in both size and gradient. This test does not consider differences in pressure, but assumes a sampling that adequately reproduces changes in temperature and salinity with pressure.
+
+Test value = \| V2 - (V3 + V1)/2 \| - \| (V3 - V1)/2 \|
+
+where V2 is the measurement being tested, and V1 and V3 are the values above and below.
+
+Temperature: the V2 value is flagged when:
+
+-   the test value exceeds 6.0 ºC for pressures less than 500 dbar, or
+-   the test value exceeds 2.0 ºC for pressures equal to or greater than 500 dbar.
+
+Salinity: the V2 value is flagged when:
+
+-   the test value exceeds 0.9 PSU for pressures less than 500 dbar, or
+-   the test value exceeds 0.3 PSU for pressures equal to or greater than 500 dbar.
+
+DOXY: the V2 value is flagged when:
+
+-   the test value exceeds 50 µmol kg^-1^ for pressures less than 500 dbar, or
+-   the test value exceeds 25 µmol kg^-1^ for pressures equal to or greater than 500 dbar.
+
+For pH:
+
+Test value 2 = \| V2 - median(V0, V1, V2, V3, V4) \|
+
+where the test value represents the anomaly of the observed pH from the median of the surrounding data. A pH data point is considered a spike and flagged as bad ('4') if Test Value 2 \> 0.04pH
+
+If the value V2 fails this test, it is flagged as bad data ('4') and is removed. If temperature and salinity both fail this test, both values are flagged as bad data ('4') and values for temperature, salinity and pressure are removed.
+
+10. Obsolete
+11. **Gradient test** (DOXY only)
+
+This test is failed when the difference between vertically adjacent measurements is too steep. The test does not consider changes in depth, but assumes a sampling that adequately reproduces changes in DOXY with depth
+
+Test value = \| V2 - (V3 + V1)/2 \|
+
+where V2 is the value being tested as a spike, and V1 and V3 are the values above and below.
+
+For DOXY, V2 is flagged when:
+
+-   the test value exceeds 50 µmol kg^-1^ for pressures less than 500 dbar, or
+
+-   the test value exceeds 25 µmol kg^-1^ for pressures equal to or greater than 500 dbar
+
+12. **Digit rollover test** (CTD data)
+
+Only so many bits are allowed to store temperature and salinity values in a profiling float. This range is not always large enough to accommodate conditions which are encountered in the ocean. When the range is exceeded, stored values rollover to the lower end of the range. This rollover should be detected and compensated for when profiles are constructed from the data stream of the float. This test is used to make sure the rollover is properly detected.
+
+-   Temperature difference between adjacent pressures \> 10 ºC
+-   Salinity difference between adjacent pressures \> 5 PSU
+
+If a value fails this test, it is flagged as bad data ('4') and removed from the initial distribution. If temperature and salinity at the same pressure level both fail this test, both values are flagged as bad data ('4') and values for pressure, temperature, and salinity are removed from the distribution.
+
+13. **Stuck value test**
+
+This test looks for CTD and BGC measurements in the same profile being identical.
+
+If this occurs, all of the values affected parameter are flagged as bad data ('4') and removed from the distribution. If both temperature and salinity are affected, then all observed values from the profile are flagged as bad data ('4').
+
+14. **Density inversion test** (CTD data)
+
+This test compares potential density between valid measurements in a profile in both directions (i.e., from top to bottom, and from bottom to top). Values of temperature and salinity at the same pressure level P~i~ are used to compute potential density ρ~i~ ( or σ~i~ = ρ~i~ - 1000) kg m^-3^, referenced to the mid-point between Pi and the next valid pressure level. A threshold of 0.03 kg m^-3^ is allowed for small density inversions.
+
+From top to bottom, if the potential density calculated at the greater pressure P~i+1~ is less than that calculated at the lesser pressure P~i~ by more than 0.03 kg m~-3~, both the temperature and salinity values at pressure P~i~ are flagged as bad data ('4'). From bottom to top, if the potential density calculated at the lesser pressure P~i-1~ is greater than that calculated at the greater pressure P~i~ by more than 0.03 kg m~-3~, both the temperature and salinity values at pressure P~i~ are flagged as bad data ('4'). Bad temperature and salinity are removed from the distribution.
+
+15. **Grey list test**
+
+This test is implemented as a mechanism for data assembly centers (DACs) to flag, in real-time, sensors that are potentially not working correctly. Each DAC manages a grey list and sends it to the GDACs. The merged grey list from all DACs is available from the GDACs.
+
+Naming convention: `xxx_greylist.csv` (where `xxx` is the DAC name, e.g., `aoml_greylist.csv`, `coriolis_greylist.csv`, etc).
+
+Columns: `PLATFORM`, `PARAMETER`, `START_DATE`, `END_DATE`, `QC`, `COMMENT`, `DAC`
+
+The decision to insert a float parameter in the grey list comes from the PI or the delayed-mode operator. A float parameter should be put in the grey list when the sensor drift is too big to be adjusted in real-time, or when the sensor is judged to be potentially not working correctly.
+
+The grey list concerns only real-time files. When an anomalous float is dead and the offending parameter has been adjusted in delayed-mode, it is removed from the grey list. When an anomalous float is active and the offending parameter has been partially adjusted in delayed-mode, it will remain on the grey list if real-time adjustment is not adequate.
+
+Grey-listed parameters are flagged as probably good ('2'), probably bad ('3') or bad ('4') data, as determined by the PI or the delayed-mode operator.
+
+16. **Gross salinity or temperature sensor drift test** (CTD)
+
+This test is implemented to detect a sudden and significant sensor drift. It calculates the average temperature and salinity from the deepest 100 dbar of a profile and the previous good profile. Only measurements with good QC are used.
+
+For salinity, if the difference between the two average values is more than 0.5 PSU, then all the salinity values of the profile are flagged as probably bad data ('3'). For temperature, if the difference between the two average values is more than 1 ºC, then all the temperature values from the profile are flagged as probably bad data ('3').
+
+17. **Visual QC test**
+
+This is subjective visual inspection of float measurements by an operator. This test is not mandatory before real-time data distribution.
+
+18. **Frozen profile test** (CTD data)
+
+This test is used to detect a float that produces the same profile (with very small deviations) over and over again. Typically the differences between two profiles are of the order of 0.001 PSU for salinity and of the order 0.01 ºC for temperature.
+
+A)  Derive temperature and salinity profiles by averaging the original profiles to get mean values for each profile in 50 dbar slabs (T_prof, T_previous_prof, S_prof, S_previous_prof). This is necessary because the floats do not sample at the same level in each profile.
+
+B)  Obtain absolute values of the difference between the averaged temperature and salinity profiles as follows:
+
+-   deltaT = abs(T_prof - T_previous_prof)
+-   deltaS = abs(S_prof - S_previous_prof)
+
+C)  Find the maximum, minimum, and mean of the absolute values of the averaged differences between profiles for temperature and salinity:
+
+-   mean(deltaT), max(deltaT), min(deltaT)
+-   mean(deltaS), max(deltaS), min(deltaS)
+
+D)  To fail the test, require that:
+
+-   max(deltaT) \< 0.3 ºC
+-   min(deltaT) \< 0.001 ºC
+-   mean(deltaT) \< 0.02 ºC
+-   max(deltaS) \< 0.3 PSU
+-   min(deltaS) \< 0.001 PSU
+-   mean(deltaS) \< 0.004 PSU
+
+If a profile fails this test, all measurements from this profile are flagged as bad data ('4'). If a float fails this test over 5 consecutive cycles, it is inserted in the grey list.
+
+19. **Deepest pressure test**
+
+This test requires that a profile has pressures that are not greater than `CONFIG_ProfilePressure_dbar` plus 10%. The value of `CONFIG_ProfilePressure_dbar` is in the meta.nc file of the float.
+
+If there is a region of incorrect pressures, those pressures and their corresponding temperature and salinity measurements are flagged as bad data ('4'). Pressures flagged as bad data and their associated measurements should be removed from distribution.
+
+25. **MEDian with a distance (MEDD) test** (CTD)
+
+This test is a set of algorithms based on three main steps:
+
+-   First, the computation of a sliding median with some customizations
+-   Then, limits are computed that are at relative 2-dimension distance d from the median
+-   Finally, these limits are also computed for the density profile. There is a spike if both the density profile measurement profile are out of limits. If there is no conductivity sensor, then the spikes in temperature are evaluated using a bigger d value.
+
+Temperature and salinity values that fail this test are flagged as bad data ('4').
+
+56. **pH-specific real-time QC test** (PH_IN_SITU_TOTAL only)
+
+Currently, there is no pH-specific QC test. If one is established, it will be reported with the number '56'.
+
+Real-time pH values which pass the real-time QC tests are assigned QC flags of '3'. The Argo goals for research-quality data require that pH values be adjusted to receive a quality flag of '1'.
+
+57. **DOXY-specific real-time QC test** (DOXY only)
+
+Real-time unadjusted `DOXY`values receive QC flags of '3'. This is because the majority of oxygen sensors deployed on BGC Argo profiling floats are Aanderaa optodes that suffer from pre-deployment storage drift that can reduce accuracy by up to 20% or more. Because this is a known bias that affects the majority of oxygen sensors within the array, and because it can be corrected, `DOXY_QC` is set to '3'.
+
+59. **Nitrate-specific real-time QC test** (NITRATE only)
+
+*Not yet available*
+
+#### Test application order on vertical profiles
+
+The Argo real-time QC tests on CTD data (temperature, salinity, pressure) are performed in the order described in the following table.
+
+A CTD measurement with a QC flag '4' is ignored by other QC tests. A measurement with QC flag '2' or '3' is tested by other QC tests.
+
+A `DOXY` measurement with a QC flag '4' or '3' is ignored by other QC tests.
+
+Note that the Test Number is different from the Application Order. The Test Number (n) is a number assigned permanently to each QC test. It is used to fill `HISTORY_QCTEST` in the Argo profile files. Therefore, each Test Number is uniquely associated to a QC test, and is never replaced, changed, or duplicated.
+
+Each real-time QC test has a unique Binary ID (2^n^) of the unique Test Number (n) is used to record QC tests performed and failed in the variable `HISTORY_QCTEST`.
+
+The QC flag assigned by a test cannot override a higher value assigned by a previous QC test.
+
+e.g.: a QC flag '4' (bad data) set by the Grey List Test cannot be decreased to QC flag '3' (bad data that are potentially correctable) set by the Gross Salinity or Temperature Sensor Drift Test.
+
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| Application Order for CTD parameters | Test Number (n) | Binary ID (2^n^) | Test Name                                       |
++======================================+=================+==================+=================================================+
+| 1                                    | 1               | 2                | Platform Identification Test                    |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 2                                    | 2               | 4                | Impossible Date Test                            |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 3                                    | 3               | 8                | Impossible Location Test                        |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 4                                    | 4               | 16               | Position on Land Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 5                                    | 5               | 32               | Impossible Speed Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 6                                    | 15              | 32768            | Grey List Test                                  |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 7                                    | 19              | 524288           | Deepest Pressure Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 8                                    | 6               | 64               | Global Range Test                               |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 9                                    | 7               | 128              | Regional Range Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 10                                   | 8               | 256              | Pressure Increasing Test                        |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 11                                   | 9               | 512              | Spike Test                                      |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 12                                   | 25              | 33554432         | MEDD Test                                       |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 13                                   | 12              | 4096             | Digit Rollover Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 14                                   | 13              | 8192             | Stuck Value Test                                |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 15                                   | 14              | 16384            | Density Inversion Test                          |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 16                                   | 16              | 65536            | Gross Salinity or Temperature Sensor Drift Test |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| 17                                   | 18              | 261144           | Frozen Profile Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+| *18*                                 | *17*            | 131072           | *Visual QC Test*                                |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
+
+The real-time tests for BGC parameters are performed in the order described in the following table:
+
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| Application order for BGC parameters | Test Number (n) | Binary ID (2^n^) | Test Name                                                  |
++======================================+=================+==================+============================================================+
+| 1                                    | 19              | 524288           | Deepest Pressure Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 2                                    | 1               | 2                | Platform Identification Test                               |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 3                                    | 2               | 4                | Impossible Date Test                                       |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 4                                    | 3               | 8                | Impossible Location Test                                   |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 5                                    | 4               | 16               | Position on Land Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 6                                    | 5               | 32               | Impossible Speed Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 7                                    | 6               | 64               | Global Range Test                                          |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 8                                    | 7               | 128              | Regional Range Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 9                                    | 9               | 512              | Spike Test                                                 |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 10                                   | 11              | 2048             | Gradient Test                                              |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 11                                   | 12              | 4096             | Digit Rollover Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 12                                   | 13              | 8192             | Stuck Value Test                                           |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 13                                   | 15              | 32768            | Grey List Test                                             |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| *14*                                 | *16*            | *65536*          | *Gross Temperature Sensor Drift Test (only for TEMP_DOXY)* |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 15                                   | 18              | 261144           | Frozen Profile Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| 16                                   |                 |                  | BGC parameter-specific tests                               |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+| *17*                                 | *17*            | *131072*         | *Visual QC Test*                                           |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
+
+#### Delayed-Mode Quality Control
+
+The QC flags determined in delayed-mode replace those assigned in real-time because some bad data cannot be detected by the real-time tests, and some good data can be identified wrongly as bad by the real-time tests.
+
+For vertical profile data, delayed-mode operators examine them for pointwise errors (such as spikes and jumps) and flag them appropriately. If an error is identified, both `PARAM_QC` and `PARAM_ADJUSTED_QC` record '4'. Conversely, if good data have wrongly been identified as bad by the real-time tests, then `PARAM_QC` and `PARAM_ADJUSTED_QC` record '1'.
+
+In SD-files, the variables `PROFILE_PARAMETER_QC`, `PARAMETER_ADJUSTED`, `PARAMETER_ADJUSTED_QC`, and `PARAMETER_ADJUSTED_ERROR` are compulsory. If no adjustment in delayed-mode is necessary and if the flag is deemed assigned correctly, then `PARAM_ADJUSTED = PARAMETER`, `PARAM_ADJUSTED_QC = PARAM_QC`, and `PARAM_ADJUSTED_ERROR` is provided by the PI.
+
+If no delayed-mode adjustment was performed, then `PARAM_ADJUSTED = 99999.f`, `PARAM_ADJUSTED_QC = " "`, `PARAM_ADJUSTED_ERROR = 99999.f` and `PROFILE_PARAMETER_QC = " "`.
+
+If values are deemed unadjustable in delayed-mode, then `PARAM_ADJUSTED_QC = '4'`, and `PARAM_ADJUSTED = 99999.f` and `PARAM_ADJUSTED_ERROR = 99999.f`.
+
+The variable `PROFILE_PARAMETER_QC` is recomputed when `PARAMETER_ADJUSTED_QC` becomes available.
+
+**Dates**
+
+Delayed-mode operators check that the dates in the profile are in chronological order. Erroneous or missing dates are replaced with another telemetered value if available, or replaced with interpolated values and marked `DATE_QC = '8'`.
+
+**Location**
+
+Profile positions `LONGITUDE`, `LATITUDE` are checked for outliers. Erroneous or missing dates are replaced with another telemetered value if available, or replaced with interpolated values and marked `POSITION_QC = '8'`.
+
+**Pressure, Temperature, Salinity**
+
+Delayed-mode quality control of `PRES` and `TEMP` is done by subjective assessment of vertical profile plots of `TEMP` vs `PRES` and `PSAL` vs `PRES` and `PRES` vs `TEMP` and `PSAL` vs `TEMP`. This assessment is done in relation to measurements from the same float, as well as in relation to nearby floats and historical data. This assessment aims to identify: (a) erroneous data points that cannot be detected by real-time QC tests, and (b) vertical profiles that have the wrong shape.
+
+Bad `PRES` data points identified by visual inspection from delayed-mode analysts are recorded with `PRES_ADJUSTED_QC = '4'` and `PRES_QC = '4'`. For these bad data points, `TEMP_ADJUSTED_QC`, `TEMP_QC`, `PSAL_ADJUSTED_QC`, and `PSAL_QC` are also set to '4'.
+
+Bad `TEMP` data points are recorded with `TEMP_ADJUSTED_QC = '4'` and `TEMP_QC = '4'`. `TEMP_ADJUSTED`, `TEMP_ADJUSTED_QC`, `TEMP_ADJUSTED_ERROR` are filled even when the data is good and no adjustment is needed. In these cases, `TEMP_ADJUSTED_ERROR` can be the manufacturer's quoted accuracy at deployment, which is 0.002 ºC.
+
+Delayed-mode quality control of PSAL is done by checking for sensor offsets and drifts, as well as other instrument errors. Float salinity values that are considered adjustable in delayed-mode are compiled into time-series. Sufficiently long time-series are compared with statistical recommendations and uncertainties to check for sensor drift and offset.
+
+After assessing all available information, the PI records `PSAL_ADJUSTED`, `PSAL_ADJUSTED_QC`, and `PSAL_ADJUSTED_ERROR`. Salinity data considered bad and unadjustable in delayed-mode are given `PSAL_ADJUSTED_QC = '4'`, and `PSAL_ADJUSTED` and `PSAL_ADJUSTED_ERROR` are set to FillValue.
+
+**Oxygen**
+
+Raw `DOXY` values are adjusted in delayed-mode to account for sensor drift and bias. The errors associated with this calibration are recorded in `DOXY_ADJUSTED_ERROR` in µmol kg^-1^.
+
+When `DOXY` for the whole profile is bad and cannot be adjusted, then `DOXY_ADJUSTED = 99999.f`, `DOXY_ADJUSTED_ERROR = 99999.f`, and `DOXY_ADJUSTED_QC = '4'`. The calibration information is recorded as `SCIENTIFIC_CALIB_EQUATION = 'none'`, `SCIENTIFIC_CALIB_EQUATION = 'none'`, and `SCIENTIFIC_CALIB_COMMENT = 'Bad data; not adjustable'`.
+
+**pH**
+
+The pH adjustment process depends on having an accurate model for pH below 1000 m, where temporal and spatial variability is minimal. pH values are adjusted using Multiple Linear Regression (MLR) methods, Linearly Interpolated Regression equations, and a neural network prediction system known as CANYON. The expected error in float pH measurements is derived from the uncertainty in the reference data as well as sensor uncertainties.
+
+The empirical algorithms used in the adjustment process for pH are:
+
+the MLR method of Williams et al. (2016)
+
+the LIR method of Carter et al. (2018)
+
+the CANYON method of Sauzede et al. (2017)
+
+The method used for adjustment is recorded in `SCIENTIFIC_CALIB_EQUATION`, `SCIENTIFIC_CALIB_COEFFICIENT`, and `SCIENTIFIC_CALIB_COMMENT`
+
+**Quality control manuals**
+
+*CTD data quality control: <https://archimer.ifremer.fr/doc/00228/33951/32470.pdf> (<http://dx.doi.org/10.13155/33951>***)**
+
+*Oxygen data quality control: <https://archimer.ifremer.fr/doc/00354/46542/82301.pdf> (<http://dx.doi.org/10.13155/46542>*)
+
+*pH data quality control: <https://archimer.ifremer.fr/doc/00460/57195/61336.pdf> (<https://doi.org/10.13155/57195>)*
+
+*BGC data quality control: <https://archimer.ifremer.fr/doc/00298/40879/42267.pdf> (<http://dx.doi.org/10.13155/40879>)*
