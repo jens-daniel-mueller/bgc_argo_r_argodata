@@ -393,7 +393,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temporal data coverage</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">04 November, 2021</h4>
+<h4 class="date">05 November, 2021</h4>
 
 </div>
 
@@ -418,7 +418,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-04
+<strong>Last updated:</strong> 2021-11-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -509,16 +509,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5bcdcdab76f1eeff6cb4202c0ddab3589ab3149ctargetblank5bcdcdaa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5bcdcdab76f1eeff6cb4202c0ddab3589ab3149c" target="_blank">5bcdcda</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree31576f910bb4f0814eff907e3781389d100e1d40targetblank31576f9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/31576f910bb4f0814eff907e3781389d100e1d40" target="_blank">31576f9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5bcdcdab76f1eeff6cb4202c0ddab3589ab3149ctargetblank5bcdcdaa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree31576f910bb4f0814eff907e3781389d100e1d40targetblank31576f9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5bcdcdab76f1eeff6cb4202c0ddab3589ab3149c" target="_blank">5bcdcda</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/31576f910bb4f0814eff907e3781389d100e1d40" target="_blank">31576f9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -574,6 +574,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/31576f910bb4f0814eff907e3781389d100e1d40/analysis/coverage_timeseries.Rmd" target="_blank">31576f9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-05
+</td>
+<td>
+changed QC flag maps
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/fbd5bac3eafe5123f29fe4aa5519650a19c50c29/docs/coverage_timeseries.html" target="_blank">fbd5bac</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1023,7 +1057,90 @@ bgc_profile_counts &lt;- bgc_metadata %&gt;%
   filter(!is.na(profile_flag),
          profile_flag != &quot;&quot;)
 
-# the &#39;parameter&#39; column contains character strings of either &#39;doxy_qc&#39;, &#39;ph_in_situ_total_qc&#39;, or &#39;nitrate_qc&#39;, with the corresponding profile QC flag in the &#39;profile_flag&#39; column</code></pre>
+# the &#39;parameter&#39; column contains character strings of either &#39;doxy_qc&#39;, &#39;ph_in_situ_total_qc&#39;, or &#39;nitrate_qc&#39;, with the corresponding profile QC flag in the &#39;profile_flag&#39; column
+
+# count the total number of profiles for each parameter and each flag:
+bgc_profile_counts_total &lt;- bgc_metadata %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != &quot;&quot;)</code></pre>
+<div id="total-number-of-profiles" class="section level4">
+<h4>Total number of profiles</h4>
+<pre class="r"><code># count the total number of profiles, regardless of QC flag 
+total_data_count &lt;- bgc_metadata %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != &quot;&quot;) %&gt;% 
+  group_by(parameter) %&gt;% 
+  summarise(n = sum(n)) %&gt;% 
+  kable(., caption = &#39;total number of profiles (all QC flags)&#39;)</code></pre>
+<pre class="r"><code># count the number of profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
+usable_data_count &lt;- bgc_metadata %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != &quot;&quot;,
+         profile_flag != &#39;F&#39;) %&gt;% 
+  group_by(parameter) %&gt;% 
+  summarise(n = sum(n)) %&gt;% 
+  kable(., caption = &#39;total number of profiles with QC flags A, B, C, D, and E&#39;)</code></pre>
+<pre class="r"><code># count the number of profiles with QC flag A 
+A_data_count &lt;- bgc_metadata %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != &quot;&quot;,
+         profile_flag == &#39;A&#39;) %&gt;% 
+  group_by(parameter) %&gt;% 
+  summarise(n = sum(n)) %&gt;% 
+  kable(., caption = &#39;total number of profiles with QC flag A&#39;)</code></pre>
+<pre class="r"><code># count the number of profiles with QC Flag F (not usable data)
+F_data_count &lt;- bgc_metadata %&gt;% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = &quot;parameter&quot;,
+               values_to = &quot;profile_flag&quot;,
+               names_prefix = &quot;profile_&quot;) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != &quot;&quot;,
+         profile_flag == &#39;F&#39;) %&gt;% 
+  group_by(parameter) %&gt;% 
+  summarise(n = sum(n)) %&gt;% 
+  kable(., caption = &#39;total number of profiles with QC flag F&#39;)</code></pre>
 <p>Plot the evolution of the number of profiles over time</p>
 <pre class="r"><code>bgc_profile_counts %&gt;% 
   ggplot(aes(x = month, y = n, col = profile_flag)) +
@@ -1271,6 +1388,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>ggsave(&quot;output/figures/time_series_profiles_per_parameter.png&quot;,
 width = 7,
 height = 4)</code></pre>
+</div>
 </div>
 <div id="all-flag-a" class="section level2">
 <h2>All flag A</h2>
@@ -1591,10 +1709,11 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] lubridate_1.7.9     argodata_0.0.0.9000 forcats_0.5.0      
- [4] stringr_1.4.0       dplyr_1.0.5         purrr_0.3.4        
- [7] readr_1.4.0         tidyr_1.1.3         tibble_3.1.3       
-[10] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
+ [1] knitr_1.33          lubridate_1.7.9     argodata_0.0.0.9000
+ [4] forcats_0.5.0       stringr_1.4.0       dplyr_1.0.5        
+ [7] purrr_0.3.4         readr_1.4.0         tidyr_1.1.3        
+[10] tibble_3.1.3        ggplot2_3.3.5       tidyverse_1.3.0    
+[13] workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
  [1] Rcpp_1.0.7         assertthat_0.2.1   rprojroot_2.0.2    digest_0.6.27     
@@ -1612,7 +1731,7 @@ loaded via a namespace (and not attached):
 [49] xml2_1.3.2         bslib_0.2.5.1      ellipsis_0.3.2     generics_0.1.0    
 [53] vctrs_0.3.8        RColorBrewer_1.1-2 tools_4.0.3        glue_1.4.2        
 [57] RNetCDF_2.4-2      hms_0.5.3          yaml_2.2.1         colorspace_2.0-2  
-[61] rvest_0.3.6        knitr_1.33         haven_2.3.1        sass_0.4.0        </code></pre>
+[61] rvest_0.3.6        haven_2.3.1        sass_0.4.0        </code></pre>
 </div>
 </div>
 </div>
