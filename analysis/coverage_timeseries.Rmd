@@ -16,7 +16,7 @@ Count the number of bgc-argo profiles, and plot their evolution over time.
 library(tidyverse)
 library(argodata)
 library(lubridate)
-
+library(knitr)
 ```
 
 ```{r set_updata_root_directory, include=FALSE}
@@ -107,7 +107,107 @@ bgc_profile_counts <- bgc_metadata %>%
 
 # the 'parameter' column contains character strings of either 'doxy_qc', 'ph_in_situ_total_qc', or 'nitrate_qc', with the corresponding profile QC flag in the 'profile_flag' column
 
+# count the total number of profiles for each parameter and each flag:
+bgc_profile_counts_total <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != "")
+
 ```
+
+#### Total number of profiles
+```{r count_data, results='asis'}
+
+# count the total number of profiles, regardless of QC flag 
+total_data_count <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != "") %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n)) %>% 
+  kable(., caption = 'total number of profiles (all QC flags)')
+```
+
+
+```{r count_usable_data, results='asis'}
+# count the number of profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
+usable_data_count <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != "",
+         profile_flag != 'F') %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n)) %>% 
+  kable(., caption = 'total number of profiles with QC flags A, B, C, D, and E')
+```
+
+
+```{r count_A_flag_data, results='asis'}
+# count the number of profiles with QC flag A 
+A_data_count <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != "",
+         profile_flag == 'A') %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n)) %>% 
+  kable(., caption = 'total number of profiles with QC flag A')
+```
+
+
+```{r count_F_flag_data, results='asis'}
+# count the number of profiles with QC Flag F (not usable data)
+F_data_count <- bgc_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>%   # count the number of occurrences of flags for each parameter
+  filter(!is.na(profile_flag),
+         profile_flag != "",
+         profile_flag == 'F') %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n)) %>% 
+  kable(., caption = 'total number of profiles with QC flag F')
+
+```
+
 
 Plot the evolution of the number of profiles over time
 
