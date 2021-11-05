@@ -16,7 +16,6 @@ Count the number of bgc-argo profiles, and plot their evolution over time.
 library(tidyverse)
 library(argodata)
 library(lubridate)
-library(knitr)
 ```
 
 ```{r set_updata_root_directory, include=FALSE}
@@ -124,7 +123,7 @@ bgc_profile_counts_total <- bgc_metadata %>%
 ```
 
 #### Total number of profiles
-```{r count_data, results='asis'}
+```{r count_data}
 
 # count the total number of profiles, regardless of QC flag 
 total_data_count <- bgc_metadata %>% 
@@ -140,12 +139,13 @@ total_data_count <- bgc_metadata %>%
   filter(!is.na(profile_flag),
          profile_flag != "") %>% 
   group_by(parameter) %>% 
-  summarise(n = sum(n)) %>% 
-  kable(., caption = 'total number of profiles (all QC flags)')
+  summarise(n = sum(n))
+
+knitr::kable(total_data_count, caption = 'total number of profiles', format = 'markdown')
 ```
 
 
-```{r count_usable_data, results='asis'}
+```{r count_usable_data}
 # count the number of profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
 usable_data_count <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
@@ -161,12 +161,15 @@ usable_data_count <- bgc_metadata %>%
          profile_flag != "",
          profile_flag != 'F') %>% 
   group_by(parameter) %>% 
-  summarise(n = sum(n)) %>% 
-  kable(., caption = 'total number of profiles with QC flags A, B, C, D, and E')
+  summarise(n = sum(n)) 
+
+knitr::kable(usable_data_count, 
+             caption = 'total number of profiles with QC flags A, B, C, D, E', 
+             format = 'markdown')
 ```
 
 
-```{r count_A_flag_data, results='asis'}
+```{r count_A_flag_data}
 # count the number of profiles with QC flag A 
 A_data_count <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
@@ -182,12 +185,15 @@ A_data_count <- bgc_metadata %>%
          profile_flag != "",
          profile_flag == 'A') %>% 
   group_by(parameter) %>% 
-  summarise(n = sum(n)) %>% 
-  kable(., caption = 'total number of profiles with QC flag A')
+  summarise(n = sum(n)) 
+
+knitr::kable(A_data_count, 
+             caption = 'total number of profiles with QC flag A',
+             format = 'markdown')
 ```
 
 
-```{r count_F_flag_data, results='asis'}
+```{r count_F_flag_data}
 # count the number of profiles with QC Flag F (not usable data)
 F_data_count <- bgc_metadata %>% 
   select(platform_number, cycle_number, date,
@@ -203,8 +209,11 @@ F_data_count <- bgc_metadata %>%
          profile_flag != "",
          profile_flag == 'F') %>% 
   group_by(parameter) %>% 
-  summarise(n = sum(n)) %>% 
-  kable(., caption = 'total number of profiles with QC flag F')
+  summarise(n = sum(n)) 
+
+knitr::kable(F_data_count, 
+             caption = 'total number of profiles with QC flag F',
+             format = 'markdown')
 
 ```
 
