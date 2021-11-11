@@ -12,7 +12,7 @@
 <meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
 
 
-<title>BGC-Argo pH Data</title>
+<title>BGC-Argo Oxygen Data</title>
 
 <script src="site_libs/header-attrs-2.10/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -406,7 +406,7 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">BGC-Argo pH Data</h1>
+<h1 class="title toc-ignore">BGC-Argo Oxygen Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
 <h4 class="date">11 November, 2021</h4>
 
@@ -566,7 +566,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/ph_data.Rmd</code>) and HTML (<code>docs/ph_data.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/oxygen_data.Rmd</code>) and HTML (<code>docs/oxygen_data.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -595,7 +595,7 @@ Message
 Rmd
 </td>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7807dbd5aa7bf6e6966728ae8660306b8d15364/analysis/ph_data.Rmd" target="_blank">f7807db</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fb668ef60406975b9a76ba99b1f3c4501c703880/analysis/oxygen_data.Rmd" target="_blank">fb668ef</a>
 </td>
 <td>
 pasqualina-vonlanthendinenna
@@ -609,27 +609,10 @@ added oxygen data page
 </tr>
 <tr>
 <td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/ph_data.html" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
 Rmd
 </td>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8baed53514b5b9857fdab3ab0fa66d1cf316a4e2/analysis/ph_data.Rmd" target="_blank">8baed53</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7807dbd5aa7bf6e6966728ae8660306b8d15364/analysis/oxygen_data.Rmd" target="_blank">f7807db</a>
 </td>
 <td>
 pasqualina-vonlanthendinenna
@@ -638,7 +621,7 @@ pasqualina-vonlanthendinenna
 2021-11-11
 </td>
 <td>
-added pH data page
+added oxygen data page
 </td>
 </tr>
 </tbody>
@@ -650,13 +633,13 @@ added pH data page
 </div>
 <div id="task" class="section level1">
 <h1>Task</h1>
-<p>Explore BGC-Argo pH data through timeseries and monthly climatological maps</p>
+<p>Explore BGC-Argo oxygen data through timeseries and climatological maps</p>
 <pre class="r"><code>path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
 path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;</code></pre>
 </div>
-<div id="load-ph-data" class="section level1">
-<h1>Load pH data</h1>
-<p>Load in delayed-mode adjusted pH values from the BGC-Argo synthetic profile files</p>
+<div id="load-oxygen-data" class="section level1">
+<h1>Load oxygen data</h1>
+<p>Load in delayed-mode, adjusted oxygen data from the BGC-Argo synthetic profile files</p>
 <pre class="r"><code># set cache directory
 argo_set_cache_dir(cache_dir = path_argo)
 
@@ -670,8 +653,8 @@ bgc_subset &lt;- argo_global_synthetic_prof() %&gt;%
   argo_filter_date(date_min = &#39;2013-01-01&#39;,
                    date_max = Sys.time())</code></pre>
 <pre><code>Loading argo_global_synthetic_prof()</code></pre>
-<pre class="r"><code># read in the pH data (with corresponding CTD data)
-ph_data &lt;- argo_prof_levels(
+<pre class="r"><code># read in the oxygen data (with corresponding CTD variables)
+oxy_data &lt;- argo_prof_levels(
   path = bgc_subset,
   vars =
     c(
@@ -684,22 +667,21 @@ ph_data &lt;- argo_prof_levels(
       &#39;TEMP_ADJUSTED&#39;,
       &#39;TEMP_ADJUSTED_QC&#39;,
       &#39;TEMP_ADJUSTED_ERROR&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
+      &#39;DOXY_ADJUSTED&#39;,
+      &#39;DOXY_ADJUSTED_QC&#39;,
+      &#39;DOXY_ADJUSTED_ERROR&#39;
     ),
   quiet = TRUE
 )
 
 # read in corresponding metadata
-ph_metadata &lt;- argo_prof_prof(path = bgc_subset)</code></pre>
+oxy_metadata &lt;- argo_prof_prof(path = bgc_subset)</code></pre>
 <pre><code>Extracting from 138081 files</code></pre>
 <pre class="r"><code># merge the data and metadata
-ph_merge &lt;-
-  full_join(ph_data, ph_metadata)</code></pre>
+oxy_merge &lt;-
+  full_join(oxy_data, oxy_metadata)</code></pre>
 <pre><code>Joining, by = c(&quot;file&quot;, &quot;n_prof&quot;)</code></pre>
-<pre class="r"><code># harmonize lat and lon variables and remove columns with no data
-ph_merge &lt;- ph_merge %&gt;%
+<pre class="r"><code>oxy_merge &lt;- oxy_merge %&gt;%
   rename(lon = longitude,
          lat = latitude) %&gt;%
   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
@@ -710,16 +692,15 @@ ph_merge &lt;- ph_merge %&gt;%
     lon = as.numeric(as.character(lon))
   ) %&gt;%
   select(
-    -c(profile_doxy_qc:profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc) 
-  ) # remove columns which don&#39;t contain data </code></pre>
-<div id="southern-ocean-surface-ph" class="section level3">
-<h3>Southern Ocean surface pH</h3>
-<p>The focus here is on surface pH (in the top 10 m of the watercolumn), in the region south of 30ºS</p>
+    -c(profile_nitrate_qc:profile_up_radiance555_qc) 
+  )        # remove profile_qc columns for non existent variables  </code></pre>
+<div id="southern-ocean-surface-oxygen" class="section level3">
+<h3>Southern Ocean surface oxygen</h3>
+<p>Focus on surface oxygen (top 10 m of the watercolumn) in the Southern Ocean, south of 30ºS</p>
 <pre class="r"><code># select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
-ph_surface &lt;- ph_merge %&gt;%
+oxy_surface &lt;- oxy_merge %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %&gt;%
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
+  filter(doxy_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
          lat &lt;= -30,                   # keep only data at or south of 30ºS
          depth &lt;= 10) %&gt;%              # keep only data above or at 10 m depth
   mutate(
@@ -728,17 +709,19 @@ ph_surface &lt;- ph_merge %&gt;%
   )
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
-# max(ph_surface$lat)
-# min(ph_surface$lat)
-# table(ph_surface$ph_in_situ_total_adjusted_qc)
-# max(ph_surface$depth)</code></pre>
+# max(oxy_surface$lat)
+# min(oxy_surface$lat)
+# table(oxy_surface$doxy_adjusted_qc)
+# max(oxy_surface$depth)
+# max(oxy_surface$date)
+# min(oxy_surface$date)</code></pre>
 <div id="monthly-climatological-map" class="section level4">
 <h4>Monthly climatological map</h4>
-<p>Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)</p>
-<pre class="r"><code># average pH values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean &lt;- ph_surface %&gt;%
+<p>Create a map of climatological monthly oxygen values, from January 2013 to August 2021, for the region south of 30ºS</p>
+<pre class="r"><code># average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+oxy_mean &lt;- oxy_surface %&gt;%
   group_by(lat, lon, month) %&gt;%
-  summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))</code></pre>
+  summarise(oxy_ave_month = mean(doxy_adjusted))</code></pre>
 <pre><code>`summarise()` has grouped output by &#39;lat&#39;, &#39;lon&#39;. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code># read in the map from updata
 map &lt;-
@@ -746,159 +729,66 @@ map &lt;-
                  &quot;map_landmask_WOA18.rds&quot;,
                  sep = &quot;&quot;))
 
-# map a monthly climatology of pH (April 2014 - August 2021)
+# map a monthly climatology of surface oxygen (Jan 2013 - September 2021)
 map +
-  geom_tile(data = ph_mean,
-            aes(lon, lat, fill = ph_ave_month)) +
+  geom_tile(data = oxy_mean,
+            aes(lon, lat, fill = oxy_ave_month)) +
   lims(y = c(-85, -25)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean$oxy_ave_month)) +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
-       fill = &#39;pH&#39;,
-       title = &#39;Monthly average pH values (Apr 2014 - Aug 2021)&#39;) +
+       fill = &#39;dissolved oxygen \n(µmol kg-1)&#39;,
+       title = &#39;Monthly average surface dissolved oxygen values (Jan 2013-Sep 2021)&#39;) +
+  theme(legend.position = &#39;bottom&#39;)+
   facet_wrap(~month)</code></pre>
 <pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
 argument</code></pre>
 <pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
 shifted. Consider using geom_tile() instead.</code></pre>
 <pre><code>Warning: Removed 153708 rows containing missing values (geom_raster).</code></pre>
-<p><img src="figure/ph_data.Rmd/climatological_monthly_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-climatological_monthly_map-1">
-Past versions of climatological_monthly_map-1.png
-</button>
-</p>
-<div id="fig-climatological_monthly_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/oxygen_data.Rmd/climatological_oxygen_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="monthly-timeseries" class="section level4">
 <h4>Monthly timeseries</h4>
-<p>Plot timeseries of monthly pH values, averaged over the whole region south of 30ºS</p>
+<p>Plot a timeseries of monthly-mean dissolved oxygen for the region south of 30ºS for the upper 10 m of the watercolumn</p>
 <pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
-ph_month &lt;- ph_surface %&gt;%
+oxy_month &lt;- oxy_surface %&gt;%
   group_by(year, month) %&gt;%
-  summarise(ph_ave = mean(ph_in_situ_total_adjusted))</code></pre>
+  summarise(oxy_ave = mean(doxy_adjusted))</code></pre>
 <pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># timeseries of monthly pH values over 2014-2021 (separate panels for each month)
-ph_month %&gt;%
-  ggplot(aes(x = year, y = ph_ave)) +
+<pre class="r"><code># timeseries of monthly pH values over 2013-2021 (separate panels for each month)
+oxy_month %&gt;%
+  ggplot(aes(x = year, y = oxy_ave)) +
   facet_wrap(~month) +
   geom_line() +
   geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2021, 2))+
   labs(x = &#39;year&#39;, 
-       y = &#39;pH in situ (total scale)&#39;, 
-       title = &#39;monthly mean pH (Apr 2014-Aug 2021, south of 30ºS)&#39;)</code></pre>
-<p><img src="figure/ph_data.Rmd/plot_monthly_ph_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>#all months on one plot in different colors (not very nice plot)
-# ph_month %&gt;%
-#   ggplot(aes(x = year, y = ph_ave, group = month, col = as.character(month))) +
-#   geom_line() +
-#   geom_point() +
-#   labs(x = &#39;year&#39;, y = &#39;pH in situ (total scale)&#39;, title = &#39;monthly mean pH (Apr 2014-Aug 2021)&#39;)</code></pre>
-<p>Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), over the whole region south of 30ºS</p>
-<pre class="r"><code># timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month %&gt;%
-  filter(year != 2014,
-         year != 2021) %&gt;%    # remove the two years that are missing data (keep only data for full years)
-  ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
+       y = &#39;dissolved O2 (µmol kg-1)&#39;, 
+       title = &#39;monthly mean dissolved oxygen (Jan 2013-Sep 2021, south of 30ºS)&#39;)</code></pre>
+<p><img src="figure/oxygen_data.Rmd/plot_monthly_oxygen_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Monthly average dissolved oxygen, per year (January 2013 - December 2020; plotting only full years), over the whole region south of 30ºS</p>
+<pre class="r"><code># timeseries of monthly oxygen values for each year (separate years on the same plot)
+oxy_month %&gt;%
+  filter(year != 2021) %&gt;%    # keep only years with full data 
+  ggplot(aes(x = month, y = oxy_ave, group = year, col = as.character(year)))+
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(x = &#39;month&#39;,
-       y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;monthly mean pH (Jan 2015-Dec 2020, south of 30ºS)&#39;,
+       y = &#39;dissolved O2 (µmol kg-1)&#39;,
+       title = &#39;monthly mean dissolved oxygen (Jan 2013-Dec 2020, south of 30ºS)&#39;,
        col = &#39;year&#39;)</code></pre>
-<p><img src="figure/ph_data.Rmd/monthly_pH_per_year-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-monthly_pH_per_year-1">
-Past versions of monthly_pH_per_year-1.png
-</button>
-</p>
-<div id="fig-monthly_pH_per_year-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/ph_data.Rmd/monthly_pH_per_year-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/oxygen_data.Rmd/monthly_oxygen_per_year-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<pre class="r"><code># calculate a yearly average ph (one ph value per year, for the whole domain)
-ph_year &lt;- ph_surface %&gt;%
-  group_by(year) %&gt;%
-  summarise(ph_ave = mean(ph_in_situ_total_adjusted))
-
-# plot a timeseries of the yearly average pH value (one value per year)
-ph_year %&gt;%
-  ggplot(aes(x = year, y = ph_ave))+
-  lims(y = c(8.03, 8.06))+
-  geom_line()+
-  geom_point()+
-  labs(x = &#39;year&#39;,
-       y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;yearly mean pH (Apr 2014-Aug 2021, south of 30ºS)&#39;)</code></pre>
-</div>
-</div>
-<div id="northwest-pacific-surface-ph" class="section level3">
-<h3>Northwest Pacific surface pH</h3>
-<p>Focus on surface pH in the northwest Pacific Ocean (10ºN - 70ºN, -190ºE - -140ºE)</p>
+<div id="northwest-pacific-surface-oxygen" class="section level3">
+<h3>Northwest Pacific surface oxygen</h3>
+<p>Focus on surface oxygen (upper 10 m) in the north-west Pacific (10ºN - 70ºN, -190ºE, -140ºE)</p>
 <pre class="r"><code># select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
-ph_nwpacific &lt;- ph_merge %&gt;%
+oxy_nwpacific &lt;- oxy_merge %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %&gt;%
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
+  filter(doxy_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
         between(lat, 10, 70),
         between(lon, 190, 240),                   # keep only data at or south of 30ºS
         depth &lt;= 10) %&gt;%              # keep only data above or at 10 m depth
@@ -906,66 +796,32 @@ ph_nwpacific &lt;- ph_merge %&gt;%
     year = year(date),     # separate the year and month from the date column
     month = month(date), .after = n_prof
   )
-# longitudes larger than -180ºE are lon-380</code></pre>
+# longitudes larger than -180ºE are lon-380 </code></pre>
 <div id="monthly-climatological-map-1" class="section level4">
 <h4>Monthly climatological map</h4>
-<p>Create a map of climatological monthly surface pH values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for</p>
+<p>Create a map of climatological monthly surface oxygen values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for January 2013 - August 2021</p>
 <pre class="r"><code># average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean_nwpacific &lt;- ph_nwpacific %&gt;%
+oxy_mean_nwpacific &lt;- oxy_nwpacific %&gt;%
   group_by(lat, lon, month) %&gt;%
-  summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))</code></pre>
+  summarise(oxy_ave_month = mean(doxy_adjusted))</code></pre>
 <pre><code>`summarise()` has grouped output by &#39;lat&#39;, &#39;lon&#39;. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code># map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
 map +
-  geom_tile(data = ph_mean_nwpacific,
-            aes(lon, lat, fill = ph_ave_month)) +
+  geom_tile(data = oxy_mean_nwpacific,
+            aes(lon, lat, fill = oxy_ave_month)) +
   lims(y = c(5, 60), 
        x = c(180, 250)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nwpacific$ph_ave_month)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean_nwpacific$oxy_ave_month)) +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
-       fill = &#39;pH&#39;,
-       title = &#39;Monthly average pH (Jan 2013-Aug 2021)&#39;) +
+       fill = &#39;dissolved oxygen \n(µmol kg-1)&#39;,
+       title = &#39;Monthly average surface dissolved oxygen values (Jan 2013-Aug 2021)&#39;) +
   theme(legend.position = &#39;right&#39;)+
   facet_wrap(~month)</code></pre>
 <pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
 argument</code></pre>
 <pre><code>Warning: Removed 219516 rows containing missing values (geom_raster).</code></pre>
-<p><img src="figure/ph_data.Rmd/northwest_pacific_climatological_pH_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="monthly-timeseries-1" class="section level4">
-<h4>Monthly timeseries</h4>
-<p>Timeseries of monthly mean pH, averaged over the whole NW-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 10 m of the watercolumn.</p>
-<pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
-ph_month_nwpacific &lt;- ph_nwpacific %&gt;%
-  group_by(year, month) %&gt;%
-  summarise(ph_ave = mean(ph_in_situ_total_adjusted))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># timeseries of monthly pH values over 2014-2021 (separate panels for each month)
-ph_month_nwpacific %&gt;%
-  ggplot(aes(x = year, y = ph_ave)) +
-  facet_wrap(~month) +
-  scale_x_continuous(breaks = seq(2013, 2021, 2)) +
-  geom_line() +
-  geom_point() +
-  labs(x = &#39;year&#39;, 
-       y = &#39;pH in situ (total scale)&#39;, 
-       title = &#39;monthly mean pH (Jan 2013-Aug 2021, NW Pacific)&#39;)</code></pre>
-<p><img src="figure/ph_data.Rmd/monthly_pH_timeseries_pacific-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>Monthly average pH, per year, over the NW Pacific region</p>
-<pre class="r"><code># timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month_nwpacific %&gt;%
-  filter(year != 2016,
-         year != 2021) %&gt;%    # remove the two years that are missing data (keep only data for full years)
-  ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
-  geom_line()+
-  geom_point()+
-  scale_x_continuous(breaks = seq(1, 12, 1))+
-  labs(x = &#39;month&#39;,
-       y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;monthly mean pH (Jan 2013-Dec 2020, NW Pacific)&#39;,
-       col = &#39;year&#39;)</code></pre>
-<p><img src="figure/ph_data.Rmd/monthly_pH_timeseries_per_year-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/oxygen_data.Rmd/climatological_oxygen_map_nwpacific-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
