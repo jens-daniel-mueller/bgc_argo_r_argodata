@@ -1,0 +1,245 @@
+---
+title: "BGC-Argo Oxygen Data"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task 
+
+Explore BGC-Argo oxygen data through timeseries and climatological maps 
+
+```{r loading_libraries, include=FALSE}
+# load in the necessary libraries
+library(tidyverse)
+library(argodata)
+library(ggplot2)
+library(lubridate)
+library(oce)
+```
+
+```{r set_root_directory}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+```
+
+# Load oxygen data 
+
+Load in delayed-mode, adjusted oxygen data from the BGC-Argo synthetic profile files 
+
+```{r load_oxygen_data}
+
+# set cache directory
+argo_set_cache_dir(cache_dir = path_argo)
+
+# periodically update the cached files
+argo_update_global(max_global_cache_age = Inf)
+argo_update_data(max_data_cache_age = Inf)
+
+# load synthetic Argo files containing delayed-mode data between 2013 and now
+bgc_subset <- argo_global_synthetic_prof() %>%
+  argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
+  argo_filter_date(date_min = '2013-01-01',
+                   date_max = Sys.time())
+
+# read in the oxygen data (with corresponding CTD variables)
+oxy_data <- argo_prof_levels(
+  path = bgc_subset,
+  vars =
+    c(
+      'PRES_ADJUSTED',
+      'PRES_ADJUSTED_QC',
+      'PRES_ADJUSTED_ERROR',
+      'PSAL_ADJUSTED',
+      'PSAL_ADJUSTED_QC',
+      'PSAL_ADJUSTED_ERROR',
+      'TEMP_ADJUSTED',
+      'TEMP_ADJUSTED_QC',
+      'TEMP_ADJUSTED_ERROR',
+      'DOXY_ADJUSTED',
+      'DOXY_ADJUSTED_QC',
+      'DOXY_ADJUSTED_ERROR'
+    ),
+  quiet = TRUE
+)
+
+# read in corresponding metadata
+oxy_metadata <- argo_prof_prof(path = bgc_subset)
+
+# merge the data and metadata
+oxy_merge <-
+  full_join(oxy_data, oxy_metadata)
+```
+
+```{r grid_oxygen_data}
+oxy_merge <- oxy_merge %>%
+  rename(lon = longitude,
+         lat = latitude) %>%
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89.5, 89.5, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(20.5, 379.5, 2)),  # change to 2x2º grid
+    lon = as.numeric(as.character(lon))
+  ) %>%
+  select(
+    -c(profile_nitrate_qc:profile_up_radiance555_qc) 
+  )        # remove profile_qc columns for non existent variables  
+
+```
+
+### Southern Ocean surface oxygen
+
+Focus on surface oxygen (top 10 m of the watercolumn) in the Southern Ocean, south of 30ºS 
+
+```{r select_relevant_oxygen_data}
+# select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
+oxy_surface <- oxy_merge %>%
+  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
+  filter(doxy_adjusted_qc == '1',   # keep only 'good' data
+         lat <= -30,                   # keep only data at or south of 30ºS
+         depth <= 10) %>%              # keep only data above or at 10 m depth
+  mutate(
+    year = year(date),     # separate the year and month from the date column
+    month = month(date), .after = n_prof
+  )
+
+# check the correct latitudes, QC flags, and depth levels have been filtered
+# max(oxy_surface$lat)
+# min(oxy_surface$lat)
+# table(oxy_surface$doxy_adjusted_qc)
+# max(oxy_surface$depth)
+# max(oxy_surface$date)
+# min(oxy_surface$date)
+```
+
+#### Monthly climatological map
+
+Create a map of climatological monthly oxygen values, from January 2013 to August 2021, for the region south of 30ºS 
+
+```{r set_global_theme, include = FALSE}
+theme_set(theme_bw())
+```
+
+
+```{r climatological_oxygen_map}
+
+# average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+oxy_mean <- oxy_surface %>%
+  group_by(lat, lon, month) %>%
+  summarise(oxy_ave_month = mean(doxy_adjusted))
+
+# read in the map from updata
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+# map a monthly climatology of surface oxygen (Jan 2013 - September 2021)
+map +
+  geom_tile(data = oxy_mean,
+            aes(lon, lat, fill = oxy_ave_month)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean$oxy_ave_month)) +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'dissolved oxygen \n(µmol kg-1)',
+       title = 'Monthly average surface dissolved oxygen values (Jan 2013-Sep 2021)') +
+  theme(legend.position = 'bottom')+
+  facet_wrap(~month)
+
+```
+
+#### Monthly timeseries
+
+Plot a timeseries of monthly-mean dissolved oxygen for the region south of 30ºS for the upper 10 m of the watercolumn 
+
+```{r plot_monthly_oxygen_timeseries}
+
+# plot a timeseries of monthly values over the whole southern ocean south of 30ºS
+oxy_month <- oxy_surface %>%
+  group_by(year, month) %>%
+  summarise(oxy_ave = mean(doxy_adjusted))
+
+# timeseries of monthly pH values over 2013-2021 (separate panels for each month)
+oxy_month %>%
+  ggplot(aes(x = year, y = oxy_ave)) +
+  facet_wrap(~month) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2021, 2))+
+  labs(x = 'year', 
+       y = 'dissolved O2 (µmol kg-1)', 
+       title = 'monthly mean dissolved oxygen (Jan 2013-Sep 2021, south of 30ºS)')
+
+```
+
+Monthly average dissolved oxygen, per year (January 2013 - December 2020; plotting only full years), over the whole region south of 30ºS 
+
+```{r monthly_oxygen_per_year}
+
+# timeseries of monthly oxygen values for each year (separate years on the same plot)
+oxy_month %>%
+  filter(year != 2021) %>%    # keep only years with full data 
+  ggplot(aes(x = month, y = oxy_ave, group = year, col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  labs(x = 'month',
+       y = 'dissolved O2 (µmol kg-1)',
+       title = 'monthly mean dissolved oxygen (Jan 2013-Dec 2020, south of 30ºS)',
+       col = 'year')
+
+```
+
+### Northwest Pacific surface oxygen 
+
+Focus on surface oxygen (upper 10 m) in the north-west Pacific (10ºN - 70ºN, -190ºE, -140ºE)
+
+```{r select_nwpacific_oxygen_data}
+
+# select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
+oxy_nwpacific <- oxy_merge %>%
+  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
+  filter(doxy_adjusted_qc == '1',   # keep only 'good' data
+        between(lat, 10, 70),
+        between(lon, 190, 240),                   # keep only data at or south of 30ºS
+        depth <= 10) %>%              # keep only data above or at 10 m depth
+  mutate(
+    year = year(date),     # separate the year and month from the date column
+    month = month(date), .after = n_prof
+  )
+# longitudes larger than -180ºE are lon-380 
+
+```
+
+#### Monthly climatological map
+
+Create a map of climatological monthly surface oxygen values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for January 2013 - August 2021
+
+```{r climatological_oxygen_map_nwpacific}
+
+# average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+oxy_mean_nwpacific <- oxy_nwpacific %>%
+  group_by(lat, lon, month) %>%
+  summarise(oxy_ave_month = mean(doxy_adjusted))
+
+# map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
+map +
+  geom_tile(data = oxy_mean_nwpacific,
+            aes(lon, lat, fill = oxy_ave_month)) +
+  lims(y = c(5, 60), 
+       x = c(180, 250)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean_hawaii$oxy_ave_month)) +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'dissolved oxygen \n(µmol kg-1)',
+       title = 'Monthly average surface dissolved oxygen values (Jan 2013-Aug 2021)') +
+  theme(legend.position = 'right')+
+  facet_wrap(~month)
+
+```
+
