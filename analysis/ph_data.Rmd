@@ -1,0 +1,223 @@
+---
+title: "BGC-Argo pH Data"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task
+
+Explore BGC-Argo pH data through timeseries and monthly climatological maps
+
+```{r loading_libraries, include=FALSE}
+# load in the necessary libraries
+library(tidyverse)
+library(argodata)
+library(ggplot2)
+library(lubridate)
+library(oce)
+```
+
+```{r set_root_directory}
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+```
+
+# Load pH data
+
+Load in delayed-mode adjusted pH values from the BGC-Argo synthetic files
+
+```{r load_data}
+
+# set cache directory
+argo_set_cache_dir(cache_dir = path_argo)
+
+# periodically update the cached files
+argo_update_global(max_global_cache_age = Inf)
+argo_update_data(max_data_cache_age = Inf)
+
+# load synthetic Argo files containing delayed-mode data between 2013 and now
+bgc_subset <- argo_global_synthetic_prof() %>%
+  argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
+  argo_filter_date(date_min = '2013-01-01',
+                   date_max = Sys.time())
+
+# read in the pH data (with corresponding CTD data)
+ph_data <- argo_prof_levels(
+  path = bgc_subset,
+  vars =
+    c(
+      'PRES_ADJUSTED',
+      'PRES_ADJUSTED_QC',
+      'PRES_ADJUSTED_ERROR',
+      'PSAL_ADJUSTED',
+      'PSAL_ADJUSTED_QC',
+      'PSAL_ADJUSTED_ERROR',
+      'TEMP_ADJUSTED',
+      'TEMP_ADJUSTED_QC',
+      'TEMP_ADJUSTED_ERROR',
+      'PH_IN_SITU_TOTAL_ADJUSTED',
+      'PH_IN_SITU_TOTAL_ADJUSTED_QC',
+      'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
+    ),
+  quiet = TRUE
+)
+
+# read in corresponding metadata
+ph_metadata <- argo_prof_prof(path = bgc_subset)
+
+# merge the data and metadata
+ph_merge <-
+  full_join(ph_data, ph_metadata)
+```
+
+```{r grid_data}
+# harmonize lat and lon variables and remove columns with no data
+ph_merge <- ph_merge %>%
+  rename(lon = longitude,
+         lat = latitude) %>%
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89.5, 89.5, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(20.5, 379.5, 2)),  # change to 2x2º grid
+    lon = as.numeric(as.character(lon))
+  ) %>%
+  select(
+    -c(profile_doxy_qc:profile_cdom_qc),
+    -c(profile_cndc_qc:profile_up_radiance555_qc) 
+  ) # remove columns which don't contain data 
+```
+
+### Southern Ocean surface pH
+
+The focus here is on surface pH (in the top 10 m of the watercolumn), in the region south of 30ºS
+
+```{r select_relevant_data}
+
+# select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
+ph_surface <- ph_merge %>%
+  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
+  filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
+         lat <= -30,                   # keep only data at or south of 30ºS
+         depth <= 10) %>%              # keep only data above or at 10 m depth
+  mutate(
+    year = year(date),     # separate the year and month from the date column
+    month = month(date), .after = n_prof
+  )
+
+# check the correct latitudes, QC flags, and depth levels have been filtered
+# max(ph_surface$lat)
+# min(ph_surface$lat)
+# table(ph_surface$ph_in_situ_total_adjusted_qc)
+# max(ph_surface$depth)
+
+```
+
+#### Monthly climatological map
+
+Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
+
+```{r set_global_theme, include=FALSE}
+
+theme_set(theme_bw())
+
+```
+
+```{r climatological_monthly_map}
+
+# average pH values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+ph_mean <- ph_surface %>%
+  group_by(lat, lon, month) %>%
+  summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
+
+# read in the map from updata
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+# map a monthly climatology of pH (April 2014 - August 2021)
+map +
+  geom_tile(data = ph_mean,
+            aes(lon, lat, fill = ph_ave_month)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month)) +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'pH',
+       title = 'Monthly average pH values (Apr 2014 - Aug 2021)') +
+  facet_wrap(~month)
+
+```
+
+#### Monthly timeseries
+
+Plot timeseries of monthly pH values, averaged over the whole region south of 30ºS
+
+```{r plot_monthly_timeseries}
+
+# plot a timeseries of monthly values over the whole southern ocean south of 30ºS
+ph_month <- ph_surface %>%
+  group_by(year, month) %>%
+  summarise(ph_ave = mean(ph_in_situ_total_adjusted))
+
+# timeseries of monthly pH values over 2014-2021 (separate panels for each month)
+ph_month %>%
+  ggplot(aes(x = year, y = ph_ave)) +
+  facet_wrap(~month) +
+  geom_line() +
+  geom_point() +
+  labs(x = 'year', 
+       y = 'pH in situ (total scale)', 
+       title = 'monthly mean pH (Apr 2014-Aug 2021, south of 30ºS)')
+```
+
+```{r not_very_nice_plot, eval=FALSE}
+
+#all months on one plot in different colors (not very nice plot)
+# ph_month %>%
+#   ggplot(aes(x = year, y = ph_ave, group = month, col = as.character(month))) +
+#   geom_line() +
+#   geom_point() +
+#   labs(x = 'year', y = 'pH in situ (total scale)', title = 'monthly mean pH (Apr 2014-Aug 2021)')
+```
+
+Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), over the whole region south of 30ºS
+
+```{r monthly_pH_per_year}
+
+# timeseries of monthly pH values for each year (separate years on the same plot)
+ph_month %>%
+  filter(year != 2014,
+         year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
+  ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  labs(x = 'month',
+       y = 'pH in situ (total scale)',
+       title = 'monthly mean pH (Jan 2015-Dec 2020, south of 30ºS)',
+       col = 'year')
+```
+
+```{r yearly_average_pH, eval=FALSE}
+
+# calculate a yearly average ph (one ph value per year, for the whole domain)
+ph_year <- ph_surface %>%
+  group_by(year) %>%
+  summarise(ph_ave = mean(ph_in_situ_total_adjusted))
+
+# plot a timeseries of the yearly average pH value (one value per year)
+ph_year %>%
+  ggplot(aes(x = year, y = ph_ave))+
+  lims(y = c(8.03, 8.06))+
+  geom_line()+
+  geom_point()+
+  labs(x = 'year',
+       y = 'pH in situ (total scale)',
+       title = 'yearly mean pH (Apr 2014-Aug 2021, south of 30ºS)')
+
+```
