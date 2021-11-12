@@ -27,73 +27,23 @@ path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 
 # Load pH data
 
-Load in delayed-mode adjusted pH values from the BGC-Argo synthetic profile files
+Load in delayed-mode adjusted pH data from the data files created in Loading Data
 
-```{r load_ph_data}
+```{r load_preprocessed_data}
+# keep only pH data and associated CTD variables 
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
-# set cache directory
-argo_set_cache_dir(cache_dir = path_argo)
-
-# periodically update the cached files
-argo_update_global(max_global_cache_age = Inf)
-argo_update_data(max_data_cache_age = Inf)
-
-# load synthetic Argo files containing delayed-mode data between 2013 and now
-bgc_subset <- argo_global_synthetic_prof() %>%
-  argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
-  argo_filter_date(date_min = '2013-01-01',
-                   date_max = Sys.time())
-
-# read in the pH data (with corresponding CTD data)
-ph_data <- argo_prof_levels(
-  path = bgc_subset,
-  vars =
-    c(
-      'PRES_ADJUSTED',
-      'PRES_ADJUSTED_QC',
-      'PRES_ADJUSTED_ERROR',
-      'PSAL_ADJUSTED',
-      'PSAL_ADJUSTED_QC',
-      'PSAL_ADJUSTED_ERROR',
-      'TEMP_ADJUSTED',
-      'TEMP_ADJUSTED_QC',
-      'TEMP_ADJUSTED_ERROR',
-      'PH_IN_SITU_TOTAL_ADJUSTED',
-      'PH_IN_SITU_TOTAL_ADJUSTED_QC',
-      'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
-    ),
-  quiet = TRUE
-)
-
-# read in corresponding metadata
-ph_metadata <- argo_prof_prof(path = bgc_subset)
-
-# merge the data and metadata
 ph_merge <-
-  full_join(ph_data, ph_metadata)
-```
-
-```{r grid_ph_data}
-# harmonize lat and lon variables and remove columns with no data
-ph_merge <- ph_merge %>%
-  rename(lon = longitude,
-         lat = latitude) %>%
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89.5, 89.5, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(20.5, 379.5, 2)),  # change to 2x2º grid
-    lon = as.numeric(as.character(lon))
-  ) %>%
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds")) %>% 
   select(
-    -c(profile_doxy_qc:profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc) 
-  ) # remove columns which don't contain data 
+    -c(doxy_adjusted:nitrate_adjusted_error),
+    -c(profile_doxy_qc, profile_nitrate_qc)
+  )
 ```
 
 ### Southern Ocean surface pH
 
-The focus here is on surface pH (in the top 10 m of the watercolumn), in the region south of 30ºS
+The focus here is on surface pH (in the top 20 m of the watercolumn), in the region south of 30ºS
 
 ```{r select_relevant_ph_data}
 
@@ -102,7 +52,7 @@ ph_surface <- ph_merge %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
          lat <= -30,                   # keep only data at or south of 30ºS
-         depth <= 10) %>%              # keep only data above or at 10 m depth
+         depth <= 20) %>%              # keep only data above or at 20 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
     month = month(date), .after = n_prof
@@ -113,7 +63,8 @@ ph_surface <- ph_merge %>%
 # min(ph_surface$lat)
 # table(ph_surface$ph_in_situ_total_adjusted_qc)
 # max(ph_surface$depth)
-
+# min(ph_surface$date)
+# max(ph_surface$date)
 ```
 
 #### Monthly climatological map
@@ -148,7 +99,8 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
-       title = 'Monthly average pH values (Apr 2014 - Aug 2021)') +
+       title = 'Monthly average pH (Apr 2014 - Aug 2021)') +
+  theme(legend.position = 'bottom') +
   facet_wrap(~month)
 
 ```
