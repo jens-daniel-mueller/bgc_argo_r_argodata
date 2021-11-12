@@ -222,18 +222,18 @@ ph_year %>%
 
 ```
 
-### Northwest Pacific surface pH
+### Northeast Pacific surface pH
 
-Focus on surface pH in the northwest Pacific Ocean (10ºN - 70ºN, -190ºE - -140ºE)
+Focus on surface pH in the northeast Pacific Ocean (10ºN - 70ºN, -190ºE - -140ºE)
 
-```{r select_northwest_pacific_pH_data}
+```{r select_northeast_pacific_pH_data}
 
 # select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
-ph_nwpacific <- ph_merge %>%
+ph_nepacific <- ph_merge %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
         between(lat, 10, 70),
-        between(lon, 190, 240),                   # keep only data at or south of 30ºS
+        between(lon, 190, 240),               # NE Pacific 
         depth <= 10) %>%              # keep only data above or at 10 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
@@ -247,20 +247,20 @@ ph_nwpacific <- ph_merge %>%
 
 Create a map of climatological monthly surface pH values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for
 
-```{r northwest_pacific_climatological_pH_map}
+```{r northeast_pacific_climatological_pH_map}
 
 # average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean_nwpacific <- ph_nwpacific %>%
+ph_mean_nepacific <- ph_nepacific %>%
   group_by(lat, lon, month) %>%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
 
 # map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
 map +
-  geom_tile(data = ph_mean_nwpacific,
+  geom_tile(data = ph_mean_nepacific,
             aes(lon, lat, fill = ph_ave_month)) +
   lims(y = c(5, 60), 
        x = c(180, 250)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nwpacific$ph_ave_month)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month)) +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
@@ -272,16 +272,16 @@ map +
 
 #### Monthly timeseries
 
-Timeseries of monthly mean pH, averaged over the whole NW-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 10 m of the watercolumn.
+Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 10 m of the watercolumn.
 
 ```{r monthly_pH_timeseries_pacific}
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
-ph_month_nwpacific <- ph_nwpacific %>%
+ph_month_nepacific <- ph_nepacific %>%
   group_by(year, month) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # timeseries of monthly pH values over 2014-2021 (separate panels for each month)
-ph_month_nwpacific %>%
+ph_month_nepacific %>%
   ggplot(aes(x = year, y = ph_ave)) +
   facet_wrap(~month) +
   scale_x_continuous(breaks = seq(2013, 2021, 2)) +
@@ -289,15 +289,15 @@ ph_month_nwpacific %>%
   geom_point() +
   labs(x = 'year', 
        y = 'pH in situ (total scale)', 
-       title = 'monthly mean pH (Jan 2013-Aug 2021, NW Pacific)')
+       title = 'monthly mean pH (Jan 2013-Aug 2021, NE Pacific)')
 ```
 
-Monthly average pH, per year, over the NW Pacific region
+Monthly average pH, per year, over the NE Pacific region
 
-```{r monthly_pH_timeseries_per_year}
+```{r monthly_pH_timeseries_per_year_nepacific}
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month_nwpacific %>%
+ph_month_nepacific %>%
   filter(year != 2016,
          year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
   ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
@@ -306,6 +306,6 @@ ph_month_nwpacific %>%
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean pH (Jan 2013-Dec 2020, NW Pacific)',
+       title = 'monthly mean pH (Jan 2013-Dec 2020, NE Pacific)',
        col = 'year')
 ```

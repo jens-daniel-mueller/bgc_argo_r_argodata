@@ -195,18 +195,18 @@ oxy_month %>%
 
 ```
 
-### Northwest Pacific surface oxygen 
+### Northeast Pacific surface oxygen 
 
-Focus on surface oxygen (upper 10 m) in the north-west Pacific (10ºN - 70ºN, -190ºE, -140ºE)
+Focus on surface oxygen (upper 10 m) in the north-east Pacific (10ºN - 70ºN, -190ºE, -140ºE)
 
-```{r select_nwpacific_oxygen_data}
+```{r select_nepacific_oxygen_data}
 
 # select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
-oxy_nwpacific <- oxy_merge %>%
+oxy_nepacific <- oxy_merge %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(doxy_adjusted_qc == '1',   # keep only 'good' data
         between(lat, 10, 70),
-        between(lon, 190, 240),                   # keep only data at or south of 30ºS
+        between(lon, 190, 240),                   # keep only data for the NE Pacific
         depth <= 10) %>%              # keep only data above or at 10 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
@@ -218,28 +218,69 @@ oxy_nwpacific <- oxy_merge %>%
 
 #### Monthly climatological map
 
-Create a map of climatological monthly surface oxygen values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for January 2013 - August 2021
+Create a map of climatological monthly surface oxygen values, in the north-east Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for January 2013 - August 2021
 
-```{r climatological_oxygen_map_nwpacific}
+```{r climatological_oxygen_map_nepacific}
 
 # average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
-oxy_mean_nwpacific <- oxy_nwpacific %>%
+oxy_mean_nepacific <- oxy_nepacific %>%
   group_by(lat, lon, month) %>%
   summarise(oxy_ave_month = mean(doxy_adjusted))
 
 # map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
 map +
-  geom_tile(data = oxy_mean_nwpacific,
+  geom_tile(data = oxy_mean_nepacific,
             aes(lon, lat, fill = oxy_ave_month)) +
   lims(y = c(5, 60), 
        x = c(180, 250)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean_nwpacific$oxy_ave_month)) +
+  scale_fill_gradientn(colors = oceColorsJet(n = oxy_mean_nepacific$oxy_ave_month)) +
   labs(x = 'lon',
        y = 'lat',
        fill = 'dissolved oxygen \n(µmol kg-1)',
-       title = 'Monthly average surface dissolved oxygen values (Jan 2013-Aug 2021)') +
+       title = 'Monthly average surface dissolved oxygen (Jan 2013-Aug 2021)') +
   theme(legend.position = 'right')+
   facet_wrap(~month)
+
+```
+
+#### Monthly timeseries
+
+Timeseries of monthly mean oxygen for the northeast Pacific from January 2013 to August 2021
+
+```{r timeseries_nepacific_oxygen}
+
+# plot a timeseries of monthly values over the whole NE Pacific
+oxy_month_nepacific <- oxy_nepacific %>%
+  group_by(year, month) %>%
+  summarise(oxy_ave = mean(doxy_adjusted))
+
+# timeseries of monthly pH values over 2013-2021 (separate panels for each month)
+oxy_month_nepacific %>%
+  ggplot(aes(x = year, y = oxy_ave)) +
+  facet_wrap(~month) +
+  geom_line() +
+  geom_point() +
+  scale_x_continuous(breaks = seq(2013, 2021, 2))+
+  labs(x = 'year', 
+       y = 'dissolved O2 (µmol kg-1)', 
+       title = 'monthly mean dissolved oxygen (Jan 2013-Aug 2021, NE Pacific)')
+```
+
+Timeseries of monthly surface oxygen, per year, in the NE Pacific 
+
+```{r timeseries_nepacific_oxygen_per_year}
+
+# timeseries of monthly oxygen values for each year (separate years on the same plot)
+oxy_month_nepacific %>%
+  filter(year != 2021) %>%    # keep only years with full data
+  ggplot(aes(x = month, y = oxy_ave, group = year, col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  labs(x = 'month',
+       y = 'dissolved O2 (µmol kg-1)',
+       title = 'monthly mean dissolved oxygen (Jan 2013-Dec 2020, NE Pacific)',
+       col = 'year')
 
 ```
 
