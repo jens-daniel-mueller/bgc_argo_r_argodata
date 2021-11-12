@@ -408,7 +408,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">11 November, 2021</h4>
+<h4 class="date">12 November, 2021</h4>
 
 </div>
 
@@ -433,7 +433,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-11
+<strong>Last updated:</strong> 2021-11-12
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreefb668ef60406975b9a76ba99b1f3c4501c703880targetblankfb668efa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/fb668ef60406975b9a76ba99b1f3c4501c703880" target="_blank">fb668ef</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree59073c174631e4f515d1d25f24630cf390fb2ebctargetblank59073c1a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/59073c174631e4f515d1d25f24630cf390fb2ebc" target="_blank">59073c1</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreefb668ef60406975b9a76ba99b1f3c4501c703880targetblankfb668efa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree59073c174631e4f515d1d25f24630cf390fb2ebctargetblank59073c1a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/fb668ef60406975b9a76ba99b1f3c4501c703880" target="_blank">fb668ef</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/59073c174631e4f515d1d25f24630cf390fb2ebc" target="_blank">59073c1</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -548,10 +548,6 @@ Untracked files:
     Untracked:  code/creating_dataframe.R
     Untracked:  code/creating_map.R
     Untracked:  code/pH_data_timeseries.R
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -590,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/59073c174631e4f515d1d25f24630cf390fb2ebc/analysis/loading_data.Rmd" target="_blank">59073c1</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-12
+</td>
+<td>
+added NE Pacific oxygen
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/284003d8bc6d90b9ff68bef75628cd635eb58629/docs/loading_data.html" target="_blank">284003d</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1241,7 +1271,7 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 <h1>Read meta data</h1>
 <p>Read in the corresponding metadata:</p>
 <pre class="r"><code>bgc_metadata &lt;- argo_prof_prof(path = bgc_subset)</code></pre>
-<pre><code>Extracting from 138081 files</code></pre>
+<pre><code>Extracting from 138158 files</code></pre>
 <pre class="r"><code># bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
 # ?????
 # returns blank output (0 observations of 0 variables)
@@ -1289,9 +1319,9 @@ bgc_merge &lt;- bgc_merge %&gt;%
          lat = latitude) %&gt;% 
   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
   mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
+    lat = cut(lat, seq(-90, 90, 2), seq(-89.5, 89.5, 2)), 
     lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
+    lon = cut(lon, seq(20, 380, 2), seq(20.5, 379.5, 2)), 
     lon = as.numeric(as.character(lon))
    ) %&gt;% 
   select(
