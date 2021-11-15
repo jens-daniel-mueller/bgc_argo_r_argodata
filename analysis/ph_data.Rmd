@@ -18,6 +18,7 @@ library(argodata)
 library(ggplot2)
 library(lubridate)
 library(oce)
+library(ggOceanMaps)
 ```
 
 ```{r set_root_directory}
@@ -47,7 +48,7 @@ The focus here is on surface pH (in the top 20 m of the watercolumn), in the reg
 
 ```{r select_relevant_ph_data}
 
-# select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
+# select only best pH data (with QC flag 1) below 30ºS, for the top 20 m of the watercolumn
 ph_surface <- ph_merge %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
@@ -79,7 +80,7 @@ theme_set(theme_bw())
 
 ```{r climatological_monthly_map}
 
-# average pH values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+# average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean <- ph_surface %>%
   group_by(lat, lon, month) %>%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
@@ -103,6 +104,24 @@ map +
   theme(legend.position = 'bottom') +
   facet_wrap(~month)
 
+
+```
+
+```{r using_ggOceanMap}
+
+basemap(limits = -30, data = ph_mean) +   # change to polar projection 
+  geom_spatial_tile(data = ph_mean, 
+            aes(x = lon,
+                y = lat,
+                fill = ph_ave_month), 
+            detail = 50)+
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
+  theme(legend.position = 'bottom')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'pH',
+       title = 'monthly average pH (Apr 2014 - Aug 2021)')+
+  facet_wrap(~month)
 ```
 
 #### Monthly timeseries
@@ -218,6 +237,18 @@ map +
        fill = 'pH',
        title = 'Monthly average pH (Jan 2013-Aug 2021)') +
   theme(legend.position = 'right')+
+  facet_wrap(~month)
+
+```
+
+```{r ggOceanMaps_Pacific, eval=FALSE}
+
+basemap(limits = c(-180, -110, 7, 70)) +
+  geom_spatial_tile(data = ph_mean_nepacific, 
+              aes(x = lon,
+                  y = lat, 
+                  fill = ph_ave_month))+
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month))+
   facet_wrap(~month)
 
 ```
