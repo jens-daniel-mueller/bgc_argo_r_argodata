@@ -408,7 +408,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">BGC-Argo pH Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">12 November, 2021</h4>
+<h4 class="date">15 November, 2021</h4>
 
 </div>
 
@@ -433,7 +433,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-12
+<strong>Last updated:</strong> 2021-11-15
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree59073c174631e4f515d1d25f24630cf390fb2ebctargetblank59073c1a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/59073c174631e4f515d1d25f24630cf390fb2ebc" target="_blank">59073c1</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2c203677dc3f3bfe2b257201cc7e020d1c1253a7targetblank2c20367a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2c203677dc3f3bfe2b257201cc7e020d1c1253a7" target="_blank">2c20367</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree59073c174631e4f515d1d25f24630cf390fb2ebctargetblank59073c1a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2c203677dc3f3bfe2b257201cc7e020d1c1253a7targetblank2c20367a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/59073c174631e4f515d1d25f24630cf390fb2ebc" target="_blank">59073c1</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2c203677dc3f3bfe2b257201cc7e020d1c1253a7" target="_blank">2c20367</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2c203677dc3f3bfe2b257201cc7e020d1c1253a7/analysis/ph_data.Rmd" target="_blank">2c20367</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-15
+</td>
+<td>
+added ggOceanMap for pH
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7a01367ed6852048f198fa401eae74b91c87dd72/docs/ph_data.html" target="_blank">7a01367</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -733,7 +767,7 @@ ph_merge &lt;-
 <div id="southern-ocean-surface-ph" class="section level3">
 <h3>Southern Ocean surface pH</h3>
 <p>The focus here is on surface pH (in the top 20 m of the watercolumn), in the region south of 30ºS</p>
-<pre class="r"><code># select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
+<pre class="r"><code># select only best pH data (with QC flag 1) below 30ºS, for the top 20 m of the watercolumn
 ph_surface &lt;- ph_merge %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %&gt;%
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
@@ -754,7 +788,7 @@ ph_surface &lt;- ph_merge %&gt;%
 <div id="monthly-climatological-map" class="section level4">
 <h4>Monthly climatological map</h4>
 <p>Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)</p>
-<pre class="r"><code># average pH values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+<pre class="r"><code># average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean &lt;- ph_surface %&gt;%
   group_by(lat, lon, month) %&gt;%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))</code></pre>
@@ -807,6 +841,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">7a01367</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-12
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">6276d6c</a>
 </td>
 <td>
@@ -820,6 +865,34 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre class="r"><code>basemap(limits = -30, data = ph_mean) +   # change to polar projection 
+  geom_spatial_tile(data = ph_mean, 
+            aes(x = lon,
+                y = lat,
+                fill = ph_ave_month), 
+            detail = 50)+
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
+  theme(legend.position = &#39;bottom&#39;)+
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;pH&#39;,
+       title = &#39;monthly average pH (Apr 2014 - Aug 2021)&#39;)+
+  facet_wrap(~month)</code></pre>
+<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
+argument</code></pre>
+<pre><code>Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()
+Assuming `crs = 4326` in stat_spatial_rect()</code></pre>
+<p><img src="figure/ph_data.Rmd/using_ggOceanMap-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="monthly-timeseries" class="section level4">
 <h4>Monthly timeseries</h4>
@@ -861,6 +934,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">7a01367</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-12
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/284003d8bc6d90b9ff68bef75628cd635eb58629/docs/figure/ph_data.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">284003d</a>
@@ -918,6 +1002,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/monthly_pH_per_year-1.png" target="_blank">7a01367</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-12
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/ph_data.Rmd/monthly_pH_per_year-1.png" target="_blank">6276d6c</a>
@@ -1026,6 +1121,13 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre class="r"><code>basemap(limits = c(-180, -110, 7, 70)) +
+  geom_spatial_tile(data = ph_mean_nepacific, 
+              aes(x = lon,
+                  y = lat, 
+                  fill = ph_ave_month))+
+  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month))+
+  facet_wrap(~month)</code></pre>
 </div>
 <div id="monthly-timeseries-1" class="section level4">
 <h4>Monthly timeseries</h4>
@@ -1173,32 +1275,41 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] oce_1.4-0           testthat_3.0.4      sf_1.0-2           
- [4] gsw_1.0-6           lubridate_1.7.9     argodata_0.0.0.9000
- [7] forcats_0.5.0       stringr_1.4.0       dplyr_1.0.5        
-[10] purrr_0.3.4         readr_1.4.0         tidyr_1.1.3        
-[13] tibble_3.1.3        ggplot2_3.3.5       tidyverse_1.3.0    
-[16] workflowr_1.6.2    
+ [1] ggOceanMaps_0.4.3   ggspatial_1.1.5     oce_1.4-0          
+ [4] testthat_3.0.4      sf_1.0-2            gsw_1.0-6          
+ [7] lubridate_1.7.9     argodata_0.0.0.9000 forcats_0.5.0      
+[10] stringr_1.4.0       dplyr_1.0.5         purrr_0.3.4        
+[13] readr_1.4.0         tidyr_1.1.3         tibble_3.1.3       
+[16] ggplot2_3.3.5       tidyverse_1.3.0     workflowr_1.6.2    
 
 loaded via a namespace (and not attached):
- [1] httr_1.4.2         sass_0.4.0         jsonlite_1.7.2     modelr_0.1.8      
- [5] bslib_0.2.5.1      assertthat_0.2.1   highr_0.8          blob_1.2.1        
- [9] cellranger_1.1.0   yaml_2.2.1         pillar_1.6.2       backports_1.1.10  
-[13] glue_1.4.2         digest_0.6.27      promises_1.2.0.1   rvest_0.3.6       
-[17] colorspace_2.0-2   htmltools_0.5.1.1  httpuv_1.6.2       pkgconfig_2.0.3   
-[21] broom_0.7.9        haven_2.3.1        scales_1.1.1       whisker_0.4       
-[25] later_1.3.0        git2r_0.27.1       proxy_0.4-26       generics_0.1.0    
-[29] farver_2.1.0       ellipsis_0.3.2     withr_2.4.2        cli_3.0.1         
-[33] magrittr_2.0.1     crayon_1.4.1       readxl_1.3.1       evaluate_0.14     
-[37] fs_1.5.0           fansi_0.5.0        xml2_1.3.2         class_7.3-17      
-[41] tools_4.0.3        hms_0.5.3          lifecycle_1.0.0    munsell_0.5.0     
-[45] reprex_0.3.0       compiler_4.0.3     jquerylib_0.1.4    e1071_1.7-8       
-[49] RNetCDF_2.4-2      rlang_0.4.11       classInt_0.4-3     units_0.7-2       
-[53] grid_4.0.3         rstudioapi_0.13    labeling_0.4.2     rmarkdown_2.10    
-[57] gtable_0.3.0       DBI_1.1.1          R6_2.5.1           knitr_1.33        
-[61] utf8_1.2.2         rprojroot_2.0.2    KernSmooth_2.23-17 stringi_1.5.3     
-[65] Rcpp_1.0.7         vctrs_0.3.8        dbplyr_1.4.4       tidyselect_1.1.0  
-[69] xfun_0.25         </code></pre>
+ [1] smoothr_0.1.2         fs_1.5.0              httr_1.4.2           
+ [4] rprojroot_2.0.2       tools_4.0.3           backports_1.1.10     
+ [7] bslib_0.2.5.1         utf8_1.2.2            rgdal_1.5-18         
+[10] R6_2.5.1              KernSmooth_2.23-17    rgeos_0.5-5          
+[13] DBI_1.1.1             colorspace_2.0-2      raster_3.4-5         
+[16] withr_2.4.2           sp_1.4-4              tidyselect_1.1.0     
+[19] compiler_4.0.3        git2r_0.27.1          cli_3.0.1            
+[22] rvest_0.3.6           RNetCDF_2.4-2         xml2_1.3.2           
+[25] labeling_0.4.2        sass_0.4.0            scales_1.1.1         
+[28] classInt_0.4-3        ggOceanMapsData_1.0.1 proxy_0.4-26         
+[31] digest_0.6.27         rmarkdown_2.10        pkgconfig_2.0.3      
+[34] htmltools_0.5.1.1     highr_0.8             dbplyr_1.4.4         
+[37] rlang_0.4.11          readxl_1.3.1          rstudioapi_0.13      
+[40] farver_2.1.0          jquerylib_0.1.4       generics_0.1.0       
+[43] jsonlite_1.7.2        magrittr_2.0.1        Rcpp_1.0.7           
+[46] munsell_0.5.0         fansi_0.5.0           abind_1.4-5          
+[49] lifecycle_1.0.0       stringi_1.5.3         whisker_0.4          
+[52] yaml_2.2.1            grid_4.0.3            blob_1.2.1           
+[55] parallel_4.0.3        promises_1.2.0.1      crayon_1.4.1         
+[58] lattice_0.20-41       stars_0.5-2           haven_2.3.1          
+[61] hms_0.5.3             knitr_1.33            pillar_1.6.2         
+[64] codetools_0.2-16      reprex_0.3.0          glue_1.4.2           
+[67] evaluate_0.14         modelr_0.1.8          vctrs_0.3.8          
+[70] httpuv_1.6.2          cellranger_1.1.0      gtable_0.3.0         
+[73] assertthat_0.2.1      xfun_0.25             lwgeom_0.2-5         
+[76] broom_0.7.9           e1071_1.7-8           later_1.3.0          
+[79] class_7.3-17          units_0.7-2           ellipsis_0.3.2       </code></pre>
 </div>
 </div>
 </div>
