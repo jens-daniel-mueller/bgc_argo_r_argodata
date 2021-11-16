@@ -114,7 +114,8 @@ basemap(limits = -30, data = ph_mean) +   # change to polar projection
             aes(x = lon,
                 y = lat,
                 fill = ph_ave_month),
-            linejoin = 'bevel')+
+            linejoin = 'mitre',
+            detail = 60)+
   scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
   theme(legend.position = 'bottom')+
   labs(x = 'lon',
@@ -122,7 +123,7 @@ basemap(limits = -30, data = ph_mean) +   # change to polar projection
        fill = 'pH',
        title = 'monthly average pH (Apr 2014 - Aug 2021)')+
   facet_wrap(~month)
-# the squares look grey but it's because I haven't figured out how to remove the borders
+# the squares look grey because I haven't figured out how to remove the borders
 ```
 
 #### Monthly timeseries
