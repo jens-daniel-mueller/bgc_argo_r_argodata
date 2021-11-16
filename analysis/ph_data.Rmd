@@ -113,8 +113,8 @@ basemap(limits = -30, data = ph_mean) +   # change to polar projection
   geom_spatial_tile(data = ph_mean, 
             aes(x = lon,
                 y = lat,
-                fill = ph_ave_month), 
-            detail = 50)+
+                fill = ph_ave_month),
+            linejoin = 'bevel')+
   scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
   theme(legend.position = 'bottom')+
   labs(x = 'lon',
@@ -122,6 +122,7 @@ basemap(limits = -30, data = ph_mean) +   # change to polar projection
        fill = 'pH',
        title = 'monthly average pH (Apr 2014 - Aug 2021)')+
   facet_wrap(~month)
+# the squares look grey but it's because I haven't figured out how to remove the borders
 ```
 
 #### Monthly timeseries
@@ -199,13 +200,13 @@ Focus on surface pH in the northeast Pacific Ocean (10ºN - 70ºN, -190ºE - -14
 
 ```{r select_northeast_pacific_pH_data}
 
-# select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
+# select only best pH data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 20 m of the watercolumn
 ph_nepacific <- ph_merge %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
         between(lat, 10, 70),
         between(lon, 190, 240),               # NE Pacific 
-        depth <= 10) %>%              # keep only data above or at 10 m depth
+        depth <= 20) %>%              # keep only data above or at 20 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
     month = month(date), .after = n_prof
@@ -220,12 +221,12 @@ Create a map of climatological monthly surface pH values, in the north-west Paci
 
 ```{r northeast_pacific_climatological_pH_map}
 
-# average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
+# average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean_nepacific <- ph_nepacific %>%
   group_by(lat, lon, month) %>%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
 
-# map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
+# map a monthly climatology of surface pH (Jan 2013 - August 2021)
 map +
   geom_tile(data = ph_mean_nepacific,
             aes(lon, lat, fill = ph_ave_month)) +
@@ -242,15 +243,19 @@ map +
 ```
 
 ```{r ggOceanMaps_Pacific, eval=FALSE}
-
-basemap(limits = c(-180, -110, 7, 70)) +
+# using the ggOceanMaps package
+basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
   geom_spatial_tile(data = ph_mean_nepacific, 
               aes(x = lon,
                   y = lat, 
                   fill = ph_ave_month))+
   scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month))+
-  facet_wrap(~month)
-
+  facet_wrap(~month) + 
+  labs(x = 'lon', 
+       y = 'lat',
+       fill = 'pH',
+       title = 'Monthly average pH (Jan 2013-Aug 2021)')
+# haven't figured out why the data isn't being plotted 
 ```
 
 #### Monthly timeseries
