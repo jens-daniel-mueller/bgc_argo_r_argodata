@@ -34,12 +34,15 @@ Load in delayed-mode adjusted pH data from the data files created in Loading Dat
 # keep only pH data and associated CTD variables 
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
-ph_merge <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds")) %>% 
-  select(
-    -c(doxy_adjusted:nitrate_adjusted_error),
-    -c(profile_doxy_qc, profile_nitrate_qc)
-  )
+# load in surface pH data 
+ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x2.rds'))
+
+# ph_merge <-
+#   read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds")) %>% 
+#   select(
+#     -c(doxy_adjusted:nitrate_adjusted_error),
+#     -c(profile_doxy_qc, profile_nitrate_qc)
+#   )
 ```
 
 ### Southern Ocean surface pH
@@ -49,15 +52,8 @@ The focus here is on surface pH (in the top 20 m of the watercolumn), in the reg
 ```{r select_relevant_ph_data}
 
 # select only best pH data (with QC flag 1) below 30ºS, for the top 20 m of the watercolumn
-ph_surface <- ph_merge %>%
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
-  filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
-         lat <= -30,                   # keep only data at or south of 30ºS
-         depth <= 20) %>%              # keep only data above or at 20 m depth
-  mutate(
-    year = year(date),     # separate the year and month from the date column
-    month = month(date), .after = n_prof
-  )
+ph_surface_SO <- ph_surface_2x2 %>%
+  filter(lat <= -30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
 # max(ph_surface$lat)
@@ -81,7 +77,7 @@ theme_set(theme_bw())
 ```{r climatological_monthly_map}
 
 # average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean <- ph_surface %>%
+ph_mean_SO <- ph_surface_SO %>%
   group_by(lat, lon, month) %>%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
 
@@ -93,10 +89,10 @@ map <-
 
 # map a monthly climatology of pH (April 2014 - August 2021)
 map +
-  geom_tile(data = ph_mean,
+  geom_tile(data = ph_mean_SO,
             aes(lon, lat, fill = ph_ave_month)) +
   lims(y = c(-85, -25)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month)) +
+  scale_fill_viridis_c() +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
@@ -109,21 +105,21 @@ map +
 
 ```{r using_ggOceanMap}
 
-basemap(limits = -30, data = ph_mean) +   # change to polar projection 
-  geom_spatial_tile(data = ph_mean, 
+basemap(limits = -30, data = ph_mean_SO) +   # change to polar projection 
+  geom_spatial_tile(data = ph_mean_SO, 
             aes(x = lon,
                 y = lat,
                 fill = ph_ave_month),
             linejoin = 'mitre',
+            col = 'transparent',
             detail = 60)+
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
+  scale_fill_viridis_c()+
   theme(legend.position = 'bottom')+
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
        title = 'monthly average pH (Apr 2014 - Aug 2021)')+
   facet_wrap(~month)
-# the squares look grey because I haven't figured out how to remove the borders
 ```
 
 #### Monthly timeseries
@@ -133,12 +129,12 @@ Plot timeseries of monthly pH values, averaged over the whole region south of 30
 ```{r plot_monthly_ph_timeseries}
 
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
-ph_month <- ph_surface %>%
+ph_month_SO <- ph_surface_SO %>%
   group_by(year, month) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # timeseries of monthly pH values over 2014-2021 (separate panels for each month)
-ph_month %>%
+ph_month_SO %>%
   ggplot(aes(x = year, y = ph_ave)) +
   facet_wrap(~month) +
   geom_line() +
@@ -151,7 +147,7 @@ ph_month %>%
 ```{r weird_plot, eval=FALSE}
 
 #all months on one plot in different colors (not very nice plot)
-# ph_month %>%
+# ph_month_SO %>%
 #   ggplot(aes(x = year, y = ph_ave, group = month, col = as.character(month))) +
 #   geom_line() +
 #   geom_point() +
@@ -163,7 +159,7 @@ Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), over the whole
 ```{r monthly_pH_per_year}
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month %>%
+ph_month_SO %>%
   filter(year != 2014,
          year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
   ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
@@ -179,12 +175,12 @@ ph_month %>%
 ```{r yearly_average_pH, eval=FALSE}
 
 # calculate a yearly average ph (one ph value per year, for the whole domain)
-ph_year <- ph_surface %>%
+ph_year_SO <- ph_surface_SO %>%
   group_by(year) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # plot a timeseries of the yearly average pH value (one value per year)
-ph_year %>%
+ph_year_SO %>%
   ggplot(aes(x = year, y = ph_ave))+
   lims(y = c(8.03, 8.06))+
   geom_line()+
@@ -202,7 +198,7 @@ Focus on surface pH in the northeast Pacific Ocean (10ºN - 70ºN, -190ºE - -14
 ```{r select_northeast_pacific_pH_data}
 
 # select only best pH data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 20 m of the watercolumn
-ph_nepacific <- ph_merge %>%
+ph_nepacific <- ph_surface_2x2 %>%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
   filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
         between(lat, 10, 70),
@@ -233,7 +229,7 @@ map +
             aes(lon, lat, fill = ph_ave_month)) +
   lims(y = c(5, 60), 
        x = c(180, 250)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month)) +
+  scale_fill_viridis_c() +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
@@ -250,7 +246,7 @@ basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
               aes(x = lon,
                   y = lat, 
                   fill = ph_ave_month))+
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month))+
+  scale_fill_viridis_c()+
   facet_wrap(~month) + 
   labs(x = 'lon', 
        y = 'lat',
@@ -261,7 +257,7 @@ basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
 
 #### Monthly timeseries
 
-Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 10 m of the watercolumn.
+Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 20 m of the watercolumn.
 
 ```{r monthly_pH_timeseries_pacific}
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
