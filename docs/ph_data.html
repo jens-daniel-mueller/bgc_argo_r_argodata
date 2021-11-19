@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeae64132ed7a5ba0b3bb32e3389f403321e67aa8dtargetblankae64132a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d" target="_blank">ae64132</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeae64132ed7a5ba0b3bb32e3389f403321e67aa8dtargetblankae64132a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d" target="_blank">ae64132</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d/analysis/ph_data.Rmd" target="_blank">ae64132</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+added offset pH plot
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ab706491022684c49392c552f038e4e76651d461/docs/ph_data.html" target="_blank">ab70649</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -896,12 +930,35 @@ ph_surface_SO &lt;- ph_surface_2x2 %&gt;%
   filter(lat &lt;= -30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
-# max(ph_surface$lat)
-# min(ph_surface$lat)
+ max(ph_surface_SO$lat)</code></pre>
+<pre><code>[1] -31.5</code></pre>
+<pre class="r"><code># min(ph_surface$lat)
 # table(ph_surface$ph_in_situ_total_adjusted_qc)
 # max(ph_surface$depth)
 # min(ph_surface$date)
 # max(ph_surface$date)</code></pre>
+<div id="data-offset-with-depth" class="section level4">
+<h4>Data offset with depth</h4>
+<p>Plot the difference between in-situ observed pH and the mean surface pH (20m)</p>
+<pre class="r"><code>ph_SO &lt;- ph_surface_SO %&gt;%
+  group_by(month) %&gt;%
+  summarise(ph_month_ave = mean(ph_in_situ_total_adjusted))   # mean pH in top 20 m for each month
+
+ph_SO = full_join(ph_SO, ph_surface_SO, by = &#39;month&#39;) %&gt;%
+  mutate(offset = ph_in_situ_total_adjusted-ph_month_ave, 
+         .after = ph_month_ave) # subtract the surface mean from the in-situ pH, for each month
+
+ph_SO %&gt;%
+  ggplot()+
+  geom_jitter(aes(x = offset, y = depth), size = 0.3, pch = 1) +
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = &#39;red&#39;, size = 1.5)+
+  facet_wrap(~month)+
+  labs(x = &#39;offset (pH units)&#39;,
+       y = &#39;depth (m)&#39;,
+       title = &#39;in situ pH - mean pH&#39;)</code></pre>
+<p><img src="figure/ph_data.Rmd/SO_offset_from_the_mean-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 <div id="monthly-climatological-map" class="section level4">
 <h4>Monthly climatological map</h4>
 <p>Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)</p>
@@ -954,6 +1011,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ab706491022684c49392c552f038e4e76651d461/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">ab70649</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">7a01367</a>
@@ -1030,6 +1098,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ab706491022684c49392c552f038e4e76651d461/docs/figure/ph_data.Rmd/using_ggOceanMap-1.png" target="_blank">ab70649</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/982492848629b2e50227d795a54d4077c10ec169/docs/figure/ph_data.Rmd/using_ggOceanMap-1.png" target="_blank">9824928</a>
@@ -1278,6 +1357,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ab706491022684c49392c552f038e4e76651d461/docs/figure/ph_data.Rmd/northeast_pacific_climatological_pH_map-1.png" target="_blank">ab70649</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b6a26a1e405e6cfce6d6b87febb0f1b07efbd493/docs/figure/ph_data.Rmd/northeast_pacific_climatological_pH_map-1.png" target="_blank">b6a26a1</a>

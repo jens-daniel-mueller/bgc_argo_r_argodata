@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeae64132ed7a5ba0b3bb32e3389f403321e67aa8dtargetblankae64132a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d" target="_blank">ae64132</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeae64132ed7a5ba0b3bb32e3389f403321e67aa8dtargetblankae64132a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d" target="_blank">ae64132</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ae64132ed7a5ba0b3bb32e3389f403321e67aa8d/analysis/loading_data.Rmd" target="_blank">ae64132</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+added offset pH plot
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ab706491022684c49392c552f038e4e76651d461/docs/loading_data.html" target="_blank">ab70649</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1481,7 +1515,7 @@ ph_surface_1x1 &lt;- full_join(bgc_data, bgc_metadata) %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat),
          .before = pres_adjusted) %&gt;%
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,
-         depth &lt;= 20) %&gt;% 
+         between(depth, 0, 20)) %&gt;% 
   mutate(year = year(date),
          month = month(date),
          .after = n_prof)</code></pre>
@@ -1505,7 +1539,7 @@ ph_surface_2x2 &lt;- full_join(bgc_data, bgc_metadata) %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat),
          .before = pres_adjusted) %&gt;%
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,
-         depth &lt;= 20) %&gt;% 
+         between(depth, 0, 20)) %&gt;% 
   mutate(year = year(date),
          month = month(date),
          .after = n_prof)</code></pre>
@@ -1785,10 +1819,10 @@ bgc_metadata %&gt;%
 <p>e.g.: a QC flag ‘4’ (bad data) set by the Grey List Test cannot be decreased to QC flag ‘3’ (bad data that are potentially correctable) set by the Gross Salinity or Temperature Sensor Drift Test.</p>
 <table>
 <colgroup>
-<col width="30%" />
+<col width="31%" />
+<col width="13%" />
 <col width="14%" />
-<col width="15%" />
-<col width="39%" />
+<col width="40%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1913,9 +1947,9 @@ bgc_metadata %&gt;%
 <table>
 <colgroup>
 <col width="28%" />
+<col width="12%" />
 <col width="13%" />
-<col width="13%" />
-<col width="44%" />
+<col width="45%" />
 </colgroup>
 <thead>
 <tr class="header">
