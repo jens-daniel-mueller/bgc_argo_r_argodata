@@ -408,7 +408,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">BGC-Argo pH Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">16 November, 2021</h4>
+<h4 class="date">19 November, 2021</h4>
 
 </div>
 
@@ -433,7 +433,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-16
+<strong>Last updated:</strong> 2021-11-19
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree383aa57942918c5b9c07c0ab2740b1f9c556d115targetblank383aa57a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/383aa57942918c5b9c07c0ab2740b1f9c556d115" target="_blank">383aa57</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree383aa57942918c5b9c07c0ab2740b1f9c556d115targetblank383aa57a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/383aa57942918c5b9c07c0ab2740b1f9c556d115" target="_blank">383aa57</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b/analysis/ph_data.Rmd" target="_blank">171aa37</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+updated loading pH data and color palettes
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c69672618637d4713394298dc0e89da1bda92a21/analysis/ph_data.Rmd" target="_blank">c696726</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-17
+</td>
+<td>
+updated loading pH data and color palettes
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/982492848629b2e50227d795a54d4077c10ec169/docs/ph_data.html" target="_blank">9824928</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -826,25 +877,23 @@ path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/fi
 <pre class="r"><code># keep only pH data and associated CTD variables 
 path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 
-ph_merge &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;)) %&gt;% 
-  select(
-    -c(doxy_adjusted:nitrate_adjusted_error),
-    -c(profile_doxy_qc, profile_nitrate_qc)
-  )</code></pre>
+# load in surface pH data 
+ph_surface_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/ph_surface_2x2.rds&#39;))
+
+ph_surface_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
+
+# ph_merge &lt;-
+#   read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;)) %&gt;% 
+#   select(
+#     -c(doxy_adjusted:nitrate_adjusted_error),
+#     -c(profile_doxy_qc, profile_nitrate_qc)
+#   )</code></pre>
 <div id="southern-ocean-surface-ph" class="section level3">
 <h3>Southern Ocean surface pH</h3>
 <p>The focus here is on surface pH (in the top 20 m of the watercolumn), in the region south of 30ºS</p>
-<pre class="r"><code># select only best pH data (with QC flag 1) below 30ºS, for the top 20 m of the watercolumn
-ph_surface &lt;- ph_merge %&gt;%
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %&gt;%
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
-         lat &lt;= -30,                   # keep only data at or south of 30ºS
-         depth &lt;= 20) %&gt;%              # keep only data above or at 20 m depth
-  mutate(
-    year = year(date),     # separate the year and month from the date column
-    month = month(date), .after = n_prof
-  )
+<pre class="r"><code># select pH data for the Southern Ocean, south of 30ºS 
+ph_surface_SO &lt;- ph_surface_2x2 %&gt;%
+  filter(lat &lt;= -30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
 # max(ph_surface$lat)
@@ -857,7 +906,7 @@ ph_surface &lt;- ph_merge %&gt;%
 <h4>Monthly climatological map</h4>
 <p>Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)</p>
 <pre class="r"><code># average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean &lt;- ph_surface %&gt;%
+ph_mean_SO &lt;- ph_surface_SO %&gt;%
   group_by(lat, lon, month) %&gt;%
   summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))</code></pre>
 <pre><code>`summarise()` has grouped output by &#39;lat&#39;, &#39;lon&#39;. You can override using the `.groups` argument.</code></pre>
@@ -869,18 +918,16 @@ map &lt;-
 
 # map a monthly climatology of pH (April 2014 - August 2021)
 map +
-  geom_tile(data = ph_mean,
+  geom_tile(data = ph_mean_SO,
             aes(lon, lat, fill = ph_ave_month)) +
   lims(y = c(-85, -25)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month)) +
+  scale_fill_viridis_c() +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
        title = &#39;Monthly average pH (Apr 2014 - Aug 2021)&#39;) +
   theme(legend.position = &#39;bottom&#39;) +
   facet_wrap(~month)</code></pre>
-<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
-argument</code></pre>
 <pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
 shifted. Consider using geom_tile() instead.</code></pre>
 <pre><code>Warning: Removed 153708 rows containing missing values (geom_raster).</code></pre>
@@ -933,22 +980,21 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>basemap(limits = -30, data = ph_mean) +   # change to polar projection 
-  geom_spatial_tile(data = ph_mean, 
+<pre class="r"><code>basemap(limits = -30, data = ph_mean_SO) +   # change to polar projection 
+  geom_spatial_tile(data = ph_mean_SO, 
             aes(x = lon,
                 y = lat,
                 fill = ph_ave_month),
             linejoin = &#39;mitre&#39;,
+            col = &#39;transparent&#39;,
             detail = 60)+
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean$ph_ave_month))+
+  scale_fill_viridis_c()+
   theme(legend.position = &#39;bottom&#39;)+
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
        title = &#39;monthly average pH (Apr 2014 - Aug 2021)&#39;)+
   facet_wrap(~month)</code></pre>
-<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
-argument</code></pre>
 <pre><code>Assuming `crs = 4326` in stat_spatial_rect()
 Assuming `crs = 4326` in stat_spatial_rect()
 Assuming `crs = 4326` in stat_spatial_rect()
@@ -986,6 +1032,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/982492848629b2e50227d795a54d4077c10ec169/docs/figure/ph_data.Rmd/using_ggOceanMap-1.png" target="_blank">9824928</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-16
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b6a26a1e405e6cfce6d6b87febb0f1b07efbd493/docs/figure/ph_data.Rmd/using_ggOceanMap-1.png" target="_blank">b6a26a1</a>
 </td>
 <td>
@@ -1010,18 +1067,17 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code># the squares look grey because I haven&#39;t figured out how to remove the borders</code></pre>
 </div>
 <div id="monthly-timeseries" class="section level4">
 <h4>Monthly timeseries</h4>
 <p>Plot timeseries of monthly pH values, averaged over the whole region south of 30ºS</p>
 <pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
-ph_month &lt;- ph_surface %&gt;%
+ph_month_SO &lt;- ph_surface_SO %&gt;%
   group_by(year, month) %&gt;%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))</code></pre>
 <pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code># timeseries of monthly pH values over 2014-2021 (separate panels for each month)
-ph_month %&gt;%
+ph_month_SO %&gt;%
   ggplot(aes(x = year, y = ph_ave)) +
   facet_wrap(~month) +
   geom_line() +
@@ -1079,14 +1135,14 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 <pre class="r"><code>#all months on one plot in different colors (not very nice plot)
-# ph_month %&gt;%
+# ph_month_SO %&gt;%
 #   ggplot(aes(x = year, y = ph_ave, group = month, col = as.character(month))) +
 #   geom_line() +
 #   geom_point() +
 #   labs(x = &#39;year&#39;, y = &#39;pH in situ (total scale)&#39;, title = &#39;monthly mean pH (Apr 2014-Aug 2021)&#39;)</code></pre>
 <p>Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), over the whole region south of 30ºS</p>
 <pre class="r"><code># timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month %&gt;%
+ph_month_SO %&gt;%
   filter(year != 2014,
          year != 2021) %&gt;%    # remove the two years that are missing data (keep only data for full years)
   ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
@@ -1147,12 +1203,12 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 <pre class="r"><code># calculate a yearly average ph (one ph value per year, for the whole domain)
-ph_year &lt;- ph_surface %&gt;%
+ph_year_SO &lt;- ph_surface_SO %&gt;%
   group_by(year) %&gt;%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # plot a timeseries of the yearly average pH value (one value per year)
-ph_year %&gt;%
+ph_year_SO %&gt;%
   ggplot(aes(x = year, y = ph_ave))+
   lims(y = c(8.03, 8.06))+
   geom_line()+
@@ -1166,7 +1222,7 @@ ph_year %&gt;%
 <h3>Northeast Pacific surface pH</h3>
 <p>Focus on surface pH in the northeast Pacific Ocean (10ºN - 70ºN, -190ºE - -140ºE)</p>
 <pre class="r"><code># select only best pH data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 20 m of the watercolumn
-ph_nepacific &lt;- ph_merge %&gt;%
+ph_nepacific &lt;- ph_surface_2x2 %&gt;%
   mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %&gt;%
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,   # keep only &#39;good&#39; data
         between(lat, 10, 70),
@@ -1191,15 +1247,13 @@ map +
             aes(lon, lat, fill = ph_ave_month)) +
   lims(y = c(5, 60), 
        x = c(180, 250)) +
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month)) +
+  scale_fill_viridis_c() +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
        title = &#39;Monthly average pH (Jan 2013-Aug 2021)&#39;) +
   theme(legend.position = &#39;right&#39;)+
   facet_wrap(~month)</code></pre>
-<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
-argument</code></pre>
 <pre><code>Warning: Removed 219516 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/ph_data.Rmd/northeast_pacific_climatological_pH_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1256,7 +1310,7 @@ basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
               aes(x = lon,
                   y = lat, 
                   fill = ph_ave_month))+
-  scale_fill_gradientn(colors = oceColorsJet(n = ph_mean_nepacific$ph_ave_month))+
+  scale_fill_viridis_c()+
   facet_wrap(~month) + 
   labs(x = &#39;lon&#39;, 
        y = &#39;lat&#39;,
@@ -1266,7 +1320,7 @@ basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
 </div>
 <div id="monthly-timeseries-1" class="section level4">
 <h4>Monthly timeseries</h4>
-<p>Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 10 m of the watercolumn.</p>
+<p>Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 20 m of the watercolumn.</p>
 <pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
 ph_month_nepacific &lt;- ph_nepacific %&gt;%
   group_by(year, month) %&gt;%
@@ -1466,7 +1520,8 @@ loaded via a namespace (and not attached):
 [70] httpuv_1.6.2          cellranger_1.1.0      gtable_0.3.0         
 [73] assertthat_0.2.1      xfun_0.25             lwgeom_0.2-5         
 [76] broom_0.7.9           e1071_1.7-8           later_1.3.0          
-[79] class_7.3-17          units_0.7-2           ellipsis_0.3.2       </code></pre>
+[79] viridisLite_0.4.0     class_7.3-17          units_0.7-2          
+[82] ellipsis_0.3.2       </code></pre>
 </div>
 </div>
 </div>

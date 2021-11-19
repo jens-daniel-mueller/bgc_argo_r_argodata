@@ -408,7 +408,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">18 November, 2021</h4>
+<h4 class="date">19 November, 2021</h4>
 
 </div>
 
@@ -433,7 +433,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-18
+<strong>Last updated:</strong> 2021-11-19
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree131582ddd8d841082b390817f65e41b4dcf85074targetblank131582da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/131582ddd8d841082b390817f65e41b4dcf85074" target="_blank">131582d</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree131582ddd8d841082b390817f65e41b4dcf85074targetblank131582da" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree171aa373a7b12a48f5ef7f8f8d6702114f9e6b9btargetblank171aa37a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/131582ddd8d841082b390817f65e41b4dcf85074" target="_blank">131582d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b" target="_blank">171aa37</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/171aa373a7b12a48f5ef7f8f8d6702114f9e6b9b/analysis/loading_data.Rmd" target="_blank">171aa37</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-19
+</td>
+<td>
+updated loading pH data and color palettes
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/75399eb7487e41555eee3b319d2d92a3738af34f/docs/loading_data.html" target="_blank">75399eb</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1465,7 +1499,8 @@ ph_surface_2x2 &lt;- full_join(bgc_data, bgc_metadata) %&gt;%
    ) %&gt;% 
   select(
     -c(doxy_adjusted:nitrate_adjusted_error),  # check column selection
-    -c(profile_doxy_qc, profile_nitrate_qc)
+    -c(profile_doxy_qc: profile_cdom_qc),
+    -c(profile_cndc_qc:profile_up_radiance555_qc)
     ) %&gt;% 
   mutate(depth = swDepth(pres_adjusted, latitude = lat),
          .before = pres_adjusted) %&gt;%
@@ -1750,10 +1785,10 @@ bgc_metadata %&gt;%
 <p>e.g.: a QC flag ‘4’ (bad data) set by the Grey List Test cannot be decreased to QC flag ‘3’ (bad data that are potentially correctable) set by the Gross Salinity or Temperature Sensor Drift Test.</p>
 <table>
 <colgroup>
-<col width="31%" />
-<col width="13%" />
+<col width="30%" />
 <col width="14%" />
-<col width="40%" />
+<col width="15%" />
+<col width="39%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1878,9 +1913,9 @@ bgc_metadata %&gt;%
 <table>
 <colgroup>
 <col width="28%" />
-<col width="12%" />
 <col width="13%" />
-<col width="45%" />
+<col width="13%" />
+<col width="44%" />
 </colgroup>
 <thead>
 <tr class="header">
