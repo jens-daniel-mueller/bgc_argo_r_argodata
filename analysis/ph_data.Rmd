@@ -39,12 +39,6 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x
 
 ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
-# ph_merge <-
-#   read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds")) %>% 
-#   select(
-#     -c(doxy_adjusted:nitrate_adjusted_error),
-#     -c(profile_doxy_qc, profile_nitrate_qc)
-#   )
 ```
 
 ```{r set_global_theme, include=FALSE}
@@ -74,35 +68,35 @@ ph_surface_SO <- ph_surface_2x2 %>%
 
 #### Data offset with depth
 
-Plot the difference between in-situ observed pH and the mean surface pH (20m) for each depth level
+Plot the difference between in-situ observed pH and the profile-mean surface pH (20m)
 
 ```{r SO_offset_from_the_mean}
 
-ph_SO <- ph_surface_SO %>%
-  group_by(month) %>%
-  summarise(ph_month_ave = mean(ph_in_situ_total_adjusted))   # mean pH in top 20 m for each month
+# calculate the mean pH for each profile 
+mean_profile_ph <- ph_surface_SO %>% 
+  group_by(float_serial_no, cycle_number) %>% 
+  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted), 
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph,   
+         .after = mean_prof_ph) # subtract the mean profile pH from the measured in situ pH
 
-ph_SO = full_join(ph_SO, ph_surface_SO, by = 'month') %>%
-  mutate(offset = ph_in_situ_total_adjusted-ph_month_ave, 
-         .after = ph_month_ave) # subtract the surface mean from the in-situ pH, for each month
-
-ph_SO %>%
+mean_profile_ph %>%
   ggplot()+
-  geom_jitter(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
+  geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
   scale_y_reverse()+
-  geom_vline(xintercept = 0, col = 'red', size = 1.5)+
-  facet_wrap(~month)+
+  geom_vline(xintercept = 0, col = 'red', size = 0.7)+
   labs(x = 'offset (pH units)',
        y = 'depth (m)',
        col = 'year',
-       title = 'in situ pH - mean pH')
+       title = 'in situ pH - mean profile pH')
 ```
 
 #### Monthly climatological map
 
 Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
 
-```{r climatological_monthly_map}
+```{r climatological_monthly_map, fig_asp=2}
 
 # average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean_SO <- ph_surface_SO %>%
@@ -125,13 +119,13 @@ map +
        y = 'lat',
        fill = 'pH',
        title = 'Monthly average pH (Apr 2014 - Aug 2021)') +
-  theme(legend.position = 'bottom') +
-  facet_wrap(~month)
+  theme(legend.position = 'right') +
+  facet_wrap(~month, ncol = 2)
 
 
 ```
 
-```{r using_ggOceanMap}
+```{r using_ggOceanMaps}
 
 basemap(limits = -30, data = ph_mean_SO) +   # change to polar projection 
   geom_spatial_tile(data = ph_mean_SO, 

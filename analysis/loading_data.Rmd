@@ -74,7 +74,7 @@ Delayed-mode BGC data may be available as early as 5-6 cycles after initial data
 *Argo User Manual: <https://archimer.ifremer.fr/doc/00187/29825/86414.pdf>*
 
 ```{r load_indeces}
-bgc_subset <- argo_global_synthetic_prof() %>%
+bgc_index <- argo_global_synthetic_prof() %>%
   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
   argo_filter_date(date_min = '2013-01-01',
                    date_max = Sys.time())  
@@ -107,10 +107,10 @@ bgc_subset <- argo_global_synthetic_prof() %>%
 
 Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)
 
-```{r load_data}
+```{r load_data_and_harmonize_variables}
 
 bgc_data <- argo_prof_levels(
-  path = bgc_subset,
+  path = bgc_index,
   vars =
     c(
       'PRES_ADJUSTED',
@@ -135,6 +135,8 @@ bgc_data <- argo_prof_levels(
   quiet = TRUE
 ) 
 # read in the profiles (takes a while)
+
+  
 ```
 
 The data is read in from the cached files stored in the path specified in `set_argo_cache_dir()` (in this case, `r path_argo`). To download data directly from the files stored on the ifremer server, set `max_global_cache_age` and `max_data_cache_age` to `-Inf`, which will force a new download.
@@ -145,7 +147,7 @@ Read in the corresponding metadata:
 
 ```{r load_metadata}
 
-bgc_metadata <- argo_prof_prof(path = bgc_subset)
+bgc_metadata <- argo_prof_prof(path = bgc_index)
 
 ```
 
@@ -176,8 +178,20 @@ Join the metadata and data together into one dataset
 
 ```{r create_dataset}
 
-bgc_merge <-
-  full_join(bgc_data, bgc_metadata)
+bgc_merge <- full_join(bgc_data, bgc_metadata) %>% 
+  select(-c(profile_chla_qc:profile_cdom_qc),
+        -c(profile_cndc_qc:profile_up_radiance555_qc)) %>% 
+    rename(lon = longitude, 
+          lat = latitude) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
+    lon = as.numeric(as.character(lon))) %>% 
+  mutate(depth = swDepth(pres_adjusted, latitude =  lat), 
+         .before = pres_adjusted)
+
 
 # bgc_merge_test <- full_join(bgc_data, bgc_calibration) (not sure why but it crashes R every time)
 
@@ -187,31 +201,12 @@ bgc_merge <-
 
 ### Full data
 
-```{r harmonize_variables}
-
-bgc_merge <- bgc_merge %>% 
-  rename(lon = longitude, 
-         lat = latitude) %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
-    lon = as.numeric(as.character(lon))
-   ) %>% 
-  select(
-        -c(profile_chla_qc:profile_cdom_qc),
-        -c(profile_cndc_qc:profile_up_radiance555_qc)
-   )
-
-```
-
 ```{r write_data_to_files}
 
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
-bgc_subset %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_subset.rds"))
+bgc_index %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
 
 # bgc_calibration %>%
 #  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
@@ -228,12 +223,10 @@ bgc_merge %>%
 
 ```{r create_pH_data}
 
-# create a dataframe of full pH data (only good data) with corresponding CTD and metadata 
+# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid 
 ph_merge_1x1 <- bgc_merge %>% 
   select(-c(doxy_adjusted:nitrate_adjusted_error),
          -c(profile_doxy_qc, profile_nitrate_qc)) %>% 
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), 
-         .before = pres_adjusted) %>% 
   filter(ph_in_situ_total_adjusted_qc == '1') %>% 
   mutate(year = year(date),
          month = month(date),
@@ -241,52 +234,17 @@ ph_merge_1x1 <- bgc_merge %>%
 
 
 # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
-ph_surface_1x1 <- full_join(bgc_data, bgc_metadata) %>%
-  rename(lon = longitude, 
-         lat = latitude) %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
-    lon = as.numeric(as.character(lon))
-   ) %>% 
-  select(
-    -c(doxy_adjusted:nitrate_adjusted_error),
-    -c(profile_doxy_qc:profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc)
-    ) %>% 
-  mutate(depth = swDepth(pres_adjusted, latitude = lat),
-         .before = pres_adjusted) %>%
-  filter(ph_in_situ_total_adjusted_qc == '1',
-         between(depth, 0, 20)) %>% 
-  mutate(year = year(date),
-         month = month(date),
-         .after = n_prof)
+ph_surface_1x1 <- ph_merge_1x1 %>% 
+  filter(between(depth, 0, 20)) 
 
 # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid 
-ph_surface_2x2 <- full_join(bgc_data, bgc_metadata) %>%
-  rename(lon = longitude, 
-         lat = latitude) %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+ph_surface_2x2 <- ph_surface_1x1 %>%
   mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89.5, 89.5, 2)), 
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
     lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(20.5, 379.5, 2)), 
+    lon = cut(lon, seq(20, 380, 2), seq(20, 379, 2)), 
     lon = as.numeric(as.character(lon))
-   ) %>% 
-  select(
-    -c(doxy_adjusted:nitrate_adjusted_error),  # check column selection
-    -c(profile_doxy_qc: profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc)
-    ) %>% 
-  mutate(depth = swDepth(pres_adjusted, latitude = lat),
-         .before = pres_adjusted) %>%
-  filter(ph_in_situ_total_adjusted_qc == '1',
-         between(depth, 0, 20)) %>% 
-  mutate(year = year(date),
-         month = month(date),
-         .after = n_prof)
+   )   # regrid into 2x2º grid 
 
 ```
 
@@ -619,48 +577,85 @@ The QC flag assigned by a test cannot override a higher value assigned by a prev
 
 e.g.: a QC flag '4' (bad data) set by the Grey List Test cannot be decreased to QC flag '3' (bad data that are potentially correctable) set by the Gross Salinity or Temperature Sensor Drift Test.
 
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | Application Order for CTD parameters | Test Number (n) | Binary ID (2^n^) | Test Name                                       |
-|--------------------------------------|-----------------|------------------|-------------------------------------------------|
++======================================+=================+==================+=================================================+
 | 1                                    | 1               | 2                | Platform Identification Test                    |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 2                                    | 2               | 4                | Impossible Date Test                            |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 3                                    | 3               | 8                | Impossible Location Test                        |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 4                                    | 4               | 16               | Position on Land Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 5                                    | 5               | 32               | Impossible Speed Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 6                                    | 15              | 32768            | Grey List Test                                  |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 7                                    | 19              | 524288           | Deepest Pressure Test                           |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 8                                    | 6               | 64               | Global Range Test                               |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 9                                    | 7               | 128              | Regional Range Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 10                                   | 8               | 256              | Pressure Increasing Test                        |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 11                                   | 9               | 512              | Spike Test                                      |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 12                                   | 25              | 33554432         | MEDD Test                                       |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 13                                   | 12              | 4096             | Digit Rollover Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 14                                   | 13              | 8192             | Stuck Value Test                                |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 15                                   | 14              | 16384            | Density Inversion Test                          |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 16                                   | 16              | 65536            | Gross Salinity or Temperature Sensor Drift Test |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | 17                                   | 18              | 261144           | Frozen Profile Test                             |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 | *18*                                 | *17*            | 131072           | *Visual QC Test*                                |
++--------------------------------------+-----------------+------------------+-------------------------------------------------+
 
 The real-time tests for BGC parameters are performed in the order described in the following table:
 
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | Application order for BGC parameters | Test Number (n) | Binary ID (2^n^) | Test Name                                                  |
-|--------------------------------------|-----------------|------------------|------------------------------------------------------------|
++======================================+=================+==================+============================================================+
 | 1                                    | 19              | 524288           | Deepest Pressure Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 2                                    | 1               | 2                | Platform Identification Test                               |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 3                                    | 2               | 4                | Impossible Date Test                                       |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 4                                    | 3               | 8                | Impossible Location Test                                   |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 5                                    | 4               | 16               | Position on Land Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 6                                    | 5               | 32               | Impossible Speed Test                                      |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 7                                    | 6               | 64               | Global Range Test                                          |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 8                                    | 7               | 128              | Regional Range Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 9                                    | 9               | 512              | Spike Test                                                 |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 10                                   | 11              | 2048             | Gradient Test                                              |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 11                                   | 12              | 4096             | Digit Rollover Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 12                                   | 13              | 8192             | Stuck Value Test                                           |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 13                                   | 15              | 32768            | Grey List Test                                             |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | *14*                                 | *16*            | *65536*          | *Gross Temperature Sensor Drift Test (only for TEMP_DOXY)* |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 15                                   | 18              | 261144           | Frozen Profile Test                                        |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | 16                                   |                 |                  | BGC parameter-specific tests                               |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 | *17*                                 | *17*            | *131072*         | *Visual QC Test*                                           |
++--------------------------------------+-----------------+------------------+------------------------------------------------------------+
 
 #### Delayed-Mode Quality Control
 
