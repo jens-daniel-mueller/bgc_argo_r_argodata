@@ -64,17 +64,17 @@ ph_surface_SO <- ph_surface_2x2 %>%
   filter(lat <= -30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
- max(ph_surface_SO$lat)
-# min(ph_surface$lat)
-# table(ph_surface$ph_in_situ_total_adjusted_qc)
-# max(ph_surface$depth)
-# min(ph_surface$date)
-# max(ph_surface$date)
+# max(ph_surface_SO$lat)
+# min(ph_surface_SO$lat)
+# table(ph_surface_SO$ph_in_situ_total_adjusted_qc)
+# max(ph_surface_SO$depth)
+# min(ph_surface_SO$date)
+# max(ph_surface_SO$date)
 ```
 
 #### Data offset with depth
 
-Plot the difference between in-situ observed pH and the mean surface pH (20m)
+Plot the difference between in-situ observed pH and the mean surface pH (20m) for each depth level
 
 ```{r SO_offset_from_the_mean}
 
@@ -88,14 +88,14 @@ ph_SO = full_join(ph_SO, ph_surface_SO, by = 'month') %>%
 
 ph_SO %>%
   ggplot()+
-  geom_jitter(aes(x = offset, y = depth), size = 0.3, pch = 1) +
+  geom_jitter(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
   scale_y_reverse()+
   geom_vline(xintercept = 0, col = 'red', size = 1.5)+
   facet_wrap(~month)+
   labs(x = 'offset (pH units)',
        y = 'depth (m)',
+       col = 'year',
        title = 'in situ pH - mean pH')
-
 ```
 
 #### Monthly climatological map
