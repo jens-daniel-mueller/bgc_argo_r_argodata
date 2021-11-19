@@ -47,6 +47,12 @@ ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x
 #   )
 ```
 
+```{r set_global_theme, include=FALSE}
+
+theme_set(theme_bw())
+
+```
+
 ### Southern Ocean surface pH
 
 The focus here is on surface pH (in the top 20 m of the watercolumn), in the region south of 30ºS
@@ -58,7 +64,7 @@ ph_surface_SO <- ph_surface_2x2 %>%
   filter(lat <= -30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
-# max(ph_surface$lat)
+ max(ph_surface_SO$lat)
 # min(ph_surface$lat)
 # table(ph_surface$ph_in_situ_total_adjusted_qc)
 # max(ph_surface$depth)
@@ -66,15 +72,35 @@ ph_surface_SO <- ph_surface_2x2 %>%
 # max(ph_surface$date)
 ```
 
+#### Data offset with depth
+
+Plot the difference between in-situ observed pH and the mean surface pH (20m)
+
+```{r SO_offset_from_the_mean}
+
+ph_SO <- ph_surface_SO %>%
+  group_by(month) %>%
+  summarise(ph_month_ave = mean(ph_in_situ_total_adjusted))   # mean pH in top 20 m for each month
+
+ph_SO = full_join(ph_SO, ph_surface_SO, by = 'month') %>%
+  mutate(offset = ph_in_situ_total_adjusted-ph_month_ave, 
+         .after = ph_month_ave) # subtract the surface mean from the in-situ pH, for each month
+
+ph_SO %>%
+  ggplot()+
+  geom_jitter(aes(x = offset, y = depth), size = 0.3, pch = 1) +
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 1.5)+
+  facet_wrap(~month)+
+  labs(x = 'offset (pH units)',
+       y = 'depth (m)',
+       title = 'in situ pH - mean pH')
+
+```
+
 #### Monthly climatological map
 
 Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
-
-```{r set_global_theme, include=FALSE}
-
-theme_set(theme_bw())
-
-```
 
 ```{r climatological_monthly_map}
 
