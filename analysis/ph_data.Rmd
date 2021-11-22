@@ -24,6 +24,7 @@ library(ggOceanMaps)
 ```{r set_root_directory}
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
 ```
 
 # Load pH data
@@ -39,6 +40,53 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x
 
 ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
+region_masks_all <-
+  stars::read_ncdf(paste(path_basin_mask, "RECCAP2_region_masks_all_v20210412.nc", sep = "")) %>%
+  as_tibble() %>% 
+  mutate(seamask = as.factor(seamask))
+```
+
+```{r separate_ocean_regions}
+# harmonise the latitude longitude bands to the pH data (2x2 grid)
+region_masks_all_seamask_2x2 <- region_masks_all %>% 
+  select(lat, lon, seamask) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))
+  )
+
+region_masks_all <- region_masks_all %>% 
+  select(-seamask) %>% 
+  pivot_longer(open_ocean:southern, 
+               names_to = 'region',
+               values_to = 'value') %>% 
+  mutate(value = as.factor(value))
+
+# harmonise the lat/lon of the regional separations to our pH data 
+region_masks_all_1x1 <- region_masks_all %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
+    lon = as.numeric(as.character(lon))
+)
+
+region_masks_all_2x2 <- region_masks_all %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))
+  )
+
+# add the region names to the surface pH data used for mapping 
+ph_surface_2x2 <- inner_join(ph_surface_2x2, region_masks_all_2x2)
+ph_surface_1x1 <- inner_join(ph_surface_1x1, region_masks_all_1x1)
 ```
 
 ```{r set_global_theme, include=FALSE}
@@ -55,11 +103,12 @@ The focus here is on surface pH (in the top 20 m of the watercolumn), in the reg
 
 # select pH data for the Southern Ocean, south of 30ºS 
 ph_surface_SO <- ph_surface_2x2 %>%
-  filter(lat <= -30)
+  filter(region == 'southern', 
+         value != 0)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
-# max(ph_surface_SO$lat)
-# min(ph_surface_SO$lat)
+#max(ph_surface_SO$lat)
+#min(ph_surface_SO$lat)
 # table(ph_surface_SO$ph_in_situ_total_adjusted_qc)
 # max(ph_surface_SO$depth)
 # min(ph_surface_SO$date)
@@ -127,7 +176,7 @@ map +
 
 ```{r using_ggOceanMaps}
 
-basemap(limits = -30, data = ph_mean_SO) +   # change to polar projection 
+basemap(limits = -32, data = ph_mean_SO) +   # change to polar projection 
   geom_spatial_tile(data = ph_mean_SO, 
             aes(x = lon,
                 y = lat,
@@ -146,24 +195,46 @@ basemap(limits = -30, data = ph_mean_SO) +   # change to polar projection
 
 #### Monthly timeseries
 
-Plot timeseries of monthly pH values, averaged over the whole region south of 30ºS
+Timeseries of monthly mean pH values, over the three different Southern Ocean regions
+
+```{r map_southern_ocean_biomes}
+# plot the region separations on a map 
+ggplot() +
+  geom_raster(data = region_masks_all_seamask_2x2 %>% 
+                filter(seamask == 0), 
+              aes(x = lon, y = lat)) +
+  geom_raster(data = region_masks_all_2x2 %>% 
+                filter(region == 'southern',
+                       value != 0), 
+              aes(x = lon, 
+                  y = lat, 
+                  fill = value)) +
+  coord_quickmap(expand = 0) +
+  labs(title = 'Southern Ocean regions', 
+       fill = 'region')
+```
 
 ```{r plot_monthly_ph_timeseries}
 
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
 ph_month_SO <- ph_surface_SO %>%
-  group_by(year, month) %>%
+  group_by(year, month, value) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # timeseries of monthly pH values over 2014-2021 (separate panels for each month)
 ph_month_SO %>%
-  ggplot(aes(x = year, y = ph_ave)) +
+  ggplot(aes(x = year, 
+             y = ph_ave, 
+             group = value, 
+             col = value)) +
   facet_wrap(~month) +
   geom_line() +
   geom_point() +
   labs(x = 'year', 
        y = 'pH in situ (total scale)', 
-       title = 'monthly mean pH (Apr 2014-Aug 2021, south of 30ºS)')
+       title = 'monthly mean pH (Apr 2014-Aug 2021, Southern Ocean)', 
+       col = 'region')
+
 ```
 
 ```{r weird_plot, eval=FALSE}
@@ -176,21 +247,26 @@ ph_month_SO %>%
 #   labs(x = 'year', y = 'pH in situ (total scale)', title = 'monthly mean pH (Apr 2014-Aug 2021)')
 ```
 
-Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), over the whole region south of 30ºS
+Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each Southern Ocean region (1, 2, 3)
 
 ```{r monthly_pH_per_year}
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
 ph_month_SO %>%
   filter(year != 2014,
-         year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
-  ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
+         year != 2021,
+         value != 0) %>%    # remove the two years that are missing data (keep only data for full years)
+  ggplot(aes(x = month, 
+             y = ph_ave, 
+             group = year,
+             col = as.character(year)))+
   geom_line()+
   geom_point()+
-  scale_x_continuous(breaks = seq(1, 12, 1))+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_wrap(~value)+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean pH (Jan 2015-Dec 2020, south of 30ºS)',
+       title = 'monthly mean pH (Jan 2015-Dec 2020, Southern Ocean)',
        col = 'year')
 ```
 
