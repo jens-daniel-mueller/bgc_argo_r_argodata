@@ -40,6 +40,7 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x
 
 ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
+# load in the RECCAP biome separations 
 region_masks_all <-
   stars::read_ncdf(paste(path_basin_mask, "RECCAP2_region_masks_all_v20210412.nc", sep = "")) %>%
   as_tibble() %>% 
@@ -47,7 +48,7 @@ region_masks_all <-
 ```
 
 ```{r separate_ocean_regions}
-# harmonise the latitude longitude bands to the pH data (2x2 grid)
+# harmonise the latitude longitude bands of the biomes to the pH data (2x2 grid)
 region_masks_all_seamask_2x2 <- region_masks_all %>% 
   select(lat, lon, seamask) %>% 
   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
@@ -101,7 +102,7 @@ The focus here is on surface pH (in the top 20 m of the watercolumn), in the reg
 
 ```{r select_relevant_ph_data}
 
-# select pH data for the Southern Ocean, south of 30ºS 
+# select pH data for the Southern Ocean, as defined by the RECCAP regions  
 ph_surface_SO <- ph_surface_2x2 %>%
   filter(region == 'southern', 
          value != 0)
@@ -117,11 +118,11 @@ ph_surface_SO <- ph_surface_2x2 %>%
 
 #### Data offset with depth
 
-Plot the difference between in-situ observed pH and the profile-mean surface pH for the upper 20 m
+Plot the difference between in-situ observed pH and the profile-mean surface pH for the upper 20 m. This difference represents the variability of the surface pH values with respect to the mean surface pH of the upper 20 m.
 
 ```{r SO_offset_from_the_mean}
 
-# calculate the mean pH for each profile 
+# calculate the mean pH for each surface profile 
 mean_profile_ph <- ph_surface_SO %>% 
   group_by(float_serial_no, cycle_number) %>% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted), 
@@ -195,7 +196,7 @@ basemap(limits = -32, data = ph_mean_SO) +   # change to polar projection
 
 #### Monthly timeseries
 
-Timeseries of monthly mean pH values, over the three different Southern Ocean regions
+Timeseries of monthly mean pH values, over the three different Southern Ocean regions (separated based on RECCAP biomes):
 
 ```{r map_southern_ocean_biomes}
 # plot the region separations on a map 
@@ -247,7 +248,7 @@ ph_month_SO %>%
 #   labs(x = 'year', y = 'pH in situ (total scale)', title = 'monthly mean pH (Apr 2014-Aug 2021)')
 ```
 
-Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each Southern Ocean region (1, 2, 3)
+Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each Southern Ocean RECCAP region (1, 2, 3)
 
 ```{r monthly_pH_per_year}
 
