@@ -524,16 +524,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82f09d0de56401cff2d9f8f688f7a64f0117b612targetblank82f09d0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82f09d0de56401cff2d9f8f688f7a64f0117b612" target="_blank">82f09d0</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb1706c9a7588666cb04116ed0d7d8b92ea6d7da3targetblankb1706c9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b1706c9a7588666cb04116ed0d7d8b92ea6d7da3" target="_blank">b1706c9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82f09d0de56401cff2d9f8f688f7a64f0117b612targetblank82f09d0a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb1706c9a7588666cb04116ed0d7d8b92ea6d7da3targetblankb1706c9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82f09d0de56401cff2d9f8f688f7a64f0117b612" target="_blank">82f09d0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b1706c9a7588666cb04116ed0d7d8b92ea6d7da3" target="_blank">b1706c9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -586,6 +586,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b1706c9a7588666cb04116ed0d7d8b92ea6d7da3/analysis/ph_data.Rmd" target="_blank">b1706c9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+<td>
+updated timeseries plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/ph_data.html" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1036,6 +1070,7 @@ ph_surface_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/ph_sur
 
 ph_surface_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
 
+# load in the RECCAP biome separations 
 region_masks_all &lt;-
   stars::read_ncdf(paste(path_basin_mask, &quot;RECCAP2_region_masks_all_v20210412.nc&quot;, sep = &quot;&quot;)) %&gt;%
   as_tibble() %&gt;% 
@@ -1045,7 +1080,7 @@ region_masks_all &lt;-
  lon, lat</code></pre>
 <pre><code>Warning in .get_nc_projection(meta$attribute, rep_var, all_coord_var): No
 projection information found in nc file.</code></pre>
-<pre class="r"><code># harmonise the latitude longitude bands to the pH data (2x2 grid)
+<pre class="r"><code># harmonise the latitude longitude bands of the biomes to the pH data (2x2 grid)
 region_masks_all_seamask_2x2 &lt;- region_masks_all %&gt;% 
   select(lat, lon, seamask) %&gt;% 
   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
@@ -1090,7 +1125,7 @@ ph_surface_2x2 &lt;- inner_join(ph_surface_2x2, region_masks_all_2x2)</code></pr
 <div id="southern-ocean-surface-ph" class="section level3">
 <h3>Southern Ocean surface pH</h3>
 <p>The focus here is on surface pH (in the top 20 m of the watercolumn), in the region south of 30ºS</p>
-<pre class="r"><code># select pH data for the Southern Ocean, south of 30ºS 
+<pre class="r"><code># select pH data for the Southern Ocean, as defined by the RECCAP regions  
 ph_surface_SO &lt;- ph_surface_2x2 %&gt;%
   filter(region == &#39;southern&#39;, 
          value != 0)
@@ -1104,8 +1139,8 @@ ph_surface_SO &lt;- ph_surface_2x2 %&gt;%
 # max(ph_surface_SO$date)</code></pre>
 <div id="data-offset-with-depth" class="section level4">
 <h4>Data offset with depth</h4>
-<p>Plot the difference between in-situ observed pH and the profile-mean surface pH for the upper 20 m</p>
-<pre class="r"><code># calculate the mean pH for each profile 
+<p>Plot the difference between in-situ observed pH and the profile-mean surface pH for the upper 20 m. This difference represents the variability of the surface pH values with respect to the mean surface pH of the upper 20 m.</p>
+<pre class="r"><code># calculate the mean pH for each surface profile 
 mean_profile_ph &lt;- ph_surface_SO %&gt;% 
   group_by(float_serial_no, cycle_number) %&gt;% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted), 
@@ -1146,6 +1181,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/SO_offset_from_the_mean-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e96cc7f1acc3c443e2fc1949e6ae8c660560aff5/docs/figure/ph_data.Rmd/SO_offset_from_the_mean-1.png" target="_blank">e96cc7f</a>
@@ -1236,6 +1282,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e96cc7f1acc3c443e2fc1949e6ae8c660560aff5/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">e96cc7f</a>
@@ -1336,6 +1393,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/using_ggOceanMaps-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e96cc7f1acc3c443e2fc1949e6ae8c660560aff5/docs/figure/ph_data.Rmd/using_ggOceanMaps-1.png" target="_blank">e96cc7f</a>
 </td>
 <td>
@@ -1352,7 +1420,7 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="monthly-timeseries" class="section level4">
 <h4>Monthly timeseries</h4>
-<p>Timeseries of monthly mean pH values, over the three different Southern Ocean regions</p>
+<p>Timeseries of monthly mean pH values, over the three different Southern Ocean regions (separated based on RECCAP biomes):</p>
 <pre class="r"><code># plot the region separations on a map 
 ggplot() +
   geom_raster(data = region_masks_all_seamask_2x2 %&gt;% 
@@ -1370,6 +1438,43 @@ ggplot() +
 <pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
 shifted. Consider using geom_tile() instead.</code></pre>
 <p><img src="figure/ph_data.Rmd/map_southern_ocean_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_southern_ocean_biomes-1">
+Past versions of map_southern_ocean_biomes-1.png
+</button>
+</p>
+<div id="fig-map_southern_ocean_biomes-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/map_southern_ocean_biomes-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
 ph_month_SO &lt;- ph_surface_SO %&gt;%
   group_by(year, month, value) %&gt;%
@@ -1413,6 +1518,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">7a01367</a>
 </td>
 <td>
@@ -1443,7 +1559,7 @@ pasqualina-vonlanthendinenna
 #   geom_line() +
 #   geom_point() +
 #   labs(x = &#39;year&#39;, y = &#39;pH in situ (total scale)&#39;, title = &#39;monthly mean pH (Apr 2014-Aug 2021)&#39;)</code></pre>
-<p>Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each Southern Ocean region (1, 2, 3)</p>
+<p>Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each Southern Ocean RECCAP region (1, 2, 3)</p>
 <pre class="r"><code># timeseries of monthly pH values for each year (separate years on the same plot)
 ph_month_SO %&gt;%
   filter(year != 2014,
@@ -1484,6 +1600,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/monthly_pH_per_year-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/ph_data.Rmd/monthly_pH_per_year-1.png" target="_blank">7a01367</a>
@@ -1586,6 +1713,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/northeast_pacific_climatological_pH_map-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e96cc7f1acc3c443e2fc1949e6ae8c660560aff5/docs/figure/ph_data.Rmd/northeast_pacific_climatological_pH_map-1.png" target="_blank">e96cc7f</a>
@@ -1691,6 +1829,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/monthly_pH_timeseries_pacific-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b6a26a1e405e6cfce6d6b87febb0f1b07efbd493/docs/figure/ph_data.Rmd/monthly_pH_timeseries_pacific-1.png" target="_blank">b6a26a1</a>
 </td>
 <td>
@@ -1762,6 +1911,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/105630e05bfadfb5223efe666bc6f12fb75eaf3b/docs/figure/ph_data.Rmd/monthly_pH_timeseries_per_year_nepacific-1.png" target="_blank">105630e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-22
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b6a26a1e405e6cfce6d6b87febb0f1b07efbd493/docs/figure/ph_data.Rmd/monthly_pH_timeseries_per_year_nepacific-1.png" target="_blank">b6a26a1</a>
