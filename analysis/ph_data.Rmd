@@ -40,54 +40,8 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x
 
 ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
-# load in the RECCAP biome separations 
-region_masks_all <-
-  stars::read_ncdf(paste(path_basin_mask, "RECCAP2_region_masks_all_v20210412.nc", sep = "")) %>%
-  as_tibble() %>% 
-  mutate(seamask = as.factor(seamask))
-```
-
-```{r separate_ocean_regions}
-# harmonise the latitude longitude bands of the biomes to the pH data (2x2 grid)
-region_masks_all_seamask_2x2 <- region_masks_all %>% 
-  select(lat, lon, seamask) %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))
-  )
-
-region_masks_all <- region_masks_all %>% 
-  select(-seamask) %>% 
-  pivot_longer(open_ocean:southern, 
-               names_to = 'region',
-               values_to = 'value') %>% 
-  mutate(value = as.factor(value))
-
-# harmonise the lat/lon of the regional separations to our pH data 
-region_masks_all_1x1 <- region_masks_all %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
-    lon = as.numeric(as.character(lon))
-)
-
-region_masks_all_2x2 <- region_masks_all %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))
-  )
-
-# add the region names to the surface pH data used for mapping 
-ph_surface_2x2 <- inner_join(ph_surface_2x2, region_masks_all_2x2)
-ph_surface_1x1 <- inner_join(ph_surface_1x1, region_masks_all_1x1)
+regions_masks_all_seamask_2x2 <- read_rds(file = paste0(
+  path_argo_preprocessed, "/regions_masks_all_seamask_2x2.rds"))
 ```
 
 ```{r set_global_theme, include=FALSE}
@@ -275,18 +229,18 @@ ph_month_SO %>%
 
 # calculate a yearly average ph (one ph value per year, for the whole domain)
 ph_year_SO <- ph_surface_SO %>%
-  group_by(year) %>%
+  group_by(year, value) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # plot a timeseries of the yearly average pH value (one value per year)
 ph_year_SO %>%
-  ggplot(aes(x = year, y = ph_ave))+
-  lims(y = c(8.03, 8.06))+
+  ggplot(aes(x = year, y = ph_ave, group = value, col = value))+
   geom_line()+
   geom_point()+
   labs(x = 'year',
        y = 'pH in situ (total scale)',
-       title = 'yearly mean pH (Apr 2014-Aug 2021, south of 30ºS)')
+       title = 'yearly mean pH (Apr 2014-Aug 2021, south of 30ºS)', 
+       col = 'region')
 
 ```
 
