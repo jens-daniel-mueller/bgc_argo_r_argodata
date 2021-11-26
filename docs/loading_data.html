@@ -371,6 +371,9 @@ div.tocify {
     <li>
       <a href="oxygen_data.html">BGC-Argo Oxygen</a>
     </li>
+    <li>
+      <a href="oceanSODA-argo.html"></a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -408,7 +411,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">23 November, 2021</h4>
+<h4 class="date">26 November, 2021</h4>
 
 </div>
 
@@ -433,7 +436,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-23
+<strong>Last updated:</strong> 2021-11-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -524,16 +527,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree308d007b02b4f2e336b72d0f23181d602563c6f4targetblank308d007a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/308d007b02b4f2e336b72d0f23181d602563c6f4" target="_blank">308d007</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9b5df99ef78a4725e137bacc0696df22bba082bftargetblank9b5df99a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9b5df99ef78a4725e137bacc0696df22bba082bf" target="_blank">9b5df99</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree308d007b02b4f2e336b72d0f23181d602563c6f4targetblank308d007a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9b5df99ef78a4725e137bacc0696df22bba082bftargetblank9b5df99a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/308d007b02b4f2e336b72d0f23181d602563c6f4" target="_blank">308d007</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9b5df99ef78a4725e137bacc0696df22bba082bf" target="_blank">9b5df99</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -547,7 +550,12 @@ Ignored files:
 Untracked files:
     Untracked:  code/creating_dataframe.R
     Untracked:  code/creating_map.R
+    Untracked:  code/merging_oceanSODA_Argo.R
     Untracked:  code/pH_data_timeseries.R
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -586,6 +594,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9b5df99ef78a4725e137bacc0696df22bba082bf/analysis/loading_data.Rmd" target="_blank">9b5df99</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-26
+</td>
+<td>
+added oceanSODA page
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/3cc9e647bd921a07f07f983b9128e71c3a75c3a1/docs/loading_data.html" target="_blank">3cc9e64</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1735,7 +1777,13 @@ region_masks_all_seamask_1x1 %&gt;%
   write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_seamask_1x1.rds&quot;))
 
 region_masks_all_seamask_2x2 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))</code></pre>
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
+
+region_masks_all_1x1 %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_1x1.rds&quot;))
+
+region_masks_all_2x2 %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))</code></pre>
 <div id="oceansoda-ph-data" class="section level4">
 <h4>oceanSODA pH data</h4>
 <pre class="r"><code>OceanSODA &lt;-
@@ -1755,7 +1803,8 @@ OceanSODA &lt;- OceanSODA %&gt;%
     lat = as.numeric(as.character(lat)),
     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
     lon = as.numeric(as.character(lon))
-  )
+  ) %&gt;% 
+  filter(year &gt;= 2013)
   
 OceanSODA %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &#39;/OceanSODA.rds&#39;))</code></pre>
