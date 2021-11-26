@@ -40,8 +40,10 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x
 
 ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
-regions_masks_all_seamask_2x2 <- read_rds(file = paste0(
-  path_argo_preprocessed, "/regions_masks_all_seamask_2x2.rds"))
+region_masks_all_seamask_2x2 <- read_rds(file = paste0(
+  path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
+
+region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
 ```
 
 ```{r set_global_theme, include=FALSE}
@@ -79,7 +81,7 @@ Plot the difference between in-situ observed pH and the profile-mean surface pH 
 # calculate the mean pH for each surface profile 
 mean_profile_ph <- ph_surface_SO %>% 
   group_by(float_serial_no, cycle_number) %>% 
-  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted), 
+  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE), 
          .before = depth) %>% 
   ungroup() %>% 
   mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph,   
@@ -96,6 +98,33 @@ mean_profile_ph %>%
        title = 'in situ pH - mean profile pH')
 ```
 
+Bin the pH data into 2m-depth intervals and calculate the offset for each pH observation in each depth interval relative to the profile-mean pH
+
+```{r offset_SO_binned_by_depth}
+# bin the ph values into 2m bins and calculate the offset for each 2m bin 
+mean_profile_ph_binned <- ph_surface_SO %>% 
+  mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
+         depth = as.numeric(as.character(depth))) %>% 
+  group_by(float_serial_no, cycle_number) %>% 
+  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph, 
+         .after = mean_prof_ph)
+
+# plot the offset of the depth-binned values 
+mean_profile_ph_binned %>%
+  ggplot()+
+  geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 0.6)+
+  labs(x = 'offset (pH units)',
+       y = 'depth (m)',
+       col = 'year',
+       title = 'in situ pH - mean profile pH (2m depth bins)')
+
+```
+
 #### Monthly climatological map
 
 Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
@@ -103,9 +132,9 @@ Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude
 ```{r climatological_monthly_map, fig_asp=2}
 
 # average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
-ph_mean_SO <- ph_surface_SO %>%
+ph_clim_SO <- ph_surface_SO %>%
   group_by(lat, lon, month) %>%
-  summarise(ph_ave_month = mean(ph_in_situ_total_adjusted))
+  summarise(ph_clim_month = mean(ph_in_situ_total_adjusted))
 
 # read in the map from updata
 map <-
@@ -115,14 +144,14 @@ map <-
 
 # map a monthly climatology of pH (April 2014 - August 2021)
 map +
-  geom_tile(data = ph_mean_SO,
-            aes(lon, lat, fill = ph_ave_month)) +
+  geom_tile(data = ph_clim_SO,
+            aes(lon, lat, fill = ph_clim_month)) +
   lims(y = c(-85, -25)) +
   scale_fill_viridis_c() +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
-       title = 'Monthly average pH (Apr 2014 - Aug 2021)') +
+       title = 'Monthly climatological \nArgo pH (Apr 2014 - Aug 2021)') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 
@@ -131,11 +160,11 @@ map +
 
 ```{r using_ggOceanMaps}
 
-basemap(limits = -32, data = ph_mean_SO) +   # change to polar projection 
-  geom_spatial_tile(data = ph_mean_SO, 
+basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection 
+  geom_spatial_tile(data = ph_clim_SO, 
             aes(x = lon,
                 y = lat,
-                fill = ph_ave_month),
+                fill = ph_clim_month),
             linejoin = 'mitre',
             col = 'transparent',
             detail = 60)+
@@ -144,7 +173,7 @@ basemap(limits = -32, data = ph_mean_SO) +   # change to polar projection
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
-       title = 'monthly average pH (Apr 2014 - Aug 2021)')+
+       title = 'monthly climatological \nArgo pH (Apr 2014 - Aug 2021)')+
   facet_wrap(~month)
 ```
 
@@ -165,7 +194,7 @@ ggplot() +
                   y = lat, 
                   fill = value)) +
   coord_quickmap(expand = 0) +
-  labs(title = 'Southern Ocean regions', 
+  labs(title = 'Southern Ocean RECCAP regions', 
        fill = 'region')
 ```
 
@@ -187,7 +216,7 @@ ph_month_SO %>%
   geom_point() +
   labs(x = 'year', 
        y = 'pH in situ (total scale)', 
-       title = 'monthly mean pH (Apr 2014-Aug 2021, Southern Ocean)', 
+       title = 'monthly mean Argo pH (Apr 2014-Aug 2021, Southern Ocean)', 
        col = 'region')
 
 ```
@@ -221,7 +250,7 @@ ph_month_SO %>%
   facet_wrap(~value)+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean pH (Jan 2015-Dec 2020, Southern Ocean)',
+       title = 'monthly mean Argo pH (Jan 2015-Dec 2020, Southern Ocean)',
        col = 'year')
 ```
 
@@ -239,7 +268,7 @@ ph_year_SO %>%
   geom_point()+
   labs(x = 'year',
        y = 'pH in situ (total scale)',
-       title = 'yearly mean pH (Apr 2014-Aug 2021, south of 30ºS)', 
+       title = 'yearly mean Argo pH (Apr 2014-Aug 2021, south of 30ºS)', 
        col = 'region')
 
 ```
