@@ -129,7 +129,7 @@ mean_profile_ph_binned %>%
 
 Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
 
-```{r climatological_monthly_map, fig_asp=2}
+```{r climatological_monthly_map, fig.asp=2}
 
 # average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_clim_SO <- ph_surface_SO %>%
@@ -158,7 +158,7 @@ map +
 
 ```
 
-```{r using_ggOceanMaps}
+```{r using_ggOceanMaps, fig.asp=2}
 
 basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection 
   geom_spatial_tile(data = ph_clim_SO, 
@@ -174,7 +174,7 @@ basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection
        y = 'lat',
        fill = 'pH',
        title = 'monthly climatological \nArgo pH (Apr 2014 - Aug 2021)')+
-  facet_wrap(~month)
+  facet_wrap(~month, ncol = 2)
 ```
 
 #### Monthly timeseries

@@ -10,7 +10,7 @@ editor_options:
 # Task 
 Compare BGC-Argo pH data to pH from the OceanSODA surface data product 
 
-```{r load_libraries}
+```{r load_libraries, include=FALSE}
 # load in the necessary libraries
 library(tidyverse)
 library(argodata)
@@ -99,17 +99,18 @@ theme_set(theme_bw())
 
 ```{r regrid_data}
 
-# regrid the data into 2x2º, which is better for mapping 
-argo_OceanSODA_SO_2x2 <- argo_OceanSODA_SO_1x1 %>%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon)))
+# # regrid the data into 2x2º, which is better for mapping 
+# argo_OceanSODA_SO_2x2 <- argo_OceanSODA_SO_1x1 %>%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#     lon = as.numeric(as.character(lon)))
 
 ```
 
-```{r climatological_map}
+Climatological OceanSODA pH
+```{r climatological_map, fig.asp=2}
 
 # read in the map from updata
 map <-
@@ -118,13 +119,19 @@ map <-
                  sep = ""))
 
 # calculate average monthly pH between April 2014 and August 2021 
-argo_OceanSODA_clim <- argo_OceanSODA_SO_2x2 %>% 
+argo_OceanSODA_SO_clim_2x2 <- argo_OceanSODA_SO_1x1 %>% 
   group_by(lon, lat, month) %>% 
   summarise(clim_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE),
-            clim_argo_ph = mean(argo_ph_month, na.rm = TRUE)) 
+            clim_argo_ph = mean(argo_ph_month, na.rm = TRUE)) %>% 
+    mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))) %>% 
+  mutate(offset_clim = clim_OceanSODA_ph - clim_argo_ph)
 
 map +
-  geom_tile(data = argo_OceanSODA_clim,
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
             aes(lon, lat, fill = clim_OceanSODA_ph)) +
   lims(y = c(-85, -25)) +
   scale_fill_viridis_c() +
@@ -136,11 +143,11 @@ map +
   facet_wrap(~month, ncol = 2)
 ```
 
-```{r polar_projection_map}
+```{r polar_projection_map, fig.asp=2}
 
 # plot the climatological monthly OceanSODA pH on a polar projection 
-basemap(limits = -32, data = argo_OceanSODA_clim) +   # change to polar projection
-  geom_spatial_tile(data = argo_OceanSODA_clim,
+basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
                     aes(x = lon,
                         y = lat,
                         fill = clim_OceanSODA_ph),
@@ -148,13 +155,50 @@ basemap(limits = -32, data = argo_OceanSODA_clim) +   # change to polar projecti
                     col = 'transparent',
                     detail = 60)+
   scale_fill_viridis_c()+
-  theme(legend.position = 'bottom')+
+  theme(legend.position = 'right')+
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
        title = 'monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)')+
-  facet_wrap(~month)
+  facet_wrap(~month, ncol = 2)
 ```
+
+### Climatological monthly Argo pH
+Climatological Argo pH 
+
+```{r clim_map_argo_pH, fig.asp=2}
+map +
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
+            aes(lon, lat, fill = clim_argo_ph)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'pH',
+       title = 'Monthly climatological \nArgo pH (Apr 2014 - Aug 2021)') +
+  theme(legend.position = 'right') +
+  facet_wrap(~month, ncol = 2)
+```
+
+```{r polar_projection_Argo_pH, fig.asp=2}
+
+basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = clim_argo_ph),
+                    linejoin = 'mitre',
+                    col = 'transparent',
+                    detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = 'right')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'pH',
+       title = 'monthly climatological \nArgo pH (Apr 2014 - Aug 2021)')+
+  facet_wrap(~month, ncol = 2)
+```
+
 
 ### Timeseries of monthly OceanSODA pH 
 Evolution of monthly surface pH, for the three Southern Ocean RECCAP regions 
@@ -179,7 +223,7 @@ ggplot() +
 ```{r plot_monthly_timeseries}
 
 # plot timeseries of monthly OceanSODA pH
-argo_OceanSODA_SO_2x2 %>%
+argo_OceanSODA_SO_1x1 %>%
   group_by(year, month, value) %>%  # compute regional mean OceanSODA pH for the three biomes
   mutate(OceanSODA_ph_region = mean(OceanSODA_ph, na.rm = TRUE)) %>%
   ggplot(aes(x = year,
@@ -196,7 +240,7 @@ argo_OceanSODA_SO_2x2 %>%
 
 ```{r yearly_timeseries_monthly_oceanSODA_pH}
 
-argo_OceanSODA_SO_2x2 %>%
+argo_OceanSODA_SO_1x1 %>%
   group_by(year, month, value) %>%   # compute regional mean OceanSODA pH for the three biomes
   mutate(OceanSODA_ph_region = mean(OceanSODA_ph, na.rm = TRUE)) %>%
   filter(year != 2014,
@@ -217,25 +261,67 @@ argo_OceanSODA_SO_2x2 %>%
 
 ```
 
+### Timeseries of Monthly Argo pH
+
+```{r timeseries_argo_pH_per_month}
+argo_OceanSODA_SO_1x1 %>%
+  group_by(year, month, value) %>%  # compute regional mean Argo pH for the three biomes
+  mutate(argo_ph_region = mean(argo_ph_month, na.rm = TRUE)) %>%
+  ggplot(aes(x = year,
+             y = argo_ph_region,
+             col = value)) +
+  facet_wrap(~month) +
+  geom_line() +
+  geom_point() +
+  labs(x = 'year',
+       y = 'pH in situ (total scale)',
+       title = 'monthly mean Argo pH (Apr 2014-Aug 2021, Southern Ocean)',
+       col = 'region')
+```
+
+```{r timeseries_argo_pH_per_region}
+
+argo_OceanSODA_SO_1x1 %>%
+  group_by(year, month, value) %>%   # compute regional mean Argo pH for the three biomes
+  mutate(argo_ph_region = mean(argo_ph_month, na.rm = TRUE)) %>%
+  filter(year != 2014,
+         year != 2021,
+         value != 0) %>%
+  ggplot(aes(x = month,
+             y = argo_ph_region,
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_wrap(~value)+
+  labs(x = 'month',
+       y = 'pH in situ (total scale)',
+       title = 'monthly mean Argo pH (Jan 2015-Dec 2020, Southern Ocean)',
+       col = 'year')
+
+```
+
+
 ### Comparison between Argo and OceanSODA pH
 
 Calculate the difference between Argo and OceanSODA pH values 
 
-In-situ monthly pH: 
+Offset between in-situ monthly pH: 
 
 ```{r calculate_in_situ_offset}
 
-argo_OceanSODA_SO_2x2 <- argo_OceanSODA_SO_2x2 %>%
+argo_OceanSODA_SO_1x1 <- argo_OceanSODA_SO_1x1 %>%
   mutate(offset = OceanSODA_ph - argo_ph_month)
 
-argo_OceanSODA_SO_2x2 %>%
+argo_OceanSODA_SO_1x1 %>%
   drop_na() %>%
   ggplot() +
-  geom_point(aes(x = offset, y = date, col = value), size = 0.7, pch = 19) +
-  geom_vline(xintercept = 0, size = 1, col = 'red')+
+  geom_point(aes(x = date, y = offset, col = value), size = 0.7, pch = 19) +
+  geom_hline(yintercept = 0, size = 1, col = 'red')+
   labs(title = 'oceanSODA pH - Argo pH',
-       x = 'offset (pH units)',
-       y = 'date',
+       x = 'date',
+       y = 'offset (pH units)',
        col = 'region')
 ```
 
@@ -244,28 +330,31 @@ Offset between climatological Argo and climatological OceanSODA pH:
 ```{r calculate_clim_offset}
 # Offset between climatological argo and climatological OceanSODA pH 
 
-argo_OceanSODA_clim <- argo_OceanSODA_clim %>%
+argo_OceanSODA_SO_clim_1x1 <- argo_OceanSODA_SO_1x1 %>% 
+  group_by(lon, lat, month) %>% 
+  summarise(clim_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE),
+            clim_argo_ph = mean(argo_ph_month, na.rm = TRUE)) %>% 
   mutate(offset_clim = clim_OceanSODA_ph - clim_argo_ph)
 
-argo_OceanSODA_clim %>%
+argo_OceanSODA_SO_clim_1x1 %>%
   drop_na() %>%
   ggplot() +
-  geom_point(aes(x = offset_clim, y = month), size = 0.7, pch = 19) +
-  geom_vline(xintercept = 0, size = 1, col = 'red')+
+  geom_point(aes(x = month, y = offset_clim), size = 0.7, pch = 19) +
+  geom_hline(yintercept = 0, size = 1, col = 'red')+
   scale_y_continuous(breaks = seq(1, 12, 1))+
   labs(title = 'clim oceanSODA pH - clim Argo pH',
-       x = 'offset (pH units)',
-       y = 'month',
+       x = 'month',
+       y = 'offset (pH units)',
        col = 'region')
 ```
 
-```{r map_climatological_offset}
+```{r map_climatological_offset, fig.asp=2}
 # plot the offsets on a map of the Southern Ocean
 map +
-  geom_tile(data = argo_OceanSODA_clim,
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
             aes(lon, lat, fill = offset_clim)) +
   lims(y = c(-85, -30)) +
-  scale_fill_viridis_c() +
+  metR::scale_fill_divergent(high = 'red', low = 'blue', midpoint = 0) +
   labs(x = 'lon',
        y = 'lat',
        fill = 'offset (pH units)',
@@ -275,23 +364,23 @@ map +
 
 ```
 
-```{r map_climatological_offsets_polar_map}
+```{r map_climatological_offsets_polar_map, fig.asp=2}
 
-basemap(limits = -32, data = argo_OceanSODA_clim) +   # change to polar projection
-  geom_spatial_tile(data = argo_OceanSODA_clim,
+basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
                     aes(x = lon,
                         y = lat,
                         fill = offset_clim),
                     linejoin = 'mitre',
                     col = 'transparent',
                     detail = 60)+
-  scale_fill_viridis_c()+
-  theme(legend.position = 'bottom')+
+  metR::scale_fill_divergent(high = 'red', low = 'blue', midpoint = 0)+
+  theme(legend.position = 'right')+
   labs(x = 'lon',
        y = 'lat',
        fill = 'offset (pH units)',
        title = 'clim Ocean SODA pH - clim Argo pH')+
-  facet_wrap(~month)
+  facet_wrap(~month, ncol = 2)
 
 ```
 
