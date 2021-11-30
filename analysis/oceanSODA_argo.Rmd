@@ -14,7 +14,6 @@ Compare BGC-Argo pH data to pH from the OceanSODA surface data product
 # load in the necessary libraries
 library(tidyverse)
 library(argodata)
-library(ggplot2)
 library(lubridate)
 library(ggOceanMaps)
 library(metR)
@@ -64,11 +63,12 @@ map <-
 ## Harmonise the two datasets 
 
 Calculate monthly average pH for Argo pH for each lon/lat grid, centered on the 15th of each month, to match the format of OceanSODA
+
 ```{r create_monthly_argo_data}
 
 argo_monthly_surface_ph_1x1 <- ph_surface_1x1 %>%
   # mutate(date = format_ISO8601(date, precision = "ym")) %>%
-  mutate(day = rep(15, length(date)),  # change the date format to match OceanSODA
+  mutate(day = 15,  # change the date format to match OceanSODA
          .after = month) %>%
   unite(year,
         month,
