@@ -110,7 +110,7 @@ mean_profile_ph_binned <- ph_surface_SO %>%
          .before = depth) %>% 
   ungroup() %>% 
   mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph, 
-         .after = mean_prof_ph)
+         .after = mean_prof_ph) 
 
 # plot the offset of the depth-binned values 
 mean_profile_ph_binned %>%
@@ -119,6 +119,37 @@ mean_profile_ph_binned %>%
   scale_y_reverse()+
   geom_vline(xintercept = 0, col = 'red', size = 0.6)+
   labs(x = 'offset (pH units)',
+       y = 'depth (m)',
+       col = 'year',
+       title = 'in situ pH - mean profile pH (2m depth bins)')
+
+```
+
+Mean offset for each 2m depth bin
+
+```{r pH_offset_mean_binned}
+
+# bin the ph values into 2m bins and calculate the offset for each 2m bin 
+profile_ph_binned_ave <- ph_surface_SO %>% 
+  mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
+         depth = as.numeric(as.character(depth))) %>% 
+  group_by(float_serial_no, cycle_number) %>% 
+  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph, 
+         .after = mean_prof_ph) %>% 
+  group_by(depth) %>% 
+  summarise(mean_offset = mean(offset))
+
+# plot the offset of the depth-binned values 
+profile_ph_binned_ave %>%
+  ggplot()+
+  geom_point(aes(x = mean_offset, y = depth), size = 1, pch = 19) +
+  geom_line(aes(x = mean_offset, y = depth))+
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 1)+
+  labs(x = 'mean offset (pH units)',
        y = 'depth (m)',
        col = 'year',
        title = 'in situ pH - mean profile pH (2m depth bins)')
