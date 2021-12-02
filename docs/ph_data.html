@@ -411,7 +411,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">BGC-Argo pH Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">30 November, 2021</h4>
+<h4 class="date">02 December, 2021</h4>
 
 </div>
 
@@ -436,7 +436,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-30
+<strong>Last updated:</strong> 2021-12-02
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -527,16 +527,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4b89d691dd5d070c282dd41048af1308f84ff8datargetblank4b89d69a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4b89d691dd5d070c282dd41048af1308f84ff8da" target="_blank">4b89d69</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree65e4748680baee1e18ff2e579937c3cca9412d97targetblank65e4748a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/65e4748680baee1e18ff2e579937c3cca9412d97" target="_blank">65e4748</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4b89d691dd5d070c282dd41048af1308f84ff8datargetblank4b89d69a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree65e4748680baee1e18ff2e579937c3cca9412d97targetblank65e4748a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4b89d691dd5d070c282dd41048af1308f84ff8da" target="_blank">4b89d69</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/65e4748680baee1e18ff2e579937c3cca9412d97" target="_blank">65e4748</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -590,6 +590,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/65e4748680baee1e18ff2e579937c3cca9412d97/analysis/ph_data.Rmd" target="_blank">65e4748</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-02
+</td>
+<td>
+updated offsets between Argo and OceanSODA
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/ph_data.html" target="_blank">3dc093a</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1348,7 +1382,7 @@ mean_profile_ph_binned &lt;- ph_surface_SO %&gt;%
          .before = depth) %&gt;% 
   ungroup() %&gt;% 
   mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph, 
-         .after = mean_prof_ph)
+         .after = mean_prof_ph) 
 
 # plot the offset of the depth-binned values 
 mean_profile_ph_binned %&gt;%
@@ -1398,6 +1432,32 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<p>Mean offset for each 2m depth bin</p>
+<pre class="r"><code># bin the ph values into 2m bins and calculate the offset for each 2m bin 
+profile_ph_binned_ave &lt;- ph_surface_SO %&gt;% 
+  mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
+         depth = as.numeric(as.character(depth))) %&gt;% 
+  group_by(float_serial_no, cycle_number) %&gt;% 
+  mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+         .before = depth) %&gt;% 
+  ungroup() %&gt;% 
+  mutate(offset = ph_in_situ_total_adjusted-mean_prof_ph, 
+         .after = mean_prof_ph) %&gt;% 
+  group_by(depth) %&gt;% 
+  summarise(mean_offset = mean(offset))
+
+# plot the offset of the depth-binned values 
+profile_ph_binned_ave %&gt;%
+  ggplot()+
+  geom_point(aes(x = mean_offset, y = depth), size = 1, pch = 19) +
+  geom_line(aes(x = mean_offset, y = depth))+
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = &#39;red&#39;, size = 1)+
+  labs(x = &#39;mean offset (pH units)&#39;,
+       y = &#39;depth (m)&#39;,
+       col = &#39;year&#39;,
+       title = &#39;in situ pH - mean profile pH (2m depth bins)&#39;)</code></pre>
+<p><img src="figure/ph_data.Rmd/pH_offset_mean_binned-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="monthly-climatological-map" class="section level4">
 <h4>Monthly climatological map</h4>
@@ -1451,6 +1511,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">3dc093a</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/ph_data.Rmd/climatological_monthly_map-1.png" target="_blank">3df4daf</a>
@@ -1571,6 +1642,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/ph_data.Rmd/using_ggOceanMaps-1.png" target="_blank">3dc093a</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/ph_data.Rmd/using_ggOceanMaps-1.png" target="_blank">3df4daf</a>
