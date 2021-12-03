@@ -352,21 +352,24 @@ Offset between climatological Argo and climatological OceanSODA pH:
 ```{r calculate_clim_offset}
 # Offset between climatological argo and climatological OceanSODA pH 
 
-argo_OceanSODA_SO_clim %>%
+argo_OceanSODA_SO_clim <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) 
+
+argo_OceanSODA_SO_clim %>% 
   drop_na() %>%
   ggplot() +
-  geom_point(aes(x = month, y = offset_clim), size = 0.7, pch = 19) +
+  geom_point(aes(x = month, y = offset_clim, col = value), size = 0.7, pch = 19) +
   geom_hline(yintercept = 0, size = 1, col = 'red')+
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(title = 'clim oceanSODA pH - clim Argo pH',
        x = 'month',
-       y = 'offset (pH units)')
+       y = 'offset (pH units)',
+       col = 'region')
 ```
 
 Mean offset between climatological OceanSODA pH and climatological Argo pH 
 ```{r climatological_offset_all_years}
 
-mean_clim_offset <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) %>% 
+mean_clim_offset <- argo_OceanSODA_SO_clim %>% 
   group_by(month, value) %>% 
   summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
             std_offset_clim = sd(offset_clim, na.rm = TRUE))
@@ -391,7 +394,7 @@ mean_clim_offset %>%
 ```
 
 
-Offset between climatological OceanSODA pH and climatological Argo pH 
+Mapped offset between climatological OceanSODA pH and climatological Argo pH 
 ```{r map_climatological_offset, fig.asp=2}
 
 # bin the offsets for better plotting  
