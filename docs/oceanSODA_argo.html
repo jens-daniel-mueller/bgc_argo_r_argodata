@@ -527,16 +527,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreefa7505037cc826bd773b9bd1918452d3e18d2573targetblankfa75050a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/fa7505037cc826bd773b9bd1918452d3e18d2573" target="_blank">fa75050</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78ba6f569650a7396ec7929f2f34d0626543eb0ftargetblank78ba6f5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78ba6f569650a7396ec7929f2f34d0626543eb0f" target="_blank">78ba6f5</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreefa7505037cc826bd773b9bd1918452d3e18d2573targetblankfa75050a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78ba6f569650a7396ec7929f2f34d0626543eb0ftargetblank78ba6f5a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/fa7505037cc826bd773b9bd1918452d3e18d2573" target="_blank">fa75050</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78ba6f569650a7396ec7929f2f34d0626543eb0f" target="_blank">78ba6f5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -590,6 +590,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/78ba6f569650a7396ec7929f2f34d0626543eb0f/analysis/oceanSODA_argo.Rmd" target="_blank">78ba6f5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+<td>
+made date axis better
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c391b999016ac02d31c2bc1a2989e613088e9207/docs/oceanSODA_argo.html" target="_blank">c391b99</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -930,7 +964,7 @@ map &lt;-
 
 argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
   rename(OceanSODA_ph = ph_total,
-         OceanSODA_ph_error = ph_total_uncert)</code></pre>
+         OceanSODA_ph_error = ph_total_uncert) </code></pre>
 <pre><code>Joining, by = c(&quot;date&quot;, &quot;year&quot;, &quot;lon&quot;, &quot;lat&quot;)</code></pre>
 <pre class="r"><code>argo_OceanSODA %&gt;%
   write_rds(file = paste0(path_argo_preprocessed, &quot;/argo_OceanSODA.rds&quot;))</code></pre>
@@ -1512,6 +1546,7 @@ argo_OceanSODA_SO %&gt;%
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
   geom_point(aes(x = date, y = offset, col = value), size = 0.7, pch = 19) +
+  scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   labs(title = &#39;oceanSODA pH - Argo pH&#39;,
        x = &#39;date&#39;,
        y = &#39;offset (pH units)&#39;,
@@ -1605,6 +1640,7 @@ pasqualina-vonlanthendinenna
                   group = value, 
                   fill =value),
               alpha = 0.2)+
+  scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   # facet_wrap(~year)+
   labs(title = &#39;Mean offset (in situ oceanSODA pH - in situ Argo pH)&#39;,
        x = &#39;date&#39;,
@@ -1687,6 +1723,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c391b999016ac02d31c2bc1a2989e613088e9207/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">c391b99</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a5024ee564d229ed2a8fbd6e7fb6d457ac1af27/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">6a5024e</a>
