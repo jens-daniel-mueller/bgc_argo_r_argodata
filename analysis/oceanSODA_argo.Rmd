@@ -43,7 +43,7 @@ argo <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds")) %
          -c(direction:platform_type),
          -c(firmware_version, wmo_inst_type, positioning_system, config_mission_number))
 
-# for plotting later, load in region and coastline information 
+# for plotting later, load in region and coastline information  
 region_masks_all_seamask_2x2 <- read_rds(file = paste0(
   path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
 
@@ -317,6 +317,36 @@ argo_OceanSODA_SO %>%
        col = 'region')
 ```
 
+Mean offset between in-situ OceanSODA pH and in-situ Argo pH 
+
+```{r mean_in_situ_offset}
+
+mean_insitu_offset <- argo_OceanSODA_SO %>%
+  group_by(date, value) %>% 
+  summarise(mean_offset = mean(offset, na.rm = TRUE),
+            std_offset = sd(offset, na.rm = TRUE))
+
+mean_insitu_offset %>%
+  drop_na() %>%
+  ggplot() +
+  geom_hline(yintercept = 0, size = 1, col = 'red')+
+  geom_point(aes(x = date, y = mean_offset, group = value, col = value), size = 0.7, pch = 19) +
+  geom_line(aes(x = date, y = mean_offset, group = value, col = value))+
+  geom_ribbon(aes(x = date, 
+                  ymin = mean_offset-std_offset, 
+                  ymax = mean_offset+std_offset, 
+                  group = value, 
+                  fill =value),
+              alpha = 0.2)+
+  # facet_wrap(~year)+
+  labs(title = 'Mean offset (in situ oceanSODA pH - in situ Argo pH)',
+       x = 'date',
+       y = 'offset (pH units)',
+       col = 'region',
+       fill = '± 1 std')
+
+```
+
 Offset between climatological Argo and climatological OceanSODA pH:
 
 ```{r calculate_clim_offset}
@@ -336,17 +366,18 @@ argo_OceanSODA_SO_clim %>%
 Mean offset between climatological OceanSODA pH and climatological Argo pH 
 ```{r climatological_offset_all_years}
 
-mean_offset <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) %>% 
+mean_clim_offset <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) %>% 
   group_by(month, value) %>% 
   summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
             std_offset_clim = sd(offset_clim, na.rm = TRUE))
 
-mean_offset %>% 
+mean_clim_offset %>% 
   ggplot()+
   geom_point(aes(x = month, y = mean_offset_clim, col = value))+
   geom_line(aes(x = month, y = mean_offset_clim, col = value))+
   geom_hline(yintercept = 0, col = 'red') +
-  geom_ribbon(aes(x = month, ymin = mean_offset_clim - std_offset_clim, 
+  geom_ribbon(aes(x = month, 
+                  ymin = mean_offset_clim - std_offset_clim, 
                   ymax = mean_offset_clim + std_offset_clim,
                   group = value, 
                   fill = value), 
@@ -354,10 +385,11 @@ mean_offset %>%
   scale_x_continuous(breaks = seq(1, 12, 1)) +
   labs(x = 'month',
        y = 'mean offset (pH units)',
-       title = 'clim OceanSODA pH - clim Argo pH', 
+       title = 'Mean offset (clim OceanSODA pH - clim Argo pH)', 
        col = 'region',
        fill = '± 1 std') 
 ```
+
 
 Offset between climatological OceanSODA pH and climatological Argo pH 
 ```{r map_climatological_offset, fig.asp=2}
@@ -368,8 +400,7 @@ Offset between climatological OceanSODA pH and climatological Argo pH
 argo_OceanSODA_SO_clim_2x2 <- argo_OceanSODA_SO_clim_2x2 %>% 
   mutate(offset_clim_binned = 
            cut(offset_clim, 
-               breaks = c(min(offset_clim, na.rm = TRUE), -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, max(offset_clim, na.rm = TRUE)), 
-               labels = c(-0.030, -0.010, -0.0025, 0.0025, 0.010, 0.030, 0.04, 0.055)), 
+               breaks = c(min(offset_clim, na.rm = TRUE), -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, max(offset_clim, na.rm = TRUE))),   # bin the offsets into intervals (create a discrete variable instead of continuous)
          offset_clim_binned = as.factor(as.character(offset_clim_binned))) %>% 
   drop_na()
 
@@ -377,14 +408,7 @@ map +
   geom_tile(data = argo_OceanSODA_SO_clim_2x2,
             aes(lon, lat, fill = offset_clim_binned)) +
   lims(y = c(-85, -30)) +
-  scale_fill_discrete() +
-  # binned_scale(aes(lon, lat, fill = offset_clim), 
-  #              scale_name = 'offset',
-  #              palette = scale_fill_divergent_discretised(),
-  #              name = 'offset (pH units)',
-  #              breaks = c(-Inf, -0.025, -0.005, 0.000, 0.005, 0.025, Inf),
-  #              labels = c(-0.030, -0.025, -0.005, 0.00, 0.005, 0.025, 0.030), 
-  #              limits = NULL) +
+  scale_fill_brewer(palette = 'RdBu', drop = FALSE) +
   labs(x = 'lon',
        y = 'lat',
        fill = 'offset (pH units)',
@@ -404,7 +428,7 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
                     linejoin = 'mitre',
                     col = 'transparent',
                     detail = 60)+
-  scale_fill_discrete()+
+  scale_fill_brewer(palette = 'RdBu', drop = FALSE)+
   theme(legend.position = 'right')+
   labs(x = 'lon',
        y = 'lat',
