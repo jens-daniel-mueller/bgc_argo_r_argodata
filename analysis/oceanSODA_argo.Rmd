@@ -100,7 +100,7 @@ OceanSODA <- OceanSODA %>%
 
 argo_OceanSODA <- left_join(argo_monthly, OceanSODA) %>%
   rename(OceanSODA_ph = ph_total,
-         OceanSODA_ph_error = ph_total_uncert)
+         OceanSODA_ph_error = ph_total_uncert) 
 ```
 
 
@@ -311,6 +311,7 @@ argo_OceanSODA_SO %>%
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
   geom_point(aes(x = date, y = offset, col = value), size = 0.7, pch = 19) +
+  scale_x_discrete(breaks = c('2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
   labs(title = 'oceanSODA pH - Argo pH',
        x = 'date',
        y = 'offset (pH units)',
@@ -338,6 +339,7 @@ mean_insitu_offset %>%
                   group = value, 
                   fill =value),
               alpha = 0.2)+
+  scale_x_discrete(breaks = c('2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
   # facet_wrap(~year)+
   labs(title = 'Mean offset (in situ oceanSODA pH - in situ Argo pH)',
        x = 'date',
