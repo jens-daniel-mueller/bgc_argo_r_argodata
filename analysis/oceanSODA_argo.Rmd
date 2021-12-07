@@ -7,6 +7,12 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
 # Task 
 Compare BGC-Argo pH data to pH from the OceanSODA surface data product 
 
@@ -249,8 +255,7 @@ map +
 
 ```
 
-```{r plot_monthly_timeseries, fig.asp=2}
-
+```{r calculate_regional_climatology, fig.asp=2}
 # plot timeseries of monthly OceanSODA pH
 argo_OceanSODA_SO_clim_regional <- argo_OceanSODA_SO %>%
   select(year, month, value, OceanSODA_ph, argo_ph_month) %>% 
@@ -260,7 +265,10 @@ argo_OceanSODA_SO_clim_regional <- argo_OceanSODA_SO %>%
   group_by(year, month, value, data_source) %>%  # compute regional mean OceanSODA pH for the three biomes
   summarise(ph = mean(ph, na.rm = TRUE)) %>%
   ungroup()
-  
+```
+
+
+```{r plot_monthly_timeseries, fig.asp=2, eval=FALSE}
 argo_OceanSODA_SO_clim_regional %>%   
   ggplot(aes(x = year,
              y = ph,
@@ -354,8 +362,11 @@ Offset between climatological Argo and climatological OceanSODA pH:
 ```{r calculate_clim_offset}
 # Offset between climatological argo and climatological OceanSODA pH 
 
-argo_OceanSODA_SO_clim <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) 
+argo_OceanSODA_SO_clim <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO)
+```
 
+
+```{r plot_climatological_offset, eval=FALSE}
 argo_OceanSODA_SO_clim %>% 
   drop_na() %>%
   ggplot() +
@@ -405,8 +416,8 @@ Mapped offset between climatological OceanSODA pH and climatological Argo pH
 argo_OceanSODA_SO_clim_2x2 <- argo_OceanSODA_SO_clim_2x2 %>% 
   mutate(offset_clim_binned = 
            cut(offset_clim, 
-               breaks = c(min(offset_clim, na.rm = TRUE), -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, max(offset_clim, na.rm = TRUE))),   # bin the offsets into intervals (create a discrete variable instead of continuous)
-         offset_clim_binned = as.factor(as.character(offset_clim_binned))) %>% 
+               breaks = c(-Inf, -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, Inf))) %>%    # bin the offsets into intervals (create a discrete variable instead of continuous)
+         # offset_clim_binned = as.factor(as.character(offset_clim_binned))) %>% 
   drop_na()
 
 map +
