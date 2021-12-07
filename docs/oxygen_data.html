@@ -411,7 +411,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">BGC-Argo Oxygen Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">26 November, 2021</h4>
+<h4 class="date">07 December, 2021</h4>
 
 </div>
 
@@ -436,7 +436,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-11-26
+<strong>Last updated:</strong> 2021-12-07
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -527,16 +527,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreee09c60b0584b101f32b57dfb7f4c2cd53999ce00targetblanke09c60ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/e09c60b0584b101f32b57dfb7f4c2cd53999ce00" target="_blank">e09c60b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef8abe59e85c2944b340ba126b9f47a632c09dd08targetblankf8abe59a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f8abe59e85c2944b340ba126b9f47a632c09dd08" target="_blank">f8abe59</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreee09c60b0584b101f32b57dfb7f4c2cd53999ce00targetblanke09c60ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef8abe59e85c2944b340ba126b9f47a632c09dd08targetblankf8abe59a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/e09c60b0584b101f32b57dfb7f4c2cd53999ce00" target="_blank">e09c60b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f8abe59e85c2944b340ba126b9f47a632c09dd08" target="_blank">f8abe59</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,7 +554,6 @@ Untracked files:
     Untracked:  code/pH_data_timeseries.R
 
 Unstaged changes:
-    Modified:   analysis/_site.yml
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -594,6 +593,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f8abe59e85c2944b340ba126b9f47a632c09dd08/analysis/oxygen_data.Rmd" target="_blank">f8abe59</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-07
+</td>
+<td>
+suppressed output messages and updated plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/930ea26653ac16f4924f17b7b3bbb4fa062e09ca/docs/oxygen_data.html" target="_blank">930ea26</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-11-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -832,9 +865,9 @@ oxy_surface &lt;- oxy_merge %&gt;%
 <pre class="r"><code># average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
 oxy_mean &lt;- oxy_surface %&gt;%
   group_by(lat, lon, month) %&gt;%
-  summarise(oxy_ave_month = mean(doxy_adjusted))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;lat&#39;, &#39;lon&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># read in the map from updata
+  summarise(oxy_ave_month = mean(doxy_adjusted))
+
+# read in the map from updata
 map &lt;-
   read_rds(paste(path_emlr_utilities,
                  &quot;map_landmask_WOA18.rds&quot;,
@@ -852,11 +885,6 @@ map +
        title = &#39;Monthly average surface dissolved oxygen values (Jan 2013-Sep 2021)&#39;) +
   theme(legend.position = &#39;bottom&#39;)+
   facet_wrap(~month)</code></pre>
-<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
-argument</code></pre>
-<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.</code></pre>
-<pre><code>Warning: Removed 153708 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/oxygen_data.Rmd/climatological_oxygen_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-climatological_oxygen_map-1">
@@ -913,9 +941,9 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># plot a timeseries of monthly values over the whole southern ocean south of 30ºS
 oxy_month &lt;- oxy_surface %&gt;%
   group_by(year, month) %&gt;%
-  summarise(oxy_ave = mean(doxy_adjusted))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># timeseries of monthly pH values over 2013-2021 (separate panels for each month)
+  summarise(oxy_ave = mean(doxy_adjusted))
+
+# timeseries of monthly pH values over 2013-2021 (separate panels for each month)
 oxy_month %&gt;%
   ggplot(aes(x = year, y = oxy_ave)) +
   facet_wrap(~month) +
@@ -1036,9 +1064,9 @@ oxy_nepacific &lt;- oxy_merge %&gt;%
 <pre class="r"><code># average oxygen values in the top 10 m for each month in each 2 x 2º longitude/latitude grid 
 oxy_mean_nepacific &lt;- oxy_nepacific %&gt;%
   group_by(lat, lon, month) %&gt;%
-  summarise(oxy_ave_month = mean(doxy_adjusted))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;lat&#39;, &#39;lon&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
+  summarise(oxy_ave_month = mean(doxy_adjusted))
+
+# map a monthly climatology of surface oxygen (Jan 2013 - August 2021)
 map +
   geom_tile(data = oxy_mean_nepacific,
             aes(lon, lat, fill = oxy_ave_month)) +
@@ -1051,9 +1079,6 @@ map +
        title = &#39;Monthly average surface dissolved oxygen (Jan 2013-Aug 2021)&#39;) +
   theme(legend.position = &#39;right&#39;)+
   facet_wrap(~month)</code></pre>
-<pre><code>Warning in seq.int(0, 1, length.out = n): first element used of &#39;length.out&#39;
-argument</code></pre>
-<pre><code>Warning: Removed 219516 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/oxygen_data.Rmd/climatological_oxygen_map_nepacific-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-climatological_oxygen_map_nepacific-1">
@@ -1110,9 +1135,9 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># plot a timeseries of monthly values over the whole NE Pacific
 oxy_month_nepacific &lt;- oxy_nepacific %&gt;%
   group_by(year, month) %&gt;%
-  summarise(oxy_ave = mean(doxy_adjusted))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># timeseries of monthly pH values over 2013-2021 (separate panels for each month)
+  summarise(oxy_ave = mean(doxy_adjusted))
+
+# timeseries of monthly pH values over 2013-2021 (separate panels for each month)
 oxy_month_nepacific %&gt;%
   ggplot(aes(x = year, y = oxy_ave)) +
   facet_wrap(~month) +

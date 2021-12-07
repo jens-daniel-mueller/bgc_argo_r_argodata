@@ -411,7 +411,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">OceanSODA-Argo pH</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">03 December, 2021</h4>
+<h4 class="date">07 December, 2021</h4>
 
 </div>
 
@@ -436,7 +436,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-12-03
+<strong>Last updated:</strong> 2021-12-07
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -527,16 +527,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78ba6f569650a7396ec7929f2f34d0626543eb0ftargetblank78ba6f5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78ba6f569650a7396ec7929f2f34d0626543eb0f" target="_blank">78ba6f5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef8abe59e85c2944b340ba126b9f47a632c09dd08targetblankf8abe59a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f8abe59e85c2944b340ba126b9f47a632c09dd08" target="_blank">f8abe59</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78ba6f569650a7396ec7929f2f34d0626543eb0ftargetblank78ba6f5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef8abe59e85c2944b340ba126b9f47a632c09dd08targetblankf8abe59a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78ba6f569650a7396ec7929f2f34d0626543eb0f" target="_blank">78ba6f5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f8abe59e85c2944b340ba126b9f47a632c09dd08" target="_blank">f8abe59</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -552,6 +552,9 @@ Untracked files:
     Untracked:  code/creating_map.R
     Untracked:  code/merging_oceanSODA_Argo.R
     Untracked:  code/pH_data_timeseries.R
+
+Unstaged changes:
+    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -590,6 +593,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f8abe59e85c2944b340ba126b9f47a632c09dd08/analysis/oceanSODA_argo.Rmd" target="_blank">f8abe59</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-07
+</td>
+<td>
+suppressed output messages and updated plots
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/9abcd5e5388f2dbb938c1aa2dda7d4f044fde966/docs/oceanSODA_argo.html" target="_blank">9abcd5e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -957,7 +994,6 @@ map &lt;-
     argo_psal_month,
     argo_ph_month
   )</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;, &#39;date&#39;, &#39;lat&#39;. You can override using the `.groups` argument.</code></pre>
 <p>Join the two datasets</p>
 <pre class="r"><code>OceanSODA &lt;- OceanSODA %&gt;% 
   mutate(date = format_ISO8601(date, precision = &quot;ym&quot;))
@@ -965,7 +1001,6 @@ map &lt;-
 argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
   rename(OceanSODA_ph = ph_total,
          OceanSODA_ph_error = ph_total_uncert) </code></pre>
-<pre><code>Joining, by = c(&quot;date&quot;, &quot;year&quot;, &quot;lon&quot;, &quot;lat&quot;)</code></pre>
 <pre class="r"><code>argo_OceanSODA %&gt;%
   write_rds(file = paste0(path_argo_preprocessed, &quot;/argo_OceanSODA.rds&quot;))</code></pre>
 </div>
@@ -980,7 +1015,6 @@ argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
 # keep only Southern Ocean data 
 argo_OceanSODA_SO &lt;- 
   inner_join(region_masks_all_1x1_SO, argo_OceanSODA)</code></pre>
-<pre><code>Joining, by = c(&quot;lon&quot;, &quot;lat&quot;)</code></pre>
 <div id="monthly-climatological-oceansoda-ph" class="section level3">
 <h3>Monthly climatological OceanSODA pH</h3>
 <p>Map monthly mean pH from the OceanSODA data product</p>
@@ -993,9 +1027,9 @@ argo_OceanSODA_SO_clim &lt;- argo_OceanSODA_SO %&gt;%
     clim_argo_ph = mean(argo_ph_month, na.rm = TRUE),
     offset_clim = clim_OceanSODA_ph - clim_argo_ph
   ) %&gt;%
-  ungroup()</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;lon&#39;, &#39;lat&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code># regrid to a 2x2 grid for mapping 
+  ungroup()
+
+# regrid to a 2x2 grid for mapping 
 argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim %&gt;%
   mutate(
     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
@@ -1009,9 +1043,9 @@ argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim %&gt;%
     clim_argo_ph = mean(clim_argo_ph, na.rm = TRUE),
     offset_clim = mean(offset_clim, na.rm = TRUE)
   ) %&gt;%
-  ungroup()</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;lon&#39;, &#39;lat&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>map +
+  ungroup()
+
+map +
   geom_tile(data = argo_OceanSODA_SO_clim_2x2,
             aes(lon, lat, fill = clim_OceanSODA_ph)) +
   lims(y = c(-85, -25)) +
@@ -1022,9 +1056,6 @@ argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim %&gt;%
        title = &#39;Monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)&#39;) +
   theme(legend.position = &#39;right&#39;) +
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.</code></pre>
-<pre><code>Warning: Removed 153708 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/climatological_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-climatological_map-1">
@@ -1101,18 +1132,6 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
        fill = &#39;pH&#39;,
        title = &#39;monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_map-1">
@@ -1188,9 +1207,6 @@ pasqualina-vonlanthendinenna
        title = &#39;Monthly climatological \nArgo pH (Apr 2014 - Aug 2021)&#39;) +
   theme(legend.position = &#39;right&#39;) +
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.</code></pre>
-<pre><code>Warning: Removed 153708 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/clim_map_argo_pH-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_map_argo_pH-1">
@@ -1255,18 +1271,6 @@ pasqualina-vonlanthendinenna
        fill = &#39;pH&#39;,
        title = &#39;monthly climatological \nArgo pH (Apr 2014 - Aug 2021)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_Argo_pH-1">
@@ -1332,11 +1336,6 @@ pasqualina-vonlanthendinenna
                   fill = value)) +
   labs(title = &#39;Southern Ocean RECCAP regions&#39;,
        fill = &#39;region&#39;)</code></pre>
-<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.
-
-Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/southern_ocean_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-southern_ocean_biomes-1">
@@ -1395,7 +1394,6 @@ argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
   group_by(year, month, value, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
   summarise(ph = mean(ph, na.rm = TRUE)) %&gt;%
   ungroup()</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;, &#39;month&#39;, &#39;value&#39;. You can override using the `.groups` argument.</code></pre>
 <pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
   ggplot(aes(x = year,
              y = ph,
@@ -1407,67 +1405,6 @@ argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
        y = &#39;pH in situ (total scale)&#39;,
        title = &#39;monthly mean pH (Apr 2014-Aug 2021, Southern Ocean)&#39;,
        col = &#39;region&#39;)</code></pre>
-<pre><code>Warning: Removed 23 rows containing missing values (geom_point).</code></pre>
-<p><img src="figure/oceanSODA_argo.Rmd/plot_monthly_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_monthly_timeseries-1">
-Past versions of plot_monthly_timeseries-1.png
-</button>
-</p>
-<div id="fig-plot_monthly_timeseries-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a5024ee564d229ed2a8fbd6e7fb6d457ac1af27/docs/figure/oceanSODA_argo.Rmd/plot_monthly_timeseries-1.png" target="_blank">6a5024e</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/10ddefb1a0429818d296443af9fc76122adc5816/docs/figure/oceanSODA_argo.Rmd/plot_monthly_timeseries-1.png" target="_blank">10ddefb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/oceanSODA_argo.Rmd/plot_monthly_timeseries-1.png" target="_blank">3df4daf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
   filter(year != 2014,
          year != 2021,
@@ -1576,6 +1513,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9abcd5e5388f2dbb938c1aa2dda7d4f044fde966/docs/figure/oceanSODA_argo.Rmd/calculate_in_situ_offset-1.png" target="_blank">9abcd5e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a5024ee564d229ed2a8fbd6e7fb6d457ac1af27/docs/figure/oceanSODA_argo.Rmd/calculate_in_situ_offset-1.png" target="_blank">6a5024e</a>
 </td>
 <td>
@@ -1626,9 +1574,9 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>mean_insitu_offset &lt;- argo_OceanSODA_SO %&gt;%
   group_by(date, value) %&gt;% 
   summarise(mean_offset = mean(offset, na.rm = TRUE),
-            std_offset = sd(offset, na.rm = TRUE))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;date&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>mean_insitu_offset %&gt;%
+            std_offset = sd(offset, na.rm = TRUE))
+
+mean_insitu_offset %&gt;%
   drop_na() %&gt;%
   ggplot() +
   geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
@@ -1672,6 +1620,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9abcd5e5388f2dbb938c1aa2dda7d4f044fde966/docs/figure/oceanSODA_argo.Rmd/mean_in_situ_offset-1.png" target="_blank">9abcd5e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2021-12-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/38a5110381b3df5f4eaab6fca4363a5c68805069/docs/figure/oceanSODA_argo.Rmd/mean_in_situ_offset-1.png" target="_blank">38a5110</a>
 </td>
 <td>
@@ -1688,8 +1647,7 @@ pasqualina-vonlanthendinenna
 <p>Offset between climatological Argo and climatological OceanSODA pH:</p>
 <pre class="r"><code># Offset between climatological argo and climatological OceanSODA pH 
 
-argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO) </code></pre>
-<pre><code>Joining, by = c(&quot;lon&quot;, &quot;lat&quot;)</code></pre>
+argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO)</code></pre>
 <pre class="r"><code>argo_OceanSODA_SO_clim %&gt;% 
   drop_na() %&gt;%
   ggplot() +
@@ -1700,95 +1658,13 @@ argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, region_masks_all
        x = &#39;month&#39;,
        y = &#39;offset (pH units)&#39;,
        col = &#39;region&#39;)</code></pre>
-<p><img src="figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-calculate_clim_offset-1">
-Past versions of calculate_clim_offset-1.png
-</button>
-</p>
-<div id="fig-calculate_clim_offset-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c391b999016ac02d31c2bc1a2989e613088e9207/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">c391b99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a5024ee564d229ed2a8fbd6e7fb6d457ac1af27/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">6a5024e</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/10ddefb1a0429818d296443af9fc76122adc5816/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">10ddefb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">3dc093a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/oceanSODA_argo.Rmd/calculate_clim_offset-1.png" target="_blank">3df4daf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <p>Mean offset between climatological OceanSODA pH and climatological Argo pH</p>
 <pre class="r"><code>mean_clim_offset &lt;- argo_OceanSODA_SO_clim %&gt;% 
   group_by(month, value) %&gt;% 
   summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
-            std_offset_clim = sd(offset_clim, na.rm = TRUE))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;month&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>mean_clim_offset %&gt;% 
+            std_offset_clim = sd(offset_clim, na.rm = TRUE))
+
+mean_clim_offset %&gt;% 
   ggplot()+
   geom_point(aes(x = month, y = mean_offset_clim, col = value))+
   geom_line(aes(x = month, y = mean_offset_clim, col = value))+
@@ -1861,8 +1737,8 @@ pasqualina-vonlanthendinenna
 argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim_2x2 %&gt;% 
   mutate(offset_clim_binned = 
            cut(offset_clim, 
-               breaks = c(min(offset_clim, na.rm = TRUE), -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, max(offset_clim, na.rm = TRUE))),   # bin the offsets into intervals (create a discrete variable instead of continuous)
-         offset_clim_binned = as.factor(as.character(offset_clim_binned))) %&gt;% 
+               breaks = c(-Inf, -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, Inf))) %&gt;%    # bin the offsets into intervals (create a discrete variable instead of continuous)
+         # offset_clim_binned = as.factor(as.character(offset_clim_binned))) %&gt;% 
   drop_na()
 
 map +
@@ -1876,9 +1752,6 @@ map +
        title = &#39;clim OceanSODA ph - clim Argo pH&#39;) +
   theme(legend.position = &#39;right&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Warning: Raster pixels are placed at uneven vertical intervals and will be
-shifted. Consider using geom_tile() instead.</code></pre>
-<pre><code>Warning: Removed 158580 rows containing missing values (geom_raster).</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/map_climatological_offset-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_climatological_offset-1">
@@ -1976,18 +1849,6 @@ pasqualina-vonlanthendinenna
        fill = &#39;offset (pH units)&#39;,
        title = &#39;clim Ocean SODA pH - clim Argo pH&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<pre><code>Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()
-Assuming `crs = 4326` in stat_spatial_rect()</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_climatological_offsets_polar_map-1">
