@@ -102,7 +102,7 @@ Join the two datasets
 
 ```{r join_oceanSODA_argo}
 OceanSODA <- OceanSODA %>% 
-  mutate(date = format_ISO8601(date, precision = "ym"))
+  mutate(date = format_ISO8601(date, precision = "ym")) # change date format in OceanSODA to match argo date (yyyy-mm)
 
 argo_OceanSODA <- left_join(argo_monthly, OceanSODA) %>%
   rename(OceanSODA_ph = ph_total,
@@ -324,6 +324,22 @@ argo_OceanSODA_SO %>%
        x = 'date',
        y = 'offset (pH units)',
        col = 'region')
+```
+
+```{r oceanSODA_vs_argo_ph_plot}
+argo_OceanSODA_SO %>% 
+  drop_na() %>% 
+  ggplot(aes(x = OceanSODA_ph, y = argo_ph_month, col = value))+
+  geom_point(pch = 19, size = 0.7)+
+  lims(x = c(7.8, 8.25), 
+       y = c(7.8, 8.25)) +
+  geom_abline(slope = 1, intercept = 0)+
+  labs(x = 'OceanSODA pH (total scale)',
+       y = 'Argo pH (total scale)',
+       col = 'region',
+       title = 'Southern Ocean pH')
+  
+  
 ```
 
 Mean offset between in-situ OceanSODA pH and in-situ Argo pH 

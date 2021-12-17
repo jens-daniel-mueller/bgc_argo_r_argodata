@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "made date axis better")
+wflow_publish(all = TRUE, message = "updated cache data")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -19,7 +19,7 @@ wflow_publish(here::here(
     'oceanSODA_argo.Rmd'
   )
 ),
-message = "added oceanSODA page",
+message = "suppressed output messages and updated plots",
 republish = TRUE)
 
 

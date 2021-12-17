@@ -124,7 +124,7 @@ bgc_profile_counts_A <- bgc_metadata %>%
   filter(profile_flag == 'A') %>% 
   count(lat, lon, parameter)
 
-# count the number of profiles which have a QC flag of F (100% of levels contain good data)
+# count the number of profiles which have a QC flag of F (0% of levels contain good data)
 bgc_profile_counts_F <- bgc_metadata %>% 
   select(platform_number, cycle_number, date, lon, lat,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
@@ -220,17 +220,17 @@ Map the profile locations for each profile QC flag of each parameter
 
 ```{r profiles_maps_flag, fig.asp=1.2, eval = FALSE}
 
-bgc_profile_counts_flag %>%
-  ggplot() +
-  geom_sf(data = ne_countries(returnclass = "sf"),
-          fill = "gray90",
-          color = NA) +
-  geom_sf(data = ne_coastline(returnclass = "sf")) +
-  geom_tile(aes(x = lon, y = lat, fill = n)) +
-  scale_fill_gradient(low="blue", high="red",
-                      trans = "log10") +
-  theme_bw() +
-  facet_grid(profile_flag ~ parameter)
+# bgc_profile_counts_flag %>%
+#   ggplot() +
+#   geom_sf(data = ne_countries(returnclass = "sf"),
+#           fill = "gray90",
+#           color = NA) +
+#   geom_sf(data = ne_coastline(returnclass = "sf")) +
+#   geom_tile(aes(x = lon, y = lat, fill = n)) +
+#   scale_fill_gradient(low="blue", high="red",
+#                       trans = "log10") +
+#   theme_bw() +
+#   facet_grid(profile_flag ~ parameter)
 
 ```
 
@@ -345,28 +345,28 @@ ggsave("output/figures/maps_flag_F.png",
 
 # create a separate plot for each QC flag (instead of multiple panels in one plot) 
 
-bgc_profile_counts_flag %>%
-  group_split(profile_flag) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste('Profile QC flag', unique(.x$profile_flag))
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_grid(parameter ~ .)
-  )
+# bgc_profile_counts_flag %>%
+#   group_split(profile_flag) %>%
+#   map(
+#     ~ map +
+#       geom_tile(data = .x, aes(
+#         x = lon, y = lat, fill = n
+#       )) +
+#       scale_fill_gradient(low = "blue", high = "red",
+#                           trans = "log10") +
+#       labs(
+#         x = 'lon',
+#         y = 'lat',
+#         fill = 'number of\nprofiles',
+#         title = paste('Profile QC flag', unique(.x$profile_flag))
+#       ) +
+#       theme(
+#         legend.position = "bottom",
+#         axis.text = element_blank(),
+#         axis.ticks = element_blank()
+#       ) +
+#       facet_grid(parameter ~ .)
+#   )
 
 ggsave("output/figures/maps_per_flag.png",
        width = 7,
