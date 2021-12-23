@@ -532,6 +532,38 @@ argo_OceanSODA_SO_clim_subregional %>%
        col = 'region')
 ```
 
+#### Longitudinal separation 
+
+Bin the pH data into 20º longitude bins (20º - 380º)
+```{r regrid_data_to_lon_bins}
+argo_OceanSODA_SO_lon_binned <- argo_OceanSODA_SO %>%
+  mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
+         lon = as.numeric(as.character(lon))
+  ) %>%
+  group_by(lon, year, month, value) %>%
+  summarise(
+    OceanSODA_ph_binned = mean(OceanSODA_ph, na.rm = TRUE),
+    argo_ph_month_binned = mean(argo_ph_month, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+```
+
+```{r plot_lon_binned_data}
+
+argo_OceanSODA_SO_lon_binned %>%
+  filter(year != 2014,
+         year != 2021) %>%
+  drop_na() %>% 
+  ggplot(aes(x = month, y = OceanSODA_ph_binned, group = lon, col = as.factor(lon))) +
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(year~value)+
+  labs(x = 'month',
+       y = 'OceanSODA pH',
+       col = 'longitude bin')
+```
 
 
 
