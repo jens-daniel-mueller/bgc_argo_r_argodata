@@ -474,6 +474,7 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
 
 #### Basin separation
 
+Using full OceanSODA data (even where there is no Argo data)
 Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)
 ```{r add_in_basin}
 basinmask <-
@@ -486,23 +487,25 @@ basinmask <- basinmask %>%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
   select(lon, lat, basin_AIP)
 
-argo_OceanSODA_SO <- inner_join(argo_OceanSODA_SO, basinmask) 
+OceanSODA_SO <- inner_join(OceanSODA, region_masks_all_1x1) %>% 
+  filter(region == 'southern')
 
-argo_OceanSODA_SO <- argo_OceanSODA_SO %>% 
-  unite(biome_basin, value, basin_AIP, sep = '_', remove = FALSE)
+OceanSODA_SO <- inner_join(OceanSODA_SO, basinmask) %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  mutate(date = format_ISO8601(date, precision = 'ym'))
+
 ```
 
 ```{r monthly_OceanSODA_basin}
 # plot timeseries of monthly OceanSODA pH
-argo_OceanSODA_SO_clim_subregional <- argo_OceanSODA_SO %>%
+OceanSODA_SO_clim_subregional <- OceanSODA_SO %>%
   group_by(year, month, value, basin_AIP) %>%  # compute regional mean OceanSODA pH for the three biomes
-  summarise(ph = mean(OceanSODA_ph, na.rm = TRUE)) %>%
+  summarise(ph = mean(ph_total, na.rm = TRUE)) %>%
   ungroup()
 
 # plot a timeseries of monthly average OceanSODA pH, per region and per basin
-argo_OceanSODA_SO_clim_subregional %>%   
-  filter(year != 2014,
-         year != 2021) %>%
+OceanSODA_SO_clim_subregional %>% 
   ggplot(aes(x = month,
              y = ph,
              group = year,
@@ -513,13 +516,14 @@ argo_OceanSODA_SO_clim_subregional %>%
   facet_grid(value~basin_AIP)+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean OceanSODA pH (Jan 2015-Dec 2020, Southern Ocean basins)',
+       title = 'monthly mean OceanSODA pH (Jan 2013-Dec 2020, Southern Ocean basins)',
        col = 'year')
 
 ```
 
 ```{r monthly_OceanSODA_basin_per_year}
-argo_OceanSODA_SO_clim_subregional %>%   
+OceanSODA_SO_clim_subregional %>%  
+  filter(value != 0) %>% 
   ggplot(aes(x = year,
              y = ph,
              col = value)) +
@@ -528,7 +532,7 @@ argo_OceanSODA_SO_clim_subregional %>%
   geom_point() +
   labs(x = 'year',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean pH (Apr 2014-Aug 2021, Southern Ocean basins)',
+       title = 'monthly mean pH (Jan 2013-Dec 2020, Southern Ocean basins)',
        col = 'region')
 ```
 
@@ -536,14 +540,13 @@ argo_OceanSODA_SO_clim_subregional %>%
 
 Bin the pH data into 20º longitude bins (20º - 380º)
 ```{r regrid_data_to_lon_bins}
-argo_OceanSODA_SO_lon_binned <- argo_OceanSODA_SO %>%
+OceanSODA_SO_lon_binned <- OceanSODA_SO %>%
   mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
          lon = as.numeric(as.character(lon))
   ) %>%
   group_by(lon, year, month, value) %>%
   summarise(
-    OceanSODA_ph_binned = mean(OceanSODA_ph, na.rm = TRUE),
-    argo_ph_month_binned = mean(argo_ph_month, na.rm = TRUE)
+    OceanSODA_ph_binned = mean(ph_total, na.rm = TRUE)
   ) %>%
   ungroup()
 
@@ -551,10 +554,9 @@ argo_OceanSODA_SO_lon_binned <- argo_OceanSODA_SO %>%
 
 ```{r plot_lon_binned_data}
 
-argo_OceanSODA_SO_lon_binned %>%
-  filter(year != 2014,
-         year != 2021) %>%
+OceanSODA_SO_lon_binned %>%
   drop_na() %>% 
+  filter(value != 0) %>% 
   ggplot(aes(x = month, y = OceanSODA_ph_binned, group = lon, col = as.factor(lon))) +
   geom_line()+
   geom_point()+

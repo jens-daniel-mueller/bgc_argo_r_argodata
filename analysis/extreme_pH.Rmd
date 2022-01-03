@@ -1,0 +1,317 @@
+---
+title: "Extreme pH Profiles"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Task
+
+Compare depth profiles of normal pH and of extreme pH, as identified in the surface OceanSODA pH data product
+
+```{r load_libraries, include=FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+```{r set_global_theme}
+theme_set(theme_bw())
+```
+
+# Load data
+
+```{r set_root_directories}
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+```
+
+```{r load_data}
+region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
+                                               "/region_masks_all_1x1.rds"))
+
+OceanSODA <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA.rds"))
+
+# keep only Southern Ocean data (southern ocean RECCAP biomes)
+OceanSODA_SO <-
+  inner_join(region_masks_all_1x1, OceanSODA) %>%
+  filter(region == 'southern',
+         value != 0) %>%
+  mutate(month = month(date)) %>%
+  mutate(date = format_ISO8601(date, precision = 'ym'))
+
+# add in basin separations
+basinmask <-
+  read_csv(paste(path_emlr_utilities,
+                 "basin_mask_WOA18.csv",
+                 sep = ""),
+           col_types = cols("MLR_basins" = col_character()))
+
+basinmask <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>%
+  select(lon, lat, basin_AIP)
+
+OceanSODA_SO <- inner_join(OceanSODA_SO, basinmask)
+```
+
+### OceanSODA pH
+
+Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated for 2013-2021, with the full spatial OceanSODA data
+
+```{r calculate_clim_OceanSODA_pH}
+
+# calculate climatological average OceanSODA pH, and the 95th percentile of the monthly OceanSODA pH
+OceanSODA_SO_clim <- OceanSODA_SO %>%
+  group_by(lon, lat, month) %>%
+  summarise(
+    clim_OceanSODA_ph = mean(ph_total, na.rm = TRUE),
+    threshold_high = quantile(ph_total, 0.95, na.rm = TRUE),
+    threshold_low = quantile(ph_total, 0.05, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+OceanSODA_SO_extreme <- inner_join(OceanSODA_SO, OceanSODA_SO_clim,
+                                     by = c('lon', 'lat', 'month'))
+
+```
+
+Calculate extreme OceanSODA pH, L for abnormally low, H for abnormally high, N for normal pH
+
+```{r calculate_extreme_OceanSODA_pH}
+
+# when the in-situ OceanSODA pH is lower than the 5th percentile, assign 'L' for low extreme
+# when the in-situ OceanSODA pH exceeds the 95th percentile, assign 'H' for high extreme
+# when the in-situ OceanSODA pH is within 95% of the range, then assign 'N' for normal pH
+OceanSODA_SO_extreme <- OceanSODA_SO_extreme %>%
+  mutate(extreme = case_when(ph_total < threshold_low ~ 'L',
+                             ph_total > threshold_high ~ 'H',
+                             TRUE ~ 'N')) %>%
+  drop_na()
+
+```
+
+### Argo data
+
+Load in full Argo data
+
+```{r load_Argo_data}
+# load in the full argo data
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+
+# change the date format for compatibility with OceanSODA pH data
+full_argo <- full_argo %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  mutate(date = format_ISO8601(date, precision = 'ym'))
+
+# add in RECCAP biomes, and keep only Southern Ocean argo data
+full_argo_SO <- inner_join(full_argo, region_masks_all_1x1) %>%
+  filter(region == 'southern',
+         value != 0)
+
+# add in basin separations to full profile argo data
+full_argo_SO <- inner_join(full_argo_SO, basinmask)
+
+# select only relevant columns
+full_argo_SO <- full_argo_SO %>%
+  select(depth:platform_number,
+         cycle_number,
+         float_serial_no,
+         date:lon,
+         profile_pres_qc:basin_AIP) %>%
+  filter(ph_in_situ_total_adjusted_qc == '1')
+
+# rename OceanSODA columns
+OceanSODA_SO_extreme <- OceanSODA_SO_extreme %>%
+  rename(OceanSODA_ph_uncert = ph_total_uncert,
+         OceanSODA_ph = ph_total)
+```
+
+```{r combine_extreme_OceanSODA_to_Argo}
+
+# combine the argo profile data to the surface extreme data
+profile_extreme <- inner_join(full_argo_SO, OceanSODA_SO_extreme)
+
+```
+
+# Argo profiles
+
+Argo profiles plotted according to the surface OceanSODA pH
+
+L profiles correspond to a surface acidification event (low pH), as recorded in OceanSODA
+
+H profiles correspond to an event of high surface pH, as recorded in OceanSODA
+
+N profiles correspond to normal surface OceanSODA pH
+
+## Atlantic basin
+
+### 2019
+
+### pH
+
+```{r Atlantic_pH_profiles}
+
+profile_extreme %>%
+  filter(basin_AIP == 'Atlantic',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+         aes(x = ph_in_situ_total_adjusted,
+             y = depth,
+             group = extreme,
+             col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo pH (total scale)',
+       y = 'depth (m)',
+       title = paste('Atlantic basin, 2019, biome', unique(.x$value)),
+       col = 'OceanSODA pH \n(high/low/normal)')
+  )
+```
+
+### Temperature
+
+```{r Atlantic_temp_profiles}
+
+# plot temperature profiles for the Atlantic
+profile_extreme %>%
+  filter(basin_AIP == 'Atlantic',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(x = temp_adjusted,
+                 y = depth,
+                 group = extreme,
+                 col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo temperature (ºC)',
+           y = 'depth (m)',
+           title = paste('Atlantic basin, 2019, biome', unique(.x$value)),
+           col = 'OceanSODA pH \n(high/low/normal)')
+  )
+```
+
+## Pacific basin
+
+### 2019
+
+### pH
+
+```{r Pacific_pH_profiles}
+profile_extreme %>%
+  filter(basin_AIP == 'Pacific',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(x = ph_in_situ_total_adjusted,
+                 y = depth,
+                 group = extreme,
+                 col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo pH (total scale)',
+           y = 'depth (m)',
+           title = paste('Pacific basin, 2019, biome', unique(.x$value)),
+           col = 'OceanSODA pH \n(high/low/normal)')
+  )
+```
+
+### Temperature
+
+```{r Pacific_temp_profiles}
+
+profile_extreme %>%
+  filter(basin_AIP == 'Pacific',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(x = temp_adjusted,
+                 y = depth,
+                 group = extreme,
+                 col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo temperature (ºC)',
+           y = 'depth (m)',
+           title = paste('Pacific basin, 2019, biome', unique(.x$value)),
+           col = 'OceanSODA pH \n(high/low/normal)')
+  )
+
+```
+
+## Indian basin
+
+### 2019
+
+### pH
+
+```{r Indian_pH_profiles}
+profile_extreme %>%
+  filter(basin_AIP == 'Indian',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(x = ph_in_situ_total_adjusted,
+                 y = depth,
+                 group = extreme,
+                 col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo pH (total scale)',
+           y = 'depth (m)',
+           title = paste('Indian basin, 2019, biome', unique(.x$value)),
+           col = 'OceanSODA pH \n(high/low/normal)')
+  )
+
+```
+
+### Temperature
+
+```{r Indian_temp_profiles}
+
+profile_extreme %>%
+  filter(basin_AIP == 'Indian',
+         year == '2019') %>%
+  group_split(value) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(x = temp_adjusted,
+                 y = depth,
+                 group = extreme,
+                 col = extreme))+
+      geom_point(pch = 19, size = 0.5)+
+      scale_y_reverse()+
+      theme_bw()+
+      facet_wrap(~month, ncol = 6)+
+      labs(x = 'Argo temperature (ºC))',
+           y = 'depth (m)',
+           title = paste('Indian basin, 2019, biome', unique(profile_extreme$value)),
+           col = 'OceanSODA pH \n(high/low/normal)')
+  )
+
+```
