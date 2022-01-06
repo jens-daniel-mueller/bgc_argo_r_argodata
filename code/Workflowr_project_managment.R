@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "added longitudinal bins")
+wflow_publish(all = TRUE, message = "updated profile page")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -16,10 +16,11 @@ wflow_publish(here::here(
     'coverage_maps.Rmd',
     'ph_data.Rmd',
     'oxygen_data.Rmd',
-    'oceanSODA_argo.Rmd'
+    'oceanSODA_argo.Rmd',
+    'extreme_pH.Rmd'
   )
 ),
-message = "suppressed output messages and updated plots",
+message = "added Argo profiles",
 republish = TRUE)
 
 

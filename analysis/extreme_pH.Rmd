@@ -20,6 +20,7 @@ Compare depth profiles of normal pH and of extreme pH, as identified in the surf
 ```{r load_libraries, include=FALSE}
 library(tidyverse)
 library(lubridate)
+library(ggOceanMaps)
 ```
 
 ```{r set_global_theme}
@@ -98,6 +99,63 @@ OceanSODA_SO_extreme <- OceanSODA_SO_extreme %>%
 
 ```
 
+Location of OceanSODA pH extremes
+
+```{r map_OceanSODA_extremes}
+
+OceanSODA_SO_extreme %>% 
+  group_split(year) %>% 
+  map(
+    ~ basemap(limits = -32, data = .x)+
+      geom_spatial_tile(data = .x, 
+                        aes(x = lon, 
+                            y = lat, 
+                            fill = extreme), 
+                        linejoin = 'mitre',
+                        col = 'transparent',
+                        detail = 60) +
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste('OceanSODA pH (High/Low/Normal)', unique(.x$year)),
+           fill = 'pH')
+  )
+
+# OceanSODA_SO_extreme %>% 
+#   filter(year == 2013) %>% 
+#   basemap(limits = -32, data = filter(OceanSODA_SO_extreme, year == 2013))+
+#   geom_spatial_tile(data = filter(OceanSODA_SO_extreme, year == 2013), 
+#                     aes(x = lon,
+#                         y = lat, 
+#                         fill = extreme),
+#                     linejoin = 'mitre',
+#                     col = 'transparent',
+#                     detail = 60)+
+#   facet_wrap(~month, ncol = 2)+
+#   labs(title = 'OceanSODA pH (High/Low/Normal) 2013',
+#        fill = 'pH')
+
+```
+
+OceanSODA pH timeseries
+
+```{r extreme_pH_timeseries}
+# calculate a regional mean pH for each biome, basin, and ph extreme (H/L/N) and plot a timeseries 
+
+OceanSODA_SO_extreme %>% 
+  group_by(date, value, basin_AIP, extreme) %>% 
+  summarise(ph_regional = mean(ph_total)) %>% 
+  ggplot(aes(x = date, y = ph_regional, group = extreme, col = extreme))+
+  geom_point()+
+  geom_line()+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
+  facet_grid(basin_AIP~value)+
+  labs(title = 'OceanSODA pH (High/Low/Normal)',
+       x = 'date',
+       y = 'regional mean pH',
+       col = 'High / Low / Normal pH') +
+  theme(legend.position = 'bottom')
+
+```
+
 ### Argo data
 
 Load in full Argo data
@@ -110,24 +168,25 @@ full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
 full_argo <- full_argo %>%
   mutate(year = year(date),
          month = month(date)) %>%
-  mutate(date = format_ISO8601(date, precision = 'ym'))
+  mutate(date = format_ISO8601(date, precision = 'ym')) %>% 
+  select(depth:platform_number,
+         cycle_number,
+         float_serial_no,
+         date,
+         lat,
+         lon,
+         profile_pres_qc:profile_ph_in_situ_total_qc) %>% 
+  filter(ph_in_situ_total_adjusted_qc == '1')
 
 # add in RECCAP biomes, and keep only Southern Ocean argo data
-full_argo_SO <- inner_join(full_argo, region_masks_all_1x1) %>%
+full_argo <- inner_join(full_argo, region_masks_all_1x1) 
+
+full_argo_SO <- full_argo %>%
   filter(region == 'southern',
          value != 0)
 
 # add in basin separations to full profile argo data
 full_argo_SO <- inner_join(full_argo_SO, basinmask)
-
-# select only relevant columns
-full_argo_SO <- full_argo_SO %>%
-  select(depth:platform_number,
-         cycle_number,
-         float_serial_no,
-         date:lon,
-         profile_pres_qc:basin_AIP) %>%
-  filter(ph_in_situ_total_adjusted_qc == '1')
 
 # rename OceanSODA columns
 OceanSODA_SO_extreme <- OceanSODA_SO_extreme %>%
@@ -139,6 +198,19 @@ OceanSODA_SO_extreme <- OceanSODA_SO_extreme %>%
 
 # combine the argo profile data to the surface extreme data
 profile_extreme <- inner_join(full_argo_SO, OceanSODA_SO_extreme)
+
+```
+
+Calculate mean monthly profiles
+
+```{r calculate_mean_profiles}
+# calculate mean profiles in each basin and biome, for each month between 2014 and 2021 
+
+monthly_profile_extreme <- profile_extreme %>% 
+  mutate(depth = round(depth, digits = 0)) %>%
+  group_by(year, month, value, basin_AIP, extreme, depth) %>% 
+  summarise(mean_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            mean_temp = mean(temp_adjusted, na.rm = TRUE))
 
 ```
 
@@ -313,5 +385,34 @@ profile_extreme %>%
            title = paste('Indian basin, 2019, biome', unique(profile_extreme$value)),
            col = 'OceanSODA pH \n(high/low/normal)')
   )
+
+```
+
+Mean monthly profiles
+
+```{r plot_mean_monthly_profiles}
+
+# monthly_profile_extreme %>%
+#   group_split(year, basin_AIP, value) %>%
+#   map(
+#     ~ggplot(data = .x,
+#              aes(x = mean_ph,
+#                  y = depth,
+#                  group = extreme,
+#                  col = extreme))+
+#       geom_point(size = 0.3)+
+#       scale_y_reverse()+
+#       facet_wrap(~month)
+#   )
+
+monthly_profile_extreme %>% 
+  ggplot(aes(x = mean_ph,
+             y = depth, 
+             group = extreme, 
+             col = extreme))+
+  geom_point(size = 0.3)+
+  scale_y_reverse()+
+  facet_grid(basin_AIP~value)
+
 
 ```
