@@ -161,9 +161,9 @@ Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated
 OceanSODA_SO_clim_grid <- OceanSODA_SO %>%
   group_by(lon, lat, month) %>%
   summarise(
-    ph_mean = mean(ph_total, na.rm = TRUE),
-    ph_threshold_high = quantile(ph_total, 0.95, na.rm = TRUE),
-    ph_threshold_low = quantile(ph_total, 0.05, na.rm = TRUE)
+    ph_N = mean(ph_total, na.rm = TRUE),
+    ph_H = quantile(ph_total, 0.95, na.rm = TRUE),
+    ph_L = quantile(ph_total, 0.05, na.rm = TRUE)
   ) %>%
   ungroup()
 
@@ -186,8 +186,8 @@ N for normal pH
 OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
   mutate(
     ph_extreme = case_when(
-      ph_total < ph_threshold_low ~ 'L',
-      ph_total > ph_threshold_high ~ 'H',
+      ph_total < ph_L ~ 'L',
+      ph_total > ph_H ~ 'H',
       TRUE ~ 'N'
     )
   ) %>%
@@ -204,9 +204,9 @@ OceanSODA_SO_extreme_grid %>%
   group_split(lon, lat, month) %>%
   head(6) %>%
   map(~ ggplot(data = .x) +
-        geom_hline(aes(yintercept = ph_threshold_high), linetype = 2) +
-        geom_hline(aes(yintercept = ph_threshold_low), linetype = 2) +
-        geom_hline(aes(yintercept = ph_mean)) +
+        geom_hline(aes(yintercept = ph_H), linetype = 2) +
+        geom_hline(aes(yintercept = ph_L), linetype = 2) +
+        geom_hline(aes(yintercept = ph_N)) +
         geom_point(
           aes(x = year, y = ph_total, col = ph_extreme)) +
         labs(title = paste(
@@ -290,9 +290,11 @@ OceanSODA_SO_extreme_grid %>%
 OceanSODA_SO_clim_grid %>%
   pivot_longer(starts_with("ph_"),
                names_to = "level",
-               values_to = "value") %>% 
+               values_to = "value",
+               names_prefix = "ph_") %>% 
   ggplot(aes(value, col = level)) +
   geom_density() +
+  scale_color_manual(values = HNL_colors, name = "threshold") +
   coord_cartesian(xlim = c(8, 8.2)) +
   theme(legend.position = 'bottom')
 
@@ -312,9 +314,9 @@ Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated
 OceanSODA_SO_clim_biome <- OceanSODA_SO %>%
   group_by(biome, basin_AIP, month) %>%
   summarise(
-    ph_mean = mean(ph_total, na.rm = TRUE),
-    ph_threshold_high = quantile(ph_total, 0.95, na.rm = TRUE),
-    ph_threshold_low = quantile(ph_total, 0.05, na.rm = TRUE)
+    ph_N = mean(ph_total, na.rm = TRUE),
+    ph_H = quantile(ph_total, 0.95, na.rm = TRUE),
+    ph_L = quantile(ph_total, 0.05, na.rm = TRUE)
   ) %>%
   ungroup()
 
@@ -337,8 +339,8 @@ N for normal pH
 OceanSODA_SO_extreme_biome <- OceanSODA_SO_extreme_biome %>%
   mutate(
     ph_extreme = case_when(
-      ph_total < ph_threshold_low ~ 'L',
-      ph_total > ph_threshold_high ~ 'H',
+      ph_total < ph_L ~ 'L',
+      ph_total > ph_H ~ 'H',
       TRUE ~ 'N'
     )
   ) %>%
@@ -355,9 +357,9 @@ OceanSODA_SO_extreme_biome %>%
   group_split(biome, basin_AIP, month) %>%
   head(6) %>%
   map(~ ggplot(data = .x) +
-        geom_hline(aes(yintercept = ph_threshold_high), linetype = 2) +
-        geom_hline(aes(yintercept = ph_threshold_low), linetype = 2) +
-        geom_hline(aes(yintercept = ph_mean)) +
+        geom_hline(aes(yintercept = ph_H), linetype = 2) +
+        geom_hline(aes(yintercept = ph_L), linetype = 2) +
+        geom_hline(aes(yintercept = ph_N)) +
         geom_point(
           aes(x = year, y = ph_total, col = ph_extreme)) +
         labs(title = paste(
@@ -441,9 +443,11 @@ OceanSODA_SO_extreme_biome %>%
 OceanSODA_SO_clim_biome %>%
   pivot_longer(starts_with("ph_"),
                names_to = "level",
-               values_to = "value") %>% 
+               values_to = "value",
+               names_prefix = "ph_") %>% 
   ggplot(aes(value, col = level)) +
   geom_density() +
+  scale_color_manual(values = HNL_colors, name = "threshold") +
   coord_cartesian(xlim = c(8, 8.2)) +
   theme(legend.position = 'bottom')
 
@@ -462,21 +466,6 @@ OceanSODA_SO_extreme <- OceanSODA_SO_extreme_biome %>%
 
 # combine the argo profile data to the surface extreme data
 profile_extreme <- inner_join(full_argo_SO, OceanSODA_SO_extreme)
-
-```
-
-## Mean monthly profiles
-
-```{r calculate_mean_profiles}
-# calculate mean profiles in each basin and biome, for each month between 2014 and 2021 
-
-profile_extreme_monthly <- profile_extreme %>% 
-  mutate(depth = cut(depth, seq(0,2000,10), seq(5,2000,10)),
-         depth = as.numeric(as.character(depth))) %>%
-  group_by(month, biome, basin_AIP, ph_extreme, depth) %>% 
-  summarise(mean_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            mean_temp = mean(temp_adjusted, na.rm = TRUE)) %>% 
-  ungroup()
 
 ```
 
@@ -566,6 +555,19 @@ profile_extreme %>%
 
 # Plot monthly profiles
 
+```{r calculate_mean_profiles}
+# calculate mean profiles in each basin and biome, for each month between 2014 and 2021 
+
+profile_extreme_monthly <- profile_extreme %>% 
+  mutate(depth = cut(depth, seq(0,2000,10), seq(5,2000,10)),
+         depth = as.numeric(as.character(depth))) %>%
+  group_by(month, biome, basin_AIP, ph_extreme, depth) %>% 
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            temp_mean = mean(temp_adjusted, na.rm = TRUE)) %>% 
+  ungroup()
+
+```
+
 ## pH
 
 ```{r mean_monthly_profiles_pH, fig.asp=1}
@@ -577,7 +579,7 @@ profile_extreme_monthly %>%
   map(
     ~ ggplot(data = .x,
              aes(
-               x = mean_ph,
+               x = ph_mean,
                y = depth,
                group = ph_extreme,
                col = ph_extreme
