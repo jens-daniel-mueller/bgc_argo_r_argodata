@@ -233,6 +233,16 @@ bgc_data %>%
 bgc_merge %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
 
+bgc_merge_pH_qc_1 <- bgc_merge %>%
+  filter(ph_in_situ_total_adjusted_qc == '1') %>% 
+  select(date, lat, lon,
+         depth, psal_adjusted, temp_adjusted,
+         ph_in_situ_total_adjusted,
+         platform_number, cycle_number)
+
+bgc_merge_pH_qc_1 %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+
 ```
 
 ### pH data

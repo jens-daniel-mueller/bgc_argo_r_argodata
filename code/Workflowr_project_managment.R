@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "updated profile page")
+wflow_publish(all = TRUE, message = "code review")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -22,6 +22,15 @@ wflow_publish(here::here(
 ),
 message = "added Argo profiles",
 republish = TRUE)
+
+wflow_publish(here::here(
+  "analysis",
+  c(
+    "index.Rmd",
+    'extreme_pH.Rmd'
+  )
+),
+message = "code review")
 
 
 # Push latest version to GitHub
