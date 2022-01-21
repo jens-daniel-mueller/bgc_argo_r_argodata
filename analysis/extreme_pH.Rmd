@@ -1,1 +1,740 @@
+---
+title: "Extreme pH Profiles"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
 
+```{r set_options_global, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Task
+
+Compare depth profiles of normal pH and of extreme pH, as identified in the surface OceanSODA pH data product
+
+```{r load_libraries, include=FALSE}
+library(tidyverse)
+library(lubridate)
+library(broom)
+library(ggOceanMaps)
+```
+
+```{r set_global_theme}
+
+theme_set(theme_bw())
+HNL_colors <- c("H" = "#b2182b",
+                "N" = "#636363",
+                "L" = "#2166ac")
+
+```
+
+# Load data
+
+```{r set_root_directories}
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+```
+
+```{r load_data}
+
+# RECCAP2-ocean region mask
+region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed,
+                                               "/region_masks_all_2x2.rds"))
+
+region_masks_all_2x2 <- region_masks_all_2x2 %>%
+  rename(biome = value) %>% 
+  filter(region == 'southern',
+         biome != 0) %>% 
+  select(-region) %>% 
+  mutate(coast = as.character(coast))
+
+# WOA 18 basin mask
+
+basinmask <-
+  read_csv(
+    paste(path_emlr_utilities,
+          "basin_mask_WOA18.csv",
+          sep = ""),
+    col_types = cols("MLR_basins" = col_character())
+  )
+
+basinmask_2x2 <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>%
+  select(lon, lat, basin_AIP) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)), 
+    lon = as.numeric(as.character(lon))
+   )   # regrid into 2x2º grid
+
+
+# OceanSODA
+OceanSODA <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA.rds"))
+
+OceanSODA <- OceanSODA %>%
+  mutate(month = month(date))
+
+OceanSODA_2x2 <- OceanSODA %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)), 
+    lon = as.numeric(as.character(lon))) %>% # regrid into 2x2º grid 
+  group_by(lon, lat, date, year, month) %>% 
+  summarise(ph_month = mean(ph_total, na.rm = TRUE)) %>% 
+  ungroup() 
+# calculate mean pH for each 2x2 grid at each date 
+
+# load in the full argo data
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+
+# change the date format for compatibility with OceanSODA pH data
+full_argo_2x2 <- full_argo %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  mutate(date = ymd(format(date, "%Y-%m-15"))) %>% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))) %>%  # re-grid to 2x2
+  group_by(lon, lat, date, year, month, depth, platform_number, cycle_number) %>% 
+  summarise(ph_adjusted_month = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            temp_adjusted_month = mean(temp_adjusted, na.rm = TRUE)) %>% 
+  ungroup()
+# calculate mean pH and temperature for each 2x2 grid for each date
+```
+
+# Regions
+
+## Biomes
+
+```{r biomes_map}
+
+basemap(limits = -32) +
+  geom_spatial_tile(
+    data = region_masks_all_2x2,
+    aes(x = lon,
+        y = lat,
+        fill = biome),
+    col = 'transparent'
+  ) +
+  scale_fill_brewer(palette = "Dark2")
+
+```
+
+## Coast
+
+```{r coast_map}
+
+basemap(limits = -32) +
+  geom_spatial_tile(
+    data = region_masks_all_2x2,
+    aes(x = lon,
+        y = lat,
+        fill = coast),
+    col = 'transparent'
+  ) +
+  scale_fill_brewer(palette = "Dark2")
+
+
+```
+
+## Apply region masks
+
+```{r remove_coastal_regions}
+
+region_masks_all_2x2 <- region_masks_all_2x2 %>% 
+  filter(coast == "0")
+
+```
+
+```{r apply_region_masks}
+
+# keep only Southern Ocean data
+OceanSODA_2x2_SO <- inner_join(OceanSODA_2x2, region_masks_all_2x2)
+
+# add in basin separations
+OceanSODA_2x2_SO <- inner_join(OceanSODA_2x2_SO, basinmask_2x2)
+# (adds in duplicate rows?
+# OceanSODA_2x2 -> 1101584 rows
+# OceanSODA_2x2_SO -> 3497664 rows)
+
+# remove the duplicate rows created by inner_join 
+OceanSODA_2x2_SO <- OceanSODA_2x2_SO %>% 
+  distinct()
+# (results in 248160 rows)
+
+# keep only Southern Ocean argo data
+full_argo_2x2_SO <- inner_join(full_argo_2x2, region_masks_all_2x2)
+
+# add in basin separations
+full_argo_2x2_SO <- inner_join(full_argo_2x2_SO, basinmask_2x2)
+
+# remove duplicate rows (keep only distinct rows)
+full_argo_2x2_SO <- full_argo_2x2_SO %>% 
+  distinct()
+
+```
+
+# OceanSODA pH anomalies
+
+## Grid level
+
+### Climatological thresholds
+
+Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated for 2013-2021, with the full spatial OceanSODA data
+
+```{r fit_linear_regression}
+
+# fit a linear regression of OceanSODA pH against time (temporal trend) in each lat/lon grid 
+OceanSODA_regression <- OceanSODA_2x2_SO %>% 
+  drop_na() %>% 
+  nest(data = -c(lon, lat)) %>%   # group by lon, lat
+  mutate(fit = map(.x = data,
+                   .f = ~ lm(ph_month ~ date, data = .x)),
+         tidied = map(.x = fit, .f = tidy),
+         augmented = map(.x = fit, .f = augment))
+
+OceanSODA_regression <- OceanSODA_regression %>% 
+  unnest(tidied) %>% 
+  unnest(augmented)
+
+
+```
+
+```{r threshold_calculation}
+
+# join the regression estimates to OceanSODA and remove duplicate rows 
+OceanSODA_2x2_SO_extreme_grid <- inner_join(OceanSODA_2x2_SO, OceanSODA_regression) %>% 
+  distinct()
+
+# sigma is the residual standard deviation 
+# .fitted are the predicted pH values by the linear model 
+
+# calculate H and L pH thresholds for climatological monthly pH
+OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>% 
+  mutate(ph_L = .fitted - 2*(.sigma),
+         ph_H = .fitted + 2*(.sigma))
+
+```
+
+```{r calculate_clim_OceanSODA_pH_grid, eval=FALSE}
+
+# calculate climatological average OceanSODA pH
+# and the 95th percentile of the monthly OceanSODA pH
+# 
+# OceanSODA_2x2_SO_clim_grid <- OceanSODA_2x2_SO %>%
+#   group_by(lon, lat, month) %>%
+#   summarise(
+#     ph_N = mean(ph_total, na.rm = TRUE),
+#     ph_H = quantile(ph_total, 0.95, na.rm = TRUE),
+#     ph_L = quantile(ph_total, 0.05, na.rm = TRUE)
+#   ) %>%
+#   ungroup()
+# 
+# OceanSODA_2x2_SO_extreme_grid <- inner_join(OceanSODA_2x2_SO, OceanSODA_2x2_SO_clim_grid)
+
+```
+
+### Anomaly identification
+
+Calculate OceanSODA pH anomalies: L for abnormally low, H for abnormally high, N for normal pH
+
+```{r calculate_extreme_OceanSODA_pH_grid}
+
+# when the in-situ OceanSODA pH is lower than the 5th percentile (predicted - 2*residual.st.dev), assign 'L' for low extreme
+# when the in-situ OceanSODA pH exceeds the 95th percentile (predicted + 2*residual.st.dev), assign 'H' for high extreme
+# when the in-situ OceanSODA pH is within 95% of the range, then assign 'N' for normal pH
+
+OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>%
+  mutate(
+    ph_extreme = case_when(
+      ph_month < ph_L ~ 'L',
+      ph_month > ph_H ~ 'H',
+      TRUE ~ 'N'
+    )
+  ) %>%
+  drop_na()
+
+OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>%
+  mutate(ph_extreme = fct_relevel(ph_extreme, "H", "N", "L"))
+
+# pivot_wider two columns (slope and intercept), values_from = estimate, names_from = terms, names.repair = 'unique' 
+# gives a slope and intercept column 
+# rename date...25 = slope and date...3 = date
+OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>% 
+  pivot_wider(names_from = term,
+              values_from = estimate, 
+              names_repair = 'unique') %>% 
+  rename(date = date...3, 
+         regression_slope = date...25,
+         regression_intercept = `(Intercept)`)
+
+# fill in NAs in the slope and intercept columns (values from above for regression_slope and values from below for regression_intercept) (creates duplicate rows) and remove duplicate rows 
+# OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>%
+#   group_by(lon, lat, date, year, month) %>%
+#   fill(regression_slope, .direction = 'up') %>%
+#   fill(regression_intercept, .direction = 'down') %>%
+#   distinct()
+
+```
+
+```{r anomaly_test_plot_grid, fig.asp=0.5, eval=FALSE}
+
+# OceanSODA_2x2_SO_extreme_grid %>%
+#   group_split(lon, lat, month) %>%
+#   head(6) %>%
+#   map(~ ggplot(data = .x) +
+#         # geom_hline(aes(yintercept = ph_H), linetype = 2) +
+#         # geom_hline(aes(yintercept = ph_L), linetype = 2) +
+#         geom_abline(data = .x, aes(
+#                     intercept = regression_intercept, 
+#                     slope = regression_slope)) +
+#         geom_point(
+#           aes(x = year, y = ph_month, col = ph_extreme)) +
+#         labs(title = paste(fititle = paste(
+#           "lon:", unique(.x$lon),
+#           "| lat:", unique(.x$lat),
+#           "| month:", unique(.x$month)
+#           ))) +
+#         scale_color_manual(values = HNL_colors))
+
+```
+
+### Anomaly maps
+
+Location of OceanSODA pH extremes
+
+```{r map_OceanSODA_ph_extremes_grid, fig.asp=2}
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  group_split(year) %>% 
+  # head(2) %>%
+  map(
+    ~ basemap(limits = -32, data = .x)+
+      geom_spatial_tile(data = .x,
+                        aes(x = lon,
+                            y = lat,
+                            fill = ph_extreme),
+                        linejoin = 'mitre',
+                        col = 'transparent',
+                        detail = 60
+                        ) +
+      scale_fill_manual(values = HNL_colors) +
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste("Year:", unique(.x$year)),
+           fill = 'pH')
+  )
+
+```
+
+### Anomaly time series
+
+```{r extreme_pH_timeseries_grid}
+# calculate a regional mean pH for each biome, basin, and ph extreme (H/L/N) and plot a timeseries 
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  group_by(date, biome, basin_AIP, ph_extreme) %>% 
+  summarise(ph_regional = mean(ph_month, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = date, y = ph_regional, col = ph_extreme))+
+  geom_point(size = 0.3)+
+  geom_line()+
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP~biome)+
+  labs(x = 'date',
+       y = 'regional mean pH',
+       col = 'pH anomaly') +
+  theme(legend.position = 'bottom')
+
+```
+
+### Anomaly histogram
+
+```{r extreme_pH_histogram_grid}
+
+OceanSODA_2x2_SO_extreme_grid %>%
+  ggplot(aes(ph_month, col = ph_extreme)) +
+  geom_density() +
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP ~ biome) +
+  coord_cartesian(xlim = c(8, 8.2)) +
+  labs(x = 'value',
+       y = 'density',
+       col = 'pH anomaly') +
+  theme(legend.position = 'bottom')
+
+```
+
+### Threshold histogram
+
+```{r threshold_pH_histogram_grid}
+
+OceanSODA_2x2_SO_extreme_grid %>%
+  mutate(ph_extreme = as.double(ph_extreme)) %>% 
+  pivot_longer(starts_with("ph_"),
+               names_to = "level",
+               values_to = "value",
+               names_prefix = "ph_") %>%
+  distinct() %>% 
+  ggplot(aes(value, col = level)) +
+  geom_density() +
+  scale_color_manual(values = HNL_colors, name = "threshold") +
+  coord_cartesian(xlim = c(8, 8.2)) +
+  theme(legend.position = 'bottom')
+
+```
+
+## Biome level
+
+### Climatological thresholds
+
+Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated for 2013-2021, with the full spatial OceanSODA data
+
+```{r calculate_biome_pH}
+# calculate biome-mean pH for each date
+OceanSODA_biome <- OceanSODA_2x2_SO %>% 
+  group_by(date, year, month, biome, basin_AIP) %>% 
+  summarise(biome_ph = mean(ph_month, na.rm = TRUE))
+
+```
+
+```{r fit_biome_linear_regression}
+
+# fit a linear regression of biome-mean pH against time (temporal trend) in each biome/basin area 
+OceanSODA_biome_regression <- OceanSODA_biome %>% 
+  drop_na() %>% 
+  nest(data = -c(biome, basin_AIP)) %>%   # group by biome, basin
+  mutate(fit = map(.x = data,
+                   .f = ~ lm(biome_ph ~ date, data = .x)),
+         tidied = map(.x = fit, .f = tidy),
+         augmented = map(.x = fit, .f = augment))
+
+OceanSODA_biome_regression <- OceanSODA_biome_regression %>% 
+  unnest(tidied) %>% 
+  unnest(augmented)
+
+```
+
+```{r calculate_clim_OceanSODA_pH_biome, eval=FALSE}
+
+# calculate climatological average OceanSODA pH
+# and the 95th percentile of the monthly OceanSODA pH
+
+# OceanSODA_2x2_SO_clim_biome <- OceanSODA_SO %>%
+#   group_by(biome, basin_AIP, month) %>%
+#   summarise(
+#     ph_N = mean(ph_total, na.rm = TRUE),
+#     ph_H = quantile(ph_total, 0.95, na.rm = TRUE),
+#     ph_L = quantile(ph_total, 0.05, na.rm = TRUE)
+#   ) %>%
+#   ungroup()
+# 
+# OceanSODA_2x2_SO_extreme_biome <- inner_join(OceanSODA_SO, OceanSODA_2x2_SO_clim_biome)
+
+```
+
+```{r calculate_biome_thresholds}
+
+# join the regression estimates to OceanSODA and remove duplicate rows 
+OceanSODA_2x2_SO_extreme_biome <- inner_join(OceanSODA_2x2_SO, OceanSODA_biome_regression) %>% 
+  distinct()
+
+# sigma is the residual standard deviation 
+# .fitted are the predicted pH values by the linear model 
+
+# calculate H and L pH thresholds for climatological monthly pH
+OceanSODA_2x2_SO_extreme_biome <- OceanSODA_2x2_SO_extreme_biome %>% 
+  mutate(ph_L = .fitted - 2*(.sigma),
+         ph_H = .fitted + 2*(.sigma))
+
+```
+
+### Anomaly identification
+
+Calculate OceanSODA pH anomalies: L for abnormally low, H for abnormally high, N for normal pH
+
+```{r calculate_extreme_OceanSODA_pH_biome}
+
+# when the in-situ OceanSODA pH is lower than the 5th percentile, assign 'L' for low extreme
+# when the in-situ OceanSODA pH exceeds the 95th percentile, assign 'H' for high extreme
+# when the in-situ OceanSODA pH is within 95% of the range, then assign 'N' for normal pH
+OceanSODA_2x2_SO_extreme_biome <- OceanSODA_2x2_SO_extreme_biome %>%
+  mutate(
+    ph_extreme = case_when(
+      ph_month < ph_L ~ 'L',
+      ph_month > ph_H ~ 'H',
+      TRUE ~ 'N'
+    )
+  ) %>%
+  drop_na()
+
+OceanSODA_2x2_SO_extreme_biome <- OceanSODA_2x2_SO_extreme_biome %>%
+  mutate(ph_extreme = fct_relevel(ph_extreme, "H", "N", "L"))
+
+# pivot_wider two columns (slope and intercept), values_from = estimate, names_from = terms, names.repair = 'unique' 
+# gives a slope and intercept column 
+# rename date...26 = slope and date...3 = date
+OceanSODA_2x2_SO_extreme_biome <- OceanSODA_2x2_SO_extreme_biome %>% 
+  pivot_wider(names_from = term,
+              values_from = estimate, 
+              names_repair = 'unique') %>% 
+  rename(date = date...3, 
+         regression_slope = date...26,
+         regression_intercept = `(Intercept)`)
+```
+
+```{r anomaly_test_plot_biome, fig.asp=0.5}
+# 
+# OceanSODA_2x2_SO_extreme_biome %>%
+#   group_split(biome, basin_AIP, month) %>%
+#   head(6) %>%
+#   map(~ ggplot(data = .x) +
+#         geom_hline(aes(yintercept = ph_H), linetype = 2) +
+#         geom_hline(aes(yintercept = ph_L), linetype = 2) +
+#         geom_abline(aes(slope = regression_slope, 
+#                         intercept = regression_intercept)) +
+#         geom_point(
+#           aes(x = year, y = ph_month, col = ph_extreme)) +
+#         labs(title = paste(
+#           "biome:", unique(.x$biome),
+#           "| basin:", unique(.x$basin_AIP),
+#           "| month:", unique(.x$month)
+#           )) +
+#         scale_color_manual(values = HNL_colors))
+
+```
+
+### Anomaly maps
+
+Location of OceanSODA pH extremes
+
+```{r map_OceanSODA_ph_extremes_biome, fig.asp=2}
+
+OceanSODA_2x2_SO_extreme_biome %>% 
+  group_split(year) %>% 
+  # head(1) %>%
+  map(
+    ~ basemap(limits = -32, data = .x)+
+      geom_spatial_tile(data = .x,
+                        aes(x = lon,
+                            y = lat,
+                            fill = ph_extreme),
+                        linejoin = 'mitre',
+                        col = 'transparent',
+                        detail = 60
+                        ) +
+      scale_fill_manual(values = HNL_colors) +
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste("Year:", unique(.x$year)),
+           fill = 'pH')
+  )
+
+```
+
+### Anomaly time series
+
+```{r extreme_pH_timeseries_biome}
+# calculate a regional mean pH for each biome, basin, and ph extreme (H/L/N) and plot a timeseries 
+
+OceanSODA_2x2_SO_extreme_biome %>% 
+  group_by(date, biome, basin_AIP, ph_extreme) %>% 
+  summarise(ph_regional = mean(ph_month, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = date, y = ph_regional, col = ph_extreme))+
+  geom_point(size = 0.3)+
+  geom_line()+
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP~biome)+
+  labs(x = 'date',
+       y = 'regional mean pH',
+       col = 'pH anomaly') +
+  theme(legend.position = 'bottom')
+
+```
+
+### Anomaly histogram
+
+```{r extreme_pH_histogram_biome}
+
+OceanSODA_2x2_SO_extreme_biome %>%
+  ggplot(aes(ph_month, col = ph_extreme)) +
+  geom_density() +
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP ~ biome) +
+  coord_cartesian(xlim = c(8, 8.2)) +
+  labs(x = 'value',
+       y = 'density',
+       col = 'pH anomaly') +
+  theme(legend.position = 'bottom')
+
+```
+
+### Threshold histogram
+
+```{r threshold_pH_histogram_biome}
+
+OceanSODA_2x2_SO_extreme_biome %>%
+  mutate(ph_extreme = as.double(ph_extreme)) %>% 
+  pivot_longer(starts_with("ph_"),
+               names_to = "level",
+               values_to = "value",
+               names_prefix = "ph_") %>% 
+  ggplot(aes(value, col = level)) +
+  geom_density() +
+  scale_color_manual(values = HNL_colors, name = "threshold") +
+  coord_cartesian(xlim = c(8, 8.2)) +
+  theme(legend.position = 'bottom')
+
+```
+
+# Argo
+
+## Join OceanSODA
+
+```{r combine_extreme_OceanSODA_to_Argo}
+
+# rename OceanSODA columns
+OceanSODA_2x2_SO_extreme <- OceanSODA_2x2_SO_extreme_grid %>%
+  rename(OceanSODA_ph = ph_month)
+
+# combine the argo profile data to the surface extreme data
+profile_extreme <- inner_join(full_argo_2x2_SO, OceanSODA_2x2_SO_extreme)
+
+```
+
+# Plot profiles
+
+Argo profiles plotted according to the surface OceanSODA pH
+
+L profiles correspond to a surface acidification event (low pH), as recorded in OceanSODA
+
+H profiles correspond to an event of high surface pH, as recorded in OceanSODA
+
+N profiles correspond to normal surface OceanSODA pH
+
+## pH
+
+```{r pH_profiles}
+
+profile_extreme %>%
+  group_split(biome, basin_AIP, year) %>%
+  # head(5) %>%
+  map(
+    ~ ggplot(
+      data = .x,
+      aes(
+        x = ph_adjusted_month,
+        y = depth,
+        group = ph_extreme,
+        col = ph_extreme
+      )
+    ) +
+      geom_point(pch = 19, size = 0.3) +
+      scale_y_reverse() +
+      scale_color_manual(values = HNL_colors) +
+      facet_wrap( ~ month, ncol = 6) +
+      labs(
+        x = 'Argo pH (total scale)',
+        y = 'depth (m)',
+        title = paste(
+          unique(.x$basin_AIP),
+          "|",
+          unique(.x$year),
+          "| biome:",
+          unique(.x$biome)
+        ),
+        col = 'OceanSODA pH \nanomaly'
+      )
+  )
+
+```
+
+## Temperature
+
+```{r temp_profiles}
+
+# # plot temperature profiles for the Atlantic
+# profile_extreme %>%
+#   group_split(biome, basin_AIP, year) %>%
+#   # head(1) %>%
+#   map(
+#     ~ ggplot(
+#       data = .x,
+#       aes(
+#         x = temp_adjusted,
+#         y = depth,
+#         group = ph_extreme,
+#         col = ph_extreme
+#       )
+#     ) +
+#       geom_point(pch = 19, size = 0.5) +
+#       scale_y_reverse() +
+#       scale_color_manual(values = HNL_colors) +
+#       facet_wrap( ~ month, ncol = 6) +
+#       labs(
+#         x = 'Argo temperature (°C)',
+#         y = 'depth (m)',
+#         title = paste(
+#           unique(.x$basin_AIP),
+#           "|",
+#           unique(.x$year),
+#           "| biome:",
+#           unique(.x$biome)
+#         ),
+#         col = 'OceanSODA\npH\nanomaly'
+#       )
+#   )
+```
+
+# Plot monthly profiles
+
+```{r calculate_mean_profiles}
+# calculate mean profiles in each basin and biome, for each month between 2014 and 2021 
+
+profile_extreme_monthly <- profile_extreme %>% 
+  mutate(depth = Hmisc::cut2(depth, 
+                             cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+                             m = 5,
+                             levels.mean = TRUE),
+         depth = as.numeric(as.character(depth))) %>%
+  group_by(month, biome, basin_AIP, ph_extreme, depth) %>% 
+  summarise(ph_mean = mean(ph_adjusted_month, na.rm = TRUE),
+            temp_mean = mean(temp_adjusted_month, na.rm = TRUE)) %>% 
+  ungroup()
+
+
+```
+
+## pH
+
+```{r mean_monthly_profiles_pH, fig.asp=1}
+
+profile_extreme_monthly %>%
+  arrange(depth) %>% 
+  group_split(month) %>%
+  # head(1) %>%
+  map(
+    ~ ggplot(data = .x,
+             aes(
+               x = ph_mean,
+               y = depth,
+               group = ph_extreme,
+               col = ph_extreme
+             )) +
+      geom_path() +
+      scale_color_manual(values = HNL_colors) +
+      labs(title = paste("month:", unique(.x$month)),
+           col = 'OceanSODA\npH\nanomaly') +
+      scale_y_reverse() +
+      facet_grid(basin_AIP ~ biome)
+  )
+
+
+```
