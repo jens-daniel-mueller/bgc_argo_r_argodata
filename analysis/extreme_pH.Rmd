@@ -195,7 +195,7 @@ Climatological monthly OceanSODA pH and the 5th and 95th percentiles, calculated
 # fit a linear regression of OceanSODA pH against time (temporal trend) in each lat/lon grid 
 OceanSODA_regression <- OceanSODA_2x2_SO %>% 
   drop_na() %>% 
-  nest(data = -c(lon, lat)) %>%   # group by lon, lat
+  nest(data = -c(lon, lat, month)) %>%   # group by lon, lat
   mutate(fit = map(.x = data,
                    .f = ~ lm(ph_month ~ date, data = .x)),
          tidied = map(.x = fit, .f = tidy),
@@ -285,25 +285,29 @@ OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>%
 
 ```
 
-```{r anomaly_test_plot_grid, fig.asp=0.5, eval=FALSE}
+```{r anomaly_test_plot_grid, fig.asp=0.5}
 
-# OceanSODA_2x2_SO_extreme_grid %>%
-#   group_split(lon, lat, month) %>%
-#   head(6) %>%
-#   map(~ ggplot(data = .x) +
-#         # geom_hline(aes(yintercept = ph_H), linetype = 2) +
-#         # geom_hline(aes(yintercept = ph_L), linetype = 2) +
-#         geom_abline(data = .x, aes(
-#                     intercept = regression_intercept, 
-#                     slope = regression_slope)) +
-#         geom_point(
-#           aes(x = year, y = ph_month, col = ph_extreme)) +
-#         labs(title = paste(fititle = paste(
-#           "lon:", unique(.x$lon),
-#           "| lat:", unique(.x$lat),
-#           "| month:", unique(.x$month)
-#           ))) +
-#         scale_color_manual(values = HNL_colors))
+OceanSODA_2x2_SO_extreme_grid %>%
+  group_split(lon, lat, month) %>%
+  head(12) %>%
+  map(~ ggplot(data = .x) +
+        geom_point(aes(x = year,
+                       y = ph_month,
+                       col = ph_extreme)) +
+        geom_abline(aes(slope = regression_slope,
+                    intercept = regression_intercept - 2*.sigma), 
+                    linetype = 2) +
+        geom_abline(aes(slope = regression_slope,
+                    intercept = regression_intercept + 2*.sigma), 
+                    linetype = 2) +
+        geom_abline(aes(intercept = regression_intercept,
+                        slope = regression_slope)) +
+        labs(title = paste(fititle = paste(
+          "lon:", unique(.x$lon),
+          "| lat:", unique(.x$lat),
+          "| month:", unique(.x$month)
+          ))) +
+        scale_color_manual(values = HNL_colors))
 
 ```
 
@@ -315,7 +319,7 @@ Location of OceanSODA pH extremes
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
-  # head(2) %>%
+  head(2) %>%
   map(
     ~ basemap(limits = -32, data = .x)+
       geom_spatial_tile(data = .x,
@@ -410,7 +414,7 @@ OceanSODA_biome <- OceanSODA_2x2_SO %>%
 # fit a linear regression of biome-mean pH against time (temporal trend) in each biome/basin area 
 OceanSODA_biome_regression <- OceanSODA_biome %>% 
   drop_na() %>% 
-  nest(data = -c(biome, basin_AIP)) %>%   # group by biome, basin
+  nest(data = -c(biome, basin_AIP, month)) %>%   # group by biome, basin
   mutate(fit = map(.x = data,
                    .f = ~ lm(biome_ph ~ date, data = .x)),
          tidied = map(.x = fit, .f = tidy),
