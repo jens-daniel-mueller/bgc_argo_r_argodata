@@ -294,13 +294,13 @@ OceanSODA_2x2_SO_extreme_grid %>%
         geom_point(aes(x = year,
                        y = ph_month,
                        col = ph_extreme)) +
-        geom_abline(aes(slope = regression_slope,
+        geom_abline(data = .x, aes(slope = regression_slope,
                     intercept = regression_intercept - 2*.sigma), 
                     linetype = 2) +
-        geom_abline(aes(slope = regression_slope,
+        geom_abline(data = .x, aes(slope = regression_slope,
                     intercept = regression_intercept + 2*.sigma), 
                     linetype = 2) +
-        geom_abline(aes(intercept = regression_intercept,
+        geom_abline(data = .x, aes(intercept = regression_intercept,
                         slope = regression_slope)) +
         labs(title = paste(fititle = paste(
           "lon:", unique(.x$lon),
@@ -319,7 +319,7 @@ Location of OceanSODA pH extremes
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
-  head(2) %>%
+  # head(2) %>%
   map(
     ~ basemap(limits = -32, data = .x)+
       geom_spatial_tile(data = .x,
