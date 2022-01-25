@@ -782,3 +782,25 @@ profile_extreme_biome %>%
   facet_grid(season ~ biome)
 
 ```
+
+#### Averaged over ocean basins 
+
+```{r mean_basin_profiles, fig.asp=1}
+
+profile_extreme_basin <- profile_extreme_monthly %>% 
+  group_by(season, basin_AIP, ph_extreme, depth) %>% 
+  summarise(ph_basin = mean(ph_mean, na.rm = TRUE)) %>% 
+  ungroup()
+
+profile_extreme_basin %>% 
+  ggplot(aes(x = ph_basin, 
+             y = depth, 
+             group = ph_extreme, 
+             col = ph_extreme))+
+  geom_path()+
+  scale_color_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\npH\nanomaly')+
+  scale_y_reverse()+
+  facet_grid(season~basin_AIP)
+
+```
