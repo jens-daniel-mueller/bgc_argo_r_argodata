@@ -83,6 +83,10 @@ full_argo <- full_argo %>%
          month = month(date)) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
 ```
 
 # Regions
@@ -100,7 +104,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
 
 ### Remove coastal data
 
-```{r coast_map}
+```{r coast_map, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(
@@ -115,6 +119,17 @@ basemap(limits = -32) +
 
 ```
 
+```{r coast_flat_map}
+map + 
+  geom_tile(data = region_masks_all_2x2, 
+            aes(x = lon, 
+                y = lat, 
+                fill = coast))+
+  scale_fill_brewer(palette = 'Dark2')
+
+
+```
+
 ```{r remove_coastal_data}
 
 region_masks_all_2x2 <- region_masks_all_2x2 %>% 
@@ -124,7 +139,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
 
 ### Grid reduction
 
-```{r biomes_map_pre_grid_reduction}
+```{r biomes_map_pre_grid_reduction, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(
@@ -135,6 +150,17 @@ basemap(limits = -32) +
     col = 'transparent'
   ) +
   scale_fill_brewer(palette = "Dark2")
+
+```
+
+```{r biomes_flat_map_pre_grid_reduction}
+
+map +
+  geom_tile(data = region_masks_all_2x2, 
+            aes(x = lon, 
+                y = lat, 
+                fill = biome))+
+  scale_fill_brewer(palette = 'Dark2')
 
 ```
 
@@ -148,7 +174,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
 
 ```
 
-```{r biomes_map_post_grid_reduction}
+```{r biomes_map_post_grid_reduction, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(
@@ -159,6 +185,17 @@ basemap(limits = -32) +
     col = 'transparent'
   ) +
   scale_fill_brewer(palette = "Dark2")
+
+```
+
+```{r biomes_flat_map_post_grid_reduction}
+
+map+
+  geom_tile(data = region_masks_all_2x2,
+            aes(x = lon,
+                y = lat, 
+                fill = biome))+
+  scale_fill_brewer(palette = 'Dark2')
 
 ```
 
@@ -173,7 +210,7 @@ basinmask <- basinmask %>%
 
 ### Grid reduction
 
-```{r basin_map_pre_grid_reduction}
+```{r basin_map_pre_grid_reduction, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(
@@ -184,6 +221,16 @@ basemap(limits = -32) +
     col = 'transparent'
   ) +
   scale_fill_brewer(palette = "Dark2")
+
+```
+
+```{r basin_flat_map_pre_grid_reduction}
+map +
+  geom_tile(data = basinmask, 
+            aes(x = lon, 
+                y = lat, 
+                fill = basin_AIP))+
+  scale_fill_brewer(palette = 'Dark2')
 
 ```
 
@@ -210,7 +257,7 @@ rm(basinmask)
 
 ```
 
-```{r basin_map_post_grid_reduction}
+```{r basin_map_post_grid_reduction, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(
@@ -221,6 +268,17 @@ basemap(limits = -32) +
     col = 'transparent'
   ) +
   scale_fill_brewer(palette = "Dark2")
+
+```
+
+```{r basin_flat_map_post_grid_reduction}
+
+map+
+  geom_tile(data = basinmask_2x2 %>% filter(lat < -30),
+            aes(x = lon,
+                y = lat, 
+                fill = basin_AIP))+
+  scale_fill_brewer(palette = 'Dark2')
 
 ```
 
@@ -316,7 +374,7 @@ OceanSODA_regression_glanced <- OceanSODA_regression %>%
 
 ### Slope maps
 
-```{r map_regression_slopes, fig.asp=2}
+```{r map_regression_slopes, fig.asp=2, eval=FALSE}
 
 basemap(limits = -32) +
   geom_spatial_tile(data = OceanSODA_regression_tidied,
@@ -329,9 +387,22 @@ basemap(limits = -32) +
 
 ```
 
+```{r map_regression_slopes_flat}
+
+map+
+  geom_tile(data = OceanSODA_regression_tidied,
+            aes(x = lon,
+                y = lat, 
+                fill = slope))+
+  scale_fill_scico(palette = 'vik', midpoint = 0)+
+  lims(y = c(-85, -30))+
+  facet_wrap(~month, ncol = 2)
+
+```
+
 ### Residual st. dev. maps
 
-```{r map_sigma, fig.asp=2}
+```{r map_sigma, fig.asp=2, eval=FALSE}
 
 basemap(limits = -32)+
   geom_spatial_tile(data = OceanSODA_regression_glanced,
@@ -339,7 +410,21 @@ basemap(limits = -32)+
                         y = lat, 
                         fill = sigma),
                     col = 'transparent')+
-  scale_fill_scico(palette = 'vik', midpoint = 0)+
+  scale_fill_viridis_c()+
+  facet_wrap(~month, ncol = 2)+
+  labs(fill = '1 residual \nst. dev.')
+
+```
+
+```{r flat_map_sigma}
+
+map+
+  geom_tile(data = OceanSODA_regression_glanced,
+            aes(x = lon,
+                y = lat, 
+                fill = sigma))+
+  scale_fill_viridis_c()+
+  lims(y = c(-85, -30))+
   facet_wrap(~month, ncol = 2)+
   labs(fill = '1 residual \nst. dev.')
 
@@ -418,7 +503,7 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 Location of OceanSODA pH extremes
 
-```{r map_OceanSODA_ph_extremes_grid, fig.asp=2}
+```{r map_OceanSODA_ph_extremes_grid, fig.asp=2, eval=FALSE}
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
@@ -436,6 +521,25 @@ OceanSODA_2x2_SO_extreme_grid %>%
       scale_fill_manual(values = HNL_colors) +
       facet_wrap(~month, ncol = 2)+
       labs(title = paste("Year:", unique(.x$year)),
+           fill = 'pH')
+  )
+
+```
+
+```{r flat_map_OceanSODA_ph_extremes_grid}
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  group_split(year) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat, 
+                    fill = ph_extreme))+
+      scale_fill_manual(values = HNL_colors)+
+      facet_wrap(~month, ncol = 2)+
+      lims(y = c(-85, -30))+
+      labs(title = paste('Year:', unique(.x$year)),
            fill = 'pH')
   )
 
@@ -634,7 +738,7 @@ profile_extreme_mean %>%
   labs(title = "Overall mean",
        col = 'OceanSODA\npH\nanomaly',
        y = 'log(depth)') +
-  scale_y_continuous(trans = trans_reverser("log10"),
+  scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 
 
@@ -661,7 +765,7 @@ profile_extreme_biome %>%
   scale_color_manual(values = HNL_colors) +
   labs(col = 'OceanSODA\npH\nanomaly',
        y = 'log(depth)') +
-  scale_y_continuous(trans = trans_reverser("log10"),
+  scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)
 
@@ -685,7 +789,7 @@ profile_extreme_basin %>%
   scale_color_manual(values = HNL_colors)+
   labs(col = 'OceanSODA\npH\nanomaly',
        y = 'log(depth)')+
-  scale_y_continuous(trans = trans_reverser("log10"),
+  scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)
 
@@ -720,10 +824,57 @@ profile_extreme_season %>%
            col = 'OceanSODA\npH\nanomaly',
            y = 'log(depth)') +
       scale_y_continuous(
-        trans = trans_reverser("log10"),
+        trans = trans_reverser("sqrt"),
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
       ) +
       facet_grid(basin_AIP ~ biome)
+  )
+
+```
+
+Number of profiles per season x biome x basin x pH extreme
+
+```{r count_number_season_biome_basin_profiles}
+
+profile_extreme_season %>% 
+  group_split(season) %>% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = ph_extreme))+
+      geom_bar(data =.x, 
+               aes(x = ph_extreme, 
+                   fill = ph_extreme),
+               width = 0.5)+
+      facet_grid(biome ~ basin_AIP)+
+      labs(y = 'number of profiles',
+           title = paste('season:', unique(.x$season)))
+  )
+```
+
+Surface OceanSODA pH vs surface Argo pH (30 m)
+
+```{r surface_OceanSODA_vs_argo_ph}
+
+profile_extreme %>% 
+  filter(depth < 30) %>% 
+  group_split(season) %>% 
+  map(
+  ~ggplot(data = .x, aes(x = OceanSODA_ph, 
+             y = ph_in_situ_total_adjusted))+
+  geom_point(data = .x, aes(x = OceanSODA_ph, 
+                 y = ph_in_situ_total_adjusted, 
+                 group = ph_extreme,
+                 col = ph_extreme), 
+             size = 0.3) +
+  geom_abline(slope = 1, intercept = 0)+
+  coord_fixed(ratio = 1, 
+              xlim = c(7.95, 8.2),
+              ylim = c(7.95, 8.2))+
+  facet_grid(biome ~ basin_AIP) +
+    labs(title = paste('season:', unique(.x$season)),
+         x = 'OceanSODA pH',
+         y = 'Argo pH',
+         col = 'OceanSODA \npH extreme')
   )
 
 ```

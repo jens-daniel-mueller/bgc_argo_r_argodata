@@ -13,8 +13,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ```
 
-# Task 
-Compare BGC-Argo pH data to pH from the OceanSODA surface data product 
+# Task
+
+Compare BGC-Argo pH data to pH from the OceanSODA surface data product
 
 ```{r load_libraries, include=FALSE}
 # load in the necessary libraries
@@ -29,9 +30,9 @@ library(metR)
 theme_set(theme_bw())
 ```
 
+# Load data
 
-# Load data 
-Load in surface Argo pH and the OceanSODA pH, gridded to 1x1º 
+Load in surface Argo pH and the OceanSODA pH, gridded to 1x1º
 
 ```{r set_root_directories}
 
@@ -67,9 +68,7 @@ map <-
                  sep = ""))
 ```
 
-
-
-## Harmonise the two datasets 
+## Harmonise the two datasets
 
 Calculate monthly average pH for Argo pH for each lon/lat grid, centered on the 15th of each month, to match the format of OceanSODA
 
@@ -99,7 +98,7 @@ argo_monthly <- argo %>%
 
 ```
 
-Join the two datasets 
+Join the two datasets
 
 ```{r join_oceanSODA_argo}
 OceanSODA <- OceanSODA %>% 
@@ -111,14 +110,14 @@ argo_OceanSODA <- left_join(argo_monthly, OceanSODA) %>%
          OceanSODA_ph_error = ph_total_uncert) 
 ```
 
-
 ```{r write_data}
 argo_OceanSODA %>%
   write_rds(file = paste0(path_argo_preprocessed, "/argo_OceanSODA.rds"))
 
 ```
 
-# Southern Ocean surface pH 
+# Southern Ocean surface pH
+
 The focus here is on Southern Ocean surface pH, south of 30ºS, as defined in the RECCAP biome regions
 
 ```{r extract_southern_ocean_data}
@@ -135,7 +134,7 @@ argo_OceanSODA_SO <-
 
 ### Monthly climatological OceanSODA pH
 
-Map monthly mean pH from the OceanSODA data product 
+Map monthly mean pH from the OceanSODA data product
 
 Climatological OceanSODA pH
 
@@ -201,7 +200,8 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
 ```
 
 ### Climatological monthly Argo pH
-Climatological Argo pH 
+
+Climatological Argo pH
 
 ```{r clim_map_argo_pH, fig.asp=1.5}
 map +
@@ -236,9 +236,9 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
   facet_wrap(~month, ncol = 2)
 ```
 
+### Timeseries of monthly OceanSODA pH
 
-### Timeseries of monthly OceanSODA pH 
-Evolution of monthly surface pH, for the three Southern Ocean RECCAP regions 
+Evolution of monthly surface pH, for the three Southern Ocean RECCAP regions
 
 ```{r southern_ocean_biomes}
 
@@ -268,7 +268,6 @@ argo_OceanSODA_SO_clim_regional <- argo_OceanSODA_SO %>%
   summarise(ph = mean(ph, na.rm = TRUE)) %>%
   ungroup()
 ```
-
 
 ```{r plot_monthly_timeseries, fig.asp=2, eval=FALSE}
 argo_OceanSODA_SO_clim_regional %>%   
@@ -307,9 +306,9 @@ argo_OceanSODA_SO_clim_regional %>%
 
 ### Comparison between Argo and OceanSODA pH
 
-Calculate the difference between Argo and OceanSODA pH values 
+Calculate the difference between Argo and OceanSODA pH values
 
-Offset between in-situ monthly pH: 
+Offset between in-situ monthly pH:
 
 ```{r calculate_in_situ_offset}
 
@@ -346,7 +345,7 @@ argo_OceanSODA_SO %>%
   
 ```
 
-Mean offset between in-situ OceanSODA pH and in-situ Argo pH 
+Mean offset between in-situ OceanSODA pH and in-situ Argo pH
 
 ```{r mean_in_situ_offset}
 
@@ -385,7 +384,6 @@ Offset between climatological Argo and climatological OceanSODA pH:
 argo_OceanSODA_SO_clim <- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO)
 ```
 
-
 ```{r plot_climatological_offset, eval=FALSE}
 argo_OceanSODA_SO_clim %>% 
   drop_na() %>%
@@ -399,7 +397,8 @@ argo_OceanSODA_SO_clim %>%
        col = 'region')
 ```
 
-Mean offset between climatological OceanSODA pH and climatological Argo pH 
+Mean offset between climatological OceanSODA pH and climatological Argo pH
+
 ```{r climatological_offset_all_years}
 
 mean_clim_offset <- argo_OceanSODA_SO_clim %>% 
@@ -426,8 +425,8 @@ mean_clim_offset %>%
        fill = '± 1 std') 
 ```
 
+Mapped offset between climatological OceanSODA pH and climatological Argo pH
 
-Mapped offset between climatological OceanSODA pH and climatological Argo pH 
 ```{r map_climatological_offset, fig.asp=2}
 
 # bin the offsets for better plotting  
@@ -476,8 +475,8 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
 
 #### Basin separation
 
-Using full OceanSODA data (even where there is no Argo data)
-Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)
+Using full OceanSODA data (even where there is no Argo data) Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)
+
 ```{r add_in_basin}
 basinmask <-
   read_csv(paste(path_emlr_utilities,
@@ -538,9 +537,10 @@ OceanSODA_SO_clim_subregional %>%
        col = 'region')
 ```
 
-#### Longitudinal separation 
+#### Longitudinal separation
 
 Bin the pH data into 20º longitude bins (20º - 380º)
+
 ```{r regrid_data_to_lon_bins}
 OceanSODA_SO_lon_binned <- OceanSODA_SO %>%
   mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
@@ -568,6 +568,3 @@ OceanSODA_SO_lon_binned %>%
        y = 'OceanSODA pH',
        col = 'longitude bin')
 ```
-
-
-
