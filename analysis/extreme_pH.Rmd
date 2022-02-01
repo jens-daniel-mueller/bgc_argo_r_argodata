@@ -244,7 +244,6 @@ OceanSODA_2x2 <- OceanSODA %>%
 
 ```
 
-
 ## Apply region masks
 
 ```{r apply_region_masks_OceanSODA}
@@ -330,6 +329,22 @@ basemap(limits = -32) +
 
 ```
 
+### Residual st. dev. maps
+
+```{r map_sigma, fig.asp=2}
+
+basemap(limits = -32)+
+  geom_spatial_tile(data = OceanSODA_regression_glanced,
+                    aes(x = lon, 
+                        y = lat, 
+                        fill = sigma),
+                    col = 'transparent')+
+  scale_fill_scico(palette = 'vik', midpoint = 0)+
+  facet_wrap(~month, ncol = 2)+
+  labs(fill = '1 residual \nst. dev.')
+
+```
+
 ### Anomaly identification
 
 Calculate OceanSODA pH anomalies: L for abnormally low, H for abnormally high, N for normal pH
@@ -407,7 +422,7 @@ Location of OceanSODA pH extremes
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
-  # head(1) %>%
+  # head(2) %>%
   map(
     ~ basemap(limits = -32, data = .x)+
       geom_spatial_tile(data = .x,
@@ -461,7 +476,6 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 ```
 
-
 # Argo
 
 ## Grid reduction
@@ -482,7 +496,6 @@ full_argo_2x2 <- full_argo %>%
 
 
 ```
-
 
 ## Apply region masks
 
@@ -535,7 +548,7 @@ N profiles correspond to normal surface OceanSODA pH
 
 profile_extreme %>%
   group_split(biome, basin_AIP, year) %>% 
-  # head(1) %>%
+  #head(1) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -599,7 +612,6 @@ profile_extreme <- profile_extreme %>%
 
 ```
 
-
 ### Overall mean
 
 ```{r mean_profiles, fig.asp=1}
@@ -620,8 +632,9 @@ profile_extreme_mean %>%
   geom_path() +
   scale_color_manual(values = HNL_colors) +
   labs(title = "Overall mean",
-       col = 'OceanSODA\npH\nanomaly') +
-  scale_y_continuous(trans = trans_reverser("sqrt"),
+       col = 'OceanSODA\npH\nanomaly',
+       y = 'log(depth)') +
+  scale_y_continuous(trans = trans_reverser("log10"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 
 
@@ -646,8 +659,9 @@ profile_extreme_biome %>%
   )) +
   geom_path() +
   scale_color_manual(values = HNL_colors) +
-  labs(col = 'OceanSODA\npH\nanomaly') +
-  scale_y_continuous(trans = trans_reverser("sqrt"),
+  labs(col = 'OceanSODA\npH\nanomaly',
+       y = 'log(depth)') +
+  scale_y_continuous(trans = trans_reverser("log10"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)
 
@@ -669,13 +683,13 @@ profile_extreme_basin %>%
              col = ph_extreme))+
   geom_path()+
   scale_color_manual(values = HNL_colors)+
-  labs(col = 'OceanSODA\npH\nanomaly')+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
+  labs(col = 'OceanSODA\npH\nanomaly',
+       y = 'log(depth)')+
+  scale_y_continuous(trans = trans_reverser("log10"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)
 
 ```
-
 
 ### Season x biome x basin
 
@@ -703,9 +717,10 @@ profile_extreme_season %>%
       geom_path() +
       scale_color_manual(values = HNL_colors) +
       labs(title = paste("season:", unique(.x$season)),
-           col = 'OceanSODA\npH\nanomaly') +
+           col = 'OceanSODA\npH\nanomaly',
+           y = 'log(depth)') +
       scale_y_continuous(
-        trans = trans_reverser("sqrt"),
+        trans = trans_reverser("log10"),
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
       ) +
       facet_grid(basin_AIP ~ biome)
