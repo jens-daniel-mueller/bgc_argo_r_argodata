@@ -764,7 +764,8 @@ profile_count_mean <- profile_extreme %>%
 profile_count_mean %>% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
-  labs(y = 'number of profiles',
+  scale_y_continuous(trans = 'log10')+
+  labs(y = 'log(number of profiles)',
        title = 'Number of profiles')
 
 ```
@@ -773,19 +774,23 @@ Surface Argo pH vs surface OceanSODA pH (30 m)
 
 ```{r argo_vs_OceanSODA_ph_mean, fig.asp=1}
 
-profile_extreme %>% 
-  filter(depth < 30) %>% 
+surface_ph_mean <- profile_extreme %>% 
+  filter(depth < 20) %>% 
+  group_by(ph_extreme, OceanSODA_ph) %>% 
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE))
+
+surface_ph_mean %>% 
   group_split(ph_extreme) %>% 
   map(
   ~ggplot(data = .x, aes(x = OceanSODA_ph, 
-             y = ph_in_situ_total_adjusted))+
+             y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
-                 y = ph_in_situ_total_adjusted)) +
+                 y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.95, 8.2),
               ylim = c(7.95, 8.2))+
-  facet_grid(basin_AIP ~ biome) +
+  # facet_grid(basin_AIP ~ biome) +
     labs(title = paste('pH extreme:', unique(.x$ph_extreme)),
          x = 'OceanSODA pH',
          y = 'Argo pH')
@@ -834,7 +839,8 @@ profile_count_biome %>%
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
   facet_grid(season ~ biome)+
-  labs(y = 'number of profiles',
+  scale_y_continuous(trans = 'log10')+
+  labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x biome')
 ```
 
@@ -842,14 +848,19 @@ Surface Argo vs surface OceanSODA pH (30 m) season x biome
 
 ```{r argo_vs_OceanSODA_biome, fig.asp=1}
 
-profile_extreme %>% 
-  filter(depth < 30) %>% 
+surface_ph_biome <- profile_extreme %>% 
+  filter(depth < 20) %>% 
+  group_by(season, biome, ph_extreme, OceanSODA_ph) %>% 
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
+
+surface_ph_biome %>% 
+  group_by(ph_extreme) %>% 
   group_split(ph_extreme) %>% 
   map(
   ~ggplot(data = .x, aes(x = OceanSODA_ph, 
-             y = ph_in_situ_total_adjusted))+
+             y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
-                 y = ph_in_situ_total_adjusted)) +
+                 y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.95, 8.2),
@@ -900,22 +911,28 @@ profile_count_basin %>%
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
   facet_grid(season~basin_AIP)+
-  labs(y = 'number of profiles',
+  scale_y_continuous(trans = 'log10')+
+  labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x basin')
 ```
 
 Surface Argo vs surface OceanSODA pH (30 m) season x basin
 
 ```{r argo_vs_OceanSODA_pH_basin}
+# calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
+surface_ph_basin <- profile_extreme %>% 
+  filter(depth < 20) %>% 
+  group_by(season, basin_AIP, ph_extreme, OceanSODA_ph) %>% 
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
 
-profile_extreme %>% 
-  filter(depth < 30) %>% 
+surface_ph_basin %>% 
+  group_by(ph_extreme) %>% 
   group_split(ph_extreme) %>% 
   map(
   ~ggplot(data = .x, aes(x = OceanSODA_ph, 
-             y = ph_in_situ_total_adjusted))+
+             y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
-                 y = ph_in_situ_total_adjusted)) +
+                 y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.95, 8.2),
@@ -991,7 +1008,8 @@ profile_count_season %>%
                    fill = ph_extreme),
                width = 0.5)+
       facet_grid(basin_AIP ~ biome)+
-      labs(y = 'number of profiles',
+      scale_y_continuous(trans = 'log10')+
+      labs(y = 'log(number of profiles)',
            title = paste('season:', unique(.x$season)))
   )
 
@@ -1002,14 +1020,20 @@ Surface OceanSODA pH vs surface Argo pH (30 m)
 
 ```{r surface_OceanSODA_vs_argo_ph, fig.asp=1}
 
-profile_extreme %>% 
-  filter(depth < 30) %>% 
+# calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
+surface_ph_season <- profile_extreme %>% 
+  filter(depth < 20) %>% 
+  group_by(season, basin_AIP, biome, ph_extreme, OceanSODA_ph) %>% 
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
+
+surface_ph_season %>% 
+  group_by(season, ph_extreme) %>% 
   group_split(season, ph_extreme) %>% 
   map(
   ~ggplot(data = .x, aes(x = OceanSODA_ph, 
-             y = ph_in_situ_total_adjusted))+
+             y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
-                 y = ph_in_situ_total_adjusted)) +
+                 y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.95, 8.2),
