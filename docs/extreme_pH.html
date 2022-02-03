@@ -414,7 +414,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">02 February, 2022</h4>
+<h4 class="date">03 February, 2022</h4>
 
 </div>
 
@@ -439,7 +439,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-02
+<strong>Last updated:</strong> 2022-02-03
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -530,16 +530,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea73c7cf36f5960bd5520dd264fd0acbc8559f0eetargetblanka73c7cfa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a73c7cf36f5960bd5520dd264fd0acbc8559f0ee" target="_blank">a73c7cf</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f38f15b571b75dc812b6e6f714a5694675a9d88targetblank3f38f15a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f38f15b571b75dc812b6e6f714a5694675a9d88" target="_blank">3f38f15</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea73c7cf36f5960bd5520dd264fd0acbc8559f0eetargetblanka73c7cfa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f38f15b571b75dc812b6e6f714a5694675a9d88targetblank3f38f15a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a73c7cf36f5960bd5520dd264fd0acbc8559f0ee" target="_blank">a73c7cf</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f38f15b571b75dc812b6e6f714a5694675a9d88" target="_blank">3f38f15</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -595,6 +595,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3f38f15b571b75dc812b6e6f714a5694675a9d88/analysis/extreme_pH.Rmd" target="_blank">3f38f15</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-03
+</td>
+<td>
+corrected mean argo surface pH
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/extreme_pH.html" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1776,6 +1810,7 @@ OceanSODA_2x2_SO &lt;- inner_join(OceanSODA_2x2, region_masks_all_2x2)
 OceanSODA_2x2_SO &lt;- inner_join(OceanSODA_2x2_SO, basinmask_2x2)
 # expected number of rows from -30 to -70º latitude, 360º longitude, for 12 months, 8 years:
 # 40 lat x 360 lon x 12 months x 8 years = 1 382 400 rows 
+# actual number of rows: 919 768
 
 OceanSODA_2x2_SO &lt;- OceanSODA_2x2_SO %&gt;% 
   filter(!is.na(ph_total))</code></pre>
@@ -5670,10 +5705,8 @@ jens-daniel-mueller
 </div>
 <p>Number of profiles</p>
 <pre class="r"><code>profile_count_mean &lt;- profile_extreme %&gt;% 
-  select(ph_extreme, platform_number, cycle_number) %&gt;% 
-  distinct() %&gt;%       # keep only unique combinations of ph_extreme, float number, and cycle number 
-  group_by(ph_extreme) %&gt;% 
-  count()
+  distinct(ph_extreme, platform_number, cycle_number) %&gt;% 
+  count(ph_extreme)
 
 profile_count_mean %&gt;% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
@@ -5706,6 +5739,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/mean_profile_count-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/mean_profile_count-1.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -5719,13 +5763,21 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<p>Surface Argo pH vs surface OceanSODA pH (30 m)</p>
-<pre class="r"><code>surface_ph_mean &lt;- profile_extreme %&gt;% 
+<p>Surface Argo pH vs surface OceanSODA pH (20 m)</p>
+<pre class="r"><code># calculate surface-mean argo pH, for each profile 
+surface_ph_mean &lt;- profile_extreme %&gt;% 
   filter(depth &lt; 20) %&gt;% 
-  group_by(ph_extreme, OceanSODA_ph) %&gt;% 
-  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE))
+  group_by(ph_extreme, platform_number, cycle_number) %&gt;% 
+  mutate(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
+  select(ph_extreme, 
+         platform_number,
+         cycle_number,
+         OceanSODA_ph,
+         argo_surf_ph) %&gt;% 
+  distinct()
 
 surface_ph_mean %&gt;% 
+  group_by(ph_extreme) %&gt;% 
   group_split(ph_extreme) %&gt;% 
   map(
   ~ggplot(data = .x, aes(x = OceanSODA_ph, 
@@ -5734,8 +5786,8 @@ surface_ph_mean %&gt;%
                  y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(7.95, 8.2),
-              ylim = c(7.95, 8.2))+
+              xlim = c(7.9, 8.21),
+              ylim = c(7.9, 8.21))+
   # facet_grid(basin_AIP ~ biome) +
     labs(title = paste(&#39;pH extreme:&#39;, unique(.x$ph_extreme)),
          x = &#39;OceanSODA pH&#39;,
@@ -5765,6 +5817,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-1.png" target="_blank">7376be6</a>
@@ -5807,6 +5870,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-2.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-2.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -5845,6 +5919,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-3.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_ph_mean-3.png" target="_blank">7376be6</a>
@@ -5945,10 +6030,9 @@ jens-daniel-mueller
 </div>
 <p>Number of profiles season x biome</p>
 <pre class="r"><code>profile_count_biome &lt;- profile_extreme %&gt;% 
-  select(season, biome, ph_extreme, platform_number, cycle_number) %&gt;% 
-  distinct() %&gt;% 
+  distinct(season, biome, ph_extreme, platform_number, cycle_number) %&gt;% 
   group_by(season, biome, ph_extreme) %&gt;% 
-  count()
+  count(ph_extreme)
 
 profile_count_biome %&gt;% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
@@ -5982,6 +6066,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_profiles_season_biome-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_profiles_season_biome-1.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -5995,11 +6090,13 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<p>Surface Argo vs surface OceanSODA pH (30 m) season x biome</p>
+<p>Surface Argo vs surface OceanSODA pH (20 m) season x biome</p>
 <pre class="r"><code>surface_ph_biome &lt;- profile_extreme %&gt;% 
   filter(depth &lt; 20) %&gt;% 
-  group_by(season, biome, ph_extreme, OceanSODA_ph) %&gt;% 
-  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
+  group_by(season, biome, ph_extreme, platform_number, cycle_number) %&gt;% 
+  mutate(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %&gt;% 
+  select(season, biome, ph_extreme, OceanSODA_ph, argo_surf_ph) %&gt;% 
+  distinct()
 
 surface_ph_biome %&gt;% 
   group_by(ph_extreme) %&gt;% 
@@ -6011,8 +6108,8 @@ surface_ph_biome %&gt;%
                  y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(7.95, 8.2),
-              ylim = c(7.95, 8.2))+
+              xlim = c(7.94, 8.21),
+              ylim = c(7.94, 8.21))+
   facet_grid(season~biome) +
     labs(title = paste( &#39;pH extreme:&#39;, unique(.x$ph_extreme)),
          x = &#39;OceanSODA pH&#39;,
@@ -6042,6 +6139,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-1.png" target="_blank">7376be6</a>
@@ -6084,6 +6192,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-2.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-2.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -6122,6 +6241,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-3.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_biome-3.png" target="_blank">7376be6</a>
@@ -6241,10 +6371,9 @@ pasqualina-vonlanthendinenna
 </div>
 <p>Number of profiles season x basin</p>
 <pre class="r"><code>profile_count_basin &lt;- profile_extreme %&gt;% 
-  select(season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
-  distinct() %&gt;% 
+  distinct(season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
   group_by(season, basin_AIP, ph_extreme) %&gt;% 
-  count()
+  count(ph_extreme)
 
 profile_count_basin %&gt;% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
@@ -6278,6 +6407,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_basin_profiles-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_basin_profiles-1.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -6291,12 +6431,20 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<p>Surface Argo vs surface OceanSODA pH (30 m) season x basin</p>
+<p>Surface Argo vs surface OceanSODA pH (20 m) season x basin</p>
 <pre class="r"><code># calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_ph_basin &lt;- profile_extreme %&gt;% 
   filter(depth &lt; 20) %&gt;% 
-  group_by(season, basin_AIP, ph_extreme, OceanSODA_ph) %&gt;% 
-  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
+  group_by(season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
+  mutate(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %&gt;% 
+  select(season,
+         basin_AIP,
+         ph_extreme,
+         platform_number,
+         cycle_number,
+         OceanSODA_ph,
+         surf_argo_ph) %&gt;% 
+  distinct()
 
 surface_ph_basin %&gt;% 
   group_by(ph_extreme) %&gt;% 
@@ -6308,8 +6456,8 @@ surface_ph_basin %&gt;%
                  y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(7.95, 8.2),
-              ylim = c(7.95, 8.2))+
+              xlim = c(7.94, 8.21),
+              ylim = c(7.94, 8.21))+
   facet_grid(season~basin_AIP) +
     labs(title = paste(&#39;pH extreme:&#39;, unique(.x$ph_extreme)),
          x = &#39;OceanSODA pH&#39;,
@@ -6339,6 +6487,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-1.png" target="_blank">7376be6</a>
@@ -6381,6 +6540,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-2.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-2.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -6419,6 +6589,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-3.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/argo_vs_OceanSODA_pH_basin-3.png" target="_blank">7376be6</a>
@@ -6716,15 +6897,11 @@ jens-daniel-mueller
 </div>
 <p>Number of profiles per season x biome x basin x pH extreme</p>
 <pre class="r"><code>profile_count_season &lt;- profile_extreme %&gt;% 
-  select(season, 
-         biome, 
-         basin_AIP, 
-         ph_extreme, 
-         platform_number, 
-         cycle_number) %&gt;% 
-  distinct() %&gt;% 
+  distinct(season, biome, basin_AIP,
+           ph_extreme, platform_number, cycle_number) %&gt;% 
   group_by(season, biome, basin_AIP, ph_extreme) %&gt;% 
-  count()
+  count(ph_extreme)
+
 
 profile_count_season %&gt;% 
   group_by(season) %&gt;% 
@@ -6765,6 +6942,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-1.png" target="_blank">7376be6</a>
@@ -6818,6 +7006,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-2.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-2.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -6867,6 +7066,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-3.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-3.png" target="_blank">7376be6</a>
@@ -6920,6 +7130,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-4.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/count_number_season_biome_basin_profiles-4.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -6948,8 +7169,22 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
 surface_ph_season &lt;- profile_extreme %&gt;% 
   filter(depth &lt; 20) %&gt;% 
-  group_by(season, basin_AIP, biome, ph_extreme, OceanSODA_ph) %&gt;% 
-  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE))
+  group_by(season, 
+           basin_AIP, 
+           biome, 
+           ph_extreme, 
+           platform_number, 
+           cycle_number) %&gt;% 
+  mutate(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %&gt;% 
+  select(season,
+         basin_AIP,
+         biome,
+         ph_extreme,
+         platform_number,
+         cycle_number,
+         OceanSODA_ph,
+         surf_argo_ph) %&gt;% 
+  distinct()
 
 surface_ph_season %&gt;% 
   group_by(season, ph_extreme) %&gt;% 
@@ -6961,8 +7196,8 @@ surface_ph_season %&gt;%
                  y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(7.95, 8.2),
-              ylim = c(7.95, 8.2))+
+              xlim = c(7.94, 8.21),
+              ylim = c(7.94, 8.21))+
   facet_grid(basin_AIP ~ biome) +
     labs(title = paste(&#39;season:&#39;, unique(.x$season), 
                         &#39;| pH extreme:&#39;, unique(.x$ph_extreme)),
@@ -6993,6 +7228,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-1.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-1.png" target="_blank">7376be6</a>
@@ -7057,6 +7303,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-2.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-2.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7117,6 +7374,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-3.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-3.png" target="_blank">7376be6</a>
@@ -7181,6 +7449,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-4.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-4.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7243,6 +7522,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-5.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-5.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7281,6 +7571,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-6.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-6.png" target="_blank">7376be6</a>
@@ -7323,6 +7624,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-7.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-7.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7361,6 +7673,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-8.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-8.png" target="_blank">7376be6</a>
@@ -7403,6 +7726,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-9.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-9.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7441,6 +7775,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-10.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-10.png" target="_blank">7376be6</a>
@@ -7483,6 +7828,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-11.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-11.png" target="_blank">7376be6</a>
 </td>
 <td>
@@ -7521,6 +7877,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">d7debab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-02
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">7376be6</a>
