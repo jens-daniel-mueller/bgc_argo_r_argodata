@@ -776,21 +776,25 @@ Surface Argo pH vs surface OceanSODA pH (20 m)
 surface_ph_mean <- profile_extreme %>% 
   filter(depth < 20) %>% 
   group_by(ph_extreme, platform_number, cycle_number) %>% 
-  mutate(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
-  select(ph_extreme, 
-         platform_number,
-         cycle_number,
-         OceanSODA_ph,
-         argo_surf_ph) %>% 
-  distinct()
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
+
+
+  # mutate(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
+  # select(ph_extreme, 
+  #        platform_number,
+  #        cycle_number,
+  #        OceanSODA_ph,
+  #        argo_surf_ph) %>% 
+  # distinct()
 
 surface_ph_mean %>% 
   group_by(ph_extreme) %>% 
   group_split(ph_extreme) %>% 
   map(
-  ~ggplot(data = .x, aes(x = OceanSODA_ph, 
+  ~ggplot(data = .x, aes(x = OceanSODA_surf_ph, 
              y = argo_surf_ph))+
-  geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
+  geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
@@ -856,17 +860,16 @@ Surface Argo vs surface OceanSODA pH (20 m) season x biome
 surface_ph_biome <- profile_extreme %>% 
   filter(depth < 20) %>% 
   group_by(season, biome, ph_extreme, platform_number, cycle_number) %>% 
-  mutate(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %>% 
-  select(season, biome, ph_extreme, OceanSODA_ph, argo_surf_ph) %>% 
-  distinct()
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
 surface_ph_biome %>% 
   group_by(ph_extreme) %>% 
   group_split(ph_extreme) %>% 
   map(
-  ~ggplot(data = .x, aes(x = OceanSODA_ph, 
+  ~ggplot(data = .x, aes(x = OceanSODA_surf_ph, 
              y = argo_surf_ph))+
-  geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
+  geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
@@ -929,23 +932,16 @@ Surface Argo vs surface OceanSODA pH (20 m) season x basin
 surface_ph_basin <- profile_extreme %>% 
   filter(depth < 20) %>% 
   group_by(season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
-  mutate(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %>% 
-  select(season,
-         basin_AIP,
-         ph_extreme,
-         platform_number,
-         cycle_number,
-         OceanSODA_ph,
-         surf_argo_ph) %>% 
-  distinct()
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+            surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_basin %>% 
   group_by(ph_extreme) %>% 
   group_split(ph_extreme) %>% 
   map(
-  ~ggplot(data = .x, aes(x = OceanSODA_ph, 
+  ~ggplot(data = .x, aes(x = surf_OceanSODA_ph, 
              y = surf_argo_ph))+
-  geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
+  geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
@@ -1039,24 +1035,16 @@ surface_ph_season <- profile_extreme %>%
            ph_extreme, 
            platform_number, 
            cycle_number) %>% 
-  mutate(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE)) %>% 
-  select(season,
-         basin_AIP,
-         biome,
-         ph_extreme,
-         platform_number,
-         cycle_number,
-         OceanSODA_ph,
-         surf_argo_ph) %>% 
-  distinct()
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+            surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_season %>% 
   group_by(season, ph_extreme) %>% 
   group_split(season, ph_extreme) %>% 
   map(
-  ~ggplot(data = .x, aes(x = OceanSODA_ph, 
+  ~ggplot(data = .x, aes(x = surf_OceanSODA_ph, 
              y = surf_argo_ph))+
-  geom_bin2d(data = .x, aes(x = OceanSODA_ph, 
+  geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
