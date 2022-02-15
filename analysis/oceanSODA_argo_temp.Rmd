@@ -1,0 +1,545 @@
+---
+title: "OceanSODA-Argo SST"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task 
+
+Compare Argo surface temperature to OceanSODA surface temperature 
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+```{r load_libraries, include=FALSE}
+# load in the necessary libraries
+library(tidyverse)
+library(lubridate)
+library(ggOceanMaps)
+library(metR)
+```
+
+```{r set_global_theme}
+theme_set(theme_bw())
+```
+
+# Load data 
+
+Load in surface Argo temperature, and OceanSODA temperature, on a 1ºx1º grid 
+
+```{r set_root_directories}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+```
+
+```{r load_argo_OceanSODA_temp_data}
+# Load in surface Argo and OceanSODA temperature data 
+
+OceanSODA_temp <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_temp.rds"))
+
+argo_surf_temp <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds")) %>% 
+  filter(between(depth, 0, 20)) %>% 
+  mutate(year = year(date),
+         month = month(date))
+
+# for plotting later, load in region and coastline information  
+region_masks_all_seamask_2x2 <- read_rds(file = paste0(
+  path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
+
+region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
+
+region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_1x1.rds"))
+```
+
+```{r read_map}
+# read in the map from updata
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+```
+
+# Harmonise the two datasets 
+
+Calculate monthly-mean Argo temperature for each lat/lon grid and each month 
+
+```{r create_monthly_argo_data}
+
+argo_temp_monthly <- argo_surf_temp %>%
+  mutate(year_month = format_ISO8601(date, precision = "ym"), .after = 'date') %>%
+  group_by(year, month, year_month, date, lat, lon) %>%
+  summarise(argo_temp_month = mean(temp_adjusted, na.rm = TRUE)) %>%
+  ungroup() %>%
+  select(
+    date,
+    year_month,
+    year,
+    month,
+    lon,
+    lat,
+    argo_temp_month
+  )
+```
+
+Join Argo and OceanSODA 
+
+```{r join_oceanSODA_argo}
+OceanSODA_temp <- OceanSODA_temp %>% 
+  mutate(year_month = format_ISO8601(date, precision = "ym")) %>% 
+  rename(date_OceanSODA = date)# change date format in OceanSODA to match argo date (yyyy-mm)
+
+argo_OceanSODA_temp <- left_join(argo_temp_monthly, OceanSODA_temp) %>%
+  rename(OceanSODA_temp = temperature)
+```
+
+# Southern Ocean SST 
+
+Focus on the Southern Ocean, south of 30ºS, as defined in the RECCAP biome regions 
+
+```{r extract_southern_ocean_data}
+
+region_masks_all_1x1_SO <- region_masks_all_1x1 %>%
+  filter(region == 'southern',
+         value != 0)
+
+# keep only Southern Ocean data 
+argo_OceanSODA_temp_SO <- 
+  inner_join(region_masks_all_1x1_SO, argo_OceanSODA_temp)
+```
+
+## Monthly climatological OceanSODA SST
+
+Map monthly mean SST from the OceanSODA data product
+
+Climatological OceanSODA SST
+
+```{r climatological_map, fig.asp=2}
+
+# calculate average monthly pH between April 2013 and August 2021, and the difference between the two (offset)
+argo_OceanSODA_temp_SO_clim <- argo_OceanSODA_temp_SO %>%
+  group_by(lon, lat, month) %>%
+  summarise(
+    clim_OceanSODA_temp = mean(OceanSODA_temp, na.rm = TRUE),
+    clim_argo_temp = mean(argo_temp_month, na.rm = TRUE),
+    offset_clim = clim_OceanSODA_temp - clim_argo_temp
+  ) %>%
+  ungroup()
+
+# regrid to a 2x2 grid for mapping 
+argo_OceanSODA_temp_SO_clim_2x2 <- argo_OceanSODA_temp_SO_clim %>%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))
+  ) %>%
+  group_by(lon, lat, month) %>%
+  summarise(
+    clim_OceanSODA_temp = mean(clim_OceanSODA_temp, na.rm = TRUE),
+    clim_argo_temp = mean(clim_argo_temp, na.rm = TRUE),
+    offset_clim = mean(offset_clim, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+map +
+  geom_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+            aes(lon, lat, fill = clim_OceanSODA_temp)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST (ºC)',
+       title = 'Monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)') +
+  theme(legend.position = 'right') +
+  facet_wrap(~month, ncol = 2)
+```
+
+```{r polar_projection_SST_map, fig.asp=2}
+# plot the climatological monthly OceanSODA SST on a polar projection 
+basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = clim_OceanSODA_temp),
+                    linejoin = 'mitre',
+                    col = 'transparent',
+                    detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = 'right')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST (ºC)',
+       title = 'monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)')+
+  facet_wrap(~month, ncol = 2)
+```
+
+## Monthly climatological Argo SST
+
+Climatological Argo SST
+
+```{r clim_map_argo_SST, fig.asp=2}
+map +
+  geom_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+            aes(lon, lat, fill = clim_argo_temp)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST (ºC)',
+       title = 'Monthly climatological \nArgo SST (Jan 2013 - Dec 2021)') +
+  theme(legend.position = 'right') +
+  facet_wrap(~month, ncol = 2)
+```
+
+```{r polar_projection_Argo_SST, fig.asp=2}
+
+basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = clim_argo_temp),
+                    linejoin = 'mitre',
+                    col = 'transparent',
+                    detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = 'right')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST (ºC)',
+       title = 'monthly climatological \nArgo SST (Jan 2013 - Dec 2021)')+
+  facet_wrap(~month, ncol = 2)
+```
+
+## Timeseries of monthly OceanSODA SST
+
+Evolution of monthly SST, for the three Southern Ocean RECCAP regions
+
+```{r southern_ocean_biomes}
+
+map +
+  geom_raster(data = region_masks_all_seamask_2x2 %>%
+                filter(seamask == 0),
+              aes(x = lon, y = lat)) +
+  geom_raster(data = region_masks_all_2x2 %>%
+                filter(region == 'southern',
+                       value != 0),
+              aes(x = lon,
+                  y = lat,
+                  fill = value)) +
+  labs(title = 'Southern Ocean RECCAP regions',
+       fill = 'region')
+```
+
+```{r calculate_regional_SST_climatology}
+# plot timeseries of monthly OceanSODA pH
+argo_OceanSODA_temp_SO_clim_regional <- argo_OceanSODA_temp_SO %>%
+  select(year, month, value, OceanSODA_temp, argo_temp_month) %>% 
+  pivot_longer(c(OceanSODA_temp,argo_temp_month),
+               values_to = "temp",
+               names_to = "data_source") %>% 
+  group_by(year, month, value, data_source) %>%  # compute regional mean OceanSODA pH for the three biomes
+  summarise(temp = mean(temp, na.rm = TRUE)) %>%
+  ungroup()
+```
+
+```{r plot_monthly_timeseries, fig.asp=2, eval=FALSE}
+
+argo_OceanSODA_temp_SO_clim_regional %>%   
+  ggplot(aes(x = year,
+             y = temp,
+             col = value)) +
+  facet_grid(month ~ data_source) +
+  geom_line() +
+  geom_point() +
+  labs(x = 'year',
+       y = 'SST (ºC)',
+       title = 'monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)',
+       col = 'region')
+```
+
+```{r yearly_timeseries_monthly_SST, fig.asp=2}
+
+argo_OceanSODA_temp_SO_clim_regional %>%   
+  filter(value != 0) %>%
+  ggplot(aes(x = month,
+             y = temp,
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(value~data_source)+
+  lims(y = c(-5, 20))+
+  labs(x = 'month',
+       y = 'SST (ºC)',
+       title = 'monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)',
+       col = 'year')
+```
+
+## Comparison between Argo and OceanSODA SST
+
+Calculate the difference between Argo and OceanSODA SST values
+
+Offset between in-situ monthly pH:
+
+```{r calculate_in_situ_offset}
+
+argo_OceanSODA_temp_SO <- argo_OceanSODA_temp_SO %>%
+  mutate(offset = OceanSODA_temp - argo_temp_month)
+
+argo_OceanSODA_temp_SO %>%
+  # drop_na() %>%
+  ggplot() +
+  geom_hline(yintercept = 0, size = 1)+
+  geom_point(aes(x = year_month, y = offset, col = value), size = 0.7, pch = 19) +
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01'))+
+  labs(title = 'oceanSODA SST - Argo SST',
+       x = 'date',
+       y = 'offset (ºC)',
+       col = 'region')
+```
+
+```{r oceanSODA_vs_argo_temp_plot}
+
+argo_OceanSODA_temp_SO %>% 
+  # drop_na() %>% 
+  ggplot(aes(x = OceanSODA_temp, y = argo_temp_month))+
+  # geom_point(pch = 19, size = 0.7)+
+  geom_bin2d(aes(x = OceanSODA_temp, y = argo_temp_month), size = 0.3, bins = 60)+
+  coord_fixed(ratio = 1,
+              xlim = c(-3, 27),
+              ylim= c(-3, 27)) +
+  geom_abline(slope = 1, intercept = 0)+
+  facet_wrap(~value)+
+  labs(x = 'OceanSODA SST (ºC)',
+       y = 'Argo SST (ºC)',
+       col = 'region',
+       title = 'Southern Ocean regional SST')
+```
+
+Mean offset between in-situ OceanSODA SST and in-situ Argo SST
+
+```{r mean_in_situ_SST_offset}
+
+mean_insitu_offset <- argo_OceanSODA_temp_SO %>%
+  group_by(year_month, value) %>% 
+  summarise(mean_offset = mean(offset, na.rm = TRUE),
+            std_offset = sd(offset, na.rm = TRUE))
+
+mean_insitu_offset %>%
+  # drop_na() %>%
+  ggplot() +
+  geom_hline(yintercept = 0, size = 1, col = 'red')+
+  geom_point(aes(x = year_month, y = mean_offset, group = value, col = value), size = 0.7, pch = 19) +
+  geom_line(aes(x = year_month, y = mean_offset, group = value, col = value))+
+  geom_ribbon(aes(x = year_month, 
+                  ymin = mean_offset-std_offset, 
+                  ymax = mean_offset+std_offset, 
+                  group = value, 
+                  fill =value),
+              alpha = 0.2)+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01'))+
+  # facet_wrap(~year)+
+  labs(title = 'Mean offset (in situ oceanSODA SST - in situ Argo SST)',
+       x = 'date',
+       y = 'offset (ºC)',
+       col = 'region',
+       fill = '± 1 std')
+
+```
+
+Offset between climatological Argo and climatological OceanSODA SST:
+
+```{r calculate_clim_offset}
+# Offset between climatological argo and climatological OceanSODA SST 
+
+argo_OceanSODA_temp_SO_clim <- inner_join(argo_OceanSODA_temp_SO_clim, region_masks_all_1x1_SO)
+```
+
+```{r plot_climatological_SST_offset, eval=FALSE}
+argo_OceanSODA_temp_SO_clim %>% 
+  # drop_na() %>%
+  ggplot() +
+  geom_point(aes(x = month, y = offset_clim, col = value), size = 0.7, pch = 19) +
+  geom_hline(yintercept = 0, size = 1, col = 'red')+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  labs(title = 'clim oceanSODA SST - clim Argo SST',
+       x = 'month',
+       y = 'offset (ºC)',
+       col = 'region')
+```
+
+Mean offset between climatological OceanSODA SST and climatological Argo SST
+
+```{r climatological_SST_offset_all_years}
+
+mean_clim_offset <- argo_OceanSODA_temp_SO_clim %>% 
+  group_by(month, value) %>% 
+  summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
+            std_offset_clim = sd(offset_clim, na.rm = TRUE))
+
+mean_clim_offset %>% 
+  ggplot()+
+  geom_point(aes(x = month, y = mean_offset_clim, col = value))+
+  geom_line(aes(x = month, y = mean_offset_clim, col = value))+
+  geom_hline(yintercept = 0, col = 'red') +
+  geom_ribbon(aes(x = month, 
+                  ymin = mean_offset_clim - std_offset_clim, 
+                  ymax = mean_offset_clim + std_offset_clim,
+                  group = value, 
+                  fill = value), 
+              alpha = 0.2) +
+  scale_x_continuous(breaks = seq(1, 12, 1)) +
+  labs(x = 'month',
+       y = 'mean offset (ºC)',
+       title = 'Mean offset (clim OceanSODA SST - clim Argo SST)', 
+       col = 'region',
+       fill = '± 1 std') 
+```
+
+Mapped offset between climatological OceanSODA pH and climatological Argo pH
+
+```{r map_climatological_SST_offset, fig.asp=2}
+
+# bin the offsets for better plotting  
+# plot the offsets on a map of the Southern Ocean
+
+argo_OceanSODA_temp_SO_clim_2x2 <- argo_OceanSODA_temp_SO_clim_2x2 %>% 
+  mutate(offset_clim_binned = 
+           cut(offset_clim, 
+               breaks = c(-Inf, -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, Inf)))    # bin the offsets into intervals (create a discrete variable instead of continuous)
+         # offset_clim_binned = as.factor(as.character(offset_clim_binned))) %>% 
+  # drop_na()
+
+map +
+  geom_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+            aes(lon, lat, fill = offset_clim_binned)) +
+  lims(y = c(-85, -30)) +
+  scale_fill_brewer(palette = 'RdBu', drop = FALSE) +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'offset (ºC)',
+       title = 'clim OceanSODA SST - clim Argo SST') +
+  theme(legend.position = 'right')+
+  facet_wrap(~month, ncol = 2)
+```
+
+```{r map_climatological_SST_offsets_polar_map, fig.asp=2}
+
+basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = offset_clim_binned),
+                    linejoin = 'mitre',
+                    col = 'transparent',
+                    detail = 60)+
+  scale_fill_brewer(palette = 'RdBu', drop = FALSE)+
+  theme(legend.position = 'right')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'offset (ºC)',
+       title = 'clim Ocean SODA SST - clim Argo SST')+
+  facet_wrap(~month, ncol = 2)
+```
+
+### Basin separation
+
+Using full OceanSODA data (even where there is no Argo data) Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)
+
+```{r add_in_basins_to_OceanSODA_temp}
+basinmask <-
+  read_csv(paste(path_emlr_utilities,
+                 "basin_mask_WOA18.csv",
+                 sep = ""),
+           col_types = cols("MLR_basins" = col_character()))
+
+basinmask <- basinmask %>% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(lon, lat, basin_AIP)
+
+OceanSODA_temp_SO <- inner_join(OceanSODA_temp, region_masks_all_1x1) %>% 
+  filter(region == 'southern')
+
+OceanSODA_temp_SO <- inner_join(OceanSODA_temp_SO, basinmask) %>% 
+  mutate(year = year(date_OceanSODA),
+         month = month(date_OceanSODA)) %>% 
+  mutate(date = format_ISO8601(date_OceanSODA, precision = 'ym'))
+```
+
+```{r monthly_OceanSODA_SST_basin}
+# plot timeseries of monthly OceanSODA SST
+OceanSODA_temp_SO_clim_subregional <- OceanSODA_temp_SO %>%
+  filter(value != 0) %>% 
+  group_by(year, month, value, basin_AIP) %>%  # compute regional mean OceanSODA pH for the three biomes
+  summarise(temp = mean(temperature, na.rm = TRUE)) %>%
+  ungroup()
+
+# plot a timeseries of monthly average OceanSODA pH, per region and per basin
+OceanSODA_temp_SO_clim_subregional %>% 
+  ggplot(aes(x = month,
+             y = temp,
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(value~basin_AIP)+
+  labs(x = 'month',
+       y = 'SST (ºC)',
+       title = 'monthly mean OceanSODA SST (Jan 2013-Dec 2020, Southern Ocean basins)',
+       col = 'year')
+```
+
+```{r monthly_OceanSODA_SST_basin_per_year}
+OceanSODA_temp_SO_clim_subregional %>%  
+  filter(value != 0) %>% 
+  ggplot(aes(x = year,
+             y = temp,
+             col = value)) +
+  facet_grid(month ~ basin_AIP) +
+  geom_line() +
+  geom_point() +
+  labs(x = 'year',
+       y = 'SST (ºC)',
+       title = 'monthly mean OceanSODA SST (Jan 2013-Dec 2020, Southern Ocean basins)',
+       col = 'region')
+```
+
+### Longitudinal separation 
+
+Bin the SST data into 20º longitude bins
+```{r regrid_temp_data_to_lon_bins}
+OceanSODA_temp_SO_lon_binned <- OceanSODA_temp_SO %>%
+  mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
+         lon = as.numeric(as.character(lon))
+  ) %>%
+  group_by(lon, year, month, value) %>%
+  summarise(
+    OceanSODA_temp_binned = mean(temperature, na.rm = TRUE)
+  ) %>%
+  ungroup()
+```
+
+```{r plot_lon_binned_SST_data}
+
+OceanSODA_temp_SO_lon_binned %>%
+  # drop_na() %>% 
+  filter(value != 0) %>% 
+  ggplot(aes(x = month, y = OceanSODA_temp_binned, group = lon, col = as.factor(lon))) +
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(year~value)+
+  labs(x = 'month',
+       y = 'OceanSODA SST (ºC)',
+       col = 'longitude bin')
+```
+
