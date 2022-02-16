@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "corrected surface mean pH")
+wflow_publish(all = TRUE, message = "updated extreme temperature")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -17,20 +17,23 @@ wflow_publish(here::here(
     'ph_data.Rmd',
     'oxygen_data.Rmd',
     'oceanSODA_argo.Rmd',
-    'extreme_pH.Rmd'
+    'oceanSODA_argo_temp.Rmd',
+    'extreme_pH.Rmd',
+    'extreme_temp.Rmd'
   )
 ),
-message = "added Argo profiles",
+message = "added OceanSODA-Argo SST comparison",
 republish = TRUE)
 
 wflow_publish(here::here(
   "analysis",
   c(
     "index.Rmd",
-    'extreme_pH.Rmd'
+    'extreme_pH.Rmd',
+    'extreme_temp.Rmd'
   )
 ),
-message = "code review")
+message = "added temperature profiles")
 
 
 # Push latest version to GitHub
