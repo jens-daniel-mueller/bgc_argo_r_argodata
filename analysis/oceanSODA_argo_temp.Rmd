@@ -320,8 +320,32 @@ argo_OceanSODA_temp_SO %>%
   facet_wrap(~value)+
   labs(x = 'OceanSODA SST (ºC)',
        y = 'Argo SST (ºC)',
-       col = 'region',
        title = 'Southern Ocean regional SST')
+
+# test with basin and biome 
+basinmask <-
+  read_csv(paste(path_emlr_utilities,
+                 "basin_mask_WOA18.csv",
+                 sep = ""),
+           col_types = cols("MLR_basins" = col_character()))
+
+basinmask <- basinmask %>% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(lon, lat, basin_AIP)
+
+argo_OceanSODA_temp_SO <- inner_join(argo_OceanSODA_temp_SO, basinmask)
+
+argo_OceanSODA_temp_SO %>% 
+  ggplot(aes(x = OceanSODA_temp, y = argo_temp_month))+
+  geom_bin2d(aes(x = OceanSODA_temp, y = argo_temp_month), size = 0.3, bins = 60)+
+  coord_fixed(ratio = 1, 
+              xlim = c(-3, 27),
+              ylim = c(-3, 27))+
+  geom_abline(slope = 1, intercept = 0)+
+  facet_grid(basin_AIP~value)+
+  labs(x = 'Argo SST (ºC)', 
+       y = 'OceanSODA SST (ºC)',
+       title = 'Southern Ocean subregional SST')
 ```
 
 Mean offset between in-situ OceanSODA SST and in-situ Argo SST

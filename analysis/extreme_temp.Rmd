@@ -320,6 +320,9 @@ OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>%
 
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
+OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>% 
+  mutate(row_number = row_number())
+
 
 OceanSODA_temp_regression <- OceanSODA_temp_2x2_SO %>% 
   # filter(basin_AIP == "Indian",
@@ -330,12 +333,12 @@ OceanSODA_temp_regression <- OceanSODA_temp_2x2_SO %>%
                    .f = ~ lm(temperature ~ year, data = .x)),
          tidied = map(.x = fit, .f = tidy),
          glanced = map(.x = fit, .f = glance),
-         augmented = map(.x = fit, .f = augment))
+         augmented = map(.x = fit, .f = augment)) 
 
 
 OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression %>%
   select(-c(data, fit, augmented, glanced)) %>%
-  unnest(tidied)
+  unnest(tidied) 
 
 OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression_tidied %>% 
   select(lon:estimate) %>% 
@@ -347,18 +350,27 @@ OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression_tidied %>%
 OceanSODA_temp_regression_augmented <- OceanSODA_temp_regression %>%
   select(-c(fit, tidied, glanced, data)) %>%
   unnest(augmented) %>% 
-  select(lon:year, .resid)
+  select(lon:year, .resid) 
+
+OceanSODA_temp_regression_data <- OceanSODA_temp_regression %>% 
+  select(-c(fit, tidied, glanced, augmented)) %>% 
+  unnest(data) 
+
+# OceanSODA_temp_regression_augmented <- bind_cols(
+#   OceanSODA_temp_regression_augmented,
+#   OceanSODA_temp_2x2_SO %>% 
+#     select(
+#     date, lon_raw, lat_raw, lon, lat, basin_AIP, biome)
+# )
 
 OceanSODA_temp_regression_augmented <- bind_cols(
   OceanSODA_temp_regression_augmented,
-  OceanSODA_temp_2x2_SO %>% 
-    select(
-    lon_raw, lat_raw, basin_AIP, biome)
-)
+  OceanSODA_temp_regression_data %>% 
+    select(lon_raw, lat_raw, date, row_number, biome, basin_AIP))
 
 OceanSODA_temp_regression_glanced <- OceanSODA_temp_regression %>%
   select(-c(data, fit, tidied, augmented)) %>%
-  unnest(glanced)
+  unnest(glanced) 
 ```
 
 ### Slope maps
@@ -433,6 +445,7 @@ OceanSODA_temp_2x2_SO_extreme_grid <-
     OceanSODA_temp_regression_glanced %>%
       select(lon:month, sigma)
   )
+# results in 925 056 rows 
 
 # identify observations in anomaly classes
 
@@ -453,7 +466,8 @@ OceanSODA_temp_2x2_SO_extreme_grid <- OceanSODA_temp_2x2_SO_extreme_grid %>%
 
 OceanSODA_temp_2x2_SO_extreme_grid <-
   full_join(OceanSODA_temp_2x2_SO_extreme_grid,
-            OceanSODA_temp_regression_tidied)
+            OceanSODA_temp_regression_tidied) 
+# 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)
 ```
 
 ```{r temp_anomaly_test_plot_grid, fig.asp=0.5}
@@ -584,11 +598,17 @@ full_argo_2x2 <- full_argo %>%
 # keep only Southern Ocean argo data
 full_argo_2x2_SO <- inner_join(full_argo_2x2, region_masks_all_2x2)
 # expected number of rows: 
-# number of points in a profile, for sampling every 2 m from 0 to 1000 m and every 50 m from 1000 to 2500 m: 530 points (rows)
+# number of points in a profile, for sampling every 2 m from 0 to 1000 m and every 50 m from 1000 to 2500 m: 530 obs (rows)
 # for 12 months x 9 years x 360 lon x 30 lat: 
 # 618 000 000 rows 
 # actual number of rows: 15 770 055 
-# (not all Argo profiles go down to 2500 m)
+# (not all Argo profiles go down to 2500 m and spatial coverage isn't as large as OceanSODA)
+
+# With 50% of Argo profiles to 2500 m and half of longitude coverage: 
+# sampling every 2 m from 0 to 1000 m (500 obs) + 50% every 50 m from 1000 to 2500 m (15 obs): 515 obs 
+# for 12 months x 9 years x 180 lon x 30 lat:
+# 299 181 600 rows 
+# actual number of obs: 15 770 055 
 
 # add in basin separations
 full_argo_2x2_SO <- inner_join(full_argo_2x2_SO, basinmask_2x2)
@@ -604,6 +624,47 @@ OceanSODA_temp_2x2_SO_extreme_grid <- OceanSODA_temp_2x2_SO_extreme_grid %>%
   rename(OceanSODA_temp = temperature,
          lon = lon_raw,
          lat = lat_raw)
+# 925 056 obs 
+
+# OceanSODA_temp_2x2_SO_extreme_grid <- OceanSODA_temp_2x2_SO_extreme_grid %>% 
+#   rename(OceanSODA_temp = temperature)
+
+# full_argo_2x2_SO <- full_argo_2x2_SO %>% 
+#   rename(argo_temp = temp_adjusted)
+
+# check lat/lon distributions for argo and OceanSODA 
+# OceanSODA_temp_2x2_SO_extreme_grid %>% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# OceanSODA_temp_2x2_SO_extreme_grid %>% 
+#   ggplot(aes(x = lat))+
+#   geom_density()
+# 
+# OceanSODA_temp_2x2_SO_extreme_grid %>% 
+#   ggplot(aes(x = OceanSODA_temp))+
+#   geom_density()
+
+# OceanSODA_temp_2x2_SO_extreme_grid %>% 
+#   ggplot(aes(x = lon, y = lat))+
+#   geom_bin2d(aes(x = lon, y = lat), size = 0.3, bins = 60)
+
+# 
+# full_argo_2x2_SO %>% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# full_argo_2x2_SO %>% 
+#   ggplot(aes(y = lat))+
+#   geom_density(aes(y = lat))
+#   
+# full_argo_2x2_SO %>% 
+#   ggplot(aes(x = argo_temp))+
+#   geom_density()
+
+# full_argo_2x2_SO %>% 
+#   ggplot(aes(x = lon, y = lat))+
+#   geom_bin2d(aes(x = lon, y = lat))
 
 # combine the argo profile data to the surface extreme data
 profile_temp_extreme <- inner_join(
@@ -611,13 +672,21 @@ profile_temp_extreme <- inner_join(
     select(c(year, month, date, lon, lat, depth,
            temp_adjusted,
            platform_number,
-           cycle_number)),
+           cycle_number)),                 # 15 770 055 obs 
   OceanSODA_temp_2x2_SO_extreme_grid %>% 
-    select(c(year, month, lon, lat,
+    select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
-           biome, basin_AIP)))
+           biome, basin_AIP)))            # 925 056 obs 
   
 # results in 14 934 417 rows (835 638 rows less than full_argo)
+
+# profile_temp_extreme %>% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# profile_temp_extreme %>% 
+#   ggplot(aes(y = lat))+
+#   geom_density()
 ```
 
 # Plot profiles
@@ -751,6 +820,30 @@ surface_temp_mean <- profile_temp_extreme %>%
   summarise(argo_surf_temp = mean(temp_adjusted, na.rm = TRUE),
             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
 
+# test by averaging surface temp over lat/lon instead of profile 
+# surface_temp_mean <- profile_temp_extreme %>% 
+#   filter(depth <= 20) %>% 
+#   group_by(temp_extreme, lon, lat) %>% 
+#   summarise(argo_surf_temp = mean(temp_adjusted, na.rm = TRUE),
+#             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
+
+# test 2, without averaging surface temperature 
+# surface_temp_mean <- profile_temp_extreme %>% 
+#   filter(depth <= 20)
+
+# test plot without averaging surface temperature 
+# surface_temp_mean %>% 
+#   ggplot(aes(x = OceanSODA_temp, y = temp_adjusted)) +
+#   geom_bin2d(aes(x = OceanSODA_temp, y = temp_adjusted)) +
+#   geom_abline(slope = 1, intercept = 0) +
+#   coord_fixed(ratio = 1,
+#               xlim = c(-3, 28),
+#               ylim = c(-3, 28)) +
+#   facet_wrap(~temp_extreme) +
+#   labs(x = 'OceanSODA temp',
+#        y = 'Argo temp')
+
+
 surface_temp_mean %>% 
   group_by(temp_extreme) %>% 
   group_split(temp_extreme) %>% 
@@ -758,7 +851,7 @@ surface_temp_mean %>%
   ~ggplot(data = .x, aes(x = OceanSODA_surf_temp, 
              y = argo_surf_temp))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_temp, 
-                 y = argo_surf_temp)) +
+                 y = argo_surf_temp), size = 0.3, bins = 60) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1,
               xlim = c(-3, 28),
@@ -834,8 +927,8 @@ surface_temp_biome %>%
                  y = argo_surf_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(season~biome) +
     labs(title = paste( 'Temp extreme:', unique(.x$temp_extreme)),
          x = 'OceanSODA temp',
@@ -904,8 +997,8 @@ surface_temp_basin %>%
                  y = surf_argo_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(season~basin_AIP) +
     labs(title = paste('Temp extreme:', unique(.x$temp_extreme)),
          x = 'OceanSODA temp',
@@ -1003,8 +1096,8 @@ surface_temp_season %>%
                  y = surf_argo_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(basin_AIP ~ biome) +
     labs(title = paste('season:', unique(.x$season), 
                         '| temp extreme:', unique(.x$temp_extreme)),
