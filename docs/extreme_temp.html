@@ -420,7 +420,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme Temperature Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">18 February, 2022</h4>
+<h4 class="date">22 February, 2022</h4>
 
 </div>
 
@@ -445,7 +445,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-18
+<strong>Last updated:</strong> 2022-02-22
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8b99ab39c43310a55d94dfdcaae427248b2d8f56targetblank8b99ab3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8b99ab39c43310a55d94dfdcaae427248b2d8f56" target="_blank">8b99ab3</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree818ac5432792bd2de8f52c12051259322dd971b9targetblank818ac54a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/818ac5432792bd2de8f52c12051259322dd971b9" target="_blank">818ac54</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8b99ab39c43310a55d94dfdcaae427248b2d8f56targetblank8b99ab3a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree818ac5432792bd2de8f52c12051259322dd971b9targetblank818ac54a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8b99ab39c43310a55d94dfdcaae427248b2d8f56" target="_blank">8b99ab3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/818ac5432792bd2de8f52c12051259322dd971b9" target="_blank">818ac54</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -555,6 +555,7 @@ Ignored files:
     Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
@@ -601,6 +602,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/818ac5432792bd2de8f52c12051259322dd971b9/analysis/extreme_temp.Rmd" target="_blank">818ac54</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-22
+</td>
+<td>
+updated regression and merging for extreme_temp
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/f98c7445fa0512517e82a35a336b2e9de41e8794/docs/extreme_temp.html" target="_blank">f98c744</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1165,6 +1200,9 @@ OceanSODA_temp_2x2_SO &lt;- OceanSODA_temp_2x2_SO %&gt;%
 <h3>Fit lm models</h3>
 <pre class="r"><code># fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
+OceanSODA_temp_2x2_SO &lt;- OceanSODA_temp_2x2_SO %&gt;% 
+  mutate(row_number = row_number())
+
 
 OceanSODA_temp_regression &lt;- OceanSODA_temp_2x2_SO %&gt;% 
   # filter(basin_AIP == &quot;Indian&quot;,
@@ -1175,12 +1213,12 @@ OceanSODA_temp_regression &lt;- OceanSODA_temp_2x2_SO %&gt;%
                    .f = ~ lm(temperature ~ year, data = .x)),
          tidied = map(.x = fit, .f = tidy),
          glanced = map(.x = fit, .f = glance),
-         augmented = map(.x = fit, .f = augment))
+         augmented = map(.x = fit, .f = augment)) 
 
 
 OceanSODA_temp_regression_tidied &lt;- OceanSODA_temp_regression %&gt;%
   select(-c(data, fit, augmented, glanced)) %&gt;%
-  unnest(tidied)
+  unnest(tidied) 
 
 OceanSODA_temp_regression_tidied &lt;- OceanSODA_temp_regression_tidied %&gt;% 
   select(lon:estimate) %&gt;% 
@@ -1192,18 +1230,27 @@ OceanSODA_temp_regression_tidied &lt;- OceanSODA_temp_regression_tidied %&gt;%
 OceanSODA_temp_regression_augmented &lt;- OceanSODA_temp_regression %&gt;%
   select(-c(fit, tidied, glanced, data)) %&gt;%
   unnest(augmented) %&gt;% 
-  select(lon:year, .resid)
+  select(lon:year, .resid) 
+
+OceanSODA_temp_regression_data &lt;- OceanSODA_temp_regression %&gt;% 
+  select(-c(fit, tidied, glanced, augmented)) %&gt;% 
+  unnest(data) 
+
+# OceanSODA_temp_regression_augmented &lt;- bind_cols(
+#   OceanSODA_temp_regression_augmented,
+#   OceanSODA_temp_2x2_SO %&gt;% 
+#     select(
+#     date, lon_raw, lat_raw, lon, lat, basin_AIP, biome)
+# )
 
 OceanSODA_temp_regression_augmented &lt;- bind_cols(
   OceanSODA_temp_regression_augmented,
-  OceanSODA_temp_2x2_SO %&gt;% 
-    select(
-    lon_raw, lat_raw, basin_AIP, biome)
-)
+  OceanSODA_temp_regression_data %&gt;% 
+    select(lon_raw, lat_raw, date, row_number, biome, basin_AIP))
 
 OceanSODA_temp_regression_glanced &lt;- OceanSODA_temp_regression %&gt;%
   select(-c(data, fit, tidied, augmented)) %&gt;%
-  unnest(glanced)</code></pre>
+  unnest(glanced) </code></pre>
 </div>
 <div id="slope-maps" class="section level3">
 <h3>Slope maps</h3>
@@ -1336,6 +1383,7 @@ OceanSODA_temp_2x2_SO_extreme_grid &lt;-
     OceanSODA_temp_regression_glanced %&gt;%
       select(lon:month, sigma)
   )
+# results in 925 056 rows 
 
 # identify observations in anomaly classes
 
@@ -1356,7 +1404,8 @@ OceanSODA_temp_2x2_SO_extreme_grid &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt
 
 OceanSODA_temp_2x2_SO_extreme_grid &lt;-
   full_join(OceanSODA_temp_2x2_SO_extreme_grid,
-            OceanSODA_temp_regression_tidied)</code></pre>
+            OceanSODA_temp_regression_tidied) 
+# 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)</code></pre>
 <pre class="r"><code>OceanSODA_temp_2x2_SO_extreme_grid %&gt;%
   group_split(lon, lat, month) %&gt;%
   head(6) %&gt;%
@@ -2100,11 +2149,17 @@ full_argo_2x2 &lt;- full_argo %&gt;%
 <pre class="r"><code># keep only Southern Ocean argo data
 full_argo_2x2_SO &lt;- inner_join(full_argo_2x2, region_masks_all_2x2)
 # expected number of rows: 
-# number of points in a profile, for sampling every 2 m from 0 to 1000 m and every 50 m from 1000 to 2500 m: 530 points (rows)
+# number of points in a profile, for sampling every 2 m from 0 to 1000 m and every 50 m from 1000 to 2500 m: 530 obs (rows)
 # for 12 months x 9 years x 360 lon x 30 lat: 
 # 618 000 000 rows 
 # actual number of rows: 15 770 055 
-# (not all Argo profiles go down to 2500 m)
+# (not all Argo profiles go down to 2500 m and spatial coverage isn&#39;t as large as OceanSODA)
+
+# With 50% of Argo profiles to 2500 m and half of longitude coverage: 
+# sampling every 2 m from 0 to 1000 m (500 obs) + 50% every 50 m from 1000 to 2500 m (15 obs): 515 obs 
+# for 12 months x 9 years x 180 lon x 30 lat:
+# 299 181 600 rows 
+# actual number of obs: 15 770 055 
 
 # add in basin separations
 full_argo_2x2_SO &lt;- inner_join(full_argo_2x2_SO, basinmask_2x2)</code></pre>
@@ -2118,6 +2173,47 @@ OceanSODA_temp_2x2_SO_extreme_grid &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt
   rename(OceanSODA_temp = temperature,
          lon = lon_raw,
          lat = lat_raw)
+# 925 056 obs 
+
+# OceanSODA_temp_2x2_SO_extreme_grid &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+#   rename(OceanSODA_temp = temperature)
+
+# full_argo_2x2_SO &lt;- full_argo_2x2_SO %&gt;% 
+#   rename(argo_temp = temp_adjusted)
+
+# check lat/lon distributions for argo and OceanSODA 
+# OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+#   ggplot(aes(x = lat))+
+#   geom_density()
+# 
+# OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+#   ggplot(aes(x = OceanSODA_temp))+
+#   geom_density()
+
+# OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+#   ggplot(aes(x = lon, y = lat))+
+#   geom_bin2d(aes(x = lon, y = lat), size = 0.3, bins = 60)
+
+# 
+# full_argo_2x2_SO %&gt;% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# full_argo_2x2_SO %&gt;% 
+#   ggplot(aes(y = lat))+
+#   geom_density(aes(y = lat))
+#   
+# full_argo_2x2_SO %&gt;% 
+#   ggplot(aes(x = argo_temp))+
+#   geom_density()
+
+# full_argo_2x2_SO %&gt;% 
+#   ggplot(aes(x = lon, y = lat))+
+#   geom_bin2d(aes(x = lon, y = lat))
 
 # combine the argo profile data to the surface extreme data
 profile_temp_extreme &lt;- inner_join(
@@ -2125,13 +2221,21 @@ profile_temp_extreme &lt;- inner_join(
     select(c(year, month, date, lon, lat, depth,
            temp_adjusted,
            platform_number,
-           cycle_number)),
+           cycle_number)),                 # 15 770 055 obs 
   OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
-    select(c(year, month, lon, lat,
+    select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
-           biome, basin_AIP)))
+           biome, basin_AIP)))            # 925 056 obs 
   
-# results in 14 934 417 rows (835 638 rows less than full_argo)</code></pre>
+# results in 14 934 417 rows (835 638 rows less than full_argo)
+
+# profile_temp_extreme %&gt;% 
+#   ggplot(aes(x = lon))+
+#   geom_density()
+# 
+# profile_temp_extreme %&gt;% 
+#   ggplot(aes(y = lat))+
+#   geom_density()</code></pre>
 </div>
 <div id="plot-profiles" class="section level1">
 <h1>Plot profiles</h1>
@@ -5765,6 +5869,30 @@ surface_temp_mean &lt;- profile_temp_extreme %&gt;%
   summarise(argo_surf_temp = mean(temp_adjusted, na.rm = TRUE),
             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
 
+# test by averaging surface temp over lat/lon instead of profile 
+# surface_temp_mean &lt;- profile_temp_extreme %&gt;% 
+#   filter(depth &lt;= 20) %&gt;% 
+#   group_by(temp_extreme, lon, lat) %&gt;% 
+#   summarise(argo_surf_temp = mean(temp_adjusted, na.rm = TRUE),
+#             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
+
+# test 2, without averaging surface temperature 
+# surface_temp_mean &lt;- profile_temp_extreme %&gt;% 
+#   filter(depth &lt;= 20)
+
+# test plot without averaging surface temperature 
+# surface_temp_mean %&gt;% 
+#   ggplot(aes(x = OceanSODA_temp, y = temp_adjusted)) +
+#   geom_bin2d(aes(x = OceanSODA_temp, y = temp_adjusted)) +
+#   geom_abline(slope = 1, intercept = 0) +
+#   coord_fixed(ratio = 1,
+#               xlim = c(-3, 28),
+#               ylim = c(-3, 28)) +
+#   facet_wrap(~temp_extreme) +
+#   labs(x = &#39;OceanSODA temp&#39;,
+#        y = &#39;Argo temp&#39;)
+
+
 surface_temp_mean %&gt;% 
   group_by(temp_extreme) %&gt;% 
   group_split(temp_extreme) %&gt;% 
@@ -5772,7 +5900,7 @@ surface_temp_mean %&gt;%
   ~ggplot(data = .x, aes(x = OceanSODA_surf_temp, 
              y = argo_surf_temp))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_temp, 
-                 y = argo_surf_temp)) +
+                 y = argo_surf_temp), size = 0.3, bins = 60) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1,
               xlim = c(-3, 28),
@@ -6085,8 +6213,8 @@ surface_temp_biome %&gt;%
                  y = argo_surf_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(season~biome) +
     labs(title = paste( &#39;Temp extreme:&#39;, unique(.x$temp_extreme)),
          x = &#39;OceanSODA temp&#39;,
@@ -6393,8 +6521,8 @@ surface_temp_basin %&gt;%
                  y = surf_argo_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(season~basin_AIP) +
     labs(title = paste(&#39;Temp extreme:&#39;, unique(.x$temp_extreme)),
          x = &#39;OceanSODA temp&#39;,
@@ -7037,8 +7165,8 @@ surface_temp_season %&gt;%
                  y = surf_argo_temp)) +
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
-              xlim = c(-3, 21),
-              ylim = c(-3, 21))+
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
   facet_grid(basin_AIP ~ biome) +
     labs(title = paste(&#39;season:&#39;, unique(.x$season), 
                         &#39;| temp extreme:&#39;, unique(.x$temp_extreme)),
