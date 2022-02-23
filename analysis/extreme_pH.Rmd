@@ -361,6 +361,10 @@ OceanSODA_regression_tidied <- OceanSODA_regression_tidied %>%
   rename(intercept = `(Intercept)`,
          slope = year)
 
+OceanSODA_regression_data <- OceanSODA_regression %>% 
+  select(-c(fit, tidied, glanced, augmented)) %>% 
+  unnest(data)
+
 OceanSODA_regression_augmented <- OceanSODA_regression %>%
   select(-c(fit, tidied, glanced, data)) %>%
   unnest(augmented) %>% 
@@ -368,9 +372,8 @@ OceanSODA_regression_augmented <- OceanSODA_regression %>%
 
 OceanSODA_regression_augmented <- bind_cols(
   OceanSODA_regression_augmented,
-  OceanSODA_2x2_SO %>% select(
-    lon_raw, lat_raw, basin_AIP, biome)
-)
+  OceanSODA_regression_data %>% select(
+    lon_raw, lat_raw, basin_AIP, biome))
 
 OceanSODA_regression_glanced <- OceanSODA_regression %>%
   select(-c(data, fit, tidied, augmented)) %>%
