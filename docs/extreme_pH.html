@@ -420,7 +420,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">23 February, 2022</h4>
+<h4 class="date">24 February, 2022</h4>
 
 </div>
 
@@ -445,7 +445,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-23
+<strong>Last updated:</strong> 2022-02-24
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7517b78fcb2b1fe5c0548266c9f42504dc4d4efbtargetblank7517b78a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7517b78fcb2b1fe5c0548266c9f42504dc4d4efb" target="_blank">7517b78</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6targetblank4557a6ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6" target="_blank">4557a6e</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7517b78fcb2b1fe5c0548266c9f42504dc4d4efbtargetblank7517b78a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6targetblank4557a6ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7517b78fcb2b1fe5c0548266c9f42504dc4d4efb" target="_blank">7517b78</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6" target="_blank">4557a6e</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -601,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6/analysis/extreme_pH.Rmd" target="_blank">4557a6e</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+<td>
+added st dev for pH profiles
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/08c8d4b42cac2f7c7ab111e2f8395cf43328dc92/docs/extreme_pH.html" target="_blank">08c8d4b</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -6596,7 +6630,8 @@ profile_extreme &lt;- profile_extreme %&gt;%
 <h3>Overall mean</h3>
 <pre class="r"><code>profile_extreme_mean &lt;- profile_extreme %&gt;%
   group_by(ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_mean %&gt;%
@@ -6607,11 +6642,20 @@ profile_extreme_mean %&gt;%
     group = ph_extreme,
     col = ph_extreme
   )) +
+  geom_ribbon(aes(xmin = ph_mean - ph_std,
+                  xmax = ph_mean + ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
   geom_path() +
   scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
   labs(title = &quot;Overall mean&quot;,
-       col = &#39;OceanSODA\npH\nanomaly&#39;,
-       y = &#39;log(depth)&#39;) +
+       col = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       y = &#39;sqrt(depth)&#39;,
+       x = &#39;Argo mean pH&#39;) +
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))</code></pre>
 <p><img src="figure/extreme_pH.Rmd/mean_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -7046,7 +7090,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x biome</h3>
 <pre class="r"><code>profile_extreme_biome &lt;- profile_extreme %&gt;% 
   group_by(season, biome, ph_extreme, depth) %&gt;% 
-  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
   
 
@@ -7057,10 +7102,19 @@ profile_extreme_biome %&gt;%
     group = ph_extreme,
     col = ph_extreme
   )) +
+  geom_ribbon(aes(xmin = ph_biome - ph_biome_std,
+                  xmax = ph_biome + ph_biome_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA, 
+              alpha = 0.2)+
   geom_path() +
   scale_color_manual(values = HNL_colors) +
-  labs(col = &#39;OceanSODA\npH\nanomaly&#39;,
-       y = &#39;log(depth)&#39;) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       y = &#39;sqrt(depth)&#39;,
+       x = &#39;Biome mean Argo pH&#39;) +
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)</code></pre>
@@ -7488,7 +7542,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x basin</h3>
 <pre class="r"><code>profile_extreme_basin &lt;- profile_extreme %&gt;% 
   group_by(season, basin_AIP, ph_extreme, depth) %&gt;% 
-  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
 
 profile_extreme_basin %&gt;% 
@@ -7496,10 +7551,19 @@ profile_extreme_basin %&gt;%
              y = depth, 
              group = ph_extreme, 
              col = ph_extreme))+
+  geom_ribbon(aes(xmax = ph_basin + ph_basin_std,
+                  xmin = ph_basin - ph_basin_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.3)+
   geom_path()+
   scale_color_manual(values = HNL_colors)+
-  labs(col = &#39;OceanSODA\npH\nanomaly&#39;,
-       y = &#39;log(depth)&#39;)+
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
+       y = &#39;sqrt(depth)&#39;,
+       x = &#39;Basin mean Argo pH&#39;)+
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)</code></pre>
@@ -7983,7 +8047,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x biome x basin</h3>
 <pre class="r"><code>profile_extreme_season &lt;- profile_extreme %&gt;%
   group_by(season, biome, basin_AIP, ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_season %&gt;%
@@ -8000,11 +8065,20 @@ profile_extreme_season %&gt;%
         col = ph_extreme
       )
     ) +
+      geom_ribbon(aes(xmax = ph_mean + ph_std,
+                      xmin = ph_mean - ph_std,
+                      group = ph_extreme,
+                      fill = ph_extreme),
+                  col = NA,
+                  alpha = 0.2)+
       geom_path() +
       scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors)+
       labs(title = paste(&quot;season:&quot;, unique(.x$season)),
-           col = &#39;OceanSODA\npH\nanomaly&#39;,
-           y = &#39;log(depth)&#39;) +
+           col = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
+           fill = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
+           y = &#39;sqrt(depth)&#39;,
+           x = &#39;Argo pH&#39;) +
       scale_y_continuous(
         trans = trans_reverser(&quot;sqrt&quot;),
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
