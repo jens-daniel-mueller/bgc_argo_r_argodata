@@ -733,7 +733,8 @@ profile_extreme <- profile_extreme %>%
 
 profile_extreme_mean <- profile_extreme %>%
   group_by(ph_extreme, depth) %>%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_mean %>%
@@ -744,11 +745,20 @@ profile_extreme_mean %>%
     group = ph_extreme,
     col = ph_extreme
   )) +
+  geom_ribbon(aes(xmin = ph_mean - ph_std,
+                  xmax = ph_mean + ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
   geom_path() +
   scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
   labs(title = "Overall mean",
-       col = 'OceanSODA\npH\nanomaly',
-       y = 'log(depth)') +
+       col = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'Argo mean pH') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 
@@ -817,7 +827,8 @@ surface_ph_mean %>%
 
 profile_extreme_biome <- profile_extreme %>% 
   group_by(season, biome, ph_extreme, depth) %>% 
-  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
+  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
   
 
@@ -828,10 +839,19 @@ profile_extreme_biome %>%
     group = ph_extreme,
     col = ph_extreme
   )) +
+  geom_ribbon(aes(xmin = ph_biome - ph_biome_std,
+                  xmax = ph_biome + ph_biome_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA, 
+              alpha = 0.2)+
   geom_path() +
   scale_color_manual(values = HNL_colors) +
-  labs(col = 'OceanSODA\npH\nanomaly',
-       y = 'log(depth)') +
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'Biome mean Argo pH') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)
@@ -892,7 +912,8 @@ surface_ph_biome %>%
 
 profile_extreme_basin <- profile_extreme %>% 
   group_by(season, basin_AIP, ph_extreme, depth) %>% 
-  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
+  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
 
 profile_extreme_basin %>% 
@@ -900,10 +921,19 @@ profile_extreme_basin %>%
              y = depth, 
              group = ph_extreme, 
              col = ph_extreme))+
+  geom_ribbon(aes(xmax = ph_basin + ph_basin_std,
+                  xmin = ph_basin - ph_basin_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.3)+
   geom_path()+
   scale_color_manual(values = HNL_colors)+
-  labs(col = 'OceanSODA\npH\nanomaly',
-       y = 'log(depth)')+
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'Basin mean Argo pH')+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)
@@ -964,7 +994,8 @@ surface_ph_basin %>%
 
 profile_extreme_season <- profile_extreme %>%
   group_by(season, biome, basin_AIP, ph_extreme, depth) %>%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_season %>%
@@ -981,11 +1012,20 @@ profile_extreme_season %>%
         col = ph_extreme
       )
     ) +
+      geom_ribbon(aes(xmax = ph_mean + ph_std,
+                      xmin = ph_mean - ph_std,
+                      group = ph_extreme,
+                      fill = ph_extreme),
+                  col = NA,
+                  alpha = 0.2)+
       geom_path() +
       scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors)+
       labs(title = paste("season:", unique(.x$season)),
-           col = 'OceanSODA\npH\nanomaly',
-           y = 'log(depth)') +
+           col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+           fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+           y = 'sqrt(depth)',
+           x = 'Argo pH') +
       scale_y_continuous(
         trans = trans_reverser("sqrt"),
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
