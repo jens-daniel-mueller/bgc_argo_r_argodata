@@ -7,9 +7,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-# Task 
+# Task
 
-Compare Argo surface temperature to OceanSODA surface temperature 
+Compare Argo surface temperature to OceanSODA surface temperature
 
 ```{r set_options_global, include=FALSE}
 
@@ -28,9 +28,9 @@ library(metR)
 theme_set(theme_bw())
 ```
 
-# Load data 
+# Load data
 
-Load in surface Argo temperature, and OceanSODA temperature, on a 1ºx1º grid 
+Load in surface Argo temperature, and OceanSODA temperature, on a 1ºx1º grid
 
 ```{r set_root_directories}
 
@@ -66,9 +66,9 @@ map <-
                  sep = ""))
 ```
 
-# Harmonise the two datasets 
+# Harmonise the two datasets
 
-Calculate monthly-mean Argo temperature for each lat/lon grid and each month 
+Calculate monthly-mean Argo temperature for each lat/lon grid and each month
 
 ```{r create_monthly_argo_data}
 
@@ -88,7 +88,7 @@ argo_temp_monthly <- argo_surf_temp %>%
   )
 ```
 
-Join Argo and OceanSODA 
+Join Argo and OceanSODA
 
 ```{r join_oceanSODA_argo}
 OceanSODA_temp <- OceanSODA_temp %>% 
@@ -99,9 +99,9 @@ argo_OceanSODA_temp <- left_join(argo_temp_monthly, OceanSODA_temp) %>%
   rename(OceanSODA_temp = temperature)
 ```
 
-# Southern Ocean SST 
+# Southern Ocean SST
 
-Focus on the Southern Ocean, south of 30ºS, as defined in the RECCAP biome regions 
+Focus on the Southern Ocean, south of 30ºS, as defined in the RECCAP biome regions
 
 ```{r extract_southern_ocean_data}
 
@@ -537,9 +537,10 @@ OceanSODA_temp_SO_clim_subregional %>%
        col = 'region')
 ```
 
-### Longitudinal separation 
+### Longitudinal separation
 
 Bin the SST data into 20º longitude bins
+
 ```{r regrid_temp_data_to_lon_bins}
 OceanSODA_temp_SO_lon_binned <- OceanSODA_temp_SO %>%
   mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
@@ -566,4 +567,3 @@ OceanSODA_temp_SO_lon_binned %>%
        y = 'OceanSODA SST (ºC)',
        col = 'longitude bin')
 ```
-

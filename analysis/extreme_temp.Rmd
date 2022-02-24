@@ -678,7 +678,7 @@ profile_temp_extreme <- inner_join(
            OceanSODA_temp, temp_extreme,
            biome, basin_AIP)))            # 925 056 obs 
   
-# results in 14 934 417 rows (835 638 rows less than full_argo)
+# results in 14 816 885 rows 
 
 # profile_temp_extreme %>% 
 #   ggplot(aes(x = lon))+
@@ -774,22 +774,30 @@ profile_temp_extreme <- profile_temp_extreme %>%
 
 profile_temp_extreme_mean <- profile_temp_extreme %>%
   group_by(temp_extreme, depth) %>%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE)) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_temp_extreme_mean %>%
   arrange(depth) %>%
-  ggplot(aes(
-    x = temp_mean,
-    y = depth,
-    group = temp_extreme,
-    col = temp_extreme
-  )) +
-  geom_path() +
+  ggplot(aes(x = temp_mean, 
+             y = depth, 
+             group = temp_extreme, 
+             col = temp_extreme)) +
+  geom_ribbon(aes(xmin = temp_mean - temp_std,
+                  xmax = temp_mean + temp_std,
+                  col = NA,
+                  fill = temp_extreme), 
+              col = NA,
+              alpha = 0.2)+
+  geom_path()+
   scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
   labs(title = "Overall mean",
-       col = 'OceanSODA\ntemp\nanomaly',
-       y = 'log(depth)') +
+       col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 ```
@@ -868,7 +876,8 @@ surface_temp_mean %>%
 
 profile_temp_extreme_biome <- profile_temp_extreme %>% 
   group_by(season, biome, temp_extreme, depth) %>% 
-  summarise(temp_biome = mean(temp_adjusted, na.rm = TRUE)) %>% 
+  summarise(temp_biome = mean(temp_adjusted, na.rm = TRUE),
+            temp_std_biome = sd(temp_adjusted, na.rm = TRUE)) %>% 
   ungroup()
   
 
@@ -879,10 +888,19 @@ profile_temp_extreme_biome %>%
     group = temp_extreme,
     col = temp_extreme
   )) +
+  geom_ribbon(aes(xmax = temp_biome + temp_std_biome,
+                  xmin = temp_biome - temp_std_biome,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA, 
+              alpha = 0.2)+
   geom_path() +
   scale_color_manual(values = HNL_colors) +
-  labs(col = 'OceanSODA\ntemp\nanomaly',
-       y = 'log(depth)') +
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'biome mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   lims(x = c(-3, 18))+
@@ -942,7 +960,8 @@ surface_temp_biome %>%
 
 profile_temp_extreme_basin <- profile_temp_extreme %>% 
   group_by(season, basin_AIP, temp_extreme, depth) %>% 
-  summarise(temp_basin = mean(temp_adjusted, na.rm = TRUE)) %>% 
+  summarise(temp_basin = mean(temp_adjusted, na.rm = TRUE),
+            temp_basin_std = sd(temp_adjusted, na.rm = TRUE)) %>% 
   ungroup()
 
 profile_temp_extreme_basin %>% 
@@ -950,10 +969,19 @@ profile_temp_extreme_basin %>%
              y = depth, 
              group = temp_extreme, 
              col = temp_extreme))+
+  geom_ribbon(aes(xmin = temp_basin - temp_basin_std,
+                  xmax = temp_basin + temp_basin_std,
+                  group = temp_extreme, 
+                  fill = temp_extreme),
+              col = NA, 
+              alpha = 0.2)+
   geom_path()+
   scale_color_manual(values = HNL_colors)+
-  labs(col = 'OceanSODA\ntemp\nanomaly',
-       y = 'log(depth)')+
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\ntemp anomaly\n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly\n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'basin-mean Argo temperature (ªC)')+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)
@@ -1012,7 +1040,8 @@ surface_temp_basin %>%
 
 profile_temp_extreme_season <- profile_temp_extreme %>%
   group_by(season, biome, basin_AIP, temp_extreme, depth) %>%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE)) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_temp_extreme_season %>%
@@ -1022,18 +1051,24 @@ profile_temp_extreme_season %>%
   map(
     ~ ggplot(
       data = .x,
-      aes(
-        x = temp_mean,
-        y = depth,
-        group = temp_extreme,
-        col = temp_extreme
-      )
-    ) +
+      aes(x = temp_mean,
+          y = depth,
+          group = temp_extreme,
+          col = temp_extreme)) +
+      geom_ribbon(aes(xmax = temp_mean + temp_std,
+                      xmin = temp_mean - temp_std,
+                      group = temp_extreme,
+                      fill = temp_extreme),
+                  col = NA,
+                  alpha = 0.2)+
       geom_path() +
       scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors) +
       labs(title = paste("season:", unique(.x$season)),
-           col = 'OceanSODA\ntemp\nanomaly',
-           y = 'log(depth)') +
+           col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           y = 'sqrt(depth)',
+           x = 'mean Argo temperature (ºC)') +
       scale_y_continuous(
         trans = trans_reverser("sqrt"),
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
