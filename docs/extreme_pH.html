@@ -420,7 +420,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">24 February, 2022</h4>
+<h4 class="date">25 February, 2022</h4>
 
 </div>
 
@@ -445,7 +445,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-24
+<strong>Last updated:</strong> 2022-02-25
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6targetblank4557a6ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6" target="_blank">4557a6e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64c2c71727041d1ebcd54c71ef54ff11880fe128targetblank64c2c71a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64c2c71727041d1ebcd54c71ef54ff11880fe128" target="_blank">64c2c71</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6targetblank4557a6ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64c2c71727041d1ebcd54c71ef54ff11880fe128targetblank64c2c71a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4557a6ebf5a0bc2ebc901dcf5c7c2d62b41866e6" target="_blank">4557a6e</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64c2c71727041d1ebcd54c71ef54ff11880fe128" target="_blank">64c2c71</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -601,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/64c2c71727041d1ebcd54c71ef54ff11880fe128/analysis/extreme_pH.Rmd" target="_blank">64c2c71</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-25
+</td>
+<td>
+plotted line profiles and changed HNL colors
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/extreme_pH.html" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1549,7 +1583,11 @@ added Argo profiles
 <pre class="r"><code>theme_set(theme_bw())
 HNL_colors &lt;- c(&quot;H&quot; = &quot;#b2182b&quot;,
                 &quot;N&quot; = &quot;#636363&quot;,
-                &quot;L&quot; = &quot;#2166ac&quot;)</code></pre>
+                &quot;L&quot; = &quot;#2166ac&quot;)
+
+HNL_colors_map &lt;- c(&#39;H&#39; = &#39;red3&#39;,
+                    &#39;N&#39; = &#39;gray90&#39;,
+                    &#39;L&#39; = &#39;blue3&#39;)</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -2850,7 +2888,7 @@ jens-daniel-mueller
                         col = &#39;transparent&#39;,
                         detail = 60
                         ) +
-      scale_fill_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors_map) +
       facet_wrap(~month, ncol = 2)+
       labs(title = paste(&quot;Year:&quot;, unique(.x$year)),
            fill = &#39;pH&#39;)
@@ -2863,7 +2901,7 @@ jens-daniel-mueller
                 aes(x = lon,
                     y = lat, 
                     fill = ph_extreme))+
-      scale_fill_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~month, ncol = 2)+
       lims(y = c(-85, -30))+
       labs(title = paste(&#39;Year:&#39;, unique(.x$year)),
@@ -3276,6 +3314,22 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre class="r"><code>#use the original lat/lon grid to plot the extreme on a 1x1
+
+OceanSODA_2x2_SO_extreme_grid %&gt;% 
+  group_split(year) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon_raw,
+                    y = lat_raw, 
+                    fill = ph_extreme))+
+      scale_fill_manual(values = HNL_colors_map)+
+      facet_wrap(~month, ncol = 2)+
+      lims(y = c(-85, -30))+
+      labs(title = paste(&#39;Year:&#39;, unique(.x$year)),
+           fill = &#39;pH&#39;)
+  )</code></pre>
 </div>
 <div id="anomaly-time-series" class="section level3">
 <h3>Anomaly time series</h3>
@@ -3580,7 +3634,8 @@ profile_extreme &lt;- inner_join(
   OceanSODA_2x2_SO_extreme_grid %&gt;% 
     select(year, month, lon, lat,
            OceanSODA_ph, ph_extreme,
-           biome, basin_AIP))</code></pre>
+           biome, basin_AIP)) %&gt;% 
+  unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
 </div>
 </div>
 <div id="plot-profiles" class="section level1">
@@ -3593,18 +3648,18 @@ profile_extreme &lt;- inner_join(
 <h2>Raw</h2>
 <pre class="r"><code>profile_extreme %&gt;%
   group_split(biome, basin_AIP, year) %&gt;% 
-  #head(1) %&gt;%
+  head(10) %&gt;%
   map(
     ~ ggplot(
       data = .x,
       aes(
         x = ph_in_situ_total_adjusted,
         y = depth,
-        group = ph_extreme,
+        group = platform_cycle,
         col = ph_extreme
       )
     ) +
-      geom_point(pch = 19, size = 0.3) +
+      geom_path(size = 0.3) +
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -4130,2472 +4185,6 @@ jens-daniel-mueller
 </table>
 </div>
 </div>
-<pre><code>
-[[11]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-11.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-11">
-Past versions of profiles_raw-11.png
-</button>
-</p>
-<div id="fig-profiles_raw-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-11.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-11.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[12]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-12.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-12">
-Past versions of profiles_raw-12.png
-</button>
-</p>
-<div id="fig-profiles_raw-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-12.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-12.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[13]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-13.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-13">
-Past versions of profiles_raw-13.png
-</button>
-</p>
-<div id="fig-profiles_raw-13" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-13.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-13.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[14]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-14.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-14">
-Past versions of profiles_raw-14.png
-</button>
-</p>
-<div id="fig-profiles_raw-14" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-14.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-14.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[15]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-15.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-15">
-Past versions of profiles_raw-15.png
-</button>
-</p>
-<div id="fig-profiles_raw-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-15.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-15.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[16]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-16.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-16">
-Past versions of profiles_raw-16.png
-</button>
-</p>
-<div id="fig-profiles_raw-16" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-16.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-16.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[17]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-17.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-17">
-Past versions of profiles_raw-17.png
-</button>
-</p>
-<div id="fig-profiles_raw-17" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-17.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-17.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[18]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-18.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-18">
-Past versions of profiles_raw-18.png
-</button>
-</p>
-<div id="fig-profiles_raw-18" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-18.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-18.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[19]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-19.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-19">
-Past versions of profiles_raw-19.png
-</button>
-</p>
-<div id="fig-profiles_raw-19" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-19.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-19.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[20]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-20.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-20">
-Past versions of profiles_raw-20.png
-</button>
-</p>
-<div id="fig-profiles_raw-20" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-20.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-20.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[21]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-21.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-21">
-Past versions of profiles_raw-21.png
-</button>
-</p>
-<div id="fig-profiles_raw-21" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-21.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-21.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[22]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-22.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-22">
-Past versions of profiles_raw-22.png
-</button>
-</p>
-<div id="fig-profiles_raw-22" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-22.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-22.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[23]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-23.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-23">
-Past versions of profiles_raw-23.png
-</button>
-</p>
-<div id="fig-profiles_raw-23" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-23.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-23.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[24]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-24.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-24">
-Past versions of profiles_raw-24.png
-</button>
-</p>
-<div id="fig-profiles_raw-24" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-24.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-24.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[25]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-25.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-25">
-Past versions of profiles_raw-25.png
-</button>
-</p>
-<div id="fig-profiles_raw-25" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-25.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-25.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[26]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-26.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-26">
-Past versions of profiles_raw-26.png
-</button>
-</p>
-<div id="fig-profiles_raw-26" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-26.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-26.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[27]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-27.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-27">
-Past versions of profiles_raw-27.png
-</button>
-</p>
-<div id="fig-profiles_raw-27" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-27.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-27.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[28]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-28.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-28">
-Past versions of profiles_raw-28.png
-</button>
-</p>
-<div id="fig-profiles_raw-28" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-28.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-28.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[29]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-29.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-29">
-Past versions of profiles_raw-29.png
-</button>
-</p>
-<div id="fig-profiles_raw-29" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-29.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-29.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[30]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-30.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-30">
-Past versions of profiles_raw-30.png
-</button>
-</p>
-<div id="fig-profiles_raw-30" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-30.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-30.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[31]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-31.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-31">
-Past versions of profiles_raw-31.png
-</button>
-</p>
-<div id="fig-profiles_raw-31" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-31.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-31.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[32]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-32.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-32">
-Past versions of profiles_raw-32.png
-</button>
-</p>
-<div id="fig-profiles_raw-32" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-32.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-32.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[33]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-33.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-33">
-Past versions of profiles_raw-33.png
-</button>
-</p>
-<div id="fig-profiles_raw-33" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-33.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-33.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[34]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-34.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-34">
-Past versions of profiles_raw-34.png
-</button>
-</p>
-<div id="fig-profiles_raw-34" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-34.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-34.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[35]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-35.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-35">
-Past versions of profiles_raw-35.png
-</button>
-</p>
-<div id="fig-profiles_raw-35" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-35.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-35.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[36]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-36.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-36">
-Past versions of profiles_raw-36.png
-</button>
-</p>
-<div id="fig-profiles_raw-36" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-36.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-36.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[37]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-37.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-37">
-Past versions of profiles_raw-37.png
-</button>
-</p>
-<div id="fig-profiles_raw-37" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-37.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-37.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[38]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-38.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-38">
-Past versions of profiles_raw-38.png
-</button>
-</p>
-<div id="fig-profiles_raw-38" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-38.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-38.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[39]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-39.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-39">
-Past versions of profiles_raw-39.png
-</button>
-</p>
-<div id="fig-profiles_raw-39" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-39.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-39.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[40]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-40.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-40">
-Past versions of profiles_raw-40.png
-</button>
-</p>
-<div id="fig-profiles_raw-40" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-40.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-40.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[41]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-41.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-41">
-Past versions of profiles_raw-41.png
-</button>
-</p>
-<div id="fig-profiles_raw-41" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-41.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-41.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[42]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-42.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-42">
-Past versions of profiles_raw-42.png
-</button>
-</p>
-<div id="fig-profiles_raw-42" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-42.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-42.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[43]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-43.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-43">
-Past versions of profiles_raw-43.png
-</button>
-</p>
-<div id="fig-profiles_raw-43" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-43.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-43.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[44]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-44.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-44">
-Past versions of profiles_raw-44.png
-</button>
-</p>
-<div id="fig-profiles_raw-44" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-44.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-44.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[45]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-45.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-45">
-Past versions of profiles_raw-45.png
-</button>
-</p>
-<div id="fig-profiles_raw-45" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-45.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-45.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[46]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-46.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-46">
-Past versions of profiles_raw-46.png
-</button>
-</p>
-<div id="fig-profiles_raw-46" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-46.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-46.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[47]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-47.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-47">
-Past versions of profiles_raw-47.png
-</button>
-</p>
-<div id="fig-profiles_raw-47" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-47.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-47.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[48]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-48.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-48">
-Past versions of profiles_raw-48.png
-</button>
-</p>
-<div id="fig-profiles_raw-48" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-48.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-48.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[49]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-49.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-49">
-Past versions of profiles_raw-49.png
-</button>
-</p>
-<div id="fig-profiles_raw-49" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-49.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-49.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[50]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-50.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-50">
-Past versions of profiles_raw-50.png
-</button>
-</p>
-<div id="fig-profiles_raw-50" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-50.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-50.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[51]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-51.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-51">
-Past versions of profiles_raw-51.png
-</button>
-</p>
-<div id="fig-profiles_raw-51" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-51.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-51.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[52]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-52.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-52">
-Past versions of profiles_raw-52.png
-</button>
-</p>
-<div id="fig-profiles_raw-52" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-52.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-52.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[53]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-53.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-53">
-Past versions of profiles_raw-53.png
-</button>
-</p>
-<div id="fig-profiles_raw-53" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-53.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-53.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[54]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-54.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-54">
-Past versions of profiles_raw-54.png
-</button>
-</p>
-<div id="fig-profiles_raw-54" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-54.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-54.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[55]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-55.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-55">
-Past versions of profiles_raw-55.png
-</button>
-</p>
-<div id="fig-profiles_raw-55" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-55.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-55.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[56]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-56.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-56">
-Past versions of profiles_raw-56.png
-</button>
-</p>
-<div id="fig-profiles_raw-56" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-56.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/28c8d17cb7b74e2ea3c434a89c36541e1ae0b075/docs/figure/extreme_pH.Rmd/profiles_raw-56.png" target="_blank">28c8d17</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[57]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-57.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-57">
-Past versions of profiles_raw-57.png
-</button>
-</p>
-<div id="fig-profiles_raw-57" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-57.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[58]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-58.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-58">
-Past versions of profiles_raw-58.png
-</button>
-</p>
-<div id="fig-profiles_raw-58" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-58.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[59]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/profiles_raw-59.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profiles_raw-59">
-Past versions of profiles_raw-59.png
-</button>
-</p>
-<div id="fig-profiles_raw-59" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/profiles_raw-59.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="averaged-profiles" class="section level2">
 <h2>Averaged profiles</h2>
@@ -6681,6 +4270,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles-1.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles-1.png" target="_blank">71ced5f</a>
@@ -6825,6 +4425,7 @@ surface_ph_mean %&gt;%
              y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.9, 8.21),
@@ -7143,6 +4744,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome-1.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome-1.png" target="_blank">71ced5f</a>
 </td>
 <td>
@@ -7277,6 +4889,7 @@ surface_ph_biome %&gt;%
              y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
@@ -7592,6 +5205,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_basin_profiles-1.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_basin_profiles-1.png" target="_blank">71ced5f</a>
 </td>
 <td>
@@ -7749,6 +5373,7 @@ surface_ph_basin %&gt;%
              y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
@@ -8111,6 +5736,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-1.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-1.png" target="_blank">71ced5f</a>
 </td>
 <td>
@@ -8182,6 +5818,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-2.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-2.png" target="_blank">71ced5f</a>
@@ -8257,6 +5904,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-3.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-3.png" target="_blank">71ced5f</a>
 </td>
 <td>
@@ -8328,6 +5986,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/daa0a8f4990beabf7d3b0387d4085525f175f3e4/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-4.png" target="_blank">daa0a8f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-24
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/mean_profiles_season_biome_basin-4.png" target="_blank">71ced5f</a>
@@ -8755,6 +6424,7 @@ surface_ph_season %&gt;%
              y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
