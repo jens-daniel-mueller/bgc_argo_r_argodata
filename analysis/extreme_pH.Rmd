@@ -32,6 +32,10 @@ HNL_colors <- c("H" = "#b2182b",
                 "N" = "#636363",
                 "L" = "#2166ac")
 
+HNL_colors_map <- c('H' = 'red3',
+                    'N' = 'gray90',
+                    'L' = 'blue3')
+
 ```
 
 # Load data
@@ -527,7 +531,7 @@ OceanSODA_2x2_SO_extreme_grid %>%
                         col = 'transparent',
                         detail = 60
                         ) +
-      scale_fill_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors_map) +
       facet_wrap(~month, ncol = 2)+
       labs(title = paste("Year:", unique(.x$year)),
            fill = 'pH')
@@ -545,13 +549,33 @@ OceanSODA_2x2_SO_extreme_grid %>%
                 aes(x = lon,
                     y = lat, 
                     fill = ph_extreme))+
-      scale_fill_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~month, ncol = 2)+
       lims(y = c(-85, -30))+
       labs(title = paste('Year:', unique(.x$year)),
            fill = 'pH')
   )
 
+```
+
+```{r flat_map_OceanSODA_ph_extremes_1x1_plot, eval=FALSE}
+
+#use the original lat/lon grid to plot the extreme on a 1x1
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  group_split(year) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon_raw,
+                    y = lat_raw, 
+                    fill = ph_extreme))+
+      scale_fill_manual(values = HNL_colors_map)+
+      facet_wrap(~month, ncol = 2)+
+      lims(y = c(-85, -30))+
+      labs(title = paste('Year:', unique(.x$year)),
+           fill = 'pH')
+  )
 ```
 
 ### Anomaly time series
@@ -643,7 +667,8 @@ profile_extreme <- inner_join(
   OceanSODA_2x2_SO_extreme_grid %>% 
     select(year, month, lon, lat,
            OceanSODA_ph, ph_extreme,
-           biome, basin_AIP))
+           biome, basin_AIP)) %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
 
 ```
 
@@ -663,18 +688,18 @@ N profiles correspond to normal surface OceanSODA pH
 
 profile_extreme %>%
   group_split(biome, basin_AIP, year) %>% 
-  #head(1) %>%
+  head(10) %>%
   map(
     ~ ggplot(
       data = .x,
       aes(
         x = ph_in_situ_total_adjusted,
         y = depth,
-        group = ph_extreme,
+        group = platform_cycle,
         col = ph_extreme
       )
     ) +
-      geom_point(pch = 19, size = 0.3) +
+      geom_path(size = 0.3) +
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -809,6 +834,7 @@ surface_ph_mean %>%
              y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.9, 8.21),
@@ -894,6 +920,7 @@ surface_ph_biome %>%
              y = argo_surf_ph))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_ph, 
                  y = argo_surf_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
@@ -976,6 +1003,7 @@ surface_ph_basin %>%
              y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
@@ -1089,6 +1117,7 @@ surface_ph_season %>%
              y = surf_argo_ph))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_ph, 
                  y = surf_argo_ph)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),

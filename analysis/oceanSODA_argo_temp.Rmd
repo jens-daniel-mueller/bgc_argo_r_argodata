@@ -150,7 +150,7 @@ argo_OceanSODA_temp_SO_clim_2x2 <- argo_OceanSODA_temp_SO_clim %>%
 
 map +
   geom_tile(data = argo_OceanSODA_temp_SO_clim_2x2,
-            aes(lon, lat, fill = clim_OceanSODA_temp)) +
+            aes(x = lon, y = lat, fill = clim_OceanSODA_temp)) +
   lims(y = c(-85, -25)) +
   scale_fill_viridis_c() +
   labs(x = 'lon',
@@ -249,7 +249,7 @@ argo_OceanSODA_temp_SO_clim_regional <- argo_OceanSODA_temp_SO %>%
   ungroup()
 ```
 
-```{r plot_monthly_timeseries, fig.asp=2, eval=FALSE}
+```{r plot_monthly_timeseries, eval=FALSE}
 
 argo_OceanSODA_temp_SO_clim_regional %>%   
   ggplot(aes(x = year,
@@ -264,10 +264,11 @@ argo_OceanSODA_temp_SO_clim_regional %>%
        col = 'region')
 ```
 
-```{r yearly_timeseries_monthly_SST, fig.asp=2}
+```{r yearly_timeseries_monthly_SST}
 
 argo_OceanSODA_temp_SO_clim_regional %>%   
-  filter(value != 0) %>%
+  filter(value != 0,
+         year != 2021) %>%
   ggplot(aes(x = month,
              y = temp,
              group = year,

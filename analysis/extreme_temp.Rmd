@@ -31,6 +31,10 @@ theme_set(theme_bw())
 HNL_colors <- c("H" = "#b2182b",
                 "N" = "#636363",
                 "L" = "#2166ac")
+
+HNL_colors_map <- c('H' = 'red3',
+                    'N' = 'gray90',
+                    'L' = 'blue3')
 ```
 
 # Load data
@@ -531,12 +535,31 @@ OceanSODA_temp_2x2_SO_extreme_grid %>%
                 aes(x = lon,
                     y = lat, 
                     fill = temp_extreme))+
-      scale_fill_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~month, ncol = 2)+
       lims(y = c(-85, -30))+
       labs(title = paste('Year:', unique(.x$year)),
            fill = 'pH')
   )
+```
+
+```{r flat_map_temp_extremes_1x1_plot, eval = FALSE}
+
+OceanSODA_temp_2x2_SO_extreme_grid %>% 
+  group_split(year) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon_raw,
+                    y = lat_raw, 
+                    fill = temp_extreme))+
+      scale_fill_manual(values = HNL_colors_map)+
+      facet_wrap(~month, ncol = 2)+
+      lims(y = c(-85, -30))+
+      labs(title = paste('Year:', unique(.x$year)),
+           fill = 'pH')
+  )
+
 ```
 
 ### Anomaly timeseries
@@ -676,7 +699,10 @@ profile_temp_extreme <- inner_join(
   OceanSODA_temp_2x2_SO_extreme_grid %>% 
     select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
-           biome, basin_AIP)))            # 925 056 obs 
+           biome, basin_AIP))) %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+  
+  # 925 056 obs 
   
 # results in 14 816 885 rows 
 
@@ -712,11 +738,11 @@ profile_temp_extreme %>%
       aes(
         x = temp_adjusted,
         y = depth,
-        group = temp_extreme,
+        group = platform_cycle,
         col = temp_extreme
       )
     ) +
-      geom_point(pch = 19, size = 0.3) +
+      geom_path(size = 0.3) +
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -860,6 +886,7 @@ surface_temp_mean %>%
              y = argo_surf_temp))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_temp, 
                  y = argo_surf_temp), size = 0.3, bins = 60) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1,
               xlim = c(-3, 28),
@@ -943,6 +970,7 @@ surface_temp_biome %>%
              y = argo_surf_temp))+
   geom_bin2d(data = .x, aes(x = OceanSODA_surf_temp, 
                  y = argo_surf_temp)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(-3, 25),
@@ -1023,6 +1051,7 @@ surface_temp_basin %>%
              y = surf_argo_temp))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_temp, 
                  y = surf_argo_temp)) +
+    scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(-3, 25),
@@ -1129,6 +1158,7 @@ surface_temp_season %>%
              y = surf_argo_temp))+
   geom_bin2d(data = .x, aes(x = surf_OceanSODA_temp, 
                  y = surf_argo_temp)) +
+  scale_fill_viridis_c()+
   geom_abline(slope = 1, intercept = 0)+
   coord_fixed(ratio = 1, 
               xlim = c(-3, 25),
