@@ -297,10 +297,11 @@ argo_OceanSODA_temp_SO <- argo_OceanSODA_temp_SO %>%
 
 argo_OceanSODA_temp_SO %>%
   # drop_na() %>%
+  # filter(year != '2021') %>% 
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
   geom_point(aes(x = year_month, y = offset, col = value), size = 0.7, pch = 19) +
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
   labs(title = 'oceanSODA SST - Argo SST',
        x = 'date',
        y = 'offset (ºC)',
@@ -360,6 +361,7 @@ mean_insitu_offset <- argo_OceanSODA_temp_SO %>%
 
 mean_insitu_offset %>%
   # drop_na() %>%
+  # filter(year != '2021') %>% 
   ggplot() +
   geom_hline(yintercept = 0, size = 1, col = 'red')+
   geom_point(aes(x = year_month, y = mean_offset, group = value, col = value), size = 0.7, pch = 19) +
@@ -370,7 +372,7 @@ mean_insitu_offset %>%
                   group = value, 
                   fill =value),
               alpha = 0.2)+
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
   # facet_wrap(~year)+
   labs(title = 'Mean offset (in situ oceanSODA SST - in situ Argo SST)',
        x = 'date',
