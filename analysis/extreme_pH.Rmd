@@ -719,6 +719,87 @@ profile_extreme %>%
 
 ```
 
+### Indian basin, biome 2, June & October 2016
+
+```{r select_specific_pH_profiles_2016}
+
+# plot profiles for the Indian basin, biome 2, months 6 and 10, 2016 
+
+OceanSODA_2x2_SO_extreme_grid_2016 <-  
+  OceanSODA_2x2_SO_extreme_grid %>% 
+  filter(date == '2016-06-15' | date == '2016-10-15')
+
+map+
+  geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2016,
+            aes(x = lon,
+                y = lat,
+                fill = ph_extreme))+
+  facet_wrap(~month, ncol = 1)+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'June & October 2016',
+       fill = 'OceanSODA pH \nextreme')
+
+profile_extreme_Ind_2016 <- profile_extreme %>% 
+  filter(date == '2016-06-15' | date == '2016-10-15',
+         basin_AIP == 'Indian',
+         biome == '2')
+
+profile_extreme_Ind_2016 %>% 
+  ggplot(aes(y = depth, 
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
+             col = ph_extreme))+
+  geom_path(size = 0.3)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Indian basin, biome 2, June & October 2016',
+       col = 'OceanSODA\npH anomaly',
+       x = 'Argo pH')
+
+```
+
+### Pacific basin, biome 3, June & December 2017
+
+```{r select_specific_profiles_2017}
+
+# Plot profiles for the Pacific basin, biome 3, months 6 & 12, 2017
+
+OceanSODA_2x2_SO_extreme_grid_2017 <-   
+  OceanSODA_2x2_SO_extreme_grid %>% 
+  filter(date == '2017-06-15' | date == '2017-12-15')
+
+map+
+  geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2017,
+            aes(x = lon,
+                y = lat,
+                fill = ph_extreme))+
+  facet_wrap(~month, ncol = 1)+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'June & December 2017',
+       fill = 'OceanSODA pH \nextreme')
+
+profile_extreme_Pac_2017 <- profile_extreme %>% 
+  filter(date == '2017-06-15' | date == '2017-12-15',
+         basin_AIP == 'Pacific',
+         biome == '3')
+
+profile_extreme_Pac_2017 %>% 
+  ggplot(aes(y = depth, 
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
+             col = ph_extreme))+
+  geom_path(size = 0.3)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Pacific basin, biome 3, June & December 2016',
+       col = 'OceanSODA\npH anomaly',
+       x = 'Argo pH')
+```
+
 ## Averaged profiles
 
 ```{r calculate_mean_profiles}

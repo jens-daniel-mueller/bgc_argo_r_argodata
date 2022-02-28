@@ -539,7 +539,7 @@ OceanSODA_temp_2x2_SO_extreme_grid %>%
       facet_wrap(~month, ncol = 2)+
       lims(y = c(-85, -30))+
       labs(title = paste('Year:', unique(.x$year)),
-           fill = 'pH')
+           fill = 'temperature (ºC)')
   )
 ```
 
@@ -759,6 +759,128 @@ profile_temp_extreme %>%
         col = 'OceanSODA temp \nanomaly'
       )
   )
+
+```
+
+### Atlantic, biome 1, March - April 2018
+
+```{r select_specific_temp_profiles_2018}
+
+# Temperature extreme: 
+# Atlantic biome 1, 2018, months 2 and 3 
+
+OceanSODA_temp_2x2_SO_extreme_grid_2018 <- OceanSODA_temp_2x2_SO_extreme_grid %>% 
+  filter(date == '2018-03-15' | date == '2018-04-15')  
+
+map+
+  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2018,
+            aes(x = lon,
+                y = lat,
+                fill = temp_extreme))+
+  facet_wrap(~month, ncol = 1)+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'March - April 2018',
+       fill = 'OceanSODA SST \nextreme')
+  
+profile_temp_Atl_2018 <- profile_temp_extreme %>% 
+  filter(date == '2018-03-15' | date == '2018-04-15',
+         basin_AIP == 'Atlantic',
+         biome == '1') 
+
+profile_temp_Atl_2018 %>% 
+  ggplot(aes(x = temp_adjusted,
+             y = depth,
+             group = platform_cycle,
+             col = temp_extreme))+
+  geom_path(size = 0.3)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Atlantic, biome 1, March - April 2018',
+       col = 'OceanSODA SST\nextreme',
+       x = 'Argo temperature (ºC)')
+
+
+```
+
+### Atlantic, biome 3, July - August 2015
+
+```{r select_specific_temp_profiles_2015}
+
+# Atlantic biome 3, 2015 months 7 and 8 
+
+OceanSODA_temp_2x2_SO_extreme_grid_2015 <- OceanSODA_temp_2x2_SO_extreme_grid %>% 
+  filter(date == '2015-07-15' | date == '2015-08-15')  
+
+map+
+  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2015,
+            aes(x = lon,
+                y = lat,
+                fill = temp_extreme))+
+  facet_wrap(~month, ncol = 1)+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'July - August 2018',
+       fill = 'OceanSODA SST \nextreme')
+
+profile_temp_Atl_2015 <- profile_temp_extreme %>% 
+  filter(date == '2015-07-15' | date == '2015-08-15',
+         basin_AIP == 'Atlantic',
+         biome == '3') 
+
+profile_temp_Atl_2015 %>% 
+  ggplot(aes(x = temp_adjusted,
+             y = depth,
+             group = platform_cycle,
+             col = temp_extreme))+
+  geom_path(size = 0.3)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Atlantic, biome 3, July - August 2015',
+       col = 'OceanSODA SST\nextreme',
+       x = 'Argo temperature (ºC)')
+
+```
+
+### Pacific, biome 2, July - August 2016
+
+```{r select_specific_temp_profile_2016}
+
+# Pacific biome 2, 2016, months 7 and 8 
+
+OceanSODA_temp_2x2_SO_extreme_grid_2016 <- OceanSODA_temp_2x2_SO_extreme_grid %>% 
+  filter(date == '2016-07-15' | date == '2016-08-15')  
+
+map+
+  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2016,
+            aes(x = lon,
+                y = lat,
+                fill = temp_extreme))+
+  facet_wrap(~month, ncol = 1)+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'July - August 2016',
+       fill = 'OceanSODA SST \nextreme')
+
+profile_temp_Pac_2016 <- profile_temp_extreme %>% 
+  filter(date == '2016-07-15' | date == '2016-08-15',
+         basin_AIP == 'Pacific',
+         biome == '2') 
+
+profile_temp_Pac_2016 %>% 
+  ggplot(aes(x = temp_adjusted,
+             y = depth,
+             group = platform_cycle,
+             col = temp_extreme))+
+  geom_path(size = 0.3)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Pacific, biome 2, July - August 2015',
+       col = 'OceanSODA SST\nextreme',
+       x = 'Argo temperature (ºC)')
 
 ```
 
