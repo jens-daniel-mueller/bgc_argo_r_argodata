@@ -758,6 +758,34 @@ profile_extreme_Ind_2016 %>%
        col = 'OceanSODA\npH anomaly',
        x = 'Argo pH')
 
+
+```
+
+```{r change_line_thickness_for_extreme_profile, eval=FALSE}
+
+# make the lines for the H and L profiles thicker than for N profiles 
+
+profile_extreme_Ind_2016 %>% 
+  map(
+    ~ggplot()+
+      geom_path(data = .x %>% 
+                  filter(ph_extreme == 'N'),
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = ph_extreme),
+                size = 0.3) +
+      geom_path(data = .x %>% 
+                  filter(ph_extreme == 'H' | ph_extreme == 'L'),
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = ph_extreme),
+                size = 0.5)+
+      scale_y_reverse()+
+      scale_color_manual(values = HNL_colors)
+  )
+
 ```
 
 ### Pacific basin, biome 3, June & December 2017
