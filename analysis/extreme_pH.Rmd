@@ -514,6 +514,8 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 ### Anomaly maps
 
+##### Anomalies on a 2x2 grid 
+
 Location of OceanSODA pH extremes
 
 ```{r map_OceanSODA_ph_extremes_grid, fig.asp=2, eval=FALSE}
@@ -558,12 +560,15 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 ```
 
-```{r flat_map_OceanSODA_ph_extremes_1x1_plot, eval=FALSE}
+##### Anomalies on a 1x1 grid 
+
+```{r flat_map_OceanSODA_ph_extremes_1x1_plot, fig.asp=2}
 
 #use the original lat/lon grid to plot the extreme on a 1x1
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
+  head(3) %>% 
   map(
     ~map +
       geom_tile(data = .x,
@@ -1264,3 +1269,4 @@ profile_extreme_season %>%
       facet_wrap(~ biome)
   )
 ```
+
