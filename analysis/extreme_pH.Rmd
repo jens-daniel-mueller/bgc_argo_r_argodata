@@ -514,7 +514,7 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 ### Anomaly maps
 
-##### Anomalies on a 2x2 grid 
+##### Anomalies on a 2x2 grid
 
 Location of OceanSODA pH extremes
 
@@ -560,7 +560,7 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 ```
 
-##### Anomalies on a 1x1 grid 
+##### Anomalies on a 1x1 grid
 
 ```{r flat_map_OceanSODA_ph_extremes_1x1_plot, fig.asp=2}
 
@@ -568,7 +568,7 @@ OceanSODA_2x2_SO_extreme_grid %>%
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
-  head(3) %>% 
+  # head(3) %>% 
   map(
     ~map +
       geom_tile(data = .x,
@@ -735,57 +735,15 @@ profile_extreme %>%
 
 ```
 
-### Indian basin, biome 2, June & October 2016
+### Atlantic basin, biome 1, August 2017
 
 ```{r select_specific_pH_profiles_2016}
 
-# plot profiles for the Indian basin, biome 2, months 6 and 10, 2016 
+# plot profiles for the Atlantic basin, biome 1, month 08, 2017 
 
-OceanSODA_2x2_SO_extreme_grid_2016 <-  
+OceanSODA_2x2_SO_extreme_grid_2017 <-  
   OceanSODA_2x2_SO_extreme_grid %>% 
-  filter(date == '2016-06-15' | date == '2016-10-15')
-
-map+
-  geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2016,
-            aes(x = lon,
-                y = lat,
-                fill = ph_extreme))+
-  facet_wrap(~month, ncol = 1)+
-  scale_fill_manual(values = HNL_colors_map)+
-  lims(y = c(-85, -30))+
-  labs(title = 'June & October 2016',
-       fill = 'OceanSODA pH \nextreme')
-
-profile_extreme_Ind_2016 <- profile_extreme %>% 
-  filter(date == '2016-06-15' | date == '2016-10-15',
-         basin_AIP == 'Indian',
-         biome == '2')
-
-profile_extreme_Ind_2016 %>% 
-  ggplot(aes(y = depth, 
-             x = ph_in_situ_total_adjusted,
-             group = platform_cycle,
-             col = ph_extreme))+
-  geom_path(size = 0.3)+
-  scale_y_reverse()+
-  scale_color_manual(values = HNL_colors)+
-  facet_wrap(~month, ncol = 2)+
-  labs(title = 'Indian basin, biome 2, June & October 2016',
-       col = 'OceanSODA\npH anomaly',
-       x = 'Argo pH')
-
-
-```
-
-### Pacific basin, biome 3, June & December 2017
-
-```{r select_specific_profiles_2017}
-
-# Plot profiles for the Pacific basin, biome 3, months 6 & 12, 2017
-
-OceanSODA_2x2_SO_extreme_grid_2017 <-   
-  OceanSODA_2x2_SO_extreme_grid %>% 
-  filter(date == '2017-06-15' | date == '2017-12-15')
+  filter(date == '2017-08-15')
 
 map+
   geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2017,
@@ -795,24 +753,85 @@ map+
   facet_wrap(~month, ncol = 1)+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
-  labs(title = 'June & December 2017',
+  labs(title = 'August 2017',
        fill = 'OceanSODA pH \nextreme')
 
-profile_extreme_Pac_2017 <- profile_extreme %>% 
-  filter(date == '2017-06-15' | date == '2017-12-15',
-         basin_AIP == 'Pacific',
-         biome == '3')
+profile_extreme_Atl_2017 <- profile_extreme %>% 
+  filter(date == '2017-08-15',
+         basin_AIP == 'Atlantic',
+         biome == '1')
 
-profile_extreme_Pac_2017 %>% 
+profile_extreme_Atl_2017 %>% 
   ggplot(aes(y = depth, 
              x = ph_in_situ_total_adjusted,
              group = platform_cycle,
              col = ph_extreme))+
-  geom_path(size = 0.3)+
+  geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'N'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth, 
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.3)+
+  geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'H'| ph_extreme == 'L'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
-  facet_wrap(~month, ncol = 2)+
-  labs(title = 'Pacific basin, biome 3, June & December 2017',
+  labs(title = 'Atlantic basin, biome 1, August 2017',
+       col = 'OceanSODA\npH anomaly',
+       x = 'Argo pH')
+
+
+```
+
+### Atlantic basin, biome 1, December 2017
+
+```{r select_specific_profiles_2017}
+
+# Plot profiles for the Pacific basin, biome 3, months 12, 2017
+
+OceanSODA_2x2_SO_extreme_grid_2017 <-   
+  OceanSODA_2x2_SO_extreme_grid %>% 
+  filter(date == '2017-12-15')
+
+map+
+  geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2017,
+            aes(x = lon,
+                y = lat,
+                fill = ph_extreme))+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'December 2017',
+       fill = 'OceanSODA pH \nextreme')
+
+profile_extreme_Atl_2017 <- profile_extreme %>% 
+  filter(date == '2017-12-15',
+         basin_AIP == 'Atlantic',
+         biome == '1')
+
+profile_extreme_Atl_2017 %>% 
+  ggplot(aes(y = depth, 
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
+             col = ph_extreme))+
+  geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'N'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.3)+
+  geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'H' | ph_extreme == 'L'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.5)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  labs(title = 'Atlantic basin, biome 1, December 2017',
        col = 'OceanSODA\npH anomaly',
        x = 'Argo pH')
 ```
@@ -1229,44 +1248,65 @@ surface_ph_season %>%
 
 ```
 
-##### Season x biome x Atlantic basin 
+##### Atlantic basin, biome 2, winter
 
-```{r season_biome_Atlantic_profile, fig.asp=1}
+```{r season_biome_1_Atlantic_profile_winter}
 
 profile_extreme_season %>%
-  filter(basin_AIP == 'Atlantic') %>% 
+  filter(basin_AIP == 'Atlantic',
+         season == 'winter',
+         biome == '1') %>% 
   arrange(depth) %>%
-  group_split(season) %>%
-  # head(1) %>%
-  map(
-    ~ ggplot(
-      data = .x,
-      aes(
-        x = ph_mean,
-        y = depth,
-        group = ph_extreme,
-        col = ph_extreme
-      )
-    ) +
-      geom_ribbon(aes(xmax = ph_mean + ph_std,
-                      xmin = ph_mean - ph_std,
-                      group = ph_extreme,
-                      fill = ph_extreme),
-                  col = NA,
-                  alpha = 0.2)+
-      geom_path() +
-      scale_color_manual(values = HNL_colors) +
-      scale_fill_manual(values = HNL_colors)+
-      labs(title = paste("Atlantic basin, season:", unique(.x$season)),
-           col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
-           fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
-           y = 'sqrt(depth)',
-           x = 'Argo pH') +
-      scale_y_continuous(
+  ggplot(aes(x = ph_mean,
+             y = depth,
+             group = ph_extreme,
+             col = ph_extreme)) +
+  geom_ribbon(aes(xmax = ph_mean + ph_std,
+                  xmin = ph_mean - ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+                col = NA,
+                alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = 'Atlantic basin, biome 1, winter',
+       col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'Argo pH') +
+  scale_y_continuous(
         trans = trans_reverser("sqrt"),
-        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
-      ) +
-      facet_wrap(~ biome)
-  )
+        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 ```
 
+##### Atlantic basin, biome 1, summer 
+
+```{r Atlantic_biome_1_profile_season_summer}
+profile_extreme_season %>%
+  filter(basin_AIP == 'Atlantic',
+         season == 'summer',
+         biome == '1') %>% 
+  arrange(depth) %>%
+  ggplot(aes(x = ph_mean,
+             y = depth,
+             group = ph_extreme,
+             col = ph_extreme)) +
+  geom_ribbon(aes(xmax = ph_mean + ph_std,
+                  xmin = ph_mean - ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+                col = NA,
+                alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = 'Atlantic basin, biome 1, summer',
+       col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'Argo pH') +
+  scale_y_continuous(
+        trans = trans_reverser("sqrt"),
+        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
+```
