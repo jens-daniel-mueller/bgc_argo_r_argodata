@@ -1223,3 +1223,44 @@ surface_ph_season %>%
   )
 
 ```
+
+##### Season x biome x Atlantic basin 
+
+```{r season_biome_Atlantic_profile, fig.asp=1}
+
+profile_extreme_season %>%
+  filter(basin_AIP == 'Atlantic') %>% 
+  arrange(depth) %>%
+  group_split(season) %>%
+  # head(1) %>%
+  map(
+    ~ ggplot(
+      data = .x,
+      aes(
+        x = ph_mean,
+        y = depth,
+        group = ph_extreme,
+        col = ph_extreme
+      )
+    ) +
+      geom_ribbon(aes(xmax = ph_mean + ph_std,
+                      xmin = ph_mean - ph_std,
+                      group = ph_extreme,
+                      fill = ph_extreme),
+                  col = NA,
+                  alpha = 0.2)+
+      geom_path() +
+      scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors)+
+      labs(title = paste("Atlantic basin, season:", unique(.x$season)),
+           col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+           fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
+           y = 'sqrt(depth)',
+           x = 'Argo pH') +
+      scale_y_continuous(
+        trans = trans_reverser("sqrt"),
+        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
+      ) +
+      facet_wrap(~ biome)
+  )
+```

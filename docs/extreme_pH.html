@@ -420,7 +420,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">28 February, 2022</h4>
+<h4 class="date">01 March, 2022</h4>
 
 </div>
 
@@ -445,7 +445,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-28
+<strong>Last updated:</strong> 2022-03-01
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5b0901d3c9f28f742637d7dafb72ec0d72705ff6targetblank5b0901da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5b0901d3c9f28f742637d7dafb72ec0d72705ff6" target="_blank">5b0901d</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree73463cc0e7a97ad353fc4c6d13491f3cfed02f09targetblank73463cca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/73463cc0e7a97ad353fc4c6d13491f3cfed02f09" target="_blank">73463cc</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5b0901d3c9f28f742637d7dafb72ec0d72705ff6targetblank5b0901da" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree73463cc0e7a97ad353fc4c6d13491f3cfed02f09targetblank73463cca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5b0901d3c9f28f742637d7dafb72ec0d72705ff6" target="_blank">5b0901d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/73463cc0e7a97ad353fc4c6d13491f3cfed02f09" target="_blank">73463cc</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -601,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/73463cc0e7a97ad353fc4c6d13491f3cfed02f09/analysis/extreme_pH.Rmd" target="_blank">73463cc</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+<td>
+changed line thickness for H and L raw profiles
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c4362e51c7bc86eadead54713e904faca1fcb9a9/docs/extreme_pH.html" target="_blank">c4362e5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3883,7 +3917,18 @@ profile_extreme &lt;- inner_join(
         col = ph_extreme
       )
     ) +
-      geom_path(size = 0.3) +
+      geom_path(data = .x %&gt;% filter(ph_extreme == &#39;N&#39;),
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = ph_extreme),
+                size = 0.3) +
+      geom_path(data = .x %&gt;% filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = ph_extreme),
+                size = 0.5)+
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -8174,28 +8219,6 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code># make the lines for the H and L profiles thicker than for N profiles 
-
-profile_extreme_Ind_2016 %&gt;% 
-  map(
-    ~ggplot()+
-      geom_path(data = .x %&gt;% 
-                  filter(ph_extreme == &#39;N&#39;),
-                aes(x = ph_in_situ_total_adjusted,
-                    y = depth,
-                    group = platform_cycle,
-                    col = ph_extreme),
-                size = 0.3) +
-      geom_path(data = .x %&gt;% 
-                  filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
-                aes(x = ph_in_situ_total_adjusted,
-                    y = depth,
-                    group = platform_cycle,
-                    col = ph_extreme),
-                size = 0.5)+
-      scale_y_reverse()+
-      scale_color_manual(values = HNL_colors)
-  )</code></pre>
 </div>
 <div id="pacific-basin-biome-3-june-december-2017" class="section level3">
 <h3>Pacific basin, biome 3, June &amp; December 2017</h3>
@@ -8293,6 +8316,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c4362e51c7bc86eadead54713e904faca1fcb9a9/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">c4362e5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-28
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d2993591406dc205adccc90959879f1653b6354d/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">d299359</a>

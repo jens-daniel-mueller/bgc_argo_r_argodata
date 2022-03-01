@@ -1308,3 +1308,41 @@ surface_temp_season %>%
          y = 'Argo temp')
   )
 ```
+
+##### Season x biome x Atlantic basin 
+
+```{r temp_profile_season_biome_Atlantic, fig.asp=1}
+
+profile_temp_extreme_season %>%
+  filter(basin_AIP == 'Atlantic') %>% 
+  arrange(depth) %>%
+  group_split(season) %>%
+  # head(1) %>%
+  map(
+    ~ ggplot(
+      data = .x,
+      aes(x = temp_mean,
+          y = depth,
+          group = temp_extreme,
+          col = temp_extreme)) +
+      geom_ribbon(aes(xmax = temp_mean + temp_std,
+                      xmin = temp_mean - temp_std,
+                      group = temp_extreme,
+                      fill = temp_extreme),
+                  col = NA,
+                  alpha = 0.2)+
+      geom_path() +
+      scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors) +
+      labs(title = paste("Atlantic basin, season:", unique(.x$season)),
+           col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           y = 'sqrt(depth)',
+           x = 'mean Argo temperature (ºC)') +
+      scale_y_continuous(
+        trans = trans_reverser("sqrt"),
+        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
+      ) +
+      facet_wrap(~ biome)
+  )
+```
