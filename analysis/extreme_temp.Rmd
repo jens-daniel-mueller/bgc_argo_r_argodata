@@ -501,6 +501,8 @@ OceanSODA_temp_2x2_SO_extreme_grid %>%
 
 ### Anomaly maps
 
+##### Anomalies on a 2x2 grid
+
 Location of OceanSODA temperature extremes
 
 ```{r map_OceanSODA_temp_extremes_grid, fig.asp=2, eval=FALSE}
@@ -543,10 +545,13 @@ OceanSODA_temp_2x2_SO_extreme_grid %>%
   )
 ```
 
-```{r flat_map_temp_extremes_1x1_plot, eval = FALSE}
+##### Anomalies on a 1x1 grid 
+
+```{r flat_map_temp_extremes_1x1_plot}
 
 OceanSODA_temp_2x2_SO_extreme_grid %>% 
   group_split(year) %>% 
+  head(3) %>% 
   map(
     ~map +
       geom_tile(data = .x,
@@ -731,7 +736,7 @@ N profiles correspond to normal surface OceanSODA temperature
 
 profile_temp_extreme %>%
   group_split(biome, basin_AIP, year) %>% 
-  #head(1) %>%
+  # head(5) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -742,7 +747,18 @@ profile_temp_extreme %>%
         col = temp_extreme
       )
     ) +
-      geom_path(size = 0.3) +
+      geom_path(data = .x %>% filter(temp_extreme == 'N'),
+                aes(x = temp_adjusted, 
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.3) +
+      geom_path(data = .x %>% filter(temp_extreme == 'H' | temp_extreme == 'L'),
+                aes(x = temp_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.5)+
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
