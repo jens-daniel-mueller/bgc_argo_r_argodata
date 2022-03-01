@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ef1277b007178b78907479c9854d36b0c1526d5targetblank8ef1277a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ef1277b007178b78907479c9854d36b0c1526d5" target="_blank">8ef1277</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree57ada58ffbe65aa79e4143c8d81c2ef024912311targetblank57ada58a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/57ada58ffbe65aa79e4143c8d81c2ef024912311" target="_blank">57ada58</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ef1277b007178b78907479c9854d36b0c1526d5targetblank8ef1277a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree57ada58ffbe65aa79e4143c8d81c2ef024912311targetblank57ada58a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ef1277b007178b78907479c9854d36b0c1526d5" target="_blank">8ef1277</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/57ada58ffbe65aa79e4143c8d81c2ef024912311" target="_blank">57ada58</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -555,7 +555,6 @@ Ignored files:
     Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
@@ -602,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/57ada58ffbe65aa79e4143c8d81c2ef024912311/analysis/extreme_pH.Rmd" target="_blank">57ada58</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+<td>
+updated figure aspects
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/extreme_pH.html" target="_blank">5ef4df2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3079,6 +3112,8 @@ jens-daniel-mueller
 </div>
 <div id="anomaly-maps" class="section level3">
 <h3>Anomaly maps</h3>
+<div id="anomalies-on-a-2x2-grid" class="section level5">
+<h5>Anomalies on a 2x2 grid</h5>
 <p>Location of OceanSODA pH extremes</p>
 <pre class="r"><code>OceanSODA_2x2_SO_extreme_grid %&gt;% 
   group_split(year) %&gt;% 
@@ -3607,10 +3642,14 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+</div>
+<div id="anomalies-on-a-1x1-grid" class="section level5">
+<h5>Anomalies on a 1x1 grid</h5>
 <pre class="r"><code>#use the original lat/lon grid to plot the extreme on a 1x1
 
 OceanSODA_2x2_SO_extreme_grid %&gt;% 
   group_split(year) %&gt;% 
+  head(3) %&gt;% 
   map(
     ~map +
       geom_tile(data = .x,
@@ -3623,6 +3662,15 @@ OceanSODA_2x2_SO_extreme_grid %&gt;%
       labs(title = paste(&#39;Year:&#39;, unique(.x$year)),
            fill = &#39;pH&#39;)
   )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="anomaly-time-series" class="section level3">
 <h3>Anomaly time series</h3>
@@ -12576,15 +12624,163 @@ pasqualina-vonlanthendinenna
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/season_biome_Atlantic_profile-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-season_biome_Atlantic_profile-1">
+Past versions of season_biome_Atlantic_profile-1.png
+</button>
+</p>
+<div id="fig-season_biome_Atlantic_profile-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_pH.Rmd/season_biome_Atlantic_profile-1.png" target="_blank">5ef4df2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/season_biome_Atlantic_profile-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-season_biome_Atlantic_profile-2">
+Past versions of season_biome_Atlantic_profile-2.png
+</button>
+</p>
+<div id="fig-season_biome_Atlantic_profile-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_pH.Rmd/season_biome_Atlantic_profile-2.png" target="_blank">5ef4df2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/season_biome_Atlantic_profile-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-season_biome_Atlantic_profile-3">
+Past versions of season_biome_Atlantic_profile-3.png
+</button>
+</p>
+<div id="fig-season_biome_Atlantic_profile-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_pH.Rmd/season_biome_Atlantic_profile-3.png" target="_blank">5ef4df2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/season_biome_Atlantic_profile-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-season_biome_Atlantic_profile-4">
+Past versions of season_biome_Atlantic_profile-4.png
+</button>
+</p>
+<div id="fig-season_biome_Atlantic_profile-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_pH.Rmd/season_biome_Atlantic_profile-4.png" target="_blank">5ef4df2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
