@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree57ada58ffbe65aa79e4143c8d81c2ef024912311targetblank57ada58a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/57ada58ffbe65aa79e4143c8d81c2ef024912311" target="_blank">57ada58</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ca535c6b1a9e6170ff1d72f48c8d4a680539c7dtargetblank6ca535ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ca535c6b1a9e6170ff1d72f48c8d4a680539c7d" target="_blank">6ca535c</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree57ada58ffbe65aa79e4143c8d81c2ef024912311targetblank57ada58a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ca535c6b1a9e6170ff1d72f48c8d4a680539c7dtargetblank6ca535ca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/57ada58ffbe65aa79e4143c8d81c2ef024912311" target="_blank">57ada58</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ca535c6b1a9e6170ff1d72f48c8d4a680539c7d" target="_blank">6ca535c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -601,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6ca535c6b1a9e6170ff1d72f48c8d4a680539c7d/analysis/extreme_temp.Rmd" target="_blank">6ca535c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+<td>
+updated profiles
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/extreme_temp.html" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1514,16 +1548,25 @@ OceanSODA_temp_2x2 &lt;- OceanSODA_temp %&gt;%
 <pre class="r"><code># keep only Southern Ocean data
 OceanSODA_temp_2x2_SO &lt;- inner_join(OceanSODA_temp_2x2, region_masks_all_2x2)
 
+# original 1x1:
+# OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp, region_masks_all_2x2)
+
 # add in basin separations
 OceanSODA_temp_2x2_SO &lt;- inner_join(OceanSODA_temp_2x2_SO, basinmask_2x2)
 # expected number of rows from -30 to -70º latitude, 360º longitude, for 12 months, 8 years:
 # 40 lat x 360 lon x 12 months x 8 years = 1 382 400 rows 
 # actual number of rows: 1 134 177 (in line with expectations)
+# original 1x1: 
+# OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp_SO, basinmask)
 
 OceanSODA_temp_2x2_SO &lt;- OceanSODA_temp_2x2_SO %&gt;% 
   filter(!is.na(temperature))
 # resulting number of rows: 925 056 
-# (removes 209 121 observations)</code></pre>
+# (removes 209 121 observations)
+
+# original 1x1:
+# OceanSODA_temp_SO &lt;- OceanSODA_temp_SO %&gt;% 
+#   filter(!is.na(temperature))</code></pre>
 </div>
 </div>
 <div id="oceansoda-temperature-anomalies" class="section level1">
@@ -2890,13 +2933,15 @@ pasqualina-vonlanthendinenna
 <h5>Anomalies on a 1x1 grid</h5>
 <pre class="r"><code>OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
   group_split(year) %&gt;% 
-  head(3) %&gt;% 
+  # head(3) %&gt;% 
   map(
     ~map +
       geom_tile(data = .x,
                 aes(x = lon_raw,
                     y = lat_raw, 
-                    fill = temp_extreme))+
+                    fill = temp_extreme),
+                width = 1,
+                height = 1)+
       scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~month, ncol = 2)+
       lims(y = c(-85, -30))+
@@ -2927,6 +2972,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-1.png" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-1.png" target="_blank">5ef4df2</a>
@@ -2969,6 +3025,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-2.png" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-2.png" target="_blank">5ef4df2</a>
 </td>
 <td>
@@ -3009,6 +3076,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-3.png" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-3.png" target="_blank">5ef4df2</a>
 </td>
 <td>
@@ -3022,6 +3100,21 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/extreme_temp.Rmd/flat_map_temp_extremes_1x1_plot-8.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="anomaly-timeseries" class="section level3">
@@ -9852,23 +9945,22 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<div id="atlantic-biome-1-march---april-2018" class="section level3">
-<h3>Atlantic, biome 1, March - April 2018</h3>
+<div id="atlantic-biome-1-october-2017" class="section level3">
+<h3>Atlantic, biome 1, October 2017</h3>
 <pre class="r"><code># Temperature extreme: 
 # Atlantic biome 1, 2018, months 2 and 3 
 
-OceanSODA_temp_2x2_SO_extreme_grid_2018 &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
-  filter(date == &#39;2018-03-15&#39; | date == &#39;2018-04-15&#39;)  
+OceanSODA_temp_2x2_SO_extreme_grid_2017 &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+  filter(date == &#39;2017-10-15&#39;)  
 
 map+
-  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2018,
+  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2017,
             aes(x = lon,
                 y = lat,
                 fill = temp_extreme))+
-  facet_wrap(~month, ncol = 1)+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
-  labs(title = &#39;March - April 2018&#39;,
+  labs(title = &#39;October 2017&#39;,
        fill = &#39;OceanSODA SST \nextreme&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/select_specific_temp_profiles_2018-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -9930,21 +10022,31 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>profile_temp_Atl_2018 &lt;- profile_temp_extreme %&gt;% 
-  filter(date == &#39;2018-03-15&#39; | date == &#39;2018-04-15&#39;,
+<pre class="r"><code>profile_temp_Atl_2017 &lt;- profile_temp_extreme %&gt;% 
+  filter(date == &#39;2017-10-15&#39;,
          basin_AIP == &#39;Atlantic&#39;,
          biome == &#39;1&#39;) 
 
-profile_temp_Atl_2018 %&gt;% 
+profile_temp_Atl_2017 %&gt;% 
   ggplot(aes(x = temp_adjusted,
              y = depth,
              group = platform_cycle,
              col = temp_extreme))+
-  geom_path(size = 0.3)+
+  geom_path(data = profile_temp_Atl_2017 %&gt;% filter(temp_extreme == &#39;N&#39;),
+            aes(x = temp_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = temp_extreme),
+            size = 0.3)+
+  geom_path(data = profile_temp_Atl_2017 %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
+            aes(x = temp_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = temp_extreme),
+            size = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
-  facet_wrap(~month, ncol = 2)+
-  labs(title = &#39;Atlantic, biome 1, March - April 2018&#39;,
+  labs(title = &#39;Atlantic, biome 1, October 2017&#39;,
        col = &#39;OceanSODA SST\nextreme&#39;,
        x = &#39;Argo temperature (ºC)&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/select_specific_temp_profiles_2018-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -10008,22 +10110,21 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="atlantic-biome-3-july---august-2015" class="section level3">
-<h3>Atlantic, biome 3, July - August 2015</h3>
-<pre class="r"><code># Atlantic biome 3, 2015 months 7 and 8 
+<div id="atlantic-biome-2-july-2016" class="section level3">
+<h3>Atlantic, biome 2, July 2016</h3>
+<pre class="r"><code># Atlantic biome 2, 2016 month 7 
 
-OceanSODA_temp_2x2_SO_extreme_grid_2015 &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
-  filter(date == &#39;2015-07-15&#39; | date == &#39;2015-08-15&#39;)  
+OceanSODA_temp_2x2_SO_extreme_grid_2016 &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
+  filter(date == &#39;2016-07-15&#39;)  
 
 map+
-  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2015,
+  geom_tile(data = OceanSODA_temp_2x2_SO_extreme_grid_2016,
             aes(x = lon,
                 y = lat,
                 fill = temp_extreme))+
-  facet_wrap(~month, ncol = 1)+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
-  labs(title = &#39;July - August 2015&#39;,
+  labs(title = &#39;July 2016&#39;,
        fill = &#39;OceanSODA SST \nextreme&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/select_specific_temp_profiles_2015-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -10096,21 +10197,32 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>profile_temp_Atl_2015 &lt;- profile_temp_extreme %&gt;% 
-  filter(date == &#39;2015-07-15&#39; | date == &#39;2015-08-15&#39;,
+<pre class="r"><code>profile_temp_Atl_2016 &lt;- profile_temp_extreme %&gt;% 
+  filter(date == &#39;2016-07-15&#39;,
          basin_AIP == &#39;Atlantic&#39;,
-         biome == &#39;3&#39;) 
+         biome == &#39;2&#39;) 
 
-profile_temp_Atl_2015 %&gt;% 
+profile_temp_Atl_2016 %&gt;% 
   ggplot(aes(x = temp_adjusted,
              y = depth,
              group = platform_cycle,
              col = temp_extreme))+
-  geom_path(size = 0.3)+
+  geom_path(data = profile_temp_Atl_2016 %&gt;% filter(temp_extreme == &#39;N&#39;),
+            aes(x = temp_adjusted,
+                y = depth, 
+                group = platform_cycle,
+                col = temp_extreme),
+            size = 0.3)+
+  geom_path(data = profile_temp_Atl_2016 %&gt;% filter(temp_extreme == &#39;H&#39;|temp_extreme == &#39;L&#39;),
+            aes(x = temp_adjusted,
+                y = depth, 
+                group = platform_cycle,
+                col = temp_extreme),
+            size = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
   facet_wrap(~month, ncol = 2)+
-  labs(title = &#39;Atlantic, biome 3, July - August 2015&#39;,
+  labs(title = &#39;Atlantic, biome 2, July 2016&#39;,
        col = &#39;OceanSODA SST\nextreme&#39;,
        x = &#39;Argo temperature (ºC)&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/select_specific_temp_profiles_2015-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -10174,8 +10286,8 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="pacific-biome-2-july---august-2016" class="section level3">
-<h3>Pacific, biome 2, July - August 2016</h3>
+<div id="section" class="section level3">
+<h3></h3>
 <pre class="r"><code># Pacific biome 2, 2016, months 7 and 8 
 
 OceanSODA_temp_2x2_SO_extreme_grid_2016 &lt;- OceanSODA_temp_2x2_SO_extreme_grid %&gt;% 
@@ -10190,68 +10302,9 @@ map+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
   labs(title = &#39;July - August 2016&#39;,
-       fill = &#39;OceanSODA SST \nextreme&#39;)</code></pre>
-<p><img src="figure/extreme_temp.Rmd/select_specific_temp_profile_2016-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_temp_profile_2016-1">
-Past versions of select_specific_temp_profile_2016-1.png
-</button>
-</p>
-<div id="fig-select_specific_temp_profile_2016-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-1.png" target="_blank">5ef4df2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ef1277b007178b78907479c9854d36b0c1526d5/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-1.png" target="_blank">8ef1277</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d2993591406dc205adccc90959879f1653b6354d/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-1.png" target="_blank">d299359</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>profile_temp_Pac_2016 &lt;- profile_temp_extreme %&gt;% 
+       fill = &#39;OceanSODA SST \nextreme&#39;)
+
+profile_temp_Pac_2016 &lt;- profile_temp_extreme %&gt;% 
   filter(date == &#39;2016-07-15&#39; | date == &#39;2016-08-15&#39;,
          basin_AIP == &#39;Pacific&#39;,
          biome == &#39;2&#39;) 
@@ -10268,77 +10321,6 @@ profile_temp_Pac_2016 %&gt;%
   labs(title = &#39;Pacific, biome 2, July - August 2016&#39;,
        col = &#39;OceanSODA SST\nextreme&#39;,
        x = &#39;Argo temperature (ºC)&#39;)</code></pre>
-<p><img src="figure/extreme_temp.Rmd/select_specific_temp_profile_2016-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_temp_profile_2016-2">
-Past versions of select_specific_temp_profile_2016-2.png
-</button>
-</p>
-<div id="fig-select_specific_temp_profile_2016-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-2.png" target="_blank">5ef4df2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ef1277b007178b78907479c9854d36b0c1526d5/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-2.png" target="_blank">8ef1277</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c4362e51c7bc86eadead54713e904faca1fcb9a9/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-2.png" target="_blank">c4362e5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d2993591406dc205adccc90959879f1653b6354d/docs/figure/extreme_temp.Rmd/select_specific_temp_profile_2016-2.png" target="_blank">d299359</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 </div>
 <div id="averaged-profiles" class="section level2">
@@ -13925,41 +13907,34 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<div id="season-x-biome-x-atlantic-basin" class="section level5">
-<h5>Season x biome x Atlantic basin</h5>
+<div id="atlantic-basin-biome-2-winter" class="section level5">
+<h5>Atlantic basin, biome 2, winter</h5>
 <pre class="r"><code>profile_temp_extreme_season %&gt;%
-  filter(basin_AIP == &#39;Atlantic&#39;) %&gt;% 
+  filter(basin_AIP == &#39;Atlantic&#39;,
+         biome == &#39;2&#39;,
+         season == &#39;winter&#39;) %&gt;% 
   arrange(depth) %&gt;%
-  group_split(season) %&gt;%
-  # head(1) %&gt;%
-  map(
-    ~ ggplot(
-      data = .x,
-      aes(x = temp_mean,
-          y = depth,
-          group = temp_extreme,
-          col = temp_extreme)) +
-      geom_ribbon(aes(xmax = temp_mean + temp_std,
-                      xmin = temp_mean - temp_std,
-                      group = temp_extreme,
-                      fill = temp_extreme),
-                  col = NA,
-                  alpha = 0.2)+
-      geom_path() +
-      scale_color_manual(values = HNL_colors) +
-      scale_fill_manual(values = HNL_colors) +
-      labs(title = paste(&quot;Atlantic basin, season:&quot;, unique(.x$season)),
-           col = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
-           fill = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
-           y = &#39;sqrt(depth)&#39;,
-           x = &#39;mean Argo temperature (ºC)&#39;) +
-      scale_y_continuous(
-        trans = trans_reverser(&quot;sqrt&quot;),
-        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
-      ) +
-      facet_wrap(~ biome)
-  )</code></pre>
-<pre><code>[[1]]</code></pre>
+  ggplot(aes(x = temp_mean,
+             y = depth,
+             group = temp_extreme,
+             col = temp_extreme)) +
+  geom_ribbon(aes(xmax = temp_mean + temp_std,
+                  xmin = temp_mean - temp_std,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors) +
+  labs(title = &#39;Atlantic basin, biome 2, winter&#39;,
+       col = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
+       y = &#39;sqrt(depth)&#39;,
+       x = &#39;mean Argo temperature (ºC)&#39;) +
+  scale_y_continuous(
+  trans = trans_reverser(&quot;sqrt&quot;),
+  breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) </code></pre>
 <p><img src="figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-temp_profile_season_biome_Atlantic-1">
@@ -13998,126 +13973,36 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-temp_profile_season_biome_Atlantic-2">
-Past versions of temp_profile_season_biome_Atlantic-2.png
-</button>
-</p>
-<div id="fig-temp_profile_season_biome_Atlantic-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-2.png" target="_blank">5ef4df2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-</tbody>
-</table>
 </div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-temp_profile_season_biome_Atlantic-3">
-Past versions of temp_profile_season_biome_Atlantic-3.png
-</button>
-</p>
-<div id="fig-temp_profile_season_biome_Atlantic-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-3.png" target="_blank">5ef4df2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[4]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-temp_profile_season_biome_Atlantic-4">
-Past versions of temp_profile_season_biome_Atlantic-4.png
-</button>
-</p>
-<div id="fig-temp_profile_season_biome_Atlantic-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5ef4df2de41fdb65443943da0a15aec4fa372664/docs/figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-4.png" target="_blank">5ef4df2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<div id="atlantic-basin-biome-1-spring" class="section level5">
+<h5>Atlantic basin, biome 1, spring</h5>
+<pre class="r"><code>profile_temp_extreme_season %&gt;%
+  filter(basin_AIP == &#39;Atlantic&#39;,
+         biome == &#39;1&#39;,
+         season == &#39;spring&#39;) %&gt;% 
+  arrange(depth) %&gt;%
+  ggplot(aes(x = temp_mean,
+             y = depth,
+             group = temp_extreme,
+             col = temp_extreme)) +
+  geom_ribbon(aes(xmax = temp_mean + temp_std,
+                  xmin = temp_mean - temp_std,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors) +
+  labs(title = &#39;Atlantic basin, biome 1, spring&#39;,
+       col = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\ntemp anomaly \n(mean ± st dev)&#39;,
+       y = &#39;sqrt(depth)&#39;,
+       x = &#39;mean Argo temperature (ºC)&#39;) +
+  scale_y_continuous(
+  trans = trans_reverser(&quot;sqrt&quot;),
+  breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) </code></pre>
+<p><img src="figure/extreme_temp.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
