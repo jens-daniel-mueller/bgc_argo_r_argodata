@@ -835,6 +835,52 @@ profile_extreme_Atl_2017 %>%
        x = 'Argo pH')
 ```
 
+### Atlantic basin, biome 1, January 2018
+
+```{r}
+OceanSODA_2x2_SO_extreme_grid_2018 <-   
+  OceanSODA_2x2_SO_extreme_grid %>% 
+  filter(date == '2018-01-15')
+
+map+
+  geom_tile(data = OceanSODA_2x2_SO_extreme_grid_2018,
+            aes(x = lon,
+                y = lat,
+                fill = ph_extreme))+
+  scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30))+
+  labs(title = 'January 2018',
+       fill = 'OceanSODA pH \nextreme')
+
+profile_extreme_Atl_2018 <- profile_extreme %>% 
+  filter(date == '2018-01-15',
+         basin_AIP == 'Atlantic',
+         biome == '1')
+
+profile_extreme_Atl_2018 %>% 
+  ggplot(aes(y = depth, 
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
+             col = ph_extreme))+
+  geom_path(data = profile_extreme_Atl_2018 %>% filter(ph_extreme == 'N'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.3)+
+  geom_path(data = profile_extreme_Atl_2018 %>% filter(ph_extreme == 'H' | ph_extreme == 'L'),
+            aes(x = ph_in_situ_total_adjusted,
+                y = depth,
+                group = platform_cycle,
+                col = ph_extreme),
+            size = 0.5)+
+  scale_y_reverse()+
+  scale_color_manual(values = HNL_colors)+
+  labs(title = 'Atlantic basin, biome 1, January 2018',
+       col = 'OceanSODA\npH anomaly',
+       x = 'Argo pH')
+```
+
 ## Averaged profiles
 
 ```{r calculate_mean_profiles}
