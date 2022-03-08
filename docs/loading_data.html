@@ -420,7 +420,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">15 February, 2022</h4>
+<h4 class="date">08 March, 2022</h4>
 
 </div>
 
@@ -445,7 +445,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-02-15
+<strong>Last updated:</strong> 2022-03-08
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -536,16 +536,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree01ae9dae9a7b77feb51601c30613e1545af1c1b4targetblank01ae9daa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/01ae9dae9a7b77feb51601c30613e1545af1c1b4" target="_blank">01ae9da</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree18dff1b06c6042d7b4a17d970b9121e78711ebd4targetblank18dff1ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/18dff1b06c6042d7b4a17d970b9121e78711ebd4" target="_blank">18dff1b</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree01ae9dae9a7b77feb51601c30613e1545af1c1b4targetblank01ae9daa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree18dff1b06c6042d7b4a17d970b9121e78711ebd4targetblank18dff1ba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/01ae9dae9a7b77feb51601c30613e1545af1c1b4" target="_blank">01ae9da</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/18dff1b06c6042d7b4a17d970b9121e78711ebd4" target="_blank">18dff1b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -563,10 +563,6 @@ Untracked files:
     Untracked:  code/creating_map.R
     Untracked:  code/merging_oceanSODA_Argo.R
     Untracked:  code/pH_data_timeseries.R
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -605,6 +601,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/18dff1b06c6042d7b4a17d970b9121e78711ebd4/analysis/loading_data.Rmd" target="_blank">18dff1b</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-08
+</td>
+<td>
+subsetted profiles with flag A only for extremes
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/905d82f915b374c8bc9463896f629b15986c83ff/docs/loading_data.html" target="_blank">905d82f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-02-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1906,7 +1936,29 @@ bgc_merge_temp_qc_1 &lt;- bgc_merge %&gt;%
          platform_number, cycle_number)
 
 bgc_merge_temp_qc_1 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))</code></pre>
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))
+
+# create a dataframe with temperature and pH profile flags A and B only 
+# flag A and B: 7 394 514 obs 
+# flag A only: 2 542 782 obs 
+# remove QC flags other than 1 (flag A profiles only): results in 389 396 obs 
+# keep only temperature observations where good pH data exists: 
+
+bgc_merge_flag_A &lt;- bgc_merge %&gt;% 
+  filter(profile_temp_qc == &#39;A&#39;,
+         profile_ph_in_situ_total_qc == &#39;A&#39;) %&gt;% 
+  select(depth, 
+         temp_adjusted:temp_adjusted_error, 
+         ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+         platform_number,
+         cycle_number,
+         date,
+         lat, lon,
+         profile_temp_qc,
+         profile_ph_in_situ_total_qc) 
+
+bgc_merge_flag_A %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A.rds&quot;))</code></pre>
 </div>
 <div id="ph-data" class="section level3">
 <h3>pH data</h3>
