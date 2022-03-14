@@ -1,0 +1,213 @@
+---
+title: "Argo pH Variability"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Task 
+
+Explore the spatial variability of Argo pH profiles 
+
+```{r load_libraries, include=FALSE}
+
+library(tidyverse)
+library(lubridate)
+library(broom)
+library(ggOceanMaps)
+library(scico)
+library(metR)
+library(ggforce)
+```
+
+```{r set_global_theme}
+
+theme_set(theme_bw())
+
+```
+
+# Load data 
+
+
+```{r set_root_directories}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_updata <- '/nfs/kryo/work/updata'
+```
+
+```{r load_data}
+
+region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
+                                               "/region_masks_all_1x1.rds"))
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  rename(biome = value) %>% 
+  mutate(coast = as.character(coast))
+
+# WOA 18 basin mask
+
+basinmask <-
+  read_csv(
+    paste(path_emlr_utilities,
+          "basin_mask_WOA18.csv",
+          sep = ""),
+    col_types = cols("MLR_basins" = col_character())
+  )
+
+basinmask <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(-c(MLR_basins, basin))
+
+# full argo data
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+
+# change the date format for compatibility with OceanSODA data
+full_argo <- full_argo %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
+  mutate(date = ymd(format(date, "%Y-%m-15")))
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+```
+
+
+# Regions 
+
+### Biomes 
+
+```{r filter_southern_ocean_open_ocean_biomes}
+
+# keep only southern ocean biomes 
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  filter(region == 'southern',
+         biome != 0) %>% 
+  select(-region)
+
+# remove coastal data 
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>% 
+  filter(coast == "0")
+```
+
+```{r map_of_biomes}
+
+map +
+  geom_tile(data = region_masks_all_1x1, 
+            aes(x = lon, 
+                y = lat, 
+                fill = biome))+
+  lims(y = c(-85, -30))+
+  scale_fill_brewer(palette = 'Dark2')
+
+```
+
+### Basins
+
+```{r filter_southern_ocean_basins}
+
+basinmask <- basinmask %>%
+  filter(lat < -30)
+```
+
+```{r map_of_basins, fig.asp=1}
+
+map +
+  geom_tile(data = basinmask, 
+            aes(x = lon, 
+                y = lat, 
+                fill = basin_AIP))+
+  lims(y = c(-85, -30))+
+  scale_fill_brewer(palette = 'Dark2')
+```
+
+
+# Southern Ocean Argo pH 
+
+```{r apply_region_and_basin_masks}
+
+full_argo_SO <- inner_join(full_argo, region_masks_all_1x1)
+
+full_argo_SO <- inner_join(full_argo_SO, basinmask)
+
+full_argo_SO <- full_argo_SO %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+```
+
+## Profiles by longitude 
+
+```{r plot_raw_pH_profiles_by_longitude}
+
+# plot the argo temperature profiles according to their longitude, in each biome, basin, and year
+
+full_argo_SO %>% 
+  group_split(biome, basin_AIP, year) %>% 
+  # head(6) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = ph_in_situ_total_adjusted,
+                 y = depth,
+                 group = platform_cycle,
+                 col = lon))+
+      geom_path(data = .x,
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = lon), 
+                size = 0.3)+
+      scale_y_reverse()+
+      scale_color_viridis_c()+
+      facet_wrap(~month, ncol = 6)+
+      labs(title = paste0('biome: ', unique(.x$biome), '| basin: ', unique(.x$basin_AIP), ' |', unique(.x$year)),
+           x = 'Argo pH',
+           y = 'depth (m)',
+           col = 'longitude')
+  )
+```
+
+
+## Profiles by latitude 
+
+```{r plot_raw_pH_profiles_by_latitude}
+
+# color the argo profiles according to their latitude, for each biome, basin, and year 
+
+full_argo_SO %>% 
+  group_split(biome, basin_AIP, year) %>% 
+  # head(6) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = ph_in_situ_total_adjusted,
+                 y = depth,
+                 group = platform_cycle,
+                 col = lat))+
+      geom_path(data = .x,
+                aes(x = ph_in_situ_total_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = lat), 
+                size = 0.3)+
+      scale_y_reverse()+
+      scale_color_viridis_c()+
+      facet_wrap(~month, ncol = 6)+
+      labs(title = paste0('biome: ', unique(.x$biome), '| basin: ', unique(.x$basin_AIP), ' |', unique(.x$year)),
+           x = 'Argo pH',
+           y = 'depth (m)',
+           col = 'latitude')
+  )
+
+
+```
+
