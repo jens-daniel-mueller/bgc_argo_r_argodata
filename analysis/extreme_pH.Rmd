@@ -82,20 +82,12 @@ OceanSODA <- OceanSODA %>%
          month = month(date))
 
 # full argo data
-full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
 
-# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
-# no NA pH values in this dataset 
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>%
+  select(-c(temp_adjusted:temp_adjusted_error,
+            profile_temp_qc))
 
-# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
-#   select(-c(temp_adjusted:temp_adjusted_error,
-#             profile_temp_qc))
-
-# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/pH_flag_A.rds"))
-
-# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds")) %>% 
-#   filter(ph_in_situ_total_adjusted_qc == '1',
-#          temp_adjusted_qc == '1')
 
 # change the date format for compatibility with OceanSODA pH data
 full_argo <- full_argo %>%

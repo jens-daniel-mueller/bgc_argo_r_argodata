@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "changed anomaly detection to 1x1 grid with old data")
+wflow_publish(all = TRUE, message = "updated to new only flag A data")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -30,10 +30,12 @@ wflow_publish(here::here(
   c(
     "index.Rmd",
     'extreme_pH.Rmd',
-    'extreme_temp.Rmd'
+    'extreme_temp.Rmd',
+    'variability_temp.Rmd',
+    'variability_pH.Rmd'
   )
 ),
-message = "added temperature profiles")
+message = "added variability pages")
 
 
 # Push latest version to GitHub

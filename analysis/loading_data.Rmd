@@ -247,8 +247,12 @@ bgc_merge_pH_qc_1 <- bgc_merge %>%
 # 134 931 occurrences of B pH profiles 
 # + a few C, D, and E profiles 
 # table(bgc_merge_pH_qc_1$temp_adjusted_qc)
+# 604 150 occurrences of flag 1 
+# 1841 occurrences of flag 4 
+# 568 356 occurrences of flag 8 
 # table(bgc_merge_pH_qc_1$ph_in_situ_total_adjusted_qc)
 # 1 219 410 occurrences of qc flag 1 (all obs)
+# 1 219 410 total observations 
 
 bgc_merge_pH_qc_1 %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
@@ -266,11 +270,12 @@ bgc_merge_temp_qc_1 <- bgc_merge %>%
 # 12 176 133 occurrences of blank flags 
 # 604 150 occurrences of QC flag 1 
 # table(bgc_merge_temp_qc_1$profile_ph_in_situ_total_qc)
-# 116 900 occurrences of blank profile flags (NA values, unadjustable data)
+# 116 900 occurrences of blank profile flags
 # 5 434 683 occurrences of A profile flags 
 # 857 117 occurrences of B profile flags 
 # + some C,D,E profiles 
 # 6 751 876 occurrences of F profiles 
+# 56 003 153 total observations 
 
 bgc_merge_temp_qc_1 %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
@@ -281,30 +286,10 @@ bgc_merge_temp_qc_1 %>%
 # remove QC flags other than 1 (flag A profiles only): results in 389 396 obs 
 # keep only temperature observations where good pH data exists: 
 
-# flag_A <- bgc_merge %>% 
-#   filter(profile_ph_in_situ_total_qc == 'A',
-#          profile_temp_qc == 'A') %>% 
-#   select(depth, 
-#          temp_adjusted:temp_adjusted_error,
-#          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-#          platform_number,
-#          cycle_number,
-#          date,
-#          lat, lon,
-#          profile_temp_qc,
-#          profile_ph_in_situ_total_qc) 
-
-# table(is.na(flag_A$ph_in_situ_total_adjusted))
-# 567 327 non-NA pH values 
-# 1 975 455 NA pH values 
-# out of 2 542 782 total obs 
-# table(is.na(flag_A$temp_adjusted))
-# 2 505 953 non-NA temperature values 
-# 36 829 NA temperature values 
-
+# using only complete profiles, and temperature data where pH measurements exist:
 bgc_merge_flag_A <- bgc_merge %>% 
   filter(profile_ph_in_situ_total_qc == 'A',
-         temp_adjusted_qc == '1') %>% 
+         profile_temp_qc == 'A') %>% 
   select(depth,
          temp_adjusted:temp_adjusted_error,
          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
@@ -313,30 +298,39 @@ bgc_merge_flag_A <- bgc_merge %>%
          date,
          lat, lon,
          profile_temp_qc,
-         profile_ph_in_situ_total_qc) 
+         profile_ph_in_situ_total_qc) %>% 
+  filter(!is.na(ph_in_situ_total_adjusted))
+# no NA temperature values
+# 567 327 total observations 
 
 # table((bgc_merge_flag_A$profile_ph_in_situ_total_qc))
 # table(bgc_merge_flag_A$profile_temp_qc)
+ 
+# table(bgc_merge_flag_A$temp_adjusted_qc)
+# 389 436 occurrences of flag 1
+# 177 891 occurrences of flag 8
+# table(is.na(bgc_merge_flag_A$temp_adjusted))
+# no NA temperature values 
+# table(bgc_merge_flag_A$ph_in_situ_total_adjusted_qc)
+# 567 217 occurrences of flag 1 
+# 110 occurrences of flag 8 
+
 
 bgc_merge_flag_A %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds"))
 
-# pH_flag_A <- bgc_merge %>% 
-#   filter(profile_ph_in_situ_total_qc == 'A' | profile_ph_in_situ_total_qc == 'B') %>% 
-#   select(depth,
-#          temp_adjusted:temp_adjusted_error,
-#          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-#          platform_number,
-#          cycle_number,
-#          date,
-#          lat, lon,
-#          profile_temp_qc,
-#          profile_ph_in_situ_total_qc) %>% 
-#   filter(temp_adjusted_qc == '1',
-#          ph_in_situ_total_adjusted_qc == '1')
+# bgc_merge_flag_A <- bgc_merge_flag_A %>% 
+#   filter(!is.na(temp_adjusted),
+#          !is.na(ph_in_situ_total_adjusted))
+# 567 327 total observations 
+#table(bgc_merge_flag_A$temp_adjusted_qc)
+# 389 436 occurrences of flag 1 
+# 177 891 occurrences of flag 8 
+#table(bgc_merge_flag_A$ph_in_situ_total_adjusted_qc)
+# 567 217 occurrences of flag 1 
+# 110 occurrences of flag 8 
+#table(round(bgc_merge_flag_A$depth, digits = 0))
 
-# pH_flag_A %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/pH_flag_A.rds"))
 
 # create a dataframe with QC flag 1 for both pH and temperature 
 
@@ -353,6 +347,8 @@ bgc_merge_qc_1 <- bgc_merge %>%
          profile_temp_qc,
          profile_ph_in_situ_total_qc)
 # 604 150 total obs 
+
+#table(bgc_merge_qc_1$ph_in_situ_total_adjusted_qc)
 
 # table(bgc_merge_qc_1$profile_ph_in_situ_total_qc)
 # 590 249 A profiles 

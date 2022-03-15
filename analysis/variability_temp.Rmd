@@ -65,16 +65,9 @@ basinmask <- basinmask %>%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
   select(-c(MLR_basins, basin))
 
-# OceanSODA temperature
-
-# OceanSODA_temp <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_temp.rds"))
-# 
-# OceanSODA_temp <- OceanSODA_temp %>%
-#   mutate(year = year(date),
-#          month = month(date))
-
-# full argo data
-full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
+# full argo data (temperature)
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
+  select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error, profile_ph_in_situ_total_qc))
 
 # change the date format for compatibility with OceanSODA data
 full_argo <- full_argo %>%

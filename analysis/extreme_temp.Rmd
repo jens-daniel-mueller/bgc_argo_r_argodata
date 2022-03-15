@@ -83,11 +83,11 @@ OceanSODA_temp <- OceanSODA_temp %>%
          month = month(date))
 
 # full argo data
-full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
+# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
 
-# full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
-#   select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-#             profile_ph_in_situ_total_qc))
+full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>%
+  select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+            profile_ph_in_situ_total_qc))
 
 # change the date format for compatibility with OceanSODA data
 full_argo <- full_argo %>%
@@ -265,26 +265,26 @@ map +
 
 ```{r basin_map_post_grid_reduction, eval=FALSE}
 
-basemap(limits = -32) +
-  geom_spatial_tile(
-    data = basinmask %>% filter(lat < -30),
-    aes(x = lon,
-        y = lat,
-        fill = basin_AIP),
-    col = 'transparent'
-  ) +
-  scale_fill_brewer(palette = "Dark2")
+# basemap(limits = -32) +
+#   geom_spatial_tile(
+#     data = basinmask %>% filter(lat < -30),
+#     aes(x = lon,
+#         y = lat,
+#         fill = basin_AIP),
+#     col = 'transparent'
+#   ) +
+#   scale_fill_brewer(palette = "Dark2")
 ```
 
 ```{r basin_flat_map_post_grid_reduction, fig.asp=1, eval=FALSE}
 
-map+
-  geom_tile(data = basinmask %>% filter(lat < -30),
-            aes(x = lon,
-                y = lat, 
-                fill = basin_AIP))+
-  lims(y = c(-85, -30))+
-  scale_fill_brewer(palette = 'Dark2')
+# map+
+#   geom_tile(data = basinmask %>% filter(lat < -30),
+#             aes(x = lon,
+#                 y = lat, 
+#                 fill = basin_AIP))+
+#   lims(y = c(-85, -30))+
+#   scale_fill_brewer(palette = 'Dark2')
 ```
 
 # OceanSODA
@@ -340,7 +340,7 @@ OceanSODA_temp_SO <- OceanSODA_temp_SO %>%
 
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
-OceanSODA_temp_SO <- OceanSODA_temp_SO %>% 
+OceanSODA_temp_SO <- OceanSODA_temp_SO %>%
   mutate(row_number = row_number())
 
 
@@ -714,7 +714,7 @@ profile_temp_extreme <- inner_join(
     select(c(year, month, date, lon, lat, depth,
            temp_adjusted,
            platform_number,
-           cycle_number)),                 # 2 542 782 obs 
+           cycle_number)),                 # 567 327 obs 
   OceanSODA_temp_SO_extreme_grid %>% 
     select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
@@ -723,7 +723,7 @@ profile_temp_extreme <- inner_join(
   
   # 925 056 obs 
   
-# results in 245 820 obs 
+# results in 358 428 obs 
 
 # profile_temp_extreme %>% 
 #   ggplot(aes(x = lon))+
