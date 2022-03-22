@@ -44,6 +44,7 @@ path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 path_updata <- '/nfs/kryo/work/updata'
+path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
 ```
 
 ```{r load_data}
@@ -1410,4 +1411,223 @@ profile_temp_extreme_season %>%
   scale_y_continuous(
   trans = trans_reverser("sqrt"),
   breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) 
+```
+
+# Remove climatology
+
+Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature climatology
+
+## January
+
+```{r filter_january_profiles}
+
+# keep only january profiles 
+profile_temp_extreme_jan <- inner_join(
+  full_argo %>% 
+    filter(month == 1) %>% 
+    select(c(year, month, date, lon, lat, depth,
+           temp_adjusted,
+           platform_number,
+           cycle_number)),                  
+  OceanSODA_temp_SO_extreme_grid %>% 
+    filter(month == 1) %>% 
+    select(c(year, month, date, lon, lat,
+           OceanSODA_temp, temp_extreme,
+           clim_temp, clim_diff,
+           biome, basin_AIP))) %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+
+
+```
+
+```{r load_jan_temp_climatology}
+
+boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+
+library(oce)
+
+# compatibility with profile_temp_extreme_jan
+boa_clim_temp_jan_SO <- boa_clim_argo_temp_jan %>% 
+  filter(lat < -30) %>% 
+  select(-salt) %>% 
+  mutate(lon = if_else(lon < 20, lon +360, lon),
+         depth_boa = swDepth(pressure = pres, latitude = lat)) %>% 
+  rename(clim_temp_jan = temp) %>% 
+  mutate(month = rep(1, length(time)))
+
+remove_clim_jan <- inner_join(profile_temp_extreme_jan %>% 
+                               rename(OceanSODA_clim_temp = clim_temp,
+                                      OceanSODA_clim_diff = clim_diff),
+                             boa_clim_temp_jan_SO %>% 
+                               rename(argo_clim_temp_jan = clim_temp_jan) %>% 
+                               select(-time))
+
+```
+
+Points are the january climatological temperature, lines are the raw Argo profiles colored by H/N/L classification
+
+```{r plot_raw_profiles_with_clim}
+
+
+remove_clim_jan %>%
+  group_split(biome, basin_AIP, year) %>% 
+  #head(5) %>%
+  map(
+    ~ ggplot(
+      data = .x,
+      aes(
+        x = temp_adjusted,
+        y = depth,
+        group = platform_cycle,
+        col = temp_extreme
+      )
+    ) +
+      geom_path(data = .x %>% filter(temp_extreme == 'N'),
+                aes(x = temp_adjusted, 
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.3) +
+      geom_path(data = .x %>% filter(temp_extreme == 'H' | temp_extreme == 'L'),
+                aes(x = temp_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.5)+
+      geom_point(data = .x,
+                aes(x = argo_clim_temp_jan,
+                    y = depth_boa),
+                size = 0.5)+
+      scale_y_reverse() +
+      scale_color_manual(values = HNL_colors) +
+      labs(
+        x = 'Argo temperature (ºC)',
+        y = 'depth (m)',
+        title = paste(
+          "Biome:", unique(.x$biome),
+          "| basin:", unique(.x$basin_AIP),
+          " |Jan", unique(.x$year)
+        ),
+        col = 'OceanSODA temp \nanomaly'
+      )
+  )
+```
+
+```{r remove_climatology_from_profiles}
+
+
+remove_clim_jan <- remove_clim_jan %>%
+  mutate(
+    depth = Hmisc::cut2(
+      depth,
+      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+      m = 5,
+      levels.mean = TRUE
+    ),
+    depth = as.numeric(as.character(depth)),
+    depth_boa = Hmisc::cut2(
+      depth_boa,
+      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+      m = 5,
+      levels.mean = TRUE),
+    depth_boa = as.numeric(as.character(depth))
+    )
+
+# all.equal(remove_clim_jan$depth, remove_clim_jan$depth_boa)
+  
+# calculate the difference between the climatological argo and in-situ argo for each depth level and grid cell 
+
+remove_clim_jan <- remove_clim_jan %>% 
+  group_by(lon, lat, depth) %>% 
+  mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %>% 
+  ungroup()
+```
+
+## Overall mean anomaly profiles January
+
+```{r plot_overall_mean_clim_removed_profiles}
+
+remove_clim_jan_overall_mean <- remove_clim_jan %>% 
+  group_by(temp_extreme, depth) %>% 
+  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
+            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+
+remove_clim_jan_overall_mean %>% 
+  ggplot()+
+  geom_path(aes(x = temp_diff_mean,
+                y = depth,
+                group = temp_extreme,
+                col = temp_extreme))+
+  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
+                  xmin = temp_diff_mean - temp_diff_sd,
+                  y = depth,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+  scale_color_manual(values = HNL_colors)+
+  scale_fill_manual(values = HNL_colors)
+```
+
+## Biome-mean anomaly profiles January
+
+```{r plot_biome_mean_clim_removed_profiles}
+
+remove_clim_jan_biome_mean <- remove_clim_jan %>% 
+  group_by(temp_extreme, depth, biome) %>% 
+  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
+            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+
+remove_clim_jan_biome_mean %>% 
+  ggplot(aes(x = temp_diff_mean,
+                y = depth,
+                group = temp_extreme,
+                col = temp_extreme))+
+  geom_path()+
+  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
+                  xmin = temp_diff_mean - temp_diff_sd,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+  scale_fill_manual(values = HNL_colors)+
+  scale_color_manual(values = HNL_colors)+
+  facet_wrap(~biome)
+
+```
+
+## Basin-mean anomaly profiles January
+
+```{r plot_basin_mean_anomaly_profiles}
+
+remove_clim_jan_basin_mean <- remove_clim_jan %>% 
+  group_by(basin_AIP, temp_extreme, depth) %>% 
+  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
+            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+
+remove_clim_jan_basin_mean %>% 
+  ggplot(aes(x = temp_diff_mean,
+             y = depth, 
+             group = temp_extreme,
+             col = temp_extreme))+
+  geom_path()+
+  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
+                  xmin = temp_diff_mean - temp_diff_sd,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  facet_wrap(~basin_AIP)+
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+  scale_color_manual(values = HNL_colors)+
+  scale_fill_manual(values = HNL_colors)
+  
 ```
