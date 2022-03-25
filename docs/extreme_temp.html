@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebecbfe061301d6ffc4d5a912226c00c242ce69d8targetblankbecbfe0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/becbfe061301d6ffc4d5a912226c00c242ce69d8" target="_blank">becbfe0</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9c44265151b93d83227441519bd51b870f5c0f7targetblankb9c4426a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9c44265151b93d83227441519bd51b870f5c0f7" target="_blank">b9c4426</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebecbfe061301d6ffc4d5a912226c00c242ce69d8targetblankbecbfe0a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9c44265151b93d83227441519bd51b870f5c0f7targetblankb9c4426a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/becbfe061301d6ffc4d5a912226c00c242ce69d8" target="_blank">becbfe0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9c44265151b93d83227441519bd51b870f5c0f7" target="_blank">b9c4426</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -613,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b9c44265151b93d83227441519bd51b870f5c0f7/analysis/extreme_temp.Rmd" target="_blank">b9c4426</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+read in temp climatology in loading data
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/extreme_temp.html" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -16814,6 +16848,8 @@ pasqualina-vonlanthendinenna
 <p>Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature climatology</p>
 <div id="january" class="section level2">
 <h2>January</h2>
+<div id="argo-profiles" class="section level3">
+<h3>Argo profiles</h3>
 <pre class="r"><code># # keep only january profiles 
 profile_temp_extreme_jan &lt;- inner_join(
   full_argo %&gt;%
@@ -16847,7 +16883,12 @@ profile_temp_extreme_jan &lt;- profile_temp_extreme_jan %&gt;%
 #   mutate(temp_adjusted_binned = mean(temp_adjusted, na.rm = TRUE),
 #          .after = temp_adjusted) %&gt;% 
 #   ungroup()</code></pre>
-<pre class="r"><code>boa_clim_argo_temp_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;))
+</div>
+<div id="climatological-argo-profiles" class="section level3">
+<h3>Climatological Argo Profiles</h3>
+<pre class="r"><code># boa_clim_argo_temp_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;))
+
+boa_clim_argo_temp_jan &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/boa_clim_argo_temp_jan.rds&#39;))
 
 library(oce)
 
@@ -16870,21 +16911,16 @@ boa_clim_temp_jan_SO &lt;- boa_clim_temp_jan_SO %&gt;%
   mutate(depth_binned = replace_na(depth_binned, min(profile_temp_extreme_jan$depth_binned)))
 
 
-# remove_clim_jan &lt;- inner_join(profile_temp_extreme_jan %&gt;% 
-#                                rename(OceanSODA_clim_temp = clim_temp,
-#                                       OceanSODA_clim_diff = clim_diff),
-#                              boa_clim_temp_jan_SO %&gt;% 
-#                                rename(argo_clim_temp_jan = clim_temp_jan) %&gt;% 
-#                                select(-time))
-
-# bin depths in profile_temp_extreme_jan:
-
 remove_clim_jan &lt;- inner_join(profile_temp_extreme_jan %&gt;% 
                                 rename(OceanSODA_clim_temp = clim_temp,
                                        OceanSODA_clim_diff = clim_diff),
                               boa_clim_temp_jan_SO %&gt;% 
                                 rename(argo_clim_temp_jan = clim_temp_jan) %&gt;%
                                 select(-time))</code></pre>
+</div>
+</div>
+<div id="raw-profiles---january" class="section level2">
+<h2>Raw profiles - January</h2>
 <p>Points are the january climatological temperature, lines are the raw Argo profiles colored by H/N/L classification</p>
 <pre class="r"><code>remove_clim_jan %&gt;%
   group_split(biome, basin_AIP, year) %&gt;% 
@@ -16954,6 +16990,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-1.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-1.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -16992,6 +17039,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-2.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-2.png" target="_blank">d9caaae</a>
@@ -17034,6 +17092,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-3.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-3.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17072,6 +17141,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-4.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-4.png" target="_blank">d9caaae</a>
@@ -17114,6 +17194,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-5.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-5.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17152,6 +17243,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-6.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-6.png" target="_blank">d9caaae</a>
@@ -17194,6 +17296,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-7.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-7.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17232,6 +17345,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-8.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-8.png" target="_blank">d9caaae</a>
@@ -17274,6 +17398,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-9.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-9.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17312,6 +17447,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-10.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-10.png" target="_blank">d9caaae</a>
@@ -17354,6 +17500,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-11.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-11.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17392,6 +17549,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-12.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-12.png" target="_blank">d9caaae</a>
@@ -17434,6 +17602,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-13.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-13.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17472,6 +17651,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-14.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-14.png" target="_blank">d9caaae</a>
@@ -17514,6 +17704,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-15.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-15.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17552,6 +17753,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-16.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-16.png" target="_blank">d9caaae</a>
@@ -17594,6 +17806,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-17.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-17.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17632,6 +17855,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-18.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-18.png" target="_blank">d9caaae</a>
@@ -17674,6 +17908,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-19.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-19.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17712,6 +17957,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-20.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-20.png" target="_blank">d9caaae</a>
@@ -17754,6 +18010,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-21.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-21.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17792,6 +18059,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-22.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-22.png" target="_blank">d9caaae</a>
@@ -17834,6 +18112,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-23.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-23.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17872,6 +18161,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-24.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-24.png" target="_blank">d9caaae</a>
@@ -17914,6 +18214,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-25.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-25.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -17952,6 +18263,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-26.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-26.png" target="_blank">d9caaae</a>
@@ -17994,6 +18316,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-27.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-27.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18032,6 +18365,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-28.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-28.png" target="_blank">d9caaae</a>
@@ -18074,6 +18418,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-29.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-29.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18112,6 +18467,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-30.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-30.png" target="_blank">d9caaae</a>
@@ -18154,6 +18520,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-31.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-31.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18192,6 +18569,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-32.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-32.png" target="_blank">d9caaae</a>
@@ -18234,6 +18622,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-33.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-33.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18272,6 +18671,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-34.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-34.png" target="_blank">d9caaae</a>
@@ -18314,6 +18724,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-35.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-35.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18354,6 +18775,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-36.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-36.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18382,9 +18814,6 @@ remove_clim_jan &lt;- remove_clim_jan %&gt;%
   ungroup()
   
 # calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
-
-# remove_clim_jan_year &lt;- remove_clim_jan %&gt;% 
-#   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)
 
 remove_clim_jan &lt;- remove_clim_jan %&gt;% 
   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)</code></pre>
@@ -18444,6 +18873,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-1.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-1.png" target="_blank">27a52f8</a>
 </td>
 <td>
@@ -18482,6 +18922,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-2.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-2.png" target="_blank">27a52f8</a>
@@ -18524,6 +18975,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-3.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-3.png" target="_blank">27a52f8</a>
 </td>
 <td>
@@ -18562,6 +19024,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-4.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-4.png" target="_blank">27a52f8</a>
@@ -18604,6 +19077,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-5.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-5.png" target="_blank">27a52f8</a>
 </td>
 <td>
@@ -18644,6 +19128,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-6.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-6.png" target="_blank">27a52f8</a>
 </td>
 <td>
@@ -18658,14 +19153,9 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="overall-mean-anomaly-profiles-january" class="section level2">
-<h2>Overall mean anomaly profiles January</h2>
-<pre class="r"><code># remove_clim_jan_mean &lt;- remove_clim_jan %&gt;% 
-#   group_by(lon, lat, depth) %&gt;% 
-#   mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %&gt;% 
-#   ungroup()
-
-remove_clim_jan_overall_mean &lt;- remove_clim_jan %&gt;% 
+<div id="overall-mean-anomaly-profiles---january" class="section level2">
+<h2>Overall mean anomaly profiles - January</h2>
+<pre class="r"><code>remove_clim_jan_overall_mean &lt;- remove_clim_jan %&gt;% 
   group_by(temp_extreme, depth_binned) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
@@ -18714,6 +19204,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_overall_mean_clim_removed_profiles-1.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_overall_mean_clim_removed_profiles-1.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18728,8 +19229,8 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="biome-mean-anomaly-profiles-january" class="section level2">
-<h2>Biome-mean anomaly profiles January</h2>
+<div id="biome-mean-anomaly-profiles---january" class="section level2">
+<h2>Biome-mean anomaly profiles - January</h2>
 <pre class="r"><code>remove_clim_jan_biome_mean &lt;- remove_clim_jan %&gt;% 
   group_by(temp_extreme, depth_binned, biome) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
@@ -18779,6 +19280,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">d9caaae</a>
 </td>
 <td>
@@ -18793,8 +19305,8 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="basin-mean-anomaly-profiles-january" class="section level2">
-<h2>Basin-mean anomaly profiles January</h2>
+<div id="basin-mean-anomaly-profiles---january" class="section level2">
+<h2>Basin-mean anomaly profiles - January</h2>
 <pre class="r"><code>remove_clim_jan_basin_mean &lt;- remove_clim_jan %&gt;% 
   group_by(basin_AIP, temp_extreme, depth_binned) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
@@ -18842,6 +19354,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f5c5c62812f8329c0d94e11346d184995e01d08/docs/figure/extreme_temp.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">7f5c5c6</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d9caaae3426467b8dde0687d8917e20144c7327a/docs/figure/extreme_temp.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">d9caaae</a>
@@ -18897,38 +19420,37 @@ loaded via a namespace (and not attached):
   [7] base64enc_0.1-3     fs_1.5.2            rstudioapi_0.13    
  [10] proxy_0.4-26        farver_2.1.0        bit64_4.0.5        
  [13] fansi_1.0.2         xml2_1.3.3          codetools_0.2-18   
- [16] splines_4.1.2       ncdf4_1.19          knitr_1.37         
- [19] polyclip_1.10-0     Formula_1.2-4       jsonlite_1.7.3     
- [22] cluster_2.1.2       dbplyr_2.1.1        png_0.1-7          
- [25] rgeos_0.5-9         compiler_4.1.2      httr_1.4.2         
- [28] backports_1.4.1     assertthat_0.2.1    Matrix_1.4-0       
- [31] fastmap_1.1.0       cli_3.1.1           later_1.3.0        
- [34] tweenr_1.0.2        htmltools_0.5.2     tools_4.1.2        
- [37] gtable_0.3.0        glue_1.6.0          Rcpp_1.0.8         
- [40] RNetCDF_2.5-2       cellranger_1.1.0    jquerylib_0.1.4    
- [43] raster_3.5-11       vctrs_0.3.8         xfun_0.29          
- [46] ps_1.6.0            rvest_1.0.2         ncmeta_0.3.0       
- [49] lifecycle_1.0.1     tidync_0.2.4        terra_1.5-12       
- [52] getPass_0.2-2       MASS_7.3-55         scales_1.1.1       
- [55] vroom_1.5.7         hms_1.1.1           promises_1.2.0.1   
- [58] parallel_4.1.2      RColorBrewer_1.1-2  yaml_2.2.1         
- [61] gridExtra_2.3       sass_0.4.0          rpart_4.1-15       
- [64] latticeExtra_0.6-29 stringi_1.7.6       highr_0.9          
- [67] e1071_1.7-9         checkmate_2.0.0     rlang_0.4.12       
- [70] pkgconfig_2.0.3     evaluate_0.14       lattice_0.20-45    
- [73] sf_1.0-5            htmlwidgets_1.5.4   labeling_0.4.2     
- [76] bit_4.0.4           processx_3.5.2      tidyselect_1.1.1   
- [79] magrittr_2.0.1      R6_2.5.1            generics_0.1.1     
- [82] Hmisc_4.6-0         DBI_1.1.2           foreign_0.8-82     
- [85] pillar_1.6.4        haven_2.4.3         whisker_0.4        
- [88] withr_2.4.3         units_0.7-2         nnet_7.3-17        
- [91] survival_3.2-13     sp_1.4-6            modelr_0.1.8       
- [94] crayon_1.4.2        KernSmooth_2.23-20  utf8_1.2.2         
- [97] tzdb_0.2.0          rmarkdown_2.11      jpeg_0.1-9         
-[100] grid_4.1.2          readxl_1.3.1        data.table_1.14.2  
-[103] callr_3.7.0         git2r_0.29.0        reprex_2.0.1       
-[106] digest_0.6.29       classInt_0.4-3      httpuv_1.6.5       
-[109] munsell_0.5.0       viridisLite_0.4.0   bslib_0.3.1        </code></pre>
+ [16] splines_4.1.2       knitr_1.37          polyclip_1.10-0    
+ [19] Formula_1.2-4       jsonlite_1.7.3      cluster_2.1.2      
+ [22] dbplyr_2.1.1        png_0.1-7           rgeos_0.5-9        
+ [25] compiler_4.1.2      httr_1.4.2          backports_1.4.1    
+ [28] assertthat_0.2.1    Matrix_1.4-0        fastmap_1.1.0      
+ [31] cli_3.1.1           later_1.3.0         tweenr_1.0.2       
+ [34] htmltools_0.5.2     tools_4.1.2         gtable_0.3.0       
+ [37] glue_1.6.0          Rcpp_1.0.8          cellranger_1.1.0   
+ [40] jquerylib_0.1.4     raster_3.5-11       vctrs_0.3.8        
+ [43] xfun_0.29           ps_1.6.0            rvest_1.0.2        
+ [46] lifecycle_1.0.1     terra_1.5-12        getPass_0.2-2      
+ [49] MASS_7.3-55         scales_1.1.1        vroom_1.5.7        
+ [52] hms_1.1.1           promises_1.2.0.1    parallel_4.1.2     
+ [55] RColorBrewer_1.1-2  yaml_2.2.1          gridExtra_2.3      
+ [58] sass_0.4.0          rpart_4.1-15        latticeExtra_0.6-29
+ [61] stringi_1.7.6       highr_0.9           e1071_1.7-9        
+ [64] checkmate_2.0.0     rlang_0.4.12        pkgconfig_2.0.3    
+ [67] evaluate_0.14       lattice_0.20-45     sf_1.0-5           
+ [70] htmlwidgets_1.5.4   labeling_0.4.2      bit_4.0.4          
+ [73] processx_3.5.2      tidyselect_1.1.1    magrittr_2.0.1     
+ [76] R6_2.5.1            generics_0.1.1      Hmisc_4.6-0        
+ [79] DBI_1.1.2           foreign_0.8-82      pillar_1.6.4       
+ [82] haven_2.4.3         whisker_0.4         withr_2.4.3        
+ [85] units_0.7-2         nnet_7.3-17         survival_3.2-13    
+ [88] sp_1.4-6            modelr_0.1.8        crayon_1.4.2       
+ [91] KernSmooth_2.23-20  utf8_1.2.2          tzdb_0.2.0         
+ [94] rmarkdown_2.11      jpeg_0.1-9          grid_4.1.2         
+ [97] readxl_1.3.1        data.table_1.14.2   callr_3.7.0        
+[100] git2r_0.29.0        reprex_2.0.1        digest_0.6.29      
+[103] classInt_0.4-3      httpuv_1.6.5        munsell_0.5.0      
+[106] viridisLite_0.4.0   bslib_0.3.1        </code></pre>
 </div>
 </div>
 </div>
