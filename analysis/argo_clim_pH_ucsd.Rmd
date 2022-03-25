@@ -1,0 +1,202 @@
+---
+title: "UCSD Argo pH Climatology"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task 
+
+Explore the January climatology of Argo pH of Matt Mazloff, UCSD 
+
+```{r load_libraries}
+library(tidyverse)
+library(ggOceanMaps)
+library(oce)
+```
+
+# Load data 
+
+```{r set_paths}
+path_updata <- "/nfs/kryo/work/updata"
+path_argo_clim_ph <- paste0(path_updata, "/argo_climatology/pH")
+path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
+theme_set(theme_bw())
+```
+
+
+```{r load_argo_ph_climatology}
+
+# load in the ucsd climatology for january
+clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
+                                            "/PHclim_15March2022_Prelim.nc"))
+# 581 880 obs of 5 variables, with columns:
+# pH (range from )
+# nx (range from 1 to 360)
+# ny (range from 1 to 46)
+# nz (range from 1 to 42)
+# t (value 1, corresponds to month 1 -> january)
+
+#range(clim_argo_ph_jan$nx)
+# 1 - 360 
+#range(clim_argo_ph_jan$ny)
+# 1 - 46
+#table(clim_argo_ph_jan$ny)
+#range(clim_argo_ph_jan$nz)
+# 1 - 42 
+#range(clim_argo_ph_jan$t)
+# 1 (january only)
+#table(is.na(clim_argo_ph_jan$pH))
+# no NA pH values
+#table(round(clim_argo_ph_jan$pH, digits = 0))
+# 6516 occurrences of pH = 0
+
+clim_argo_ph_jan <- clim_argo_ph_jan %>% 
+  mutate(nx = as.double(nx),
+         ny = as.double(ny),
+         nz = as.double(nz)) %>% 
+  mutate(lon = case_when(nx < 20 ~ nx +360,
+                         TRUE ~ nx))
+
+# range(clim_argo_ph_jan$lon)
+# 20 to 279 
+
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+```
+
+Plot the climatological pH profiles for January 
+
+```{r plot_jan_pH_profiles}
+
+clim_argo_ph_jan %>% 
+  filter(pH != 0) %>% 
+  ggplot(aes(x = pH,
+             y = nz))+
+  geom_point(aes(x = pH,
+                 y = nz),
+             size = 0.3)+
+  scale_y_reverse()
+
+```
+
+Location of observations: 
+
+```{r plot_map_of_observations}
+
+map+
+  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1),
+             aes(x = lon, 
+                 y = ny),
+             size = 0.2, 
+             alpha = 0.2)+
+  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1,
+                                                ny == 1),
+            aes(x = lon,
+                y = ny),
+            size = 0.3,
+            col = 'blue')+
+  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1,
+                                                ny == 46),
+             aes(x = lon, 
+                 y = ny),
+             size = 0.3, 
+             col = 'red')
+
+# the 46th latitude level is the northernmost latitude (ny = 46, lat = -30?)
+# the 1st latitude level is the southernmost latitude (ny = 1, lat = -75?)
+
+# clim_argo_ph_jan %>% 
+#   mutate(lat = case_when(ny == 1 ~ -75,
+#                          ny == 46 ~ -30,
+#                          TRUE ~ 0))
+
+# clim_argo_ph_jan %>% 
+#   mutate(lat = case_when(ny == seq(1, 46, 1) ~ seq(-75, -30, 1)))
+# 
+# clim_argo_ph_jan %>% 
+#   mutate(lat = replace(ny, c(1:581880), seq(-75, -30, 1)))
+
+
+
+```
+
+```{r load_argo_temp_climatology}
+
+# clim_argo_temp_jan_2022 <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_202201_2019.nc"))
+# 
+# range(clim_argo_temp_jan_2022$LONGITUDE)
+# # range between 20.5 and 379.5 
+# range(clim_argo_temp_jan_2022$LATITUDE)
+# # range between -64.5 and 79.5 
+# range(clim_argo_temp_jan_2022$TIME)
+# table(clim_argo_temp_jan_2022$TIME)
+# # time = 216.5 in the whole dataset (216.5 months since January 1 2004, corresponds to 15-01-2022)
+# 
+# clim_argo_temp_2004_2018 <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_Temperature_2019.nc"))
+# range(clim_argo_temp$LONGITUDE)
+# # 20.5 to 379.5
+# table(clim_argo_temp$LONGITUDE)
+# # 1 degree intervals
+# range(clim_argo_temp$LATITUDE)
+# # -64.5 to 79.5
+# range(clim_argo_temp$TIME)
+# # 0.5 to 179.5 
+# # -> 01-01-2014 to 31-12-2018, centered on the 15th of each month
+# range(clim_argo_temp$ARGO_TEMPERATURE_ANOMALY)
+# # -12.543 to 13.413 
+# range(clim_argo_temp$PRESSURE)
+# # 2.5 to 1975.0 
+# 
+# clim_argo_temp <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
+# # 2004-2018
+# # 66 030 591 obs of 6 variables, with columns: 
+# # ARGO_TEMPERATURE_MEAN
+# # ARGO_SALINITY_MEAN
+# # BATHYMETRY_MASK
+# # LONGITUDE between 20.083 and 379.917º (1/6 degree intervals)
+# # LATITUDE between -64.5 and 79.5º 
+# # PRESSURE between 2.5 and 1975.0 dbar 
+# range(clim_argo_temp$LONGITUDE)
+# # 20.083 to 379.917
+# range(clim_argo_temp$LATITUDE)
+# # -64.5 to 79.5
+# range(clim_argo_temp$ARGO_TEMPERATURE_MEAN)
+# # -1.880 to 30.516 
+# range(clim_argo_temp$PRESSURE)
+# # 2.5 to 1975.0 
+# table(clim_argo_temp$PRESSURE)
+# # pressure levels: 2.5 dbar, 10-170 dbar by 10, 182.5, 200-440 dbar by 20, 462.5, 500-1350 dbar by 50, 12412.5, 1500-1900 dbar by 100, 1975 dbar
+# 
+# clim_argo_temp <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
+# # 88 035 468 obs of 6 variables, with columns:
+# # ARGO_TEMPERATURE_ANNUAL_ANOMALY range between -9.270 and 10.982, with some values of 9.9692e+36 
+# # ARGO_SALINITY_ANNUAL_ANOMALY
+# # LONGITUDE range between 20.25 and 379.75º, in 0.5º intervals
+# # LATITUDE range between -64.75 and 79.75º, in 0.5º intervals
+# # PRESSURE range between 2.5 and 1975 dbar 
+# # TIME ranging from 0.5 to 11.5 (15 January to 15 December)
+# range(clim_argo_temp$TIME)
+# # 0.5 to 11.5 -> 15-January to 15-December 
+# range(clim_argo_temp$ARGO_TEMPERATURE_ANNUAL_ANOMALY)
+# table(round(clim_argo_temp$ARGO_TEMPERATURE_ANNUAL_ANOMALY, digits = 0))
+# clim_argo_temp_filtered <- clim_argo_temp %>% 
+#   filter(ARGO_TEMPERATURE_ANNUAL_ANOMALY < 10^35)
+# range(clim_argo_temp_filtered$ARGO_TEMPERATURE_ANNUAL_ANOMALY)
+# # -9.270 to 10.982 
+# range(clim_argo_temp$LONGITUDE)
+# # 20.25 to 379.75 (every 0.5 degrees)
+# range(clim_argo_temp$LATITUDE)
+# # -64.75 to 79.75 (every 0.5 degrees)
+# range(clim_argo_temp$PRESSURE)
+# # 2.5 to 1975.0 dbar
+
+```
+

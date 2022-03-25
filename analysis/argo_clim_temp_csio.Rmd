@@ -1,0 +1,174 @@
+---
+title: "CSIO-MNR Argo Temperature Climatology"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Task
+
+CSIO-MNR Argo temperature climatology of Li et al. (2017)
+
+Li, H., F. Xu, W. Zhou, D. Wang, J. S. Wright, Z. Liu, and Y. Lin (2017), Development of a global gridded Argo data set with Barnes successive corrections, J. Geophys. Res.Oceans, 122, doi: 10.1002/2016JC012285.6
+
+User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Chaohui Sun，Jianping Xu.(2020). Manual of Global Ocean Argo gridded data set (BOA_Argo) (Version 2019), 14 pp <https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf>
+
+```{r load_libraries}
+library(tidyverse)
+library(ggOceanMaps)
+library(oce)
+```
+
+# Load data
+
+```{r set_paths}
+path_updata <- "/nfs/kryo/work/updata"
+path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+theme_set(theme_bw())
+```
+
+## January climatology
+
+```{r load_argo_temp_climatology}
+
+boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+# 1 896 093 obs of 6 variables (2004-2019):
+# temp (range between -3.9180 and 30.1866º)
+# salt
+# lon (range between 0.5 and 359.5)
+# lat (range between -72.5 and 79.5)
+# pres (range between 0 and 1975)
+# time (15 days since 0000-01-01)
+# range(boa_clim_argo_temp_jan$temp)
+# -3.9180 to 30.1866 
+# range(boa_clim_argo_temp_jan$lon)
+# 0.5 to 359.5 by 1
+# range(boa_clim_argo_temp_jan$lat)
+# -72.5 to 79.5 by 1
+# range(boa_clim_argo_temp_jan$pres)
+# 0 to 1975 (58 pressure levels)
+# table(boa_clim_argo_temp_jan$pres)
+# pressure levels: 0, 5, 10-170 by 10, 180-460 by 20, 500-1300 by 50, 1400-1900 by 100, 1975 dbar 
+# range(boa_clim_argo_temp_jan$time)
+# days since 0000-01-01
+
+# keep only data south of 30ºS
+boa_clim_temp_jan_SO <- boa_clim_argo_temp_jan %>% 
+  filter(lat <= -30) %>% 
+  select(-salt)
+# 766 434 obs of 5 variables 
+
+# range(boa_clim_temp_jan_SO$temp)
+# range(boa_clim_temp_jan_SO$lat)
+# range(boa_clim_temp_jan_SO$lon)
+
+boa_clim_temp_jan_SO <- boa_clim_temp_jan_SO %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon),
+         depth = swDepth(pressure = pres, latitude = lat)) %>% 
+  rename(clim_temp_jan = temp) %>% 
+  mutate(month = rep(1, length(time)))
+
+# range(boa_clim_temp_jan_SO$depth)
+```
+
+
+```{r load_regions_basins}
+
+region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
+                                               '/region_masks_all_1x1.rds'))
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  rename(biome = value) %>% 
+  mutate(coast = as.character(coast))
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  filter(region == 'southern',
+         biome != 0) %>% 
+  select(-region)
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>% 
+  filter(coast == "0")
+
+# WOA 18 basin mask
+
+basinmask <-
+  read_csv(
+    paste(path_emlr_utilities,
+          "basin_mask_WOA18.csv",
+          sep = ""),
+    col_types = cols("MLR_basins" = col_character())
+  )
+
+basinmask <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(-c(MLR_basins, basin))
+
+basinmask <- basinmask %>%
+  filter(lat <= -30)
+```
+
+
+```{r load_map}
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+```
+
+```{r map_location_of_observations}
+
+map+
+  geom_point(data = boa_clim_temp_jan_SO %>% filter(depth < 20),
+             aes(x = lon,
+                 y = lat),
+             size = 0.2,
+             pch = 2,
+             alpha = 0.2)
+
+```
+
+```{r map_surface_climatological_january_temperature}
+
+boa_clim_sst_jan_SO <- boa_clim_temp_jan_SO %>% 
+  filter(depth <= 20) %>% 
+  group_by(lon, lat) %>% 
+  summarise(clim_sst = mean(clim_temp_jan, na.rm = TRUE)) %>% 
+  ungroup()
+
+map+
+  geom_tile(data = boa_clim_sst_jan_SO,
+            aes(x = lon,
+                y = lat,
+                fill = clim_sst))+
+  scale_fill_viridis_c()+
+  lims(y = c(-80, -25))+
+  labs(title = 'CSIO January climatological argo SST')
+```
+
+
+```{r add_in_basins_and_biomes}
+
+boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO, region_masks_all_1x1)
+
+boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO,
+                                    basinmask)
+
+```
+
+```{r plot_basin_biome_climatological_profiles}
+
+boa_clim_temp_jan_SO %>% 
+  ggplot(aes(x = clim_temp_jan,
+             y = depth))+
+  geom_point(size = 0.2, pch = 1, fill = NA)+
+  scale_y_reverse()+
+  facet_grid(basin_AIP~biome)
+
+```
+
