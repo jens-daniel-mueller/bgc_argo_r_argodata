@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea6aad60be68e1815985b39758cb79073bfbe622etargetblanka6aad60a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a6aad60be68e1815985b39758cb79073bfbe622e" target="_blank">a6aad60</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebecbfe061301d6ffc4d5a912226c00c242ce69d8targetblankbecbfe0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/becbfe061301d6ffc4d5a912226c00c242ce69d8" target="_blank">becbfe0</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea6aad60be68e1815985b39758cb79073bfbe622etargetblanka6aad60a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebecbfe061301d6ffc4d5a912226c00c242ce69d8targetblankbecbfe0a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a6aad60be68e1815985b39758cb79073bfbe622e" target="_blank">a6aad60</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/becbfe061301d6ffc4d5a912226c00c242ce69d8" target="_blank">becbfe0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -613,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/becbfe061301d6ffc4d5a912226c00c242ce69d8/analysis/extreme_temp.Rmd" target="_blank">becbfe0</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+corrected anomaly profile calculation
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/extreme_temp.html" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -16780,21 +16814,39 @@ pasqualina-vonlanthendinenna
 <p>Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature climatology</p>
 <div id="january" class="section level2">
 <h2>January</h2>
-<pre class="r"><code># keep only january profiles 
+<pre class="r"><code># # keep only january profiles 
 profile_temp_extreme_jan &lt;- inner_join(
-  full_argo %&gt;% 
-    filter(month == 1) %&gt;% 
-    select(c(year, month, date, lon, lat, depth,
-           temp_adjusted,
-           platform_number,
-           cycle_number)),                  
-  OceanSODA_temp_SO_extreme_grid %&gt;% 
-    filter(month == 1) %&gt;% 
-    select(c(year, month, date, lon, lat,
+  full_argo %&gt;%
+  filter(month == 1) %&gt;% 
+  select(c(year, month, date, lon, lat, depth,
+          temp_adjusted,
+          platform_number,
+          cycle_number)),    
+OceanSODA_temp_SO_extreme_grid %&gt;% 
+  filter(month == 1) %&gt;% 
+  select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
            clim_temp, clim_diff,
-           biome, basin_AIP))) %&gt;% 
-  unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
+          biome, basin_AIP))) %&gt;% 
+unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE) %&gt;% 
+  rename(depth_raw = depth)
+
+# bin depth levels: 
+profile_temp_extreme_jan &lt;- profile_temp_extreme_jan %&gt;%
+  mutate(
+    depth_binned = Hmisc::cut2(
+      depth_raw,
+      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+      m = 5,
+      levels.mean = TRUE
+    ),
+    depth_binned = as.numeric(as.character(depth_binned)))
+
+# profile_temp_extreme_jan &lt;- profile_temp_extreme_jan %&gt;% 
+#   group_by(lon, lat, depth_binned, year) %&gt;% 
+#   mutate(temp_adjusted_binned = mean(temp_adjusted, na.rm = TRUE),
+#          .after = temp_adjusted) %&gt;% 
+#   ungroup()</code></pre>
 <pre class="r"><code>boa_clim_argo_temp_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;))
 
 library(oce)
@@ -16808,12 +16860,31 @@ boa_clim_temp_jan_SO &lt;- boa_clim_argo_temp_jan %&gt;%
   rename(clim_temp_jan = temp) %&gt;% 
   mutate(month = rep(1, length(time)))
 
+# grid average climatological temp into the argo depth bins 
+
+boa_clim_temp_jan_SO &lt;- boa_clim_temp_jan_SO %&gt;% 
+  mutate(depth_binned = cut(depth_boa, 
+                     breaks = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+                     labels = as.factor(unique(profile_temp_extreme_jan$depth_binned))),
+         depth_binned = as.numeric(as.character(depth_binned))) %&gt;% 
+  mutate(depth_binned = replace_na(depth_binned, min(profile_temp_extreme_jan$depth_binned)))
+
+
+# remove_clim_jan &lt;- inner_join(profile_temp_extreme_jan %&gt;% 
+#                                rename(OceanSODA_clim_temp = clim_temp,
+#                                       OceanSODA_clim_diff = clim_diff),
+#                              boa_clim_temp_jan_SO %&gt;% 
+#                                rename(argo_clim_temp_jan = clim_temp_jan) %&gt;% 
+#                                select(-time))
+
+# bin depths in profile_temp_extreme_jan:
+
 remove_clim_jan &lt;- inner_join(profile_temp_extreme_jan %&gt;% 
-                               rename(OceanSODA_clim_temp = clim_temp,
-                                      OceanSODA_clim_diff = clim_diff),
-                             boa_clim_temp_jan_SO %&gt;% 
-                               rename(argo_clim_temp_jan = clim_temp_jan) %&gt;% 
-                               select(-time))</code></pre>
+                                rename(OceanSODA_clim_temp = clim_temp,
+                                       OceanSODA_clim_diff = clim_diff),
+                              boa_clim_temp_jan_SO %&gt;% 
+                                rename(argo_clim_temp_jan = clim_temp_jan) %&gt;%
+                                select(-time))</code></pre>
 <p>Points are the january climatological temperature, lines are the raw Argo profiles colored by H/N/L classification</p>
 <pre class="r"><code>remove_clim_jan %&gt;%
   group_split(biome, basin_AIP, year) %&gt;% 
@@ -16823,20 +16894,20 @@ remove_clim_jan &lt;- inner_join(profile_temp_extreme_jan %&gt;%
       data = .x,
       aes(
         x = temp_adjusted,
-        y = depth,
+        y = depth_raw,
         group = platform_cycle,
         col = temp_extreme
       )
     ) +
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;N&#39;),
                 aes(x = temp_adjusted, 
-                    y = depth,
+                    y = depth_raw,
                     group = platform_cycle,
                     col = temp_extreme),
                 size = 0.3) +
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;H&#39; | temp_extreme == &#39;L&#39;),
                 aes(x = temp_adjusted,
-                    y = depth,
+                    y = depth_raw,
                     group = platform_cycle,
                     col = temp_extreme),
                 size = 0.5)+
@@ -18296,49 +18367,45 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>remove_clim_jan &lt;- remove_clim_jan %&gt;%
-  mutate(
-    depth = Hmisc::cut2(
-      depth,
-      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
-      m = 5,
-      levels.mean = TRUE
-    ),
-    depth = as.numeric(as.character(depth)),
-    depth_boa = Hmisc::cut2(
-      depth_boa,
-      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
-      m = 5,
-      levels.mean = TRUE),
-    depth_boa = as.numeric(as.character(depth))
-    )
+<pre class="r"><code># calculate average climatological temp in each depth bin 
 
-# all.equal(remove_clim_jan$depth, remove_clim_jan$depth_boa)
+remove_clim_jan &lt;- remove_clim_jan %&gt;% 
+  group_by(lon, lat, depth_binned) %&gt;% 
+  mutate(clim_temp_jan_binned = mean(argo_clim_temp_jan, na.rm = TRUE),
+         .after = argo_clim_temp_jan) %&gt;% 
+  ungroup()
+
+remove_clim_jan &lt;- remove_clim_jan %&gt;% 
+  group_by(lon, lat, depth_binned, year) %&gt;% 
+  mutate(temp_adjusted_binned = mean(temp_adjusted, na.rm = TRUE),
+         .after = temp_adjusted) %&gt;% 
+  ungroup()
   
-# calculate the difference between the climatological argo and in-situ argo for each depth level and grid cell 
+# calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
 
-remove_clim_jan_year &lt;- remove_clim_jan %&gt;% 
-  group_by(lon, lat, depth, year) %&gt;% 
-  mutate(argo_temp_anomaly = temp_adjusted - argo_clim_temp_jan) %&gt;% 
-  ungroup()</code></pre>
-<pre class="r"><code>remove_clim_jan_year %&gt;% 
+# remove_clim_jan_year &lt;- remove_clim_jan %&gt;% 
+#   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)
+
+remove_clim_jan &lt;- remove_clim_jan %&gt;% 
+  mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)</code></pre>
+<pre class="r"><code>remove_clim_jan %&gt;% 
   group_split(year) %&gt;% 
   map(
     ~ggplot(data = .x,
             aes(x = argo_temp_anomaly,
-                y = depth,
+                y = depth_binned,
                 group = platform_cycle,
                 col = temp_extreme))+
-      geom_point(data = .x %&gt;% filter(temp_extreme == &#39;N&#39;),
+      geom_path(data = .x %&gt;% filter(temp_extreme == &#39;N&#39;),
                 aes(x = argo_temp_anomaly,
-                    y = depth,
+                    y = depth_binned,
                     group = platform_cycle,
                     col = temp_extreme,
                     fill = temp_extreme),
                 size = 0.2)+
-      geom_point(data = .x %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
+      geom_path(data = .x %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
                  aes(x = argo_temp_anomaly,
-                     y = depth,
+                     y = depth_binned,
                      group = platform_cycle,
                      col = temp_extreme,
                      fill = temp_extreme),
@@ -18353,43 +18420,265 @@ remove_clim_jan_year &lt;- remove_clim_jan %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-1">
+Past versions of plot_january_anomaly_profiles-1.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-1.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-2">
+Past versions of plot_january_anomaly_profiles-2.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-2.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-3">
+Past versions of plot_january_anomaly_profiles-3.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-3.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-4">
+Past versions of plot_january_anomaly_profiles-4.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-4.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-5">
+Past versions of plot_january_anomaly_profiles-5.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-5.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_january_anomaly_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_january_anomaly_profiles-6">
+Past versions of plot_january_anomaly_profiles-6.png
+</button>
+</p>
+<div id="fig-plot_january_anomaly_profiles-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/27a52f8194ce27e729e8c18a5cc2c8f29ced5b4b/docs/figure/extreme_temp.Rmd/plot_january_anomaly_profiles-6.png" target="_blank">27a52f8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="overall-mean-anomaly-profiles-january" class="section level2">
 <h2>Overall mean anomaly profiles January</h2>
-<pre class="r"><code>remove_clim_jan_mean &lt;- remove_clim_jan %&gt;% 
-  group_by(lon, lat, depth) %&gt;% 
-  mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %&gt;% 
-  ungroup()
+<pre class="r"><code># remove_clim_jan_mean &lt;- remove_clim_jan %&gt;% 
+#   group_by(lon, lat, depth) %&gt;% 
+#   mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %&gt;% 
+#   ungroup()
 
-remove_clim_jan_overall_mean &lt;- remove_clim_jan_mean %&gt;% 
-  group_by(temp_extreme, depth) %&gt;% 
-  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
-            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+remove_clim_jan_overall_mean &lt;- remove_clim_jan %&gt;% 
+  group_by(temp_extreme, depth_binned) %&gt;% 
+  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
 remove_clim_jan_overall_mean %&gt;% 
   ggplot()+
-  geom_path(aes(x = temp_diff_mean,
-                y = depth,
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth_binned,
                 group = temp_extreme,
                 col = temp_extreme))+
-  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
-                  xmin = temp_diff_mean - temp_diff_sd,
-                  y = depth,
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth_binned,
                   group = temp_extreme,
                   fill = temp_extreme),
               col = NA,
@@ -18398,7 +18687,8 @@ remove_clim_jan_overall_mean %&gt;%
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
-  scale_fill_manual(values = HNL_colors)</code></pre>
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = &#39;Overall mean profiles&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_overall_mean_clim_removed_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_clim_removed_profiles-1">
@@ -18440,19 +18730,19 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="biome-mean-anomaly-profiles-january" class="section level2">
 <h2>Biome-mean anomaly profiles January</h2>
-<pre class="r"><code>remove_clim_jan_biome_mean &lt;- remove_clim_jan_mean %&gt;% 
-  group_by(temp_extreme, depth, biome) %&gt;% 
-  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
-            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+<pre class="r"><code>remove_clim_jan_biome_mean &lt;- remove_clim_jan %&gt;% 
+  group_by(temp_extreme, depth_binned, biome) %&gt;% 
+  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
 remove_clim_jan_biome_mean %&gt;% 
-  ggplot(aes(x = temp_diff_mean,
-                y = depth,
+  ggplot(aes(x = temp_anomaly_mean,
+                y = depth_binned,
                 group = temp_extreme,
                 col = temp_extreme))+
   geom_path()+
-  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
-                  xmin = temp_diff_mean - temp_diff_sd,
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
                   group = temp_extreme,
                   fill = temp_extreme),
               col = NA,
@@ -18462,6 +18752,7 @@ remove_clim_jan_biome_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
+  labs(title = &#39;Biome-mean profiles&#39;)+
   facet_wrap(~biome)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_biome_mean_clim_removed_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -18504,19 +18795,19 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="basin-mean-anomaly-profiles-january" class="section level2">
 <h2>Basin-mean anomaly profiles January</h2>
-<pre class="r"><code>remove_clim_jan_basin_mean &lt;- remove_clim_jan_mean %&gt;% 
-  group_by(basin_AIP, temp_extreme, depth) %&gt;% 
-  summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
-            temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
+<pre class="r"><code>remove_clim_jan_basin_mean &lt;- remove_clim_jan %&gt;% 
+  group_by(basin_AIP, temp_extreme, depth_binned) %&gt;% 
+  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
 remove_clim_jan_basin_mean %&gt;% 
-  ggplot(aes(x = temp_diff_mean,
-             y = depth, 
+  ggplot(aes(x = temp_anomaly_mean,
+             y = depth_binned, 
              group = temp_extreme,
              col = temp_extreme))+
   geom_path()+
-  geom_ribbon(aes(xmax = temp_diff_mean + temp_diff_sd,
-                  xmin = temp_diff_mean - temp_diff_sd,
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
                   group = temp_extreme,
                   fill = temp_extreme),
               col = NA,
@@ -18526,7 +18817,8 @@ remove_clim_jan_basin_mean %&gt;%
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
-  scale_fill_manual(values = HNL_colors)</code></pre>
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = &#39;Basin-mean profiles&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/plot_basin_mean_anomaly_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_basin_mean_anomaly_profiles-1">
