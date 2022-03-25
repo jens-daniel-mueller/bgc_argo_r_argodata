@@ -1419,6 +1419,8 @@ Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature c
 
 ## January
 
+### Argo profiles
+
 ```{r filter_january_profiles}
 
 # # keep only january profiles 
@@ -1457,9 +1459,13 @@ profile_temp_extreme_jan <- profile_temp_extreme_jan %>%
 
 ```
 
+### Climatological Argo Profiles
+
 ```{r load_jan_temp_climatology}
 
-boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+# boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+
+boa_clim_argo_temp_jan <- read_rds(file = paste0(path_argo_preprocessed, '/boa_clim_argo_temp_jan.rds'))
 
 library(oce)
 
@@ -1482,15 +1488,6 @@ boa_clim_temp_jan_SO <- boa_clim_temp_jan_SO %>%
   mutate(depth_binned = replace_na(depth_binned, min(profile_temp_extreme_jan$depth_binned)))
 
 
-# remove_clim_jan <- inner_join(profile_temp_extreme_jan %>% 
-#                                rename(OceanSODA_clim_temp = clim_temp,
-#                                       OceanSODA_clim_diff = clim_diff),
-#                              boa_clim_temp_jan_SO %>% 
-#                                rename(argo_clim_temp_jan = clim_temp_jan) %>% 
-#                                select(-time))
-
-# bin depths in profile_temp_extreme_jan:
-
 remove_clim_jan <- inner_join(profile_temp_extreme_jan %>% 
                                 rename(OceanSODA_clim_temp = clim_temp,
                                        OceanSODA_clim_diff = clim_diff),
@@ -1500,6 +1497,8 @@ remove_clim_jan <- inner_join(profile_temp_extreme_jan %>%
 
 
 ```
+
+## Raw profiles - January
 
 Points are the january climatological temperature, lines are the raw Argo profiles colored by H/N/L classification
 
@@ -1568,9 +1567,6 @@ remove_clim_jan <- remove_clim_jan %>%
   
 # calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
 
-# remove_clim_jan_year <- remove_clim_jan %>% 
-#   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)
-
 remove_clim_jan <- remove_clim_jan %>% 
   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)
 
@@ -1611,14 +1607,9 @@ remove_clim_jan %>%
 
 ```
 
-## Overall mean anomaly profiles January
+## Overall mean anomaly profiles - January
 
 ```{r plot_overall_mean_clim_removed_profiles}
-
-# remove_clim_jan_mean <- remove_clim_jan %>% 
-#   group_by(lon, lat, depth) %>% 
-#   mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %>% 
-#   ungroup()
 
 remove_clim_jan_overall_mean <- remove_clim_jan %>% 
   group_by(temp_extreme, depth_binned) %>% 
@@ -1646,7 +1637,7 @@ remove_clim_jan_overall_mean %>%
   labs(title = 'Overall mean profiles')
 ```
 
-## Biome-mean anomaly profiles January
+## Biome-mean anomaly profiles - January
 
 ```{r plot_biome_mean_clim_removed_profiles}
 
@@ -1677,7 +1668,7 @@ remove_clim_jan_biome_mean %>%
 
 ```
 
-## Basin-mean anomaly profiles January
+## Basin-mean anomaly profiles - January
 
 ```{r plot_basin_mean_anomaly_profiles}
 

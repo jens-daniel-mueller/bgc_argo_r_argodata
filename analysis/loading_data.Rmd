@@ -548,6 +548,29 @@ OceanSODA %>%
 
 ```
 
+# Argo temperature climatology 
+
+## CSIO-MNR temperature climatology
+
+CSIO-MNR Argo temperature climatology of Li et al. (2017)
+
+Li, H., F. Xu, W. Zhou, D. Wang, J. S. Wright, Z. Liu, and Y. Lin (2017), Development of a global gridded Argo data set with Barnes successive corrections, J. Geophys. Res.Oceans, 122, doi: 10.1002/2016JC012285.6
+
+User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Chaohui Sun，Jianping Xu.(2020). Manual of Global Ocean Argo gridded data set (BOA_Argo) (Version 2019), 14 pp <https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf>
+
+```{r load_csio_temp_climatology}
+
+path_updata <- "/nfs/kryo/work/updata"
+path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
+
+boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+
+boa_clim_argo_temp_jan %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/boa_clim_argo_temp_jan.rds"))
+
+```
+
+
 # Data set description
 
 ## Columns
