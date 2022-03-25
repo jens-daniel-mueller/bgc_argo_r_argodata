@@ -1537,17 +1537,58 @@ remove_clim_jan <- remove_clim_jan %>%
   
 # calculate the difference between the climatological argo and in-situ argo for each depth level and grid cell 
 
-remove_clim_jan <- remove_clim_jan %>% 
-  group_by(lon, lat, depth) %>% 
-  mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %>% 
+remove_clim_jan_year <- remove_clim_jan %>% 
+  group_by(lon, lat, depth, year) %>% 
+  mutate(argo_temp_anomaly = temp_adjusted - argo_clim_temp_jan) %>% 
   ungroup()
+
+```
+
+```{r plot_january_anomaly_profiles}
+
+remove_clim_jan_year %>% 
+  group_split(year) %>% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = argo_temp_anomaly,
+                y = depth,
+                group = platform_cycle,
+                col = temp_extreme))+
+      geom_point(data = .x %>% filter(temp_extreme == 'N'),
+                aes(x = argo_temp_anomaly,
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme,
+                    fill = temp_extreme),
+                size = 0.2)+
+      geom_point(data = .x %>% filter(temp_extreme == 'H'| temp_extreme == 'L'),
+                 aes(x = argo_temp_anomaly,
+                     y = depth,
+                     group = platform_cycle,
+                     col = temp_extreme,
+                     fill = temp_extreme),
+                 size = 0.3)+
+      geom_vline(xintercept = 0)+
+      scale_y_continuous(trans = trans_reverser("sqrt"),
+                         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+      scale_color_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors)+
+      facet_wrap(basin_AIP~biome)+
+      labs(title = paste0('year:', unique(.x$year)))
+  )
+
 ```
 
 ## Overall mean anomaly profiles January
 
 ```{r plot_overall_mean_clim_removed_profiles}
 
-remove_clim_jan_overall_mean <- remove_clim_jan %>% 
+remove_clim_jan_mean <- remove_clim_jan %>% 
+  group_by(lon, lat, depth) %>% 
+  mutate(argo_temp_diff = temp_adjusted - argo_clim_temp_jan) %>% 
+  ungroup()
+
+remove_clim_jan_overall_mean <- remove_clim_jan_mean %>% 
   group_by(temp_extreme, depth) %>% 
   summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
             temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
@@ -1576,7 +1617,7 @@ remove_clim_jan_overall_mean %>%
 
 ```{r plot_biome_mean_clim_removed_profiles}
 
-remove_clim_jan_biome_mean <- remove_clim_jan %>% 
+remove_clim_jan_biome_mean <- remove_clim_jan_mean %>% 
   group_by(temp_extreme, depth, biome) %>% 
   summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
             temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))
@@ -1606,7 +1647,7 @@ remove_clim_jan_biome_mean %>%
 
 ```{r plot_basin_mean_anomaly_profiles}
 
-remove_clim_jan_basin_mean <- remove_clim_jan %>% 
+remove_clim_jan_basin_mean <- remove_clim_jan_mean %>% 
   group_by(basin_AIP, temp_extreme, depth) %>% 
   summarise(temp_diff_mean = mean(argo_temp_diff, na.rm = TRUE),
             temp_diff_sd = sd(argo_temp_diff, na.rm = TRUE))

@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "removed climatology from temperature profiles (anomaly profiles section)")
+wflow_publish(all = TRUE, message = "added january anomaly profiles for each year")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -19,7 +19,11 @@ wflow_publish(here::here(
     'oceanSODA_argo.Rmd',
     'oceanSODA_argo_temp.Rmd',
     'extreme_pH.Rmd',
-    'extreme_temp.Rmd'
+    'extreme_temp.Rmd',
+    'variability_temp.Rmd',
+    'variability_pH.Rmd',
+    'argo_clim_temp_csio.Rmd',
+    'argo_clim_pH_ucsd.Rmd'
   )
 ),
 message = "added OceanSODA-Argo SST comparison",
@@ -32,10 +36,12 @@ wflow_publish(here::here(
     'extreme_pH.Rmd',
     'extreme_temp.Rmd',
     'variability_temp.Rmd',
-    'variability_pH.Rmd'
+    'variability_pH.Rmd',
+    'argo_clim_temp_csio.Rmd',
+    'argo_clim_pH_ucsd.Rmd'
   )
 ),
-message = "added variability pages")
+message = "added climatology pages")
 
 
 # Push latest version to GitHub
