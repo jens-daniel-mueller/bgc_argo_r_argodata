@@ -15,6 +15,7 @@ Explore the January climatology of Argo pH of Matt Mazloff, UCSD
 library(tidyverse)
 library(ggOceanMaps)
 library(oce)
+library(ncdf4)
 ```
 
 # Load data 
@@ -32,8 +33,7 @@ theme_set(theme_bw())
 ```{r load_argo_ph_climatology}
 
 # load in the ucsd climatology for january
-clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
-                                            "/PHclim_15March2022_Prelim.nc"))
+
 # 581 880 obs of 5 variables, with columns:
 # pH (range from )
 # nx (range from 1 to 360)
@@ -54,6 +54,18 @@ clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
 # no NA pH values
 #table(round(clim_argo_ph_jan$pH, digits = 0))
 # 6516 occurrences of pH = 0
+
+# clim_argo_ph_jan <- nc_open(paste0(path_argo_clim_ph,
+#                                             "/PHclim_15March2022_Prelim.nc"))
+# print(clim_argo_ph_jan)
+# lon <- ncvar_get(clim_argo_ph_jan, 'nx')
+# nlon <- dim(clim_argo_ph_jan$nx)
+# lat <- ncvar_get(clim_argo_ph_jan, 'ny')
+# nlat <- dim(clim_argo_ph_jan$ny)
+
+
+clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
+                                            "/PHclim_15March2022_Prelim.nc"))
 
 clim_argo_ph_jan <- clim_argo_ph_jan %>% 
   mutate(nx = as.double(nx),
