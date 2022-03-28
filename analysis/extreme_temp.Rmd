@@ -120,7 +120,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
 
 ## Remove coastal data
 
-```{r coast_map, fig.asp=0.5}
+```{r coast_map, fig.asp=0.4}
 map + 
   geom_tile(data = region_masks_all_2x2, 
             aes(x = lon, 
@@ -139,7 +139,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
 
 ## Grid reduction
 
-```{r biomes_map_pre_grid_reduction, fig.asp=0.5}
+```{r biomes_map_pre_grid_reduction, fig.asp=0.4}
 
 map +
   geom_tile(data = region_masks_all_2x2, 
@@ -161,7 +161,7 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
  
 ```
 
-```{r biomes_map_post_grid_reduction, fig.asp=0.5}
+```{r biomes_map_post_grid_reduction, fig.asp=0.4}
 
 map+
   geom_tile(data = region_masks_all_2x2,
@@ -182,7 +182,7 @@ basinmask <- basinmask %>%
 
 ## Grid reduction
 
-```{r basin_map_pre_grid_reduction, fig.asp=0.5}
+```{r basin_map_pre_grid_reduction, fig.asp=0.4}
 map +
   geom_tile(data = basinmask, 
             aes(x = lon, 
@@ -214,7 +214,7 @@ rm(basinmask)
 
 ```
 
-```{r basin_map_post_grid_reduction, fig.asp=0.5}
+```{r basin_map_post_grid_reduction, fig.asp=0.4}
 
 map+
   geom_tile(data = basinmask_2x2 %>% filter(lat < -30),
@@ -262,7 +262,7 @@ rm(OceanSODA_temp)
 
 ## Apply region masks
 
-```{r apply_region_masks_OceanSODA_temp, fig.asp=0.5}
+```{r apply_region_masks_OceanSODA_temp, fig.asp=0.4}
 
 # keep only Southern Ocean data
 OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2, region_masks_all_2x2)
@@ -284,14 +284,14 @@ OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>%
 
 ## Maps
 
-```{r map_OceanSODA_clim_diff, fig.asp=2}
+```{r map_OceanSODA_clim_diff, fig.asp=1.5}
 
 OceanSODA_temp_2x2_SO %>% 
   filter(year == 2020) %>% 
   ggplot(aes(lon_raw, lat_raw, fill = clim_temp)) +
   geom_tile() +
   scale_fill_viridis_c() +
-  facet_grid(month ~ .) +
+  facet_wrap(~ month, ncol = 2) +
   coord_quickmap(expand = 0)
 
 OceanSODA_temp_2x2_SO %>%
@@ -302,8 +302,8 @@ OceanSODA_temp_2x2_SO %>%
       geom_tile(data = .x,
                 aes(lon_raw, lat_raw, fill = clim_diff)) +
       scale_fill_divergent(mid = "grey80") +
-      facet_grid(month ~ year) +
-      lims(y = c(-85, -30)) +
+      facet_wrap(~ month, ncol = 2) +
+      labs(title = .x$year) +
       theme(legend.position = "top")
   )
 
@@ -316,12 +316,10 @@ Through setting only one of the following two code chunks to "eval=FALSE" you ca
 
 ## Fit lm models
 
-```{r fit_temp_linear_regression, eval=FALSE}
+```{r fit_temp_linear_regression}
 
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
-# OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>%
-#   mutate(row_number = row_number())
 
 OceanSODA_temp_regression <- OceanSODA_temp_2x2_SO %>% 
   # filter(basin_AIP == "Indian",
@@ -355,17 +353,10 @@ OceanSODA_temp_regression_data <- OceanSODA_temp_regression %>%
   select(-c(fit, tidied, glanced, augmented)) %>% 
   unnest(data) 
 
-# OceanSODA_temp_regression_augmented <- bind_cols(
-#   OceanSODA_temp_regression_augmented,
-#   OceanSODA_temp_2x2_SO %>% 
-#     select(
-#     date, lon_raw, lat_raw, lon, lat, basin_AIP, biome)
-# )
-
 OceanSODA_temp_regression_augmented <- bind_cols(
   OceanSODA_temp_regression_augmented,
   OceanSODA_temp_regression_data %>% 
-    select(date, #row_number, 
+    select(date,
            biome, basin_AIP, 
            temperature, clim_temp, 
            lat_raw, lon_raw))
@@ -377,7 +368,7 @@ OceanSODA_temp_regression_glanced <- OceanSODA_temp_regression %>%
 
 ## Fit mean
 
-```{r fit_temp_mean}
+```{r fit_temp_mean, eval=FALSE}
 
 # identify the mean value
 # in each lat/lon/month grid
@@ -479,7 +470,7 @@ OceanSODA_temp_SO_extreme_grid <-
 # 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)
 ```
 
-```{r temp_anomaly_test_plot_grid, fig.asp=0.5}
+```{r temp_anomaly_test_plot_grid, fig.asp=0.4}
 
 OceanSODA_temp_SO_extreme_grid %>%
   group_split(lon, lat, month) %>%
@@ -506,9 +497,7 @@ OceanSODA_temp_SO_extreme_grid %>%
 
 ## Anomaly maps
 
-### 1x1 grid
-
-```{r map_temp_extremes_1x1_plot, fig.asp=2}
+```{r map_temp_extremes_1x1_plot, fig.asp=1.5}
 # anomaly maps on a 1x1 grid 
 
 OceanSODA_temp_SO_extreme_grid %>%
@@ -1530,7 +1519,7 @@ rm(remove_clim_jan_basin_mean)
 
 ### Basin-biome-mean anomaly
 
-```{r plot_basin_biome_mean_anomaly_profiles}
+```{r plot_basin_biome_mean_anomaly_profiles, fig.asp=1.2}
 
 remove_clim_jan_basin_biome_mean <- remove_clim_jan %>% 
   group_by(basin_AIP, biome, temp_extreme, depth) %>% 
