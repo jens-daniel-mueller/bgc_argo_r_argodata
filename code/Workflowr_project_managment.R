@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "rerun with lm instead of mean anomaly detection")
+wflow_publish(all = TRUE, message = "rerun with mean instead of lm anomaly detection")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
