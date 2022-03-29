@@ -13,9 +13,10 @@ Explore the January climatology of Argo pH of Matt Mazloff, UCSD
 
 ```{r load_libraries}
 library(tidyverse)
-library(ggOceanMaps)
+#library(ggOceanMaps)
 library(oce)
-library(ncdf4)
+#library(ncdf4)
+library(stars)
 ```
 
 # Load data 
@@ -25,134 +26,80 @@ path_updata <- "/nfs/kryo/work/updata"
 path_argo_clim_ph <- paste0(path_updata, "/argo_climatology/pH")
 path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 theme_set(theme_bw())
 ```
 
 
-```{r load_argo_ph_climatology}
+```{r load_climatological_pH_data}
+nc_pH <- 
+read_ncdf(paste0(path_argo_clim_ph,"/PHclim_15March2022_Prelim.nc"),
+                    var = c("pH"))
+nc_pH <- as_tibble(nc_pH)
 
-# load in the ucsd climatology for january
+nc_lon <- 
+read_ncdf(paste0(path_argo_clim_ph,"/PHclim_15March2022_Prelim.nc"),
+                    var = c("longitude"))
+nc_lon <- as_tibble(nc_lon)
 
-# 581 880 obs of 5 variables, with columns:
-# pH (range from )
-# nx (range from 1 to 360)
-# ny (range from 1 to 46)
-# nz (range from 1 to 42)
-# t (value 1, corresponds to month 1 -> january)
+nc_lat <- 
+read_ncdf(paste0(path_argo_clim_ph,"/PHclim_15March2022_Prelim.nc"),
+                    var = c("latitude"))
+nc_lat <- as_tibble(nc_lat)
 
-#range(clim_argo_ph_jan$nx)
-# 1 - 360 
-#range(clim_argo_ph_jan$ny)
-# 1 - 46
-#table(clim_argo_ph_jan$ny)
-#range(clim_argo_ph_jan$nz)
-# 1 - 42 
-#range(clim_argo_ph_jan$t)
-# 1 (january only)
-#table(is.na(clim_argo_ph_jan$pH))
-# no NA pH values
-#table(round(clim_argo_ph_jan$pH, digits = 0))
-# 6516 occurrences of pH = 0
+nc_depth <- 
+read_ncdf(paste0(path_argo_clim_ph,"/PHclim_15March2022_Prelim.nc"),
+                    var = c("depth"))
+nc_depth <- as_tibble(nc_depth)
 
-# clim_argo_ph_jan <- nc_open(paste0(path_argo_clim_ph,
-#                                              "/PHclim_15March2022_Prelim.nc"))
-# print(clim_argo_ph_jan)
-# lon <- ncvar_get(clim_argo_ph_jan, 'longitude')
-# lat <- ncvar_get(clim_argo_ph_jan, 'latitude')
-# depth <- ncvar_get(clim_argo_ph_jan, 'depth')
-# time <- ncvar_get(clim_argo_ph_jan, 'time')
-# pH <- ncvar_get(clim_argo_ph_jan, 'pH')
+nc_pH <- nc_pH %>%
+   mutate(ny = ny - 0.5,
+          nx = nx - 0.5)
 
-# range(lon)
-# # range from 0.5 to 359.5
-# range(lat)
-# # range from -75 to -30 
-# range(depth)
-# # range from 2.1 to 2010.0 
-# range(time)
-# # 1 (january)
-# range(pH, na.rm = TRUE)
-# # 0.0000 to 8.190355 
-# 
-# lon = case_when(lon < 20 ~ lon +360,
-#                 TRUE ~ lon)
-
-clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
-                                            "/PHclim_15March2022_Prelim.nc"))
-
-# clim_argo_ph_jan <- stars::read_ncdf(paste0(path_argo_clim_ph,
-#                                             "/PHclim_15March2022_Prelim.nc"))
-
-# as_tibble(clim_argo_ph_jan)
+clim_argo_ph_jan <- full_join(nc_pH, nc_lat)
+clim_argo_ph_jan <- full_join(clim_argo_ph_jan, nc_lon)
+clim_argo_ph_jan <- full_join(clim_argo_ph_jan, nc_depth)
 
 clim_argo_ph_jan <- clim_argo_ph_jan %>%
-  mutate(nx = as.double(nx),
-         ny = as.double(ny),
-         nz = as.double(nz)) %>%
-  mutate(lon = case_when(nx < 20 ~ nx +360,
-                         TRUE ~ nx))
+   select(-c(starts_with("n"), "t"))
 
-# range(clim_argo_ph_jan$lon)
-# 20 to 279 
-
-
-map <-
-  read_rds(paste(path_emlr_utilities,
-                 "map_landmask_WOA18.rds",
-                 sep = ""))
+clim_argo_ph_jan <- clim_argo_ph_jan %>%
+   mutate(depth = round(depth))
 ```
 
-Plot the climatological pH profiles for January 
 
-```{r plot_jan_pH_profiles}
+```{r plots}
+clim_argo_ph_jan %>%
+   ggplot() +
+   geom_tile(aes(longitude, latitude, fill = pH)) +
+   facet_wrap(~depth) +
+   scale_fill_viridis_c() +
+   coord_quickmap()
 
-clim_argo_ph_jan %>% 
-  filter(pH != 0) %>% 
-  ggplot(aes(x = pH,
-             y = nz))+
-  geom_point(aes(x = pH,
-                 y = nz),
-             size = 0.3)+
-  scale_y_reverse()
+clim_argo_ph_jan %>%
+   filter(pH != 0) %>%
+   ggplot() +
+   geom_tile(aes(longitude, latitude, fill = pH)) +
+   facet_wrap(~depth) +
+   scale_fill_viridis_c() +
+   coord_quickmap()
 
+clim_argo_ph_jan %>%
+   filter(pH != 0) %>%
+   ggplot(aes(pH)) +
+   geom_histogram() +
+   facet_wrap(~depth) +
+   scale_y_log10() +
+   geom_vline(xintercept = 7.5)
 ```
 
-Location of observations: 
 
-```{r plot_map_of_observations}
+```{r remove_zero_pH_value}
+clim_argo_ph_jan <- clim_argo_ph_jan %>%
+   filter(pH != 0)
 
-map+
-  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1),
-             aes(x = lon, 
-                 y = ny),
-             size = 0.2, 
-             alpha = 0.2)+
-  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1,
-                                                ny == 1),
-            aes(x = lon,
-                y = ny),
-            size = 0.3,
-            col = 'blue')+
-  geom_point(data = clim_argo_ph_jan %>% filter(nz == 1,
-                                                ny == 46),
-             aes(x = lon, 
-                 y = ny),
-             size = 0.3, 
-             col = 'red')
-
-# the 46th latitude level is the northernmost latitude (ny = 46, lat = -30?)
-# the 1st latitude level is the southernmost latitude (ny = 1, lat = -75?)
-
-# clim_argo_ph_jan %>% 
-#   mutate(lat = case_when(ny == 1 ~ -75,
-#                          ny == 46 ~ -30,
-#                          TRUE ~ 0))
-
-# clim_argo_ph_jan %>% 
-#   mutate(lat = case_when(ny == seq(1, 46, 1) ~ seq(-75, -30, 1)))
-# 
-# clim_argo_ph_jan %>% 
-#   mutate(lat = replace(ny, c(1:581880), seq(-75, -30, 1)))
-
+clim_argo_ph_jan %>% write_rds(file = paste0(path_argo_preprocessed, "/ucsd_ph_clim_jan.rds"))
 ```
+
