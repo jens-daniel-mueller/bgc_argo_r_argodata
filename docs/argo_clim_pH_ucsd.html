@@ -432,7 +432,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">UCSD Argo pH Climatology</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">28 March, 2022</h4>
+<h4 class="date">29 March, 2022</h4>
 
 </div>
 
@@ -457,7 +457,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-28
+<strong>Last updated:</strong> 2022-03-29
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5112b5bb28f17422b8abc18c14a5810f3b874261targetblank5112b5ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5112b5bb28f17422b8abc18c14a5810f3b874261" target="_blank">5112b5b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9a42f96335d64cda863b54ba185c3c918ed3771targetblankb9a42f9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9a42f96335d64cda863b54ba185c3c918ed3771" target="_blank">b9a42f9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5112b5bb28f17422b8abc18c14a5810f3b874261targetblank5112b5ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9a42f96335d64cda863b54ba185c3c918ed3771targetblankb9a42f9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5112b5bb28f17422b8abc18c14a5810f3b874261" target="_blank">5112b5b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9a42f96335d64cda863b54ba185c3c918ed3771" target="_blank">b9a42f9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -567,6 +567,7 @@ Ignored files:
     Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
@@ -613,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b9a42f96335d64cda863b54ba185c3c918ed3771/analysis/argo_clim_pH_ucsd.Rmd" target="_blank">b9a42f9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+<td>
+added january plots and changed pH anomaly detection to mean
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ca1bd555ca76bd66237d8168c5ea039cd19dad20/docs/argo_clim_pH_ucsd.html" target="_blank">ca1bd55</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-28
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -719,7 +754,7 @@ x dplyr::filter() masks stats::filter()
 x dplyr::lag()    masks stats::lag()</code></pre>
 <pre class="r"><code>library(ggOceanMaps)</code></pre>
 <pre><code>Loading required package: ggspatial</code></pre>
-<pre><code>Setting data download folder to a temporary folder /tmp/RtmpjepYVF.
+<pre><code>Setting data download folder to a temporary folder /tmp/RtmptIwfcZ.
 This means that any downloaded map data need to be downloaded again
 when you restart R. To avoid this problem, change the default path to a
 permanent folder on your computer. Add following lines to your
@@ -763,21 +798,40 @@ theme_set(theme_bw())</code></pre>
 # 6516 occurrences of pH = 0
 
 # clim_argo_ph_jan &lt;- nc_open(paste0(path_argo_clim_ph,
-#                                             &quot;/PHclim_15March2022_Prelim.nc&quot;))
+#                                              &quot;/PHclim_15March2022_Prelim.nc&quot;))
 # print(clim_argo_ph_jan)
-# lon &lt;- ncvar_get(clim_argo_ph_jan, &#39;nx&#39;)
-# nlon &lt;- dim(clim_argo_ph_jan$nx)
-# lat &lt;- ncvar_get(clim_argo_ph_jan, &#39;ny&#39;)
-# nlat &lt;- dim(clim_argo_ph_jan$ny)
+# lon &lt;- ncvar_get(clim_argo_ph_jan, &#39;longitude&#39;)
+# lat &lt;- ncvar_get(clim_argo_ph_jan, &#39;latitude&#39;)
+# depth &lt;- ncvar_get(clim_argo_ph_jan, &#39;depth&#39;)
+# time &lt;- ncvar_get(clim_argo_ph_jan, &#39;time&#39;)
+# pH &lt;- ncvar_get(clim_argo_ph_jan, &#39;pH&#39;)
 
+# range(lon)
+# # range from 0.5 to 359.5
+# range(lat)
+# # range from -75 to -30 
+# range(depth)
+# # range from 2.1 to 2010.0 
+# range(time)
+# # 1 (january)
+# range(pH, na.rm = TRUE)
+# # 0.0000 to 8.190355 
+# 
+# lon = case_when(lon &lt; 20 ~ lon +360,
+#                 TRUE ~ lon)
 
 clim_argo_ph_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_ph,
                                             &quot;/PHclim_15March2022_Prelim.nc&quot;))
 
-clim_argo_ph_jan &lt;- clim_argo_ph_jan %&gt;% 
+# clim_argo_ph_jan &lt;- stars::read_ncdf(paste0(path_argo_clim_ph,
+#                                             &quot;/PHclim_15March2022_Prelim.nc&quot;))
+
+# as_tibble(clim_argo_ph_jan)
+
+clim_argo_ph_jan &lt;- clim_argo_ph_jan %&gt;%
   mutate(nx = as.double(nx),
          ny = as.double(ny),
-         nz = as.double(nz)) %&gt;% 
+         nz = as.double(nz)) %&gt;%
   mutate(lon = case_when(nx &lt; 20 ~ nx +360,
                          TRUE ~ nx))
 
