@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9a42f96335d64cda863b54ba185c3c918ed3771targetblankb9a42f9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9a42f96335d64cda863b54ba185c3c918ed3771" target="_blank">b9a42f9</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5432acfbf410b76ed70106c97193522c30653b82targetblank5432acfa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5432acfbf410b76ed70106c97193522c30653b82" target="_blank">5432acf</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeb9a42f96335d64cda863b54ba185c3c918ed3771targetblankb9a42f9a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5432acfbf410b76ed70106c97193522c30653b82targetblank5432acfa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/b9a42f96335d64cda863b54ba185c3c918ed3771" target="_blank">b9a42f9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5432acfbf410b76ed70106c97193522c30653b82" target="_blank">5432acf</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -567,7 +567,6 @@ Ignored files:
     Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
@@ -614,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/5432acfbf410b76ed70106c97193522c30653b82/analysis/argo_clim_pH_ucsd.Rmd" target="_blank">5432acf</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+<td>
+added january pH climatology
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/argo_clim_pH_ucsd.html" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -752,19 +785,14 @@ added climatology pages
 <pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 x dplyr::filter() masks stats::filter()
 x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(ggOceanMaps)</code></pre>
-<pre><code>Loading required package: ggspatial</code></pre>
-<pre><code>Setting data download folder to a temporary folder /tmp/RtmptIwfcZ.
-This means that any downloaded map data need to be downloaded again
-when you restart R. To avoid this problem, change the default path to a
-permanent folder on your computer. Add following lines to your
-.Rprofile file: {.ggOceanMapsenv &lt;- new.env(); .ggOceanMapsenv$datapath
-&lt;- &#39;YourCustomPath&#39;}. You can use usethis::edit_r_profile() to edit the
-file.&#39;~/Documents/ggOceanMapsLargeData&#39;would make it in a writable
-folder on most operating systems.</code></pre>
-<pre class="r"><code>library(oce)</code></pre>
+<pre class="r"><code>#library(ggOceanMaps)
+library(oce)</code></pre>
 <pre><code>Loading required package: gsw</code></pre>
-<pre class="r"><code>library(ncdf4)</code></pre>
+<pre class="r"><code>#library(ncdf4)
+library(stars)</code></pre>
+<pre><code>Loading required package: abind</code></pre>
+<pre><code>Loading required package: sf</code></pre>
+<pre><code>Linking to GEOS 3.6.2, GDAL 3.2.0, PROJ 7.0.0; sf_use_s2() is TRUE</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -772,194 +800,83 @@ folder on most operating systems.</code></pre>
 path_argo_clim_ph &lt;- paste0(path_updata, &quot;/argo_climatology/pH&quot;)
 path_argo_clim_temp &lt;- paste0(path_updata, &quot;/argo_climatology/temperature&quot;)
 path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;
+path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
+path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 
 theme_set(theme_bw())</code></pre>
-<pre class="r"><code># load in the ucsd climatology for january
+<pre class="r"><code>nc_pH &lt;- 
+read_ncdf(paste0(path_argo_clim_ph,&quot;/PHclim_15March2022_Prelim.nc&quot;),
+                    var = c(&quot;pH&quot;))</code></pre>
+<pre><code>Warning in .get_nc_projection(meta$attribute, rep_var, all_coord_var): No
+projection information found in nc file.</code></pre>
+<pre class="r"><code>nc_pH &lt;- as_tibble(nc_pH)
 
-# 581 880 obs of 5 variables, with columns:
-# pH (range from )
-# nx (range from 1 to 360)
-# ny (range from 1 to 46)
-# nz (range from 1 to 42)
-# t (value 1, corresponds to month 1 -&gt; january)
+nc_lon &lt;- 
+read_ncdf(paste0(path_argo_clim_ph,&quot;/PHclim_15March2022_Prelim.nc&quot;),
+                    var = c(&quot;longitude&quot;))</code></pre>
+<pre><code>Warning in .get_nc_projection(meta$attribute, rep_var, all_coord_var): No
+projection information found in nc file.</code></pre>
+<pre class="r"><code>nc_lon &lt;- as_tibble(nc_lon)
 
-#range(clim_argo_ph_jan$nx)
-# 1 - 360 
-#range(clim_argo_ph_jan$ny)
-# 1 - 46
-#table(clim_argo_ph_jan$ny)
-#range(clim_argo_ph_jan$nz)
-# 1 - 42 
-#range(clim_argo_ph_jan$t)
-# 1 (january only)
-#table(is.na(clim_argo_ph_jan$pH))
-# no NA pH values
-#table(round(clim_argo_ph_jan$pH, digits = 0))
-# 6516 occurrences of pH = 0
+nc_lat &lt;- 
+read_ncdf(paste0(path_argo_clim_ph,&quot;/PHclim_15March2022_Prelim.nc&quot;),
+                    var = c(&quot;latitude&quot;))</code></pre>
+<pre><code>Warning in .get_nc_projection(meta$attribute, rep_var, all_coord_var): No
+projection information found in nc file.</code></pre>
+<pre class="r"><code>nc_lat &lt;- as_tibble(nc_lat)
 
-# clim_argo_ph_jan &lt;- nc_open(paste0(path_argo_clim_ph,
-#                                              &quot;/PHclim_15March2022_Prelim.nc&quot;))
-# print(clim_argo_ph_jan)
-# lon &lt;- ncvar_get(clim_argo_ph_jan, &#39;longitude&#39;)
-# lat &lt;- ncvar_get(clim_argo_ph_jan, &#39;latitude&#39;)
-# depth &lt;- ncvar_get(clim_argo_ph_jan, &#39;depth&#39;)
-# time &lt;- ncvar_get(clim_argo_ph_jan, &#39;time&#39;)
-# pH &lt;- ncvar_get(clim_argo_ph_jan, &#39;pH&#39;)
+nc_depth &lt;- 
+read_ncdf(paste0(path_argo_clim_ph,&quot;/PHclim_15March2022_Prelim.nc&quot;),
+                    var = c(&quot;depth&quot;))</code></pre>
+<pre><code>Warning in .get_nc_projection(meta$attribute, rep_var, all_coord_var): No
+projection information found in nc file.</code></pre>
+<pre class="r"><code>nc_depth &lt;- as_tibble(nc_depth)
 
-# range(lon)
-# # range from 0.5 to 359.5
-# range(lat)
-# # range from -75 to -30 
-# range(depth)
-# # range from 2.1 to 2010.0 
-# range(time)
-# # 1 (january)
-# range(pH, na.rm = TRUE)
-# # 0.0000 to 8.190355 
-# 
-# lon = case_when(lon &lt; 20 ~ lon +360,
-#                 TRUE ~ lon)
+nc_pH &lt;- nc_pH %&gt;%
+   mutate(ny = ny - 0.5,
+          nx = nx - 0.5)
 
-clim_argo_ph_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_ph,
-                                            &quot;/PHclim_15March2022_Prelim.nc&quot;))
-
-# clim_argo_ph_jan &lt;- stars::read_ncdf(paste0(path_argo_clim_ph,
-#                                             &quot;/PHclim_15March2022_Prelim.nc&quot;))
-
-# as_tibble(clim_argo_ph_jan)
+clim_argo_ph_jan &lt;- full_join(nc_pH, nc_lat)</code></pre>
+<pre><code>Joining, by = &quot;ny&quot;</code></pre>
+<pre class="r"><code>clim_argo_ph_jan &lt;- full_join(clim_argo_ph_jan, nc_lon)</code></pre>
+<pre><code>Joining, by = &quot;nx&quot;</code></pre>
+<pre class="r"><code>clim_argo_ph_jan &lt;- full_join(clim_argo_ph_jan, nc_depth)</code></pre>
+<pre><code>Joining, by = &quot;nz&quot;</code></pre>
+<pre class="r"><code>clim_argo_ph_jan &lt;- clim_argo_ph_jan %&gt;%
+   select(-c(starts_with(&quot;n&quot;), &quot;t&quot;))
 
 clim_argo_ph_jan &lt;- clim_argo_ph_jan %&gt;%
-  mutate(nx = as.double(nx),
-         ny = as.double(ny),
-         nz = as.double(nz)) %&gt;%
-  mutate(lon = case_when(nx &lt; 20 ~ nx +360,
-                         TRUE ~ nx))
+   mutate(depth = round(depth))</code></pre>
+<pre class="r"><code>clim_argo_ph_jan %&gt;%
+   ggplot() +
+   geom_tile(aes(longitude, latitude, fill = pH)) +
+   facet_wrap(~depth) +
+   scale_fill_viridis_c() +
+   coord_quickmap()</code></pre>
+<p><img src="figure/argo_clim_pH_ucsd.Rmd/plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>clim_argo_ph_jan %&gt;%
+   filter(pH != 0) %&gt;%
+   ggplot() +
+   geom_tile(aes(longitude, latitude, fill = pH)) +
+   facet_wrap(~depth) +
+   scale_fill_viridis_c() +
+   coord_quickmap()</code></pre>
+<p><img src="figure/argo_clim_pH_ucsd.Rmd/plots-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>clim_argo_ph_jan %&gt;%
+   filter(pH != 0) %&gt;%
+   ggplot(aes(pH)) +
+   geom_histogram() +
+   facet_wrap(~depth) +
+   scale_y_log10() +
+   geom_vline(xintercept = 7.5)</code></pre>
+<pre><code>`stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<pre><code>Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
+<pre><code>Warning: Removed 736 rows containing missing values (geom_bar).</code></pre>
+<p><img src="figure/argo_clim_pH_ucsd.Rmd/plots-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>clim_argo_ph_jan &lt;- clim_argo_ph_jan %&gt;%
+   filter(pH != 0)
 
-# range(clim_argo_ph_jan$lon)
-# 20 to 279 
-
-
-map &lt;-
-  read_rds(paste(path_emlr_utilities,
-                 &quot;map_landmask_WOA18.rds&quot;,
-                 sep = &quot;&quot;))</code></pre>
-<p>Plot the climatological pH profiles for January</p>
-<pre class="r"><code>clim_argo_ph_jan %&gt;% 
-  filter(pH != 0) %&gt;% 
-  ggplot(aes(x = pH,
-             y = nz))+
-  geom_point(aes(x = pH,
-                 y = nz),
-             size = 0.3)+
-  scale_y_reverse()</code></pre>
-<p><img src="figure/argo_clim_pH_ucsd.Rmd/plot_jan_pH_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_jan_pH_profiles-1">
-Past versions of plot_jan_pH_profiles-1.png
-</button>
-</p>
-<div id="fig-plot_jan_pH_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6dd09451d97957708014c9795c72ca7c8f1d7440/docs/figure/argo_clim_pH_ucsd.Rmd/plot_jan_pH_profiles-1.png" target="_blank">6dd0945</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-25
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Location of observations:</p>
-<pre class="r"><code>map+
-  geom_point(data = clim_argo_ph_jan %&gt;% filter(nz == 1),
-             aes(x = lon, 
-                 y = ny),
-             size = 0.2, 
-             alpha = 0.2)+
-  geom_point(data = clim_argo_ph_jan %&gt;% filter(nz == 1,
-                                                ny == 1),
-            aes(x = lon,
-                y = ny),
-            size = 0.3,
-            col = &#39;blue&#39;)+
-  geom_point(data = clim_argo_ph_jan %&gt;% filter(nz == 1,
-                                                ny == 46),
-             aes(x = lon, 
-                 y = ny),
-             size = 0.3, 
-             col = &#39;red&#39;)</code></pre>
-<p><img src="figure/argo_clim_pH_ucsd.Rmd/plot_map_of_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_map_of_observations-1">
-Past versions of plot_map_of_observations-1.png
-</button>
-</p>
-<div id="fig-plot_map_of_observations-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6dd09451d97957708014c9795c72ca7c8f1d7440/docs/figure/argo_clim_pH_ucsd.Rmd/plot_map_of_observations-1.png" target="_blank">6dd0945</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-25
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code># the 46th latitude level is the northernmost latitude (ny = 46, lat = -30?)
-# the 1st latitude level is the southernmost latitude (ny = 1, lat = -75?)
-
-# clim_argo_ph_jan %&gt;% 
-#   mutate(lat = case_when(ny == 1 ~ -75,
-#                          ny == 46 ~ -30,
-#                          TRUE ~ 0))
-
-# clim_argo_ph_jan %&gt;% 
-#   mutate(lat = case_when(ny == seq(1, 46, 1) ~ seq(-75, -30, 1)))
-# 
-# clim_argo_ph_jan %&gt;% 
-#   mutate(lat = replace(ny, c(1:581880), seq(-75, -30, 1)))</code></pre>
+clim_argo_ph_jan %&gt;% write_rds(file = paste0(path_argo_preprocessed, &quot;/ucsd_ph_clim_jan.rds&quot;))</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -988,34 +905,32 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] ncdf4_1.19        oce_1.5-0         gsw_1.0-6         ggOceanMaps_1.2.6
- [5] ggspatial_1.1.5   forcats_0.5.1     stringr_1.4.0     dplyr_1.0.7      
- [9] purrr_0.3.4       readr_2.1.1       tidyr_1.1.4       tibble_3.1.6     
-[13] ggplot2_3.3.5     tidyverse_1.3.1   workflowr_1.7.0  
+ [1] stars_0.5-5     sf_1.0-5        abind_1.4-5     oce_1.5-0      
+ [5] gsw_1.0-6       forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
+ [9] purrr_0.3.4     readr_2.1.1     tidyr_1.1.4     tibble_3.1.6   
+[13] ggplot2_3.3.5   tidyverse_1.3.1 workflowr_1.7.0
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2           sf_1.0-5           lubridate_1.8.0    httr_1.4.2        
- [5] rprojroot_2.0.2    tools_4.1.2        backports_1.4.1    bslib_0.3.1       
- [9] utf8_1.2.2         rgdal_1.5-28       R6_2.5.1           KernSmooth_2.23-20
-[13] rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2   raster_3.5-11     
-[17] withr_2.4.3        sp_1.4-6           tidyselect_1.1.1   processx_3.5.2    
-[21] compiler_4.1.2     git2r_0.29.0       cli_3.1.1          rvest_1.0.2       
-[25] RNetCDF_2.5-2      xml2_1.3.3         labeling_0.4.2     sass_0.4.0        
-[29] scales_1.1.1       classInt_0.4-3     callr_3.7.0        proxy_0.4-26      
-[33] digest_0.6.29      rmarkdown_2.11     pkgconfig_2.0.3    htmltools_0.5.2   
-[37] highr_0.9          dbplyr_2.1.1       fastmap_1.1.0      tidync_0.2.4      
-[41] rlang_0.4.12       readxl_1.3.1       rstudioapi_0.13    farver_2.1.0      
-[45] jquerylib_0.1.4    generics_0.1.1     jsonlite_1.7.3     magrittr_2.0.1    
-[49] ncmeta_0.3.0       Rcpp_1.0.8         munsell_0.5.0      fansi_1.0.2       
-[53] lifecycle_1.0.1    terra_1.5-12       stringi_1.7.6      whisker_0.4       
-[57] yaml_2.2.1         grid_4.1.2         parallel_4.1.2     promises_1.2.0.1  
-[61] crayon_1.4.2       lattice_0.20-45    haven_2.4.3        hms_1.1.1         
-[65] knitr_1.37         ps_1.6.0           pillar_1.6.4       codetools_0.2-18  
-[69] reprex_2.0.1       glue_1.6.0         evaluate_0.14      getPass_0.2-2     
-[73] modelr_0.1.8       vctrs_0.3.8        tzdb_0.2.0         httpuv_1.6.5      
-[77] cellranger_1.1.0   gtable_0.3.0       assertthat_0.2.1   xfun_0.29         
-[81] broom_0.7.11       e1071_1.7-9        later_1.3.0        class_7.3-20      
-[85] units_0.7-2        ellipsis_0.3.2    </code></pre>
+ [1] fs_1.5.2           lubridate_1.8.0    httr_1.4.2         rprojroot_2.0.2   
+ [5] tools_4.1.2        backports_1.4.1    bslib_0.3.1        utf8_1.2.2        
+ [9] R6_2.5.1           KernSmooth_2.23-20 DBI_1.1.2          colorspace_2.0-2  
+[13] withr_2.4.3        tidyselect_1.1.1   processx_3.5.2     compiler_4.1.2    
+[17] git2r_0.29.0       cli_3.1.1          rvest_1.0.2        RNetCDF_2.5-2     
+[21] xml2_1.3.3         labeling_0.4.2     sass_0.4.0         scales_1.1.1      
+[25] classInt_0.4-3     callr_3.7.0        proxy_0.4-26       digest_0.6.29     
+[29] rmarkdown_2.11     pkgconfig_2.0.3    htmltools_0.5.2    highr_0.9         
+[33] dbplyr_2.1.1       fastmap_1.1.0      rlang_0.4.12       readxl_1.3.1      
+[37] rstudioapi_0.13    jquerylib_0.1.4    generics_0.1.1     farver_2.1.0      
+[41] jsonlite_1.7.3     magrittr_2.0.1     ncmeta_0.3.0       Rcpp_1.0.8        
+[45] munsell_0.5.0      fansi_1.0.2        lifecycle_1.0.1    stringi_1.7.6     
+[49] whisker_0.4        yaml_2.2.1         grid_4.1.2         parallel_4.1.2    
+[53] promises_1.2.0.1   crayon_1.4.2       haven_2.4.3        hms_1.1.1         
+[57] knitr_1.37         ps_1.6.0           pillar_1.6.4       reprex_2.0.1      
+[61] glue_1.6.0         evaluate_0.14      getPass_0.2-2      modelr_0.1.8      
+[65] vctrs_0.3.8        tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0  
+[69] gtable_0.3.0       assertthat_0.2.1   xfun_0.29          lwgeom_0.2-8      
+[73] broom_0.7.11       e1071_1.7-9        later_1.3.0        class_7.3-20      
+[77] viridisLite_0.4.0  units_0.7-2        ellipsis_0.3.2    </code></pre>
 </div>
 </div>
 
