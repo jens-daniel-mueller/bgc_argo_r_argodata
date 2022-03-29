@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "rerun with mean instead of lm anomaly detection")
+wflow_publish(all = TRUE, message = "added january plots and changed pH anomaly detection to mean")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -42,6 +42,12 @@ wflow_publish(here::here(
   )
 ),
 message = "added climatology pages")
+
+wflow_publish(here::here(
+  "analysis",
+  c('extreme_temp.Rmd')
+),
+message = "re-build extreme temp page")
 
 
 # Push latest version to GitHub

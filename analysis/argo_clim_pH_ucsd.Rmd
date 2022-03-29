@@ -56,21 +56,40 @@ theme_set(theme_bw())
 # 6516 occurrences of pH = 0
 
 # clim_argo_ph_jan <- nc_open(paste0(path_argo_clim_ph,
-#                                             "/PHclim_15March2022_Prelim.nc"))
+#                                              "/PHclim_15March2022_Prelim.nc"))
 # print(clim_argo_ph_jan)
-# lon <- ncvar_get(clim_argo_ph_jan, 'nx')
-# nlon <- dim(clim_argo_ph_jan$nx)
-# lat <- ncvar_get(clim_argo_ph_jan, 'ny')
-# nlat <- dim(clim_argo_ph_jan$ny)
+# lon <- ncvar_get(clim_argo_ph_jan, 'longitude')
+# lat <- ncvar_get(clim_argo_ph_jan, 'latitude')
+# depth <- ncvar_get(clim_argo_ph_jan, 'depth')
+# time <- ncvar_get(clim_argo_ph_jan, 'time')
+# pH <- ncvar_get(clim_argo_ph_jan, 'pH')
 
+# range(lon)
+# # range from 0.5 to 359.5
+# range(lat)
+# # range from -75 to -30 
+# range(depth)
+# # range from 2.1 to 2010.0 
+# range(time)
+# # 1 (january)
+# range(pH, na.rm = TRUE)
+# # 0.0000 to 8.190355 
+# 
+# lon = case_when(lon < 20 ~ lon +360,
+#                 TRUE ~ lon)
 
 clim_argo_ph_jan <- tidync::hyper_tibble(paste0(path_argo_clim_ph,
                                             "/PHclim_15March2022_Prelim.nc"))
 
-clim_argo_ph_jan <- clim_argo_ph_jan %>% 
+# clim_argo_ph_jan <- stars::read_ncdf(paste0(path_argo_clim_ph,
+#                                             "/PHclim_15March2022_Prelim.nc"))
+
+# as_tibble(clim_argo_ph_jan)
+
+clim_argo_ph_jan <- clim_argo_ph_jan %>%
   mutate(nx = as.double(nx),
          ny = as.double(ny),
-         nz = as.double(nz)) %>% 
+         nz = as.double(nz)) %>%
   mutate(lon = case_when(nx < 20 ~ nx +360,
                          TRUE ~ nx))
 
@@ -135,7 +154,5 @@ map+
 # 
 # clim_argo_ph_jan %>% 
 #   mutate(lat = replace(ny, c(1:581880), seq(-75, -30, 1)))
-
-
 
 ```

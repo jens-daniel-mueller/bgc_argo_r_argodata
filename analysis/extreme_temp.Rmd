@@ -172,6 +172,18 @@ map+
 
 ```
 
+```{r polar_projection_biome_map}
+
+basemap(limits = -32)+
+  geom_spatial_tile(data = region_masks_all_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = biome),
+                    col = NA)+
+  scale_fill_brewer(palette = 'Dark2')
+
+```
+
 ## Basins
 
 ```{r filter_southern_ocean_basins}
@@ -221,6 +233,18 @@ map+
             aes(x = lon,
                 y = lat,
                 fill = basin_AIP))+
+  scale_fill_brewer(palette = 'Dark2')
+
+```
+
+```{r polar_projection_basin_map}
+
+basemap(limits = -32)+
+  geom_spatial_tile(data = basinmask_2x2 %>% filter(lat < -32),
+                    aes(x = lon,
+                        y = lat,
+                        fill = basin_AIP),
+                    col = NA)+
   scale_fill_brewer(palette = 'Dark2')
 
 ```
@@ -294,17 +318,42 @@ OceanSODA_temp_2x2_SO %>%
   facet_wrap(~ month, ncol = 2) +
   coord_quickmap(expand = 0)
 
-OceanSODA_temp_2x2_SO %>%
-  group_split(year) %>%
-  # head(1) %>%
+
+```
+
+```{r monthly_clim_OceanSODA_temp_map, fig.asp=0.4}
+
+OceanSODA_temp_2x2_SO %>% 
+  group_split(month) %>% 
+  #head(1) %>% 
   map(
-    ~ map +
+    ~map +
       geom_tile(data = .x,
-                aes(lon_raw, lat_raw, fill = clim_diff)) +
-      scale_fill_divergent(mid = "grey80") +
-      facet_wrap(~ month, ncol = 2) +
-      labs(title = .x$year) +
-      theme(legend.position = "bottom")
+                aes(x = lon_raw,
+                    y = lat_raw,
+                    fill = clim_temp))+
+      scale_fill_viridis_c()+
+      labs(title = paste0('month:', unique(.x$month)))+
+      theme(legend.position = 'right')
+  )
+  
+```
+
+```{r OceanSODA_temp_anomaly_map, fig.asp=1.5}
+  
+OceanSODA_temp_2x2_SO %>% 
+  group_split(month) %>% 
+  #head(1) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon_raw,
+                    y = lat_raw,
+                    fill = clim_diff))+
+      scale_fill_divergent(mid = 'grey80')+
+      facet_wrap(~year, ncol = 2)+
+      labs(title = paste0('month:', unique(.x$month)))+
+      theme(legend.position = 'right')
   )
 
 ```
@@ -499,9 +548,26 @@ OceanSODA_temp_SO_extreme_grid %>%
 ```{r map_temp_extremes_1x1_plot, fig.asp=1.5}
 # anomaly maps on a 1x1 grid 
 
-OceanSODA_temp_SO_extreme_grid %>%
-  group_split(year) %>%
-  # head(1) %>%
+# OceanSODA_temp_SO_extreme_grid %>%
+#   group_split(year) %>%
+#   # head(1) %>%
+#   map(
+#     ~map +
+#       geom_tile(data = .x,
+#                 aes(x = lon_raw,
+#                     y = lat_raw,
+#                     fill = temp_extreme),
+#                 width = 1,
+#                 height = 1)+
+#       scale_fill_manual(values = HNL_colors_map)+
+#       facet_wrap(~month, ncol = 2)+
+#       labs(title = paste('Year:', unique(.x$year)),
+#            fill = 'temperature')
+#   )
+
+OceanSODA_temp_SO_extreme_grid %>% 
+  group_split(month) %>% 
+  #head(1) %>% 
   map(
     ~map +
       geom_tile(data = .x,
@@ -511,11 +577,10 @@ OceanSODA_temp_SO_extreme_grid %>%
                 width = 1,
                 height = 1)+
       scale_fill_manual(values = HNL_colors_map)+
-      facet_wrap(~month, ncol = 2)+
-      labs(title = paste('Year:', unique(.x$year)),
+      facet_wrap(~year, ncol = 2)+
+      labs(title = paste('month:', unique(.x$month)),
            fill = 'temperature')
   )
-
 ```
 
 ## Anomaly timeseries
@@ -667,7 +732,7 @@ profile_temp_extreme %>%
 
 ### Atl, b1, Oct17
 
-```{r select_specific_temp_profiles_2018}
+```{r select_specific_temp_profiles_2017}
 
 # Temperature extreme: 
 # Atlantic biome 1, 2018, months 2 and 3 
@@ -853,7 +918,7 @@ rm(profile_temp_count_mean)
 Surface Argo temperature vs surface OceanSODA temperature (20 m)
 
 ```{r argo_vs_OceanSODA_temp_mean, fig.asp=1}
-# calculate surface-mean argo pH, for each profile 
+# calculate surface-mean argo SST, for each profile 
 surface_temp_mean <- profile_temp_extreme %>% 
   filter(depth <= 20) %>% 
   group_by(temp_extreme, platform_number, cycle_number) %>% 
@@ -880,6 +945,41 @@ surface_temp_mean %>%
   )
 
 rm(surface_temp_mean)
+
+```
+
+### January overall mean profiles
+
+```{r jan_overall_mean_temp_profiles, fig.asp=1}
+
+profile_temp_extreme_mean_jan <- profile_temp_extreme %>%
+  filter(month == 1) %>% 
+  group_by(temp_extreme, depth) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+profile_temp_extreme_mean_jan %>%
+  arrange(depth) %>%
+  ggplot(aes(y = depth)) +
+  geom_ribbon(aes(xmin = temp_mean - temp_std,
+                  xmax = temp_mean + temp_std,
+                  fill = temp_extreme), 
+              alpha = 0.2)+
+  geom_path(aes(x = temp_mean,
+                col = temp_extreme))+
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = "January mean",
+       col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'mean Argo temperature (ºC)') +
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
+
+rm(profile_temp_extreme_mean_jan)
+
 
 ```
 
@@ -1244,6 +1344,40 @@ profile_temp_extreme_season %>%
   breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) 
 
 rm(profile_temp_extreme_season)
+
+```
+
+### Biome-basin January mean profiles
+
+```{r biome_basin_january_mean_profiles, fig.asp=1}
+
+profile_temp_extreme_biome_basin_jan <- profile_temp_extreme %>%
+  filter(month == 1) %>% 
+  group_by(biome, basin_AIP, temp_extreme, depth) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+profile_temp_extreme_biome_basin_jan %>%
+  arrange(depth) %>%
+  ggplot(aes(x = temp_mean,
+             y = depth)) +
+  geom_ribbon(aes(xmin = temp_mean - temp_std,
+                  xmax = temp_mean + temp_std,
+                  fill = temp_extreme), 
+              alpha = 0.2)+
+  geom_path(aes(x = temp_mean,
+                col = temp_extreme))+
+  facet_grid(biome~basin_AIP)+
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = "Basin-biome-mean January profiles",
+       col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'sqrt(depth)',
+       x = 'mean Argo temperature (ºC)') +
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 
 ```
 
