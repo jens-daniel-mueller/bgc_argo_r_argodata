@@ -1282,7 +1282,7 @@ rm(surface_temp_season)
 
 ##### Atl, b2, winter
 
-```{r temp_profile_season_biome_Atlantic}
+```{r temp_profile_season_biome_Atlantic, fig.asp=1}
 
 profile_temp_extreme_season %>%
   filter(basin_AIP == 'Atlantic',
@@ -1314,7 +1314,7 @@ profile_temp_extreme_season %>%
 
 ##### Atl, b1, spring
 
-```{r Atlantic_biome_1_spring_mean_profiles}
+```{r Atlantic_biome_1_spring_mean_profiles, fig.asp=1}
 
 profile_temp_extreme_season %>%
   filter(basin_AIP == 'Atlantic',
@@ -1520,7 +1520,7 @@ remove_clim_jan <- remove_clim_jan %>%
 
 ### Anomaly
 
-```{r plot_january_anomaly_profiles}
+```{r plot_january_anomaly_profiles, fig.asp=1}
 
 remove_clim_jan %>% 
   group_split(year) %>% 
@@ -1552,7 +1552,7 @@ remove_clim_jan %>%
 
 ### Overall mean anomaly
 
-```{r plot_overall_mean_clim_removed_profiles}
+```{r plot_overall_mean_clim_removed_profiles, fig.asp=1}
 
 remove_clim_jan_overall_mean <- remove_clim_jan %>% 
   group_by(temp_extreme, depth) %>% 
@@ -1585,7 +1585,7 @@ rm(remove_clim_jan_overall_mean)
 
 ### Biome-mean anomaly
 
-```{r plot_biome_mean_clim_removed_profiles}
+```{r plot_biome_mean_clim_removed_profiles, fig.asp=1}
 
 remove_clim_jan_biome_mean <- remove_clim_jan %>% 
   group_by(temp_extreme, depth, biome) %>% 
@@ -1618,7 +1618,7 @@ rm(remove_clim_jan_biome_mean)
 
 ### Basin-mean anomaly
 
-```{r plot_basin_mean_anomaly_profiles}
+```{r plot_basin_mean_anomaly_profiles, fig.asp=1}
 
 remove_clim_jan_basin_mean <- remove_clim_jan %>% 
   group_by(basin_AIP, temp_extreme, depth) %>% 
@@ -1651,7 +1651,7 @@ rm(remove_clim_jan_basin_mean)
 
 ### Basin-biome-mean anomaly
 
-```{r plot_basin_biome_mean_anomaly_profiles, fig.asp=1.2}
+```{r plot_basin_biome_mean_anomaly_profiles, fig.asp=1}
 
 remove_clim_jan_basin_biome_mean <- remove_clim_jan %>% 
   group_by(basin_AIP, biome, temp_extreme, depth) %>% 

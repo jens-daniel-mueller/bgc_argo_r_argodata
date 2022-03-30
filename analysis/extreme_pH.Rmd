@@ -1134,7 +1134,10 @@ surface_ph_basin %>%
 rm(surface_ph_basin)
 ```
 
-```{r}
+### Biome-basin January mean
+
+```{r january_biome_basin_profiles, fig.asp=1}
+
 profile_extreme_biome_basin_jan <- profile_extreme %>%
   filter(month == 1) %>% 
   group_by(biome, basin_AIP, ph_extreme, depth) %>%
@@ -1284,7 +1287,7 @@ rm(surface_ph_season)
 
 ##### Atl, b2, winter
 
-```{r season_biome_1_Atlantic_profile_winter}
+```{r season_biome_1_Atlantic_profile_winter, fig.asp=1}
 
 profile_extreme_season %>%
   filter(basin_AIP == 'Atlantic',
@@ -1316,7 +1319,7 @@ profile_extreme_season %>%
 
 ##### Atl, b1, summer
 
-```{r Atlantic_biome_1_profile_season_summer}
+```{r Atlantic_biome_1_profile_season_summer, fig.asp=1}
 profile_extreme_season %>%
   filter(basin_AIP == 'Atlantic',
          season == 'summer',
@@ -1482,7 +1485,7 @@ remove_clim_jan <- remove_clim_jan %>%
 
 ### Anomaly
 
-```{r plot_january_anomaly_ph_profiles}
+```{r plot_january_anomaly_ph_profiles, fig.asp=1}
 
 remove_clim_jan %>% 
   group_split(year) %>% 
@@ -1514,7 +1517,7 @@ remove_clim_jan %>%
 
 ### Overall mean anomaly
 
-```{r plot_overall_mean_clim_removed_profiles_ph}
+```{r plot_overall_mean_clim_removed_profiles_ph, fig.asp=1}
 
 remove_clim_jan_overall_mean <- remove_clim_jan %>% 
   group_by(ph_extreme, depth) %>% 
@@ -1547,7 +1550,7 @@ rm(remove_clim_jan_overall_mean)
 
 ### Biome-mean anomaly
 
-```{r plot_biome_mean_clim_removed_profiles}
+```{r plot_biome_mean_clim_removed_profiles, fig.asp=1}
 
 remove_clim_jan_biome_mean <- remove_clim_jan %>% 
   group_by(ph_extreme, depth, biome) %>% 
@@ -1580,7 +1583,7 @@ rm(remove_clim_jan_biome_mean)
 
 ### Basin-mean anomaly
 
-```{r plot_basin_mean_anomaly_profiles}
+```{r plot_basin_mean_anomaly_profiles, fig.asp=1}
 
 remove_clim_jan_basin_mean <- remove_clim_jan %>% 
   group_by(basin_AIP, ph_extreme, depth) %>% 
@@ -1613,7 +1616,7 @@ rm(remove_clim_jan_basin_mean)
 
 ### Basin-biome-mean anomaly
 
-```{r plot_basin_biome_mean_anomaly_profiles_ph, fig.asp=1.2}
+```{r plot_basin_biome_mean_anomaly_profiles_ph, fig.asp=1}
 
 remove_clim_jan_basin_biome_mean <- remove_clim_jan %>% 
   group_by(basin_AIP, biome, ph_extreme, depth) %>% 
