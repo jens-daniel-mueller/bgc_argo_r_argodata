@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec4d4031756aeaa94080b03c6d91103433e6f3e59targetblankc4d4031a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c4d4031756aeaa94080b03c6d91103433e6f3e59" target="_blank">c4d4031</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11915d80b02e79c748a9e5f81a849586a38bad73targetblank11915d8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11915d80b02e79c748a9e5f81a849586a38bad73" target="_blank">11915d8</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec4d4031756aeaa94080b03c6d91103433e6f3e59targetblankc4d4031a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11915d80b02e79c748a9e5f81a849586a38bad73targetblank11915d8a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c4d4031756aeaa94080b03c6d91103433e6f3e59" target="_blank">c4d4031</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11915d80b02e79c748a9e5f81a849586a38bad73" target="_blank">11915d8</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -613,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/11915d80b02e79c748a9e5f81a849586a38bad73/analysis/loading_data.Rmd" target="_blank">11915d8</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-31
+</td>
+<td>
+loaded in Mayot biomes and Roemmich temp climatology
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/eb8e3bef243348be7eaeb128a2fa9ef0cbfed93c/docs/loading_data.html" target="_blank">eb8e3be</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-31
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2238,6 +2272,11 @@ ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
     -c(profile_chla_qc:profile_cdom_qc),
     -c(profile_cndc_qc:profile_up_radiance555_qc)
   )</code></pre>
+</div>
+<div id="biome-information" class="section level3">
+<h3>Biome information</h3>
+<div id="reccap-biomes" class="section level4">
+<h4>RECCAP biomes</h4>
 <p>Add in RECCAP biome separations to the pH data</p>
 <pre class="r"><code>path_basin_mask &lt;- &quot;/nfs/kryo/work/updata/reccap2/&quot;
 
@@ -2298,6 +2337,40 @@ region_masks_all_2x2 &lt;- region_masks_all %&gt;%
 # add the region names to the surface pH dataframes
 ph_surface_2x2 &lt;- inner_join(ph_surface_2x2, region_masks_all_2x2)
 ph_surface_1x1 &lt;- inner_join(ph_surface_1x1, region_masks_all_1x1)</code></pre>
+</div>
+<div id="mayot-biomes" class="section level4">
+<h4>Mayot biomes</h4>
+<pre class="r"><code>nm_biomes &lt;- tidync::hyper_tibble(paste0(path_argo, &quot;/SouthernOcean_mask_NM.nc&quot;))
+# 1 degree lon/lat grid
+
+# table(nm_regions$LATITUDE) # 1 degree intervals
+# table((nm_regions$LONGITUDE)) # 1 degree longitude intervals
+
+nm_biomes &lt;- nm_biomes %&gt;% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon))
+
+nm_biomes &lt;- nm_biomes %&gt;% 
+  filter(ICE == 1 | STSS == 1 | SPSS == 1)
+
+nm_biomes &lt;- nm_biomes %&gt;% 
+  pivot_longer(cols = c(STSS, SPSS, ICE),
+               values_to = &#39;biome_mask&#39;,
+               names_to = &#39;biome_name&#39;)
+
+nm_biomes &lt;- nm_biomes %&gt;% 
+  filter(biome_mask==1,
+         lat &lt;= -30)
+
+# write data to file 
+
+nm_biomes %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))</code></pre>
+</div>
+</div>
+<div id="write-ph-data" class="section level3">
+<h3>Write pH data</h3>
 <pre class="r"><code>ph_merge_1x1 %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_merge_1x1.rds&quot;))
 
@@ -2321,8 +2394,9 @@ region_masks_all_1x1 %&gt;%
 
 region_masks_all_2x2 %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))</code></pre>
-<div id="oceansoda-temperature-data" class="section level4">
-<h4>OceanSODA temperature data</h4>
+</div>
+<div id="oceansoda-temperature-data" class="section level3">
+<h3>OceanSODA temperature data</h3>
 <pre class="r"><code>OceanSODA &lt;-
   tidync::hyper_tibble(paste(
     path_updata,
@@ -2348,14 +2422,13 @@ OceanSODA_temp &lt;- OceanSODA %&gt;%
 OceanSODA_temp %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &#39;/OceanSODA_temp.rds&#39;))</code></pre>
 </div>
-<div id="oceansoda-ph-data" class="section level4">
-<h4>OceanSODA pH data</h4>
+<div id="oceansoda-ph-data" class="section level3">
+<h3>OceanSODA pH data</h3>
 <pre class="r"><code>OceanSODA &lt;- OceanSODA %&gt;% 
   select(year, date, lat, lon, ph_total, ph_total_uncert) 
   
 OceanSODA %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &#39;/OceanSODA.rds&#39;))</code></pre>
-</div>
 </div>
 </div>
 <div id="argo-temperature-climatology" class="section level1">
