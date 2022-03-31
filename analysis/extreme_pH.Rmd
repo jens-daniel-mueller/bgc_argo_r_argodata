@@ -254,6 +254,7 @@ OceanSODA_2x2 <- OceanSODA %>%
     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
     lon = as.numeric(as.character(lon))) # regrid into 2x2º grid
 
+rm(OceanSODA)
 ```
 
 ## Apply region masks
@@ -289,7 +290,7 @@ OceanSODA_2x2_SO %>%
                     fill = clim_ph))+
       scale_fill_viridis_c()+
       lims(y = c(-80, -30))+
-      labs(title = paste('month:', unique(.x$month)))
+      labs(title = paste('climatological OceanSODA pH (1995-2020) month:', unique(.x$month)))
   )
   
 OceanSODA_2x2_SO %>% 
@@ -303,7 +304,7 @@ OceanSODA_2x2_SO %>%
                     fill = clim_diff))+
       scale_fill_divergent(mid = 'grey80')+
       lims(y = c(-80, -30))+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 3)+
       labs(title = paste('month:', unique(.x$month)))+
       theme(legend.position = 'right')
   )
@@ -507,10 +508,12 @@ OceanSODA_2x2_SO_extreme_grid %>%
 ```{r flat_map_OceanSODA_ph_extremes_1x1_plot, fig.asp=1.5}
 
 #use the original lat/lon grid to plot the extreme on a 1x1
+#(anomalies detected with 1995-2020 data but mapped only from 2013 to 2020)
 
 OceanSODA_2x2_SO_extreme_grid %>%
+  filter(year >= 2013) %>% 
   group_split(month) %>%
-  head(1) %>%
+  #head(1) %>%
   map(
     ~map +
       geom_tile(data = .x,
@@ -603,7 +606,8 @@ OceanSODA_2x2_SO_extreme_grid <- OceanSODA_2x2_SO_extreme_grid %>%
   select(-c(lon, lat)) %>%
   rename(OceanSODA_ph = ph_total,
          lon = lon_raw,
-         lat = lat_raw)
+         lat = lat_raw) %>% 
+  filter(year >= 2013)
 
 # combine the argo profile data to the surface extreme data
 profile_extreme <- inner_join(
@@ -734,7 +738,7 @@ rm(OceanSODA_SO_extreme_grid_2017, profile_extreme_Atl_2017)
 
 ### Atl, b1, Dec 2017
 
-```{r select_specific_profiles_2017}
+```{r select_specific_profiles_2017, eval=FALSE}
 
 # Plot profiles for the Pacific basin, biome 3, months 12, 2017
 
@@ -785,7 +789,7 @@ rm(OceanSODA_SO_extreme_grid_2017, profile_extreme_Atl_2017)
 
 ### Atl, b1, Jan 2018
 
-```{r select_specific_profiles_2018}
+```{r select_specific_profiles_2018, eval=FALSE}
 
 OceanSODA_SO_extreme_grid_2018 <-   
   OceanSODA_2x2_SO_extreme_grid %>% 
@@ -870,7 +874,6 @@ profile_extreme <- profile_extreme %>%
 ```{r mean_profiles, fig.asp=1}
 
 profile_extreme_mean <- profile_extreme %>%
-  filter(month == 1) %>% 
   group_by(ph_extreme, depth) %>%
   summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
@@ -896,7 +899,7 @@ profile_extreme_mean %>%
   labs(title = "Overall mean",
        col = 'OceanSODA\npH anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\npH anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'Argo mean pH') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
@@ -956,6 +959,46 @@ surface_ph_mean %>%
 rm(surface_ph_mean)
 ```
 
+### January Overall Mean Profiles
+
+```{r overall_mean_january_ph_profiles, fig.asp=1}
+
+profile_extreme_mean_jan <- profile_extreme %>%
+  filter(month == 1) %>% 
+  group_by(ph_extreme, depth) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+profile_extreme_mean_jan %>%
+  arrange(depth) %>%
+  ggplot(aes(
+    x = ph_mean,
+    y = depth,
+    group = ph_extreme,
+    col = ph_extreme
+  )) +
+  geom_ribbon(aes(xmin = ph_mean - ph_std,
+                  xmax = ph_mean + ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = "Overall mean January profiles",
+       col = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\npH anomaly \n(mean ± st dev)',
+       y = 'depth (m)',
+       x = 'Argo mean pH') +
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
+
+rm(profile_extreme_mean_jan)
+
+```
+
 ### Season x biome
 
 ```{r mean_profiles_season_biome, fig.asp=1}
@@ -985,8 +1028,9 @@ profile_extreme_biome %>%
   scale_fill_manual(values = HNL_colors)+
   labs(col = 'OceanSODA\npH anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\npH anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
-       x = 'Biome mean Argo pH') +
+       y = 'depth (m)',
+       x = 'Biome mean Argo pH',
+       title = 'Biome-mean Argo profiles') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)
@@ -1072,8 +1116,9 @@ profile_extreme_basin %>%
   scale_fill_manual(values = HNL_colors)+
   labs(col = 'OceanSODA\npH anomaly\n(mean ± st dev)',
        fill = 'OceanSODA\npH anomaly\n(mean ± st dev)',
-       y = 'sqrt(depth)',
-       x = 'Basin mean Argo pH')+
+       y = 'depth (m)',
+       x = 'Basin mean Argo pH',
+       title = 'Basin-mean Argo profiles')+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)
@@ -1166,7 +1211,7 @@ profile_extreme_biome_basin_jan %>%
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 
-
+rm(profile_extreme_biome_basin_jan)
 ```
 
 ### Season x biome x basin
@@ -1424,7 +1469,7 @@ Points are the January climatological pH, lines are the depth-binned Argo profil
 
 remove_clim_jan %>%
   group_split(biome, basin_AIP, year) %>%
-  head(1) %>%
+  #head(1) %>%
   map(
     ~ ggplot() +
       geom_path(
@@ -1489,7 +1534,7 @@ remove_clim_jan <- remove_clim_jan %>%
 
 remove_clim_jan %>% 
   group_split(year) %>% 
-  head(1) %>% 
+  #head(1) %>% 
   map(
     ~ggplot()+
       geom_path(data = .x %>% filter(ph_extreme == 'N'),
@@ -1510,7 +1555,7 @@ remove_clim_jan %>%
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
       facet_grid(basin_AIP~biome)+
-      labs(title = unique(.x$year))
+      labs(title = paste('January', unique(.x$year)))
   )
 
 ```
@@ -1542,7 +1587,7 @@ remove_clim_jan_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Overall mean profiles')
+  labs(title = 'January Overall Mean Anomaly Profiles')
 
 rm(remove_clim_jan_overall_mean)
 
@@ -1574,7 +1619,7 @@ remove_clim_jan_biome_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
-  labs(title = 'Biome-mean profiles')+
+  labs(title = 'January Biome-mean anomaly profiles')+
   facet_wrap(~biome)
 
 rm(remove_clim_jan_biome_mean)
@@ -1608,7 +1653,7 @@ remove_clim_jan_basin_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Basin-mean profiles')
+  labs(title = 'January Basin-mean anomaly profiles')
 
 rm(remove_clim_jan_basin_mean)
   
@@ -1641,8 +1686,8 @@ remove_clim_jan_basin_biome_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Basin-biome-mean profiles')
+  labs(title = 'January Basin-biome-mean anomaly profiles')
 
 rm(remove_clim_jan_basin_biome_mean)
-  
+
 ```

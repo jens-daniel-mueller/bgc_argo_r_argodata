@@ -74,7 +74,7 @@ basinmask <- basinmask %>%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
   select(-c(MLR_basins, basin))
 
-# OceanSODA temperature
+# OceanSODA temperature (from 1995 to 2020)
 
 OceanSODA_temp <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_temp.rds"))
 
@@ -301,7 +301,6 @@ OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2_SO, basinmask_2x2)
 
 OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>% 
   filter(!is.na(temperature))
-# results in 925 056 observations 
 # no NA clim_diff values 
 
 ```
@@ -351,7 +350,7 @@ OceanSODA_temp_2x2_SO %>%
                     y = lat_raw,
                     fill = clim_diff))+
       scale_fill_divergent(mid = 'grey80')+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 3)+
       labs(title = paste0('month:', unique(.x$month)))+
       theme(legend.position = 'right')
   )
@@ -566,6 +565,7 @@ OceanSODA_temp_SO_extreme_grid %>%
 #   )
 
 OceanSODA_temp_SO_extreme_grid %>% 
+  filter(year >= 2013) %>% 
   group_split(month) %>% 
   #head(1) %>% 
   map(
@@ -577,7 +577,7 @@ OceanSODA_temp_SO_extreme_grid %>%
                 width = 1,
                 height = 1)+
       scale_fill_manual(values = HNL_colors_map)+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 3)+
       labs(title = paste('month:', unique(.x$month)),
            fill = 'temperature')
   )
@@ -658,7 +658,8 @@ OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
   select(-c(lon, lat)) %>%
   rename(OceanSODA_temp = temperature,
          lon = lon_raw,
-         lat = lat_raw)
+         lat = lat_raw) %>% 
+  filter(year >=2013)
 # 925 056 obs 
 
 # combine the argo profile data to the surface extreme data
@@ -888,7 +889,7 @@ profile_temp_extreme_mean %>%
   labs(title = "Overall mean",
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
@@ -973,7 +974,7 @@ profile_temp_extreme_mean_jan %>%
   labs(title = "January mean",
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
@@ -1012,7 +1013,7 @@ profile_temp_extreme_biome %>%
   scale_fill_manual(values = HNL_colors)+
   labs(col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'biome mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
@@ -1102,7 +1103,7 @@ profile_temp_extreme_basin %>%
   scale_fill_manual(values = HNL_colors)+
   labs(col = 'OceanSODA\ntemp anomaly\n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly\n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'basin-mean Argo temperature (ªC)')+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
@@ -1198,7 +1199,7 @@ profile_temp_extreme_season %>%
       labs(title = paste("season:", unique(.x$season)),
            col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
            fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-           y = 'sqrt(depth)',
+           y = 'depth (m)',
            x = 'mean Argo temperature (ºC)') +
       scale_y_continuous(
         trans = trans_reverser("sqrt"),
@@ -1305,7 +1306,7 @@ profile_temp_extreme_season %>%
   labs(title = 'Atlantic basin, biome 2, winter',
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(
   trans = trans_reverser("sqrt"),
@@ -1337,7 +1338,7 @@ profile_temp_extreme_season %>%
   labs(title = 'Atlantic basin, biome 1, spring',
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(
   trans = trans_reverser("sqrt"),
@@ -1374,7 +1375,7 @@ profile_temp_extreme_biome_basin_jan %>%
   labs(title = "Basin-biome-mean January profiles",
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
-       y = 'sqrt(depth)',
+       y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
@@ -1646,7 +1647,7 @@ remove_clim_jan_basin_mean %>%
   labs(title = 'Basin-mean profiles')
 
 rm(remove_clim_jan_basin_mean)
-  
+
 ```
 
 ### Basin-biome-mean anomaly
@@ -1679,5 +1680,5 @@ remove_clim_jan_basin_biome_mean %>%
   labs(title = 'Basin-biome-mean profiles')
 
 rm(remove_clim_jan_basin_biome_mean)
-  
+
 ```
