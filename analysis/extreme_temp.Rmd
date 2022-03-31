@@ -60,6 +60,10 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
   rename(biome = value) %>% 
   mutate(coast = as.character(coast))
 
+# updated biomes of Nicolas Mayot 
+
+nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
+
 # WOA 18 basin mask
 
 basinmask <-
@@ -146,7 +150,20 @@ map +
             aes(x = lon, 
                 y = lat, 
                 fill = biome))+
-  scale_fill_brewer(palette = 'Dark2')
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'RECCAP biomes (pre-grid reduction)')
+
+```
+
+```{r new_mayot_biomes_pre_grid_reduction, fig.asp=0.4}
+
+map+
+  geom_tile(data = nm_biomes,
+            aes(x = lon,
+                y = lat,
+                fill = biome_name))+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'new Mayot biomes (pre-grid reduction)')
 
 ```
 
@@ -158,7 +175,17 @@ region_masks_all_2x2 <- region_masks_all_2x2 %>%
   slice_max(n, with_ties = FALSE) %>%
   ungroup()
 
- 
+nm_biomes_2x2 <- nm_biomes %>% 
+  mutate(lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+         lon = as.numeric(as.character(lon)),
+         lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+         lat = as.numeric(as.character(lat)))
+
+nm_biomes_2x2 <- nm_biomes_2x2 %>% 
+  count(lon, lat, biome_name) %>% 
+  group_by(lon, lat) %>% 
+  slice_max(n, with_ties = FALSE) %>% 
+  ungroup()
 ```
 
 ```{r biomes_map_post_grid_reduction, fig.asp=0.4}
@@ -168,7 +195,8 @@ map+
             aes(x = lon,
                 y = lat,
                 fill = biome))+
-  scale_fill_brewer(palette = 'Dark2')
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'RECCAP biomes post-grid reduction')
 
 ```
 
@@ -181,6 +209,18 @@ basemap(limits = -32)+
                         fill = biome),
                     col = NA)+
   scale_fill_brewer(palette = 'Dark2')
+
+```
+
+```{r new_mayot_biomes_map, fig.asp=0.4}
+
+map+
+  geom_tile(data = nm_biomes_2x2,
+            aes(x = lon,
+                y = lat,
+                fill = biome_name))+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs('new Mayot biomes post-grid reduction')
 
 ```
 
@@ -297,7 +337,10 @@ OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2_SO, basinmask_2x2)
 # expected number of rows from -30 to -70º latitude, 360º longitude, for 12 months, 8 years:
 # 40 lat x 360 lon x 12 months x 8 years = 1 382 400 rows 
 # actual number of rows: 925 260 (in line with expectations)
-# original 1x1: 
+
+OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2_SO, nm_biomes_2x2 %>% 
+                                      select(-n)) %>% 
+  rename(new_biomes = biome_name)
 
 OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>% 
   filter(!is.na(temperature))
@@ -406,7 +449,8 @@ OceanSODA_temp_regression_augmented <- bind_cols(
     select(date,
            biome, basin_AIP, 
            temperature, clim_temp, 
-           lat_raw, lon_raw))
+           lat_raw, lon_raw,
+           new_biomes))
 
 OceanSODA_temp_regression_glanced <- OceanSODA_temp_regression %>%
   select(-c(data, fit, tidied, augmented)) %>%
@@ -598,6 +642,19 @@ OceanSODA_temp_SO_extreme_grid %>%
   scale_color_manual(values = HNL_colors) +
   facet_grid(basin_AIP~biome)+
   theme(legend.position = 'bottom')
+
+# same plot, but with the new biomes:
+
+OceanSODA_temp_SO_extreme_grid %>% 
+  group_by(year, new_biomes, basin_AIP, temp_extreme) %>% 
+  summarise(temp_regional = mean(temperature, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  ggplot(aes(x = year, y = temp_regional, col = temp_extreme))+
+  geom_point(size = 0.3)+
+  geom_line()+
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP~new_biomes)+
+  theme(legend.position = 'bottom')
 ```
 
 ## Anomaly histogram
@@ -609,6 +666,19 @@ OceanSODA_temp_SO_extreme_grid %>%
   geom_density() +
   scale_color_manual(values = HNL_colors) +
   facet_grid(basin_AIP ~ biome) +
+  coord_cartesian(xlim = c(-2, 28)) +
+  labs(x = 'value',
+       y = 'density',
+       col = 'temp anomaly') +
+  theme(legend.position = 'bottom')
+
+# same plot, but with new biomes 
+
+OceanSODA_temp_SO_extreme_grid %>%
+  ggplot(aes(temperature, col = temp_extreme)) +
+  geom_density() +
+  scale_color_manual(values = HNL_colors) +
+  facet_grid(basin_AIP ~ new_biomes) +
   coord_cartesian(xlim = c(-2, 28)) +
   labs(x = 'value',
        y = 'density',
@@ -647,6 +717,8 @@ full_argo_2x2_SO <- inner_join(full_argo_2x2, region_masks_all_2x2)
 # add in basin separations
 full_argo_2x2_SO <- inner_join(full_argo_2x2_SO, basinmask_2x2)
 
+# add in new Mayot southern Ocean biomes 
+full_argo_2x2_SO <- inner_join(full_argo_2x2_SO, nm_biomes_2x2)
 ```
 
 # Join OceanSODA
@@ -673,7 +745,7 @@ profile_temp_extreme <- inner_join(
     select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
            clim_temp, clim_diff,
-           biome, basin_AIP)))
+           biome, basin_AIP, new_biomes)))
 
 profile_temp_extreme <- profile_temp_extreme %>% 
   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
@@ -693,7 +765,9 @@ N profiles correspond to normal surface OceanSODA temperature
 
 ## Raw
 
-```{r temp_profiles_raw}
+### By RECCAP biomes
+
+```{r temp_profiles_raw_RECCAP_biomes}
 
 profile_temp_extreme %>%
   group_split(biome, basin_AIP, year) %>% 
@@ -724,6 +798,46 @@ profile_temp_extreme %>%
           unique(.x$year),
           "| biome:",
           unique(.x$biome)
+        ),
+        col = 'OceanSODA temp \nanomaly'
+      )
+  )
+
+```
+
+### By Mayot biomes
+
+```{r temp_profiles_raw_Mayot_biomes}
+
+profile_temp_extreme %>%
+  group_split(new_biomes, basin_AIP, year) %>% 
+  # head(1) %>%
+  map(
+    ~ ggplot() +
+      geom_path(data = .x %>% filter(temp_extreme == 'N'),
+                aes(x = temp_adjusted, 
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.3) +
+      geom_path(data = .x %>% filter(temp_extreme == 'H' | temp_extreme == 'L'),
+                aes(x = temp_adjusted,
+                    y = depth,
+                    group = platform_cycle,
+                    col = temp_extreme),
+                size = 0.5)+
+      scale_y_reverse() +
+      scale_color_manual(values = HNL_colors) +
+      facet_wrap(~ month, ncol = 6) +
+      labs(
+        x = 'Argo temperature (ºC)',
+        y = 'depth (m)',
+        title = paste(
+          unique(.x$basin_AIP),
+          "|",
+          unique(.x$year),
+          "| biome:",
+          unique(.x$new_biomes)
         ),
         col = 'OceanSODA temp \nanomaly'
       )
@@ -984,7 +1098,7 @@ rm(profile_temp_extreme_mean_jan)
 
 ```
 
-### Season x biome
+### Season x RECCAP biome
 
 ```{r mean_temp_profiles_season_biome, fig.asp=1}
 
@@ -1068,6 +1182,100 @@ surface_temp_biome %>%
               xlim = c(-3, 25),
               ylim = c(-3, 25))+
   facet_grid(season~biome) +
+    labs(title = paste( 'Temp extreme:', unique(.x$temp_extreme)),
+         x = 'OceanSODA temp',
+         y = 'Argo temp')
+  )
+
+rm(surface_temp_biome)
+
+```
+
+### Season x Mayot biomes
+
+```{r mean_temp_profiles_season_new_biomes, fig.asp = 1}
+
+profile_temp_extreme_biome <- profile_temp_extreme %>% 
+  group_by(season, new_biomes, temp_extreme, depth) %>% 
+  summarise(temp_biome = mean(temp_adjusted, na.rm = TRUE),
+            temp_std_biome = sd(temp_adjusted, na.rm = TRUE)) %>% 
+  ungroup()
+  
+
+profile_temp_extreme_biome %>%
+  ggplot(aes(
+    x = temp_biome,
+    y = depth,
+    group = temp_extreme,
+    col = temp_extreme
+  )) +
+  geom_ribbon(aes(xmax = temp_biome + temp_std_biome,
+                  xmin = temp_biome - temp_std_biome,
+                  group = temp_extreme,
+                  fill = temp_extreme),
+              col = NA, 
+              alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'depth (m)',
+       x = 'biome mean Argo temperature (ºC)') +
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+  lims(x = c(-3, 18))+
+  facet_grid(season ~ new_biomes)
+
+rm(profile_temp_extreme_biome)
+
+```
+
+Number of profiles per season per Mayot biome
+
+```{r count_temp_profiles_season_new_biome, fig.asp=1}
+
+profile_temp_count_biome <- profile_temp_extreme %>% 
+  distinct(season, new_biomes, temp_extreme, platform_number, cycle_number) %>%
+  group_by(season, new_biomes, temp_extreme) %>% 
+  count(temp_extreme)
+
+profile_temp_count_biome %>% 
+  ggplot(aes(x = temp_extreme, y = n, fill = temp_extreme))+
+  geom_col(width = 0.5)+
+  facet_grid(season ~ new_biomes)+
+  scale_y_continuous(trans = 'log10')+
+  labs(y = 'log(number of profiles)',
+       title = 'Number of profiles season x Mayot biome')
+
+rm(profile_temp_count_biome)
+
+```
+
+Surface Argo temp vs surface OceanSODA temp season x Mayot biome (20 m)
+
+```{r argo_vs_OceanSODA_temp_new_biome, fig.asp=1}
+
+surface_temp_biome <- profile_temp_extreme %>% 
+  filter(depth <= 20) %>% 
+  group_by(season, new_biomes, temp_extreme, platform_number, cycle_number) %>% 
+  summarise(argo_surf_temp = mean(temp_adjusted, na.rm=TRUE),
+            OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
+
+surface_temp_biome %>% 
+  group_by(temp_extreme) %>% 
+  group_split(temp_extreme) %>% 
+  map(
+  ~ggplot(data = .x, aes(x = OceanSODA_surf_temp, 
+             y = argo_surf_temp))+
+  geom_bin2d(data = .x, aes(x = OceanSODA_surf_temp, 
+                 y = argo_surf_temp)) +
+  scale_fill_viridis_c()+
+  geom_abline(slope = 1, intercept = 0)+
+  coord_fixed(ratio = 1, 
+              xlim = c(-3, 25),
+              ylim = c(-3, 25))+
+  facet_grid(season~new_biomes) +
     labs(title = paste( 'Temp extreme:', unique(.x$temp_extreme)),
          x = 'OceanSODA temp',
          y = 'Argo temp')
@@ -1166,7 +1374,7 @@ rm(surface_temp_basin)
 
 ```
 
-### Season x biome x basin
+### Season x RECCAP biome x basin
 
 ```{r mean_temp_profiles_season_biome_basin, fig.asp=1}
 
@@ -1348,7 +1556,51 @@ rm(profile_temp_extreme_season)
 
 ```
 
-### Biome-basin January mean profiles
+### Season x Mayot biome x Basin
+
+```{r temp_profiles_new_biomes_basin, fig.asp=1}
+
+profile_temp_extreme_season <- profile_temp_extreme %>%
+  group_by(season, new_biomes, basin_AIP, temp_extreme, depth) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+profile_temp_extreme_season %>%
+  arrange(depth) %>%
+  group_split(season) %>%
+  # head(1) %>%
+  map(
+    ~ ggplot(
+      data = .x,
+      aes(x = temp_mean,
+          y = depth,
+          group = temp_extreme,
+          col = temp_extreme)) +
+      geom_ribbon(aes(xmax = temp_mean + temp_std,
+                      xmin = temp_mean - temp_std,
+                      group = temp_extreme,
+                      fill = temp_extreme),
+                  col = NA,
+                  alpha = 0.2)+
+      geom_path() +
+      scale_color_manual(values = HNL_colors) +
+      scale_fill_manual(values = HNL_colors) +
+      labs(title = paste("season:", unique(.x$season)),
+           col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+           y = 'depth (m)',
+           x = 'mean Argo temperature (ºC)') +
+      scale_y_continuous(
+        trans = trans_reverser("sqrt"),
+        breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))
+      ) +
+      facet_grid(basin_AIP ~ new_biomes)
+  )
+
+```
+
+### RECCAP Biome-basin January mean profiles
 
 ```{r biome_basin_january_mean_profiles, fig.asp=1}
 
@@ -1372,13 +1624,48 @@ profile_temp_extreme_biome_basin_jan %>%
   facet_grid(biome~basin_AIP)+
   scale_color_manual(values = HNL_colors) +
   scale_fill_manual(values = HNL_colors)+
-  labs(title = "Basin-biome-mean January profiles",
+  labs(title = "Basin-RECCAP biome-mean January profiles",
        col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
        y = 'depth (m)',
        x = 'mean Argo temperature (ºC)') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
+
+```
+
+### Mayot biome - basin January mean profiles
+
+```{r new_biome_basin_january_mean_profiles, fig.asp=1}
+
+profile_temp_extreme_biome_basin_jan <- profile_temp_extreme %>%
+  filter(month == 1) %>% 
+  group_by(new_biomes, basin_AIP, temp_extreme, depth) %>%
+  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
+            temp_std = sd(temp_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+profile_temp_extreme_biome_basin_jan %>%
+  arrange(depth) %>%
+  ggplot(aes(x = temp_mean,
+             y = depth)) +
+  geom_ribbon(aes(xmin = temp_mean - temp_std,
+                  xmax = temp_mean + temp_std,
+                  fill = temp_extreme), 
+              alpha = 0.2)+
+  geom_path(aes(x = temp_mean,
+                col = temp_extreme))+
+  facet_grid(new_biomes~basin_AIP)+
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = "Basin-Mayot biome-mean January profiles",
+       col = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       fill = 'OceanSODA\ntemp anomaly \n(mean ± st dev)',
+       y = 'depth (m)',
+       x = 'mean Argo temperature (ºC)') +
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
+
 
 ```
 

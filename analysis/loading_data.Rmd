@@ -415,6 +415,9 @@ bgc_metadata <- bgc_metadata %>%
 
 ```
 
+### Biome information
+
+#### RECCAP biomes 
 Add in RECCAP biome separations to the pH data
 
 ```{r load_in_biome_separations}
@@ -479,6 +482,40 @@ ph_surface_2x2 <- inner_join(ph_surface_2x2, region_masks_all_2x2)
 ph_surface_1x1 <- inner_join(ph_surface_1x1, region_masks_all_1x1)
 ```
 
+#### Mayot biomes 
+
+```{r}
+nm_biomes <- tidync::hyper_tibble(paste0(path_argo, "/SouthernOcean_mask_NM.nc"))
+# 1 degree lon/lat grid
+
+# table(nm_regions$LATITUDE) # 1 degree intervals
+# table((nm_regions$LONGITUDE)) # 1 degree longitude intervals
+
+nm_biomes <- nm_biomes %>% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon))
+
+nm_biomes <- nm_biomes %>% 
+  filter(ICE == 1 | STSS == 1 | SPSS == 1)
+
+nm_biomes <- nm_biomes %>% 
+  pivot_longer(cols = c(STSS, SPSS, ICE),
+               values_to = 'biome_mask',
+               names_to = 'biome_name')
+
+nm_biomes <- nm_biomes %>% 
+  filter(biome_mask==1,
+         lat <= -30)
+
+# write data to file 
+
+nm_biomes %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
+```
+
+### Write pH data
+
 ```{r write_pH_data_files}
 
 ph_merge_1x1 %>% 
@@ -506,7 +543,7 @@ region_masks_all_2x2 %>%
   write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
 ```
 
-#### OceanSODA temperature data
+### OceanSODA temperature data
 
 ```{r load_oceanSODA_pH}
 
@@ -536,7 +573,7 @@ OceanSODA_temp %>%
   write_rds(file = paste0(path_argo_preprocessed, '/OceanSODA_temp.rds'))
 ```
 
-#### OceanSODA pH data
+### OceanSODA pH data
 
 ```{r load_OceanSODA_temperature}
 

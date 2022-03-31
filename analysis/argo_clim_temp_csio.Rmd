@@ -17,7 +17,7 @@ User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Cha
 
 ```{r load_libraries}
 library(tidyverse)
-library(ggOceanMaps)
+# library(ggOceanMaps)
 library(oce)
 ```
 
@@ -31,9 +31,42 @@ path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 theme_set(theme_bw())
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
 ```
 
-## January climatology
+```{r load_in_regions_basins}
+
+# RECCAP2-ocean region mask
+
+region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
+                                              "/region_masks_all_1x1.rds"))
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  rename(biome = value) %>% 
+  mutate(coast = as.character(coast))
+
+# WOA 18 basin mask
+
+basinmask <-
+  read_csv(
+    paste(path_emlr_utilities,
+          "basin_mask_WOA18.csv",
+          sep = ""),
+    col_types = cols("MLR_basins" = col_character())
+  )
+
+basinmask <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(-c(MLR_basins, basin))
+
+```
+
+
+# CSIO-MNR climatology
 
 ```{r load_argo_temp_climatology}
 
@@ -77,50 +110,6 @@ boa_clim_temp_jan_SO <- boa_clim_temp_jan_SO %>%
 # range(boa_clim_temp_jan_SO$depth)
 ```
 
-
-```{r load_regions_basins}
-
-region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
-                                               '/region_masks_all_1x1.rds'))
-
-region_masks_all_1x1 <- region_masks_all_1x1 %>%
-  rename(biome = value) %>% 
-  mutate(coast = as.character(coast))
-
-region_masks_all_1x1 <- region_masks_all_1x1 %>%
-  filter(region == 'southern',
-         biome != 0) %>% 
-  select(-region)
-
-region_masks_all_1x1 <- region_masks_all_1x1 %>% 
-  filter(coast == "0")
-
-# WOA 18 basin mask
-
-basinmask <-
-  read_csv(
-    paste(path_emlr_utilities,
-          "basin_mask_WOA18.csv",
-          sep = ""),
-    col_types = cols("MLR_basins" = col_character())
-  )
-
-basinmask <- basinmask %>%
-  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
-  select(-c(MLR_basins, basin))
-
-basinmask <- basinmask %>%
-  filter(lat <= -30)
-```
-
-
-```{r load_map}
-map <-
-  read_rds(paste(path_emlr_utilities,
-                 "map_landmask_WOA18.rds",
-                 sep = ""))
-```
-
 ```{r map_location_of_observations}
 
 map+
@@ -148,7 +137,7 @@ map+
                 fill = clim_sst))+
   scale_fill_viridis_c()+
   lims(y = c(-80, -25))+
-  labs(title = 'CSIO January climatological argo SST')
+  labs(title = 'Li et al. CSIO January climatological argo SST')
 ```
 
 
@@ -172,6 +161,9 @@ boa_clim_temp_jan_SO %>%
 
 ```
 
+# UCSD climatology 
+
+Roemmich and Gilson UCSD argo temperature climatology 
 ```{r sio_temp_climatology}
 
 # clim_argo_temp_jan_2022 <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_202201_2019.nc"))
@@ -199,7 +191,9 @@ boa_clim_temp_jan_SO %>%
 # range(clim_argo_temp$PRESSURE)
 # # 2.5 to 1975.0 
 # 
-# clim_argo_temp <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
+clim_argo_temp_year_mean <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
+# yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
+
 # # 2004-2018
 # # 66 030 591 obs of 6 variables, with columns: 
 # # ARGO_TEMPERATURE_MEAN
@@ -219,7 +213,9 @@ boa_clim_temp_jan_SO %>%
 # table(clim_argo_temp$PRESSURE)
 # # pressure levels: 2.5 dbar, 10-170 dbar by 10, 182.5, 200-440 dbar by 20, 462.5, 500-1350 dbar by 50, 12412.5, 1500-1900 dbar by 100, 1975 dbar
 # 
-# clim_argo_temp <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
+clim_argo_temp_monthly_anomaly <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
+# monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid
+
 # # 88 035 468 obs of 6 variables, with columns:
 # # ARGO_TEMPERATURE_ANNUAL_ANOMALY range between -9.270 and 10.982, with some values of 9.9692e+36 
 # # ARGO_SALINITY_ANNUAL_ANOMALY
@@ -241,6 +237,104 @@ boa_clim_temp_jan_SO %>%
 # # -64.75 to 79.75 (every 0.5 degrees)
 # range(clim_argo_temp$PRESSURE)
 # # 2.5 to 1975.0 dbar
+
+
+# put both dataframes onto 1/1 lon/lat grid and calculate mean temperature / mean anomaly in each grid 
+
+clim_argo_temp_monthly_anomaly <- clim_argo_temp_monthly_anomaly %>% 
+  select(-ARGO_SALINITY_ANNUAL_ANOMALY) %>% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         pressure = PRESSURE,
+         temp_annual_anomaly = ARGO_TEMPERATURE_ANNUAL_ANOMALY,
+         time = TIME) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %>% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %>% 
+  filter(lat < -30)
+
+clim_argo_temp_monthly_anomaly <- clim_argo_temp_monthly_anomaly %>% 
+  group_by(lon, lat, depth, time) %>% 
+  summarise(temp_monthly_anomaly = mean(temp_annual_anomaly, na.rm = TRUE)) %>% 
+  ungroup()
+
+
+clim_argo_temp_year_mean <- clim_argo_temp_year_mean %>% 
+  select(-ARGO_SALINITY_MEAN) %>% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         temp_annual_mean = ARGO_TEMPERATURE_MEAN,
+         pressure = PRESSURE) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %>% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %>% 
+  filter(lat < -30)
+
+clim_argo_temp_year_mean <- clim_argo_temp_year_mean %>% 
+  group_by(lon, lat, depth) %>% 
+  summarise(temp_annual_clim = mean(temp_annual_mean, na.rm = TRUE)) %>% 
+  ungroup()
+
+# 
+clim_argo_temp_ucsd <- left_join(clim_argo_temp_monthly_anomaly,
+                                 clim_argo_temp_year_mean)
+
+clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>% 
+  mutate(temp_clim_month = temp_annual_clim + temp_monthly_anomaly,
+         depth = round(depth, digits = 0))
+
+```
+
+```{r map_location_of_ucsd_clim_observations}
+map+
+  geom_point(data = clim_argo_temp_ucsd %>% 
+              filter(depth < 5),
+            aes(x = lon,
+                y = lat),
+            size = 0.2)+
+  facet_wrap(~time, ncol = 2)+
+  lims(y = c(-80, -30))
+
+```
+
+```{r january_clim_sst_ucsd}
+
+clim_jan_sst_ucsd <- clim_argo_temp_ucsd %>% 
+  filter(time == 0.5,
+         depth <= 20) %>% 
+  group_by(lon, lat) %>% 
+  summarise(clim_sst_jan = mean(temp_clim_month, na.rm = TRUE)) %>% 
+  ungroup()
+
+map+
+  geom_tile(data = clim_jan_sst_ucsd,
+            aes(x = lon,
+                y = lat, 
+                fill = clim_sst_jan))+
+  scale_fill_viridis_c()+
+  lims(y = c(-80, -30))+
+  labs(title = 'Roemmich & Gilson UCSD January Climatological Argo SST')
+```
+
+```{r january_clim_depth_levels}
+
+map+
+  geom_tile(data = clim_argo_temp_ucsd %>% 
+              filter(time == 0.5),
+            aes(x = lon, 
+                y = lat, 
+                fill = temp_clim_month))+
+  scale_fill_viridis_c()+
+  facet_wrap(~depth)+
+  lims(y = c(-80, -30))
 
 ```
 
