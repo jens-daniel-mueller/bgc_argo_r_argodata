@@ -432,7 +432,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">30 March, 2022</h4>
+<h4 class="date">31 March, 2022</h4>
 
 </div>
 
@@ -457,7 +457,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-30
+<strong>Last updated:</strong> 2022-03-31
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree25d5eed6bc60a8cfc8ca9857fb6911ef3c6d6691targetblank25d5eeda"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/25d5eed6bc60a8cfc8ca9857fb6911ef3c6d6691" target="_blank">25d5eed</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec4d4031756aeaa94080b03c6d91103433e6f3e59targetblankc4d4031a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c4d4031756aeaa94080b03c6d91103433e6f3e59" target="_blank">c4d4031</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree25d5eed6bc60a8cfc8ca9857fb6911ef3c6d6691targetblank25d5eeda" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec4d4031756aeaa94080b03c6d91103433e6f3e59targetblankc4d4031a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/25d5eed6bc60a8cfc8ca9857fb6911ef3c6d6691" target="_blank">25d5eed</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c4d4031756aeaa94080b03c6d91103433e6f3e59" target="_blank">c4d4031</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -613,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c4d4031756aeaa94080b03c6d91103433e6f3e59/analysis/extreme_pH.Rmd" target="_blank">c4d4031</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-31
+</td>
+<td>
+extended OceanSODA to 1995 for extreme detection
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/extreme_pH.html" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2811,7 +2845,9 @@ OceanSODA_2x2 &lt;- OceanSODA %&gt;%
     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
     lat = as.numeric(as.character(lat)),
     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))) # regrid into 2x2º grid</code></pre>
+    lon = as.numeric(as.character(lon))) # regrid into 2x2º grid
+
+rm(OceanSODA)</code></pre>
 </div>
 <div id="apply-region-masks" class="section level2">
 <h2>Apply region masks</h2>
@@ -2840,7 +2876,7 @@ OceanSODA_2x2_SO &lt;- OceanSODA_2x2_SO %&gt;%
                     fill = clim_ph))+
       scale_fill_viridis_c()+
       lims(y = c(-80, -30))+
-      labs(title = paste(&#39;month:&#39;, unique(.x$month)))
+      labs(title = paste(&#39;climatological OceanSODA pH (1995-2020) month:&#39;, unique(.x$month)))
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/map_OceanSODA_pH_clim_diff-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -3431,7 +3467,7 @@ pasqualina-vonlanthendinenna
                     fill = clim_diff))+
       scale_fill_divergent(mid = &#39;grey80&#39;)+
       lims(y = c(-80, -30))+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 3)+
       labs(title = paste(&#39;month:&#39;, unique(.x$month)))+
       theme(legend.position = &#39;right&#39;)
   )</code></pre>
@@ -5162,10 +5198,12 @@ pasqualina-vonlanthendinenna
 <div id="anomalies-on-a-1x1-grid" class="section level5">
 <h5>Anomalies on a 1x1 grid</h5>
 <pre class="r"><code>#use the original lat/lon grid to plot the extreme on a 1x1
+#(anomalies detected with 1995-2020 data but mapped only from 2013 to 2020)
 
 OceanSODA_2x2_SO_extreme_grid %&gt;%
+  filter(year &gt;= 2013) %&gt;% 
   group_split(month) %&gt;%
-  head(1) %&gt;%
+  #head(1) %&gt;%
   map(
     ~map +
       geom_tile(data = .x,
@@ -5250,6 +5288,529 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-2">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-2.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-2.png" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-3">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-3.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/da665ab0e548baeedd6d26795d22b1c1a17bbf10/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-3.png" target="_blank">da665ab</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-4">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-4.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-4.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-4.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-4.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-4.png" target="_blank">e4188d2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-5">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-5.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-5.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-5.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-5.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-5.png" target="_blank">e4188d2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-6">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-6.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-6.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-6.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-6.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-6.png" target="_blank">e4188d2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-7">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-7.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-7.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-7.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-7.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-7.png" target="_blank">e4188d2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flat_map_OceanSODA_ph_extremes_1x1_plot-8">
+Past versions of flat_map_OceanSODA_ph_extremes_1x1_plot-8.png
+</button>
+</p>
+<div id="fig-flat_map_OceanSODA_ph_extremes_1x1_plot-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-8.png" target="_blank">968ad85</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-8.png" target="_blank">dfd75e9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-8.png" target="_blank">1ffe07f</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-8.png" target="_blank">e4188d2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/flat_map_OceanSODA_ph_extremes_1x1_plot-12.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># map the anomalies on the original 1x1 grid </code></pre>
 </div>
 </div>
@@ -5610,7 +6171,8 @@ OceanSODA_2x2_SO_extreme_grid &lt;- OceanSODA_2x2_SO_extreme_grid %&gt;%
   select(-c(lon, lat)) %&gt;%
   rename(OceanSODA_ph = ph_total,
          lon = lon_raw,
-         lat = lat_raw)
+         lat = lat_raw) %&gt;% 
+  filter(year &gt;= 2013)
 
 # combine the argo profile data to the surface extreme data
 profile_extreme &lt;- inner_join(
@@ -12866,101 +13428,9 @@ map+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
   labs(title = &#39;December 2017&#39;,
-       fill = &#39;OceanSODA pH \nextreme&#39;)</code></pre>
-<p><img src="figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_profiles_2017-1">
-Past versions of select_specific_profiles_2017-1.png
-</button>
-</p>
-<div id="fig-select_specific_profiles_2017-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">968ad85</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">dfd75e9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">1ffe07f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7540ae40042d8d0c3bc7d115340508a795f71522/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">7540ae4</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">e4188d2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d2993591406dc205adccc90959879f1653b6354d/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-1.png" target="_blank">d299359</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>profile_extreme_Atl_2017 &lt;- profile_extreme %&gt;% 
+       fill = &#39;OceanSODA pH \nextreme&#39;)
+
+profile_extreme_Atl_2017 &lt;- profile_extreme %&gt;% 
   filter(date == &#39;2017-12-15&#39;,
          basin_AIP == &#39;Atlantic&#39;,
          biome == &#39;1&#39;)
@@ -12986,123 +13456,9 @@ profile_extreme_Atl_2017 %&gt;%
   scale_color_manual(values = HNL_colors)+
   labs(title = &#39;Atlantic basin, biome 1, December 2017&#39;,
        col = &#39;OceanSODA\npH anomaly&#39;,
-       x = &#39;Argo pH&#39;)</code></pre>
-<p><img src="figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_profiles_2017-2">
-Past versions of select_specific_profiles_2017-2.png
-</button>
-</p>
-<div id="fig-select_specific_profiles_2017-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">968ad85</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">dfd75e9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">e12a216</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">1ffe07f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7540ae40042d8d0c3bc7d115340508a795f71522/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">7540ae4</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e4188d2436c3d806e542ffe0c55b23eed6888785/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">e4188d2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-01
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c4362e51c7bc86eadead54713e904faca1fcb9a9/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">c4362e5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d2993591406dc205adccc90959879f1653b6354d/docs/figure/extreme_pH.Rmd/select_specific_profiles_2017-2.png" target="_blank">d299359</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-28
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>rm(OceanSODA_SO_extreme_grid_2017, profile_extreme_Atl_2017)</code></pre>
+       x = &#39;Argo pH&#39;)
+
+rm(OceanSODA_SO_extreme_grid_2017, profile_extreme_Atl_2017)</code></pre>
 </div>
 <div id="atl-b1-jan-2018" class="section level3">
 <h3>Atl, b1, Jan 2018</h3>
@@ -13118,68 +13474,9 @@ map+
   scale_fill_manual(values = HNL_colors_map)+
   lims(y = c(-85, -30))+
   labs(title = &#39;January 2018&#39;,
-       fill = &#39;OceanSODA pH \nextreme&#39;)</code></pre>
-<p><img src="figure/extreme_pH.Rmd/select_specific_profiles_2018-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_profiles_2018-1">
-Past versions of select_specific_profiles_2018-1.png
-</button>
-</p>
-<div id="fig-select_specific_profiles_2018-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-1.png" target="_blank">968ad85</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-1.png" target="_blank">dfd75e9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-1.png" target="_blank">1ffe07f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>profile_extreme_Atl_2018 &lt;- profile_extreme %&gt;% 
+       fill = &#39;OceanSODA pH \nextreme&#39;)
+
+profile_extreme_Atl_2018 &lt;- profile_extreme %&gt;% 
   filter(date == &#39;2018-01-15&#39;,
          basin_AIP == &#39;Atlantic&#39;,
          biome == &#39;1&#39;)
@@ -13205,79 +13502,9 @@ profile_extreme_Atl_2018 %&gt;%
   scale_color_manual(values = HNL_colors)+
   labs(title = &#39;Atlantic basin, biome 1, January 2018&#39;,
        col = &#39;OceanSODA\npH anomaly&#39;,
-       x = &#39;Argo pH&#39;)</code></pre>
-<p><img src="figure/extreme_pH.Rmd/select_specific_profiles_2018-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-select_specific_profiles_2018-2">
-Past versions of select_specific_profiles_2018-2.png
-</button>
-</p>
-<div id="fig-select_specific_profiles_2018-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-2.png" target="_blank">968ad85</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-2.png" target="_blank">dfd75e9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-2.png" target="_blank">e12a216</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-15
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ffe07f0b3651e6a1efac9a47b63af5b547e740b/docs/figure/extreme_pH.Rmd/select_specific_profiles_2018-2.png" target="_blank">1ffe07f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-11
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>rm(OceanSODA_SO_extreme_grid_2018, profile_extreme_Atl_2018)</code></pre>
+       x = &#39;Argo pH&#39;)
+
+rm(OceanSODA_SO_extreme_grid_2018, profile_extreme_Atl_2018)</code></pre>
 </div>
 </div>
 <div id="averaged-profiles" class="section level2">
@@ -13312,7 +13539,6 @@ profile_extreme &lt;- profile_extreme %&gt;%
 <div id="overall-mean" class="section level3">
 <h3>Overall mean</h3>
 <pre class="r"><code>profile_extreme_mean &lt;- profile_extreme %&gt;%
-  filter(month == 1) %&gt;% 
   group_by(ph_extreme, depth) %&gt;%
   summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
@@ -13338,7 +13564,7 @@ profile_extreme_mean %&gt;%
   labs(title = &quot;Overall mean&quot;,
        col = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
        fill = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
-       y = &#39;sqrt(depth)&#39;,
+       y = &#39;depth (m)&#39;,
        x = &#39;Argo mean pH&#39;) +
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))</code></pre>
@@ -14085,6 +14311,42 @@ pasqualina-vonlanthendinenna
 </div>
 <pre class="r"><code>rm(surface_ph_mean)</code></pre>
 </div>
+<div id="january-overall-mean-profiles" class="section level3">
+<h3>January Overall Mean Profiles</h3>
+<pre class="r"><code>profile_extreme_mean_jan &lt;- profile_extreme %&gt;%
+  filter(month == 1) %&gt;% 
+  group_by(ph_extreme, depth) %&gt;%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  ungroup()
+
+profile_extreme_mean_jan %&gt;%
+  arrange(depth) %&gt;%
+  ggplot(aes(
+    x = ph_mean,
+    y = depth,
+    group = ph_extreme,
+    col = ph_extreme
+  )) +
+  geom_ribbon(aes(xmin = ph_mean - ph_std,
+                  xmax = ph_mean + ph_std,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_path() +
+  scale_color_manual(values = HNL_colors) +
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = &quot;Overall mean January profiles&quot;,
+       col = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       fill = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
+       y = &#39;depth (m)&#39;,
+       x = &#39;Argo mean pH&#39;) +
+  scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))</code></pre>
+<p><img src="figure/extreme_pH.Rmd/overall_mean_january_ph_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(profile_extreme_mean_jan)</code></pre>
+</div>
 <div id="season-x-biome" class="section level3">
 <h3>Season x biome</h3>
 <pre class="r"><code>profile_extreme_biome &lt;- profile_extreme %&gt;% 
@@ -14112,8 +14374,9 @@ profile_extreme_biome %&gt;%
   scale_fill_manual(values = HNL_colors)+
   labs(col = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
        fill = &#39;OceanSODA\npH anomaly \n(mean ± st dev)&#39;,
-       y = &#39;sqrt(depth)&#39;,
-       x = &#39;Biome mean Argo pH&#39;) +
+       y = &#39;depth (m)&#39;,
+       x = &#39;Biome mean Argo pH&#39;,
+       title = &#39;Biome-mean Argo profiles&#39;) +
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season ~ biome)</code></pre>
@@ -14884,8 +15147,9 @@ profile_extreme_basin %&gt;%
   scale_fill_manual(values = HNL_colors)+
   labs(col = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
        fill = &#39;OceanSODA\npH anomaly\n(mean ± st dev)&#39;,
-       y = &#39;sqrt(depth)&#39;,
-       x = &#39;Basin mean Argo pH&#39;)+
+       y = &#39;depth (m)&#39;,
+       x = &#39;Basin mean Argo pH&#39;,
+       title = &#39;Basin-mean Argo profiles&#39;)+
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   facet_grid(season~basin_AIP)</code></pre>
@@ -15718,6 +15982,44 @@ profile_extreme_biome_basin_jan %&gt;%
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))</code></pre>
 <p><img src="figure/extreme_pH.Rmd/january_biome_basin_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-january_biome_basin_profiles-1">
+Past versions of january_biome_basin_profiles-1.png
+</button>
+</p>
+<div id="fig-january_biome_basin_profiles-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/january_biome_basin_profiles-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>rm(profile_extreme_biome_basin_jan)</code></pre>
 </div>
 <div id="season-x-biome-x-basin" class="section level3">
 <h3>Season x biome x basin</h3>
@@ -18598,134 +18900,6 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre><code>
-[[12]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-surface_OceanSODA_vs_argo_ph-12">
-Past versions of surface_OceanSODA_vs_argo_ph-12.png
-</button>
-</p>
-<div id="fig-surface_OceanSODA_vs_argo_ph-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">968ad85</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dfd75e9c686bcc6ebb463c83023e001e38a62838/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">dfd75e9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7540ae40042d8d0c3bc7d115340508a795f71522/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">7540ae4</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-08
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fd521d11f71f0b70a62982357e45c93f665c4854/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">fd521d1</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-25
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71ced5fbd574a5d08b05393977994234dca798a5/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">71ced5f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/25c9e6b69262f7080345bf4f6cb9b3122b38adef/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">25c9e6b</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/71958c46c16cc3301ea147811b33f25fe432aa39/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">71958c4</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d7debabe00bbb29ec605377ec066c1988ea1b880/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">d7debab</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7376be6642c0c52fe8f1d0a3224c8b27526ad918/docs/figure/extreme_pH.Rmd/surface_OceanSODA_vs_argo_ph-12.png" target="_blank">7376be6</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-02
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <pre class="r"><code>rm(surface_ph_season)</code></pre>
 <div id="atl-b2-winter" class="section level5">
 <h5>Atl, b2, winter</h5>
@@ -18778,6 +18952,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/season_biome_1_Atlantic_profile_winter-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/season_biome_1_Atlantic_profile_winter-1.png" target="_blank">968ad85</a>
@@ -18900,6 +19085,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/Atlantic_biome_1_profile_season_summer-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/Atlantic_biome_1_profile_season_summer-1.png" target="_blank">968ad85</a>
@@ -19033,7 +19229,7 @@ remove_clim_jan &lt;- inner_join(profile_extreme_jan_binned,
 <h3>Absolute</h3>
 <pre class="r"><code>remove_clim_jan %&gt;%
   group_split(biome, basin_AIP, year) %&gt;%
-  head(1) %&gt;%
+  #head(1) %&gt;%
   map(
     ~ ggplot() +
       geom_path(
@@ -19120,6 +19316,111 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_raw_ph_profiles_with_clim-36.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
 
 remove_clim_jan &lt;- remove_clim_jan %&gt;% 
@@ -19129,7 +19430,7 @@ remove_clim_jan &lt;- remove_clim_jan %&gt;%
 <h3>Anomaly</h3>
 <pre class="r"><code>remove_clim_jan %&gt;% 
   group_split(year) %&gt;% 
-  head(1) %&gt;% 
+  #head(1) %&gt;% 
   map(
     ~ggplot()+
       geom_path(data = .x %&gt;% filter(ph_extreme == &#39;N&#39;),
@@ -19150,7 +19451,7 @@ remove_clim_jan &lt;- remove_clim_jan %&gt;%
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
       facet_grid(basin_AIP~biome)+
-      labs(title = unique(.x$year))
+      labs(title = paste(&#39;January&#39;, unique(.x$year)))
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -19178,6 +19479,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-1.png" target="_blank">968ad85</a>
 </td>
 <td>
@@ -19191,6 +19503,21 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/extreme_pH.Rmd/plot_january_anomaly_ph_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="overall-mean-anomaly" class="section level3">
 <h3>Overall mean anomaly</h3>
@@ -19217,7 +19544,7 @@ remove_clim_jan_overall_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = &#39;Overall mean profiles&#39;)</code></pre>
+  labs(title = &#39;January Overall Mean Anomaly Profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_overall_mean_clim_removed_profiles_ph-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_clim_removed_profiles_ph-1">
@@ -19241,6 +19568,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/plot_overall_mean_clim_removed_profiles_ph-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/plot_overall_mean_clim_removed_profiles_ph-1.png" target="_blank">968ad85</a>
@@ -19282,7 +19620,7 @@ remove_clim_jan_biome_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
-  labs(title = &#39;Biome-mean profiles&#39;)+
+  labs(title = &#39;January Biome-mean anomaly profiles&#39;)+
   facet_wrap(~biome)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_biome_mean_clim_removed_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -19307,6 +19645,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">968ad85</a>
@@ -19349,7 +19698,7 @@ remove_clim_jan_basin_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = &#39;Basin-mean profiles&#39;)</code></pre>
+  labs(title = &#39;January Basin-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_basin_mean_anomaly_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_basin_mean_anomaly_profiles-1">
@@ -19373,6 +19722,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">968ad85</a>
@@ -19415,7 +19775,7 @@ remove_clim_jan_basin_biome_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = &#39;Basin-biome-mean profiles&#39;)</code></pre>
+  labs(title = &#39;January Basin-biome-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_basin_biome_mean_anomaly_profiles_ph-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_basin_biome_mean_anomaly_profiles_ph-1">
@@ -19439,6 +19799,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a2271dfd6c818ee85e8a20baee4b3493f93b495f/docs/figure/extreme_pH.Rmd/plot_basin_biome_mean_anomaly_profiles_ph-1.png" target="_blank">a2271df</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/968ad8567e14efa05080292ffcbec6e3dbcc6232/docs/figure/extreme_pH.Rmd/plot_basin_biome_mean_anomaly_profiles_ph-1.png" target="_blank">968ad85</a>
