@@ -432,7 +432,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Loading BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">31 March, 2022</h4>
+<h4 class="date">05 April, 2022</h4>
 
 </div>
 
@@ -457,7 +457,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-31
+<strong>Last updated:</strong> 2022-04-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -548,16 +548,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11915d80b02e79c748a9e5f81a849586a38bad73targetblank11915d8a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11915d80b02e79c748a9e5f81a849586a38bad73" target="_blank">11915d8</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree98f3235eda23af9fdd7f43cf14fd857de90e4704targetblank98f3235a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/98f3235eda23af9fdd7f43cf14fd857de90e4704" target="_blank">98f3235</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11915d80b02e79c748a9e5f81a849586a38bad73targetblank11915d8a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree98f3235eda23af9fdd7f43cf14fd857de90e4704targetblank98f3235a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11915d80b02e79c748a9e5f81a849586a38bad73" target="_blank">11915d8</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/98f3235eda23af9fdd7f43cf14fd857de90e4704" target="_blank">98f3235</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -613,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/98f3235eda23af9fdd7f43cf14fd857de90e4704/analysis/loading_data.Rmd" target="_blank">98f3235</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-05
+</td>
+<td>
+added UCSD temp climatology to loading data
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/48573c419440bd1f87b9f8687ee3e7f7d4bbdd6c/docs/loading_data.html" target="_blank">48573c4</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-31
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2445,6 +2479,72 @@ boa_clim_argo_temp_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &q
 
 boa_clim_argo_temp_jan %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &quot;/boa_clim_argo_temp_jan.rds&quot;))</code></pre>
+</div>
+<div id="roemmich-gilson-ucsd-temperature-climatology" class="section level2">
+<h2>Roemmich-Gilson UCSD temperature climatology</h2>
+<p>Roemmich and Gilson UCSD argo temperature climatology</p>
+<p>Roemmich, D. and J. Gilson, 2009: The 2004-2008 mean and annual cycle of temperature, salinity, and steric height in the global ocean from the Argo Program. Progress in Oceanography, 82, 81-100</p>
+<pre class="r"><code>clim_argo_temp_year_mean &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_mean.nc&quot;))
+# yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
+
+clim_argo_temp_monthly_anomaly &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_annual.nc&quot;))
+# monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid</code></pre>
+<pre class="r"><code>clim_argo_temp_monthly_anomaly &lt;- clim_argo_temp_monthly_anomaly %&gt;% 
+  select(-ARGO_SALINITY_ANNUAL_ANOMALY) %&gt;% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         pressure = PRESSURE,
+         temp_annual_anomaly = ARGO_TEMPERATURE_ANNUAL_ANOMALY,
+         time = TIME) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %&gt;% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %&gt;% 
+  filter(lat &lt; -30)
+
+# calculate mean temperature anomaly in each 1x1 grid 
+clim_argo_temp_monthly_anomaly &lt;- clim_argo_temp_monthly_anomaly %&gt;% 
+  group_by(lon, lat, depth, time) %&gt;% 
+  summarise(temp_monthly_anomaly = mean(temp_annual_anomaly, na.rm = TRUE)) %&gt;% 
+  ungroup()
+
+# re-grid annual mean temperature to 1x1 grid and compute depth 
+clim_argo_temp_year_mean &lt;- clim_argo_temp_year_mean %&gt;% 
+  select(-ARGO_SALINITY_MEAN) %&gt;% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         temp_annual_mean = ARGO_TEMPERATURE_MEAN,
+         pressure = PRESSURE) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %&gt;% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %&gt;% 
+  filter(lat &lt; -30)
+
+# calculate mean yearly temperature in each lat/lon grid 
+clim_argo_temp_year_mean &lt;- clim_argo_temp_year_mean %&gt;% 
+  group_by(lon, lat, depth) %&gt;% 
+  summarise(temp_annual_clim = mean(temp_annual_mean, na.rm = TRUE)) %&gt;% 
+  ungroup()</code></pre>
+<pre class="r"><code>clim_argo_temp_ucsd &lt;- left_join(clim_argo_temp_monthly_anomaly,
+                                 clim_argo_temp_year_mean)
+
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  mutate(temp_monthly_clim = temp_annual_clim + temp_monthly_anomaly,
+         depth = round(depth, digits = 0),
+         month = time + 0.5)
+
+rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)
+
+clim_argo_temp_ucsd %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/clim_argo_temp_ucsd.rds&quot;))</code></pre>
 </div>
 </div>
 <div id="data-set-description" class="section level1">
