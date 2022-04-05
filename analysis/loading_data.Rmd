@@ -607,6 +607,86 @@ boa_clim_argo_temp_jan %>%
 
 ```
 
+## Roemmich-Gilson UCSD temperature climatology 
+
+Roemmich and Gilson UCSD argo temperature climatology 
+
+Roemmich, D. and J. Gilson, 2009: The 2004-2008 mean and annual cycle of temperature, salinity, and steric height in the global ocean from the Argo Program. Progress in Oceanography, 82, 81-100
+
+```{r load_ucsd_temp_climatology}
+
+clim_argo_temp_year_mean <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
+# yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
+
+clim_argo_temp_monthly_anomaly <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
+# monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid
+```
+
+```{r re_grid_to_1x1}
+
+clim_argo_temp_monthly_anomaly <- clim_argo_temp_monthly_anomaly %>% 
+  select(-ARGO_SALINITY_ANNUAL_ANOMALY) %>% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         pressure = PRESSURE,
+         temp_annual_anomaly = ARGO_TEMPERATURE_ANNUAL_ANOMALY,
+         time = TIME) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %>% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %>% 
+  filter(lat < -30)
+
+# calculate mean temperature anomaly in each 1x1 grid 
+clim_argo_temp_monthly_anomaly <- clim_argo_temp_monthly_anomaly %>% 
+  group_by(lon, lat, depth, time) %>% 
+  summarise(temp_monthly_anomaly = mean(temp_annual_anomaly, na.rm = TRUE)) %>% 
+  ungroup()
+
+# re-grid annual mean temperature to 1x1 grid and compute depth 
+clim_argo_temp_year_mean <- clim_argo_temp_year_mean %>% 
+  select(-ARGO_SALINITY_MEAN) %>% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         temp_annual_mean = ARGO_TEMPERATURE_MEAN,
+         pressure = PRESSURE) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %>% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %>% 
+  filter(lat < -30)
+
+# calculate mean yearly temperature in each lat/lon grid 
+clim_argo_temp_year_mean <- clim_argo_temp_year_mean %>% 
+  group_by(lon, lat, depth) %>% 
+  summarise(temp_annual_clim = mean(temp_annual_mean, na.rm = TRUE)) %>% 
+  ungroup()
+
+```
+
+```{r join_annual_and_monthly_clim}
+
+clim_argo_temp_ucsd <- left_join(clim_argo_temp_monthly_anomaly,
+                                 clim_argo_temp_year_mean)
+
+
+clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>% 
+  mutate(temp_monthly_clim = temp_annual_clim + temp_monthly_anomaly,
+         depth = round(depth, digits = 0),
+         month = time + 0.5)
+
+rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)
+
+clim_argo_temp_ucsd %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/clim_argo_temp_ucsd.rds"))
+```
+
 
 # Data set description
 
