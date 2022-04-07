@@ -81,28 +81,39 @@ Li, H., F. Xu, W. Zhou, D. Wang, J. S. Wright, Z. Liu, and Y. Lin (2017), Develo
 
 User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Chaohui Sun，Jianping Xu.(2020). Manual of Global Ocean Argo gridded data set (BOA_Argo) (Version 2019), 14 pp <https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf>
 
-```{r load_argo_temp_climatology}
+## Read data 
+
+```{r load_argo_temp_climatology_csio}
 
 boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
-# 1 896 093 obs of 6 variables (2004-2019):
-# temp (range between -3.9180 and 30.1866º)
-# salt
-# lon (range between 0.5 and 359.5)
-# lat (range between -72.5 and 79.5)
-# pres (range between 0 and 1975)
-# time (15 days since 0000-01-01)
-# range(boa_clim_argo_temp_jan$temp)
-# -3.9180 to 30.1866 
-# range(boa_clim_argo_temp_jan$lon)
-# 0.5 to 359.5 by 1
-# range(boa_clim_argo_temp_jan$lat)
-# -72.5 to 79.5 by 1
-# range(boa_clim_argo_temp_jan$pres)
-# 0 to 1975 (58 pressure levels)
-# table(boa_clim_argo_temp_jan$pres)
-# pressure levels: 0, 5, 10-170 by 10, 180-460 by 20, 500-1300 by 50, 1400-1900 by 100, 1975 dbar 
-# range(boa_clim_argo_temp_jan$time)
-# days since 0000-01-01
+```
+
+## Harmonise data
+
+```{r harmonise_csio_temp_clim}
+
+boa_clim_argo_temp_jan <- boa_clim_argo_temp_jan %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon),
+         depth = swDepth(pressure = pres, latitude = lat),
+         month = rep(1, length(time))) %>% 
+  rename(clim_temp_jan = temp) %>% 
+  select(-c(salt, pres, time))
+
+```
+
+
+## Write data to file 
+
+```{r write_csio_clim_to_file}
+
+boa_clim_argo_temp_jan %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/boa_clim_argo_temp_jan.rds"))
+
+```
+
+## Southern Ocean January climatological SST
+
+```{r load_argo_temp_climatology}
 
 # keep only data south of 30ºS
 boa_clim_temp_jan_SO <- boa_clim_argo_temp_jan %>% 
@@ -110,20 +121,9 @@ boa_clim_temp_jan_SO <- boa_clim_argo_temp_jan %>%
   select(-salt)
 # 766 434 obs of 5 variables 
 
-# range(boa_clim_temp_jan_SO$temp)
-# range(boa_clim_temp_jan_SO$lat)
-# range(boa_clim_temp_jan_SO$lon)
-
-boa_clim_temp_jan_SO <- boa_clim_temp_jan_SO %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon),
-         depth = swDepth(pressure = pres, latitude = lat)) %>% 
-  rename(clim_temp_jan = temp) %>% 
-  mutate(month = rep(1, length(time)))
-
-# range(boa_clim_temp_jan_SO$depth)
 ```
 
-```{r map_location_of_observations}
+```{r map_location_of_observations, fig.asp=0.4}
 
 map+
   geom_point(data = boa_clim_temp_jan_SO %>% filter(depth < 20),
@@ -135,7 +135,7 @@ map+
 
 ```
 
-### January climatological SST
+
 ```{r map_surface_climatological_january_temperature}
 
 boa_clim_sst_jan_SO <- boa_clim_temp_jan_SO %>% 
@@ -154,7 +154,7 @@ map+
   labs(title = 'Li et al. CSIO January climatological argo SST')
 ```
 
-### January climatological profiles
+### Southern Ocean January climatological profiles
 ```{r add_in_basins_and_biomes}
 
 boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO, region_masks_all_1x1)
@@ -171,7 +171,7 @@ boa_clim_temp_jan_SO %>%
              y = depth))+
   geom_point(size = 0.2, pch = 1, fill = NA)+
   scale_y_reverse()+
-  facet_grid(basin_AIP~biome)
+  facet_grid(basin_AIP~value)
 
 ```
 
@@ -181,32 +181,10 @@ Roemmich and Gilson UCSD argo temperature climatology
 
 Roemmich, D. and J. Gilson, 2009: The 2004-2008 mean and annual cycle of temperature, salinity, and steric height in the global ocean from the Argo Program. Progress in Oceanography, 82, 81-100
 
+## Read data 
+
 ```{r sio_temp_climatology}
-# clim_argo_temp_jan_2022 <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_202201_2019.nc"))
-# 
-# range(clim_argo_temp_jan_2022$LONGITUDE)
-# # range between 20.5 and 379.5 
-# range(clim_argo_temp_jan_2022$LATITUDE)
-# # range between -64.5 and 79.5 
-# range(clim_argo_temp_jan_2022$TIME)
-# table(clim_argo_temp_jan_2022$TIME)
-# # time = 216.5 in the whole dataset (216.5 months since January 1 2004, corresponds to 15-01-2022)
-# 
-# clim_argo_temp_2004_2018 <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_Temperature_2019.nc"))
-# range(clim_argo_temp$LONGITUDE)
-# # 20.5 to 379.5
-# table(clim_argo_temp$LONGITUDE)
-# # 1 degree intervals
-# range(clim_argo_temp$LATITUDE)
-# # -64.5 to 79.5
-# range(clim_argo_temp$TIME)
-# # 0.5 to 179.5 
-# # -> 01-01-2004 to 31-12-2018, centered on the 15th of each month
-# range(clim_argo_temp$ARGO_TEMPERATURE_ANOMALY)
-# # -12.543 to 13.413 
-# range(clim_argo_temp$PRESSURE)
-# # 2.5 to 1975.0 
-# 
+
 clim_argo_temp_year_mean <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
 # yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
 
@@ -214,6 +192,7 @@ clim_argo_temp_monthly_anomaly <- tidync::hyper_tibble(paste0(path_argo_clim_tem
 # monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid
 ```
 
+## Harmonise data 
 
 ```{r re-grid_to_1x1}
 # put both dataframes onto 1/1 lon/lat grid and calculate mean temperature / mean anomaly in each grid 
@@ -284,6 +263,18 @@ clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>%
 rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)
 ```
 
+
+## Write data to file 
+
+```{r write_ucsd_temp_clim_to_file}
+
+clim_argo_temp_ucsd %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/clim_argo_temp_ucsd.rds"))
+
+```
+
+## Southern Ocean January climatological SST 
+
 ```{r map_location_of_ucsd_clim_observations}
 map+
   geom_point(data = clim_argo_temp_ucsd %>% 
@@ -296,7 +287,7 @@ map+
 
 ```
 
-### January climatological SST 
+ 
 ```{r january_clim_sst_ucsd}
 
 clim_jan_sst_ucsd <- clim_argo_temp_ucsd %>% 
@@ -316,7 +307,7 @@ map+
   labs(title = 'Roemmich & Gilson UCSD January Climatological Argo SST')
 ```
 
-### January climatological temperature
+## Southern Ocean January climatological temperature
 ```{r january_clim_depth_levels, fig.asp=0.4}
 
 clim_argo_temp_ucsd %>% 
@@ -334,7 +325,8 @@ clim_argo_temp_ucsd %>%
 
 ```
 
-### January climatological profiles
+## Southern Ocean January climatological profiles
+
 ```{r add_in_basins_biomes_ucsd_temp}
 
 # add in RECCAP biome separations 

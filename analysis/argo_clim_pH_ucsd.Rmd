@@ -19,7 +19,7 @@ library(oce)
 library(stars)
 ```
 
-# Load data 
+
 
 ```{r set_paths}
 path_updata <- "/nfs/kryo/work/updata"
@@ -32,6 +32,7 @@ path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 theme_set(theme_bw())
 ```
 
+# Read data 
 
 ```{r load_climatological_pH_data}
 nc_pH <- 
@@ -69,7 +70,7 @@ clim_argo_ph_jan <- clim_argo_ph_jan %>%
    mutate(depth = round(depth))
 ```
 
-
+# Maps
 ```{r plots}
 clim_argo_ph_jan %>%
    ggplot() +
@@ -96,9 +97,27 @@ clim_argo_ph_jan %>%
 ```
 
 
+# Harmonise data 
+
 ```{r remove_zero_pH_value}
+
 clim_argo_ph_jan <- clim_argo_ph_jan %>%
    filter(pH != 0)
+
+# harmonise data 
+
+clim_argo_ph_jan <- clim_argo_ph_jan %>% 
+  rename(lat = latitude,
+         lon = longitude,
+         clim_pH_jan = pH) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon),
+         month = 1)
+
+```
+
+# Write data to file
+
+```{r write_data_to_file}
 
 clim_argo_ph_jan %>% write_rds(file = paste0(path_argo_preprocessed, "/ucsd_ph_clim_jan.rds"))
 ```

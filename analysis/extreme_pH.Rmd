@@ -102,9 +102,7 @@ map <-
 
 # Regions
 
-## Mayot Biomes
-
-### Grid reduction
+## Biome grid reduction
 
 ```{r biomes_flat_map_pre_grid_reduction, fig.asp=0.4}
 
@@ -149,7 +147,7 @@ map+
 
 ```
 
-## Basins
+## Basin grid reduction
 
 ```{r filter_southern_ocean_basins}
 
@@ -157,8 +155,6 @@ basinmask <- basinmask %>%
   filter(lat < -30)
 
 ```
-
-### Grid reduction
 
 ```{r basin_flat_map_pre_grid_reduction, fig.asp=1}
 map +
@@ -467,6 +463,15 @@ OceanSODA_2x2_SO_extreme_grid <-
 
 ```
 
+#### Write anomalies to file
+
+```{r write_OceanSODA_pH_anomalies_to_file}
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  write_rds(file = paste0(path = path_argo_preprocessed, "/OceanSODA_pH_anomaly_field.rds"))
+
+```
+
 ```{r anomaly_test_plot_grid, fig.asp=0.4}
 
 OceanSODA_2x2_SO_extreme_grid %>%
@@ -494,8 +499,6 @@ OceanSODA_2x2_SO_extreme_grid %>%
 ```
 
 ### Anomaly maps
-
-##### Anomalies on a 1x1 grid
 
 ```{r flat_map_OceanSODA_ph_extremes_1x1_plot, fig.asp=1.5}
 
@@ -1416,13 +1419,8 @@ ucsd_clim_argo_ph_jan <- read_rds(file = paste0(path_argo_preprocessed, "/ucsd_p
 
 # compatibility with profile_temp_extreme_jan
 ucsd_clim_argo_ph_jan_SO <- ucsd_clim_argo_ph_jan %>% 
-  rename(lat = latitude, 
-         lon = longitude) %>% 
   filter(lat < -30) %>% 
-  mutate(lon = if_else(lon < 20, lon +360, lon),
-         depth_ucsd = depth,
-         month = 1) %>% 
-  rename(clim_ph_jan = pH)
+  mutate(depth_ucsd = depth)
 
 # grid average climatological temp into the argo depth bins 
 ucsd_clim_argo_ph_jan_SO <- ucsd_clim_argo_ph_jan_SO %>%
