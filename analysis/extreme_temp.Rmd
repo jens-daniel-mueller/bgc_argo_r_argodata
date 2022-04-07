@@ -53,11 +53,11 @@ path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
 
 # RECCAP2-ocean region mask
 
-region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed,
-                                               "/region_masks_all_2x2.rds"))
-  
+ region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed,
+                                                "/region_masks_all_2x2.rds"))
+#   
 region_masks_all_2x2 <- region_masks_all_2x2 %>%
-  rename(biome = value) %>% 
+  rename(biome = value) %>%
   mutate(coast = as.character(coast))
 
 # updated biomes of Nicolas Mayot 
@@ -116,44 +116,32 @@ map <- map +
 
 ```{r filter_southern_ocean_biomes}
 
-region_masks_all_2x2 <- region_masks_all_2x2 %>%
-  filter(region == 'southern',
-         biome != 0) %>% 
-  select(-region)
+# region_masks_all_2x2 <- region_masks_all_2x2 %>%
+#   filter(region == 'southern',
+#          biome != 0) %>% 
+#   select(-region)
 ```
 
 ## Remove coastal data
 
-```{r coast_map, fig.asp=0.4}
-map + 
-  geom_tile(data = region_masks_all_2x2, 
-            aes(x = lon, 
-                y = lat, 
-                fill = coast))+
-  scale_fill_brewer(palette = 'Dark2')
+```{# {r coast_map, fig.asp=0.4}
+# map + 
+#   geom_tile(data = region_masks_all_2x2, 
+#             aes(x = lon, 
+#                 y = lat, 
+#                 fill = coast))+
+#   scale_fill_brewer(palette = 'Dark2')
 
 ```
 
 ```{r remove_coastal_data}
-
-region_masks_all_2x2 <- region_masks_all_2x2 %>% 
-  filter(coast == "0")
+# 
+# region_masks_all_2x2 <- region_masks_all_2x2 %>% 
+#   filter(coast == "0")
 
 ```
 
 ## Grid reduction
-
-```{r biomes_map_pre_grid_reduction, fig.asp=0.4}
-
-map +
-  geom_tile(data = region_masks_all_2x2, 
-            aes(x = lon, 
-                y = lat, 
-                fill = biome))+
-  scale_fill_brewer(palette = 'Dark2')+
-  labs(title = 'RECCAP biomes (pre-grid reduction)')
-
-```
 
 ```{r new_mayot_biomes_pre_grid_reduction, fig.asp=0.4}
 
@@ -163,17 +151,25 @@ map+
                 y = lat,
                 fill = biome_name))+
   scale_fill_brewer(palette = 'Dark2')+
-  labs(title = 'new Mayot biomes (pre-grid reduction)')
+  labs(title = 'Mayot biomes (pre-grid reduction)')
 
 ```
 
-```{r grid_reduction_to_true_2x2_region_mask}
+```{r polar_projection_Mayot_biomes_pre_grid_reduction}
 
-region_masks_all_2x2 <- region_masks_all_2x2 %>%
-  count(lon, lat, biome) %>%
-  group_by(lon, lat) %>%
-  slice_max(n, with_ties = FALSE) %>%
-  ungroup()
+basemap(limits = -30)+
+  geom_spatial_tile(data = nm_biomes,
+                    aes(x = lon,
+                        y = lat,
+                        fill = biome_name),
+                    col = NA)+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'Mayot biomes (pre-grid reduction)')
+
+```
+
+
+```{r grid_reduction_to_true_2x2_region_mask}
 
 nm_biomes_2x2 <- nm_biomes %>% 
   mutate(lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
@@ -186,31 +182,10 @@ nm_biomes_2x2 <- nm_biomes_2x2 %>%
   group_by(lon, lat) %>% 
   slice_max(n, with_ties = FALSE) %>% 
   ungroup()
+
+rm(nm_biomes)
 ```
 
-```{r biomes_map_post_grid_reduction, fig.asp=0.4}
-
-map+
-  geom_tile(data = region_masks_all_2x2,
-            aes(x = lon,
-                y = lat,
-                fill = biome))+
-  scale_fill_brewer(palette = 'Dark2')+
-  labs(title = 'RECCAP biomes post-grid reduction')
-
-```
-
-```{r polar_projection_biome_map}
-
-basemap(limits = -32)+
-  geom_spatial_tile(data = region_masks_all_2x2,
-                    aes(x = lon,
-                        y = lat,
-                        fill = biome),
-                    col = NA)+
-  scale_fill_brewer(palette = 'Dark2')
-
-```
 
 ```{r new_mayot_biomes_map, fig.asp=0.4}
 
@@ -220,7 +195,20 @@ map+
                 y = lat,
                 fill = biome_name))+
   scale_fill_brewer(palette = 'Dark2')+
-  labs('new Mayot biomes post-grid reduction')
+  labs('Mayot biomes post-grid reduction')
+
+```
+
+```{r polar_projection_mayot_biomes}
+
+basemap(limits = -30)+
+  geom_spatial_tile(data = nm_biomes_2x2,
+                    aes(x = lon, 
+                        y = lat,
+                        fill = biome_name),
+                    col = NA)+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'Mayot biomes (post-grid reduction)')
 
 ```
 

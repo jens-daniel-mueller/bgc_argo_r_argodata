@@ -14,8 +14,8 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 # Task
+Load data for analysis 
 
-Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata
 
 ```{r loading_libraries, include=FALSE}
 
@@ -39,10 +39,15 @@ library(ggOceanMaps)
 
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_updata <- '/nfs/kryo/work/updata'
-
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 ```
 
-# Set cache directory
+# Argo 
+Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata
+
+## Set cache directory
 
 The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using `argo_update_global()` (data files are also updated occasionally; update these using `argo_update_data()`)
 
@@ -63,7 +68,7 @@ argo_update_data(max_data_cache_age = Inf)
 
 ```
 
-# Load index files
+## Load index files
 
 Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.
 
@@ -119,7 +124,7 @@ bgc_index <- argo_global_synthetic_prof() %>%
 
 ```
 
-# Read data
+## Read data
 
 Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)
 
@@ -157,7 +162,7 @@ bgc_data <- argo_prof_levels(
 
 The data is read in from the cached files stored in the path specified in `set_argo_cache_dir()` (in this case, `r path_argo`). To download data directly from the files stored on the ifremer server, set `max_global_cache_age` and `max_data_cache_age` to `-Inf`, which will force a new download.
 
-# Read meta data
+## Read meta data
 
 Read in the corresponding metadata:
 
@@ -188,7 +193,7 @@ bgc_metadata <- argo_prof_prof(path = bgc_index)
 
 ```
 
-# Join data
+## Join data
 
 Join the metadata and data together into one dataset
 
@@ -213,25 +218,9 @@ bgc_merge <- full_join(bgc_data, bgc_metadata) %>%
 
 ```
 
-# Write data
+## pH data 
 
-### Full data
-
-```{r write_data_to_files}
-
-path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
-
-bgc_index %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
-
-# bgc_calibration %>%
-#  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
-
-bgc_data %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
-
-bgc_merge %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+```{r create_pH_argo_dataframes}
 
 bgc_merge_pH_qc_1 <- bgc_merge %>%
   filter(ph_in_situ_total_adjusted_qc == '1') %>% 
@@ -242,20 +231,33 @@ bgc_merge_pH_qc_1 <- bgc_merge %>%
          profile_ph_in_situ_total_qc,
          profile_temp_qc)
 
-# table(bgc_merge_pH_qc_1$profile_ph_in_situ_total_qc)
-# 1 078 940 occurrences of A pH profiles 
-# 134 931 occurrences of B pH profiles 
-# + a few C, D, and E profiles 
-# table(bgc_merge_pH_qc_1$temp_adjusted_qc)
-# 604 150 occurrences of flag 1 
-# 1841 occurrences of flag 4 
-# 568 356 occurrences of flag 8 
-# table(bgc_merge_pH_qc_1$ph_in_situ_total_adjusted_qc)
-# 1 219 410 occurrences of qc flag 1 (all obs)
-# 1 219 410 total observations 
+# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid 
+ph_merge_1x1 <- bgc_merge %>% 
+  select(-c(doxy_adjusted:nitrate_adjusted_error),
+         -c(profile_doxy_qc, profile_nitrate_qc)) %>% 
+  filter(ph_in_situ_total_adjusted_qc == '1') %>% 
+  mutate(year = year(date),
+         month = month(date),
+         .after = n_prof)
 
-bgc_merge_pH_qc_1 %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+
+# create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
+ph_surface_1x1 <- ph_merge_1x1 %>% 
+  filter(between(depth, 0, 20))
+
+# create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid 
+ph_surface_2x2 <- ph_surface_1x1 %>%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)), 
+    lon = as.numeric(as.character(lon))
+   )   # regrid into 2x2º grid 
+```
+
+## Temperature data 
+
+```{r create_temp_argo_dataframe}
 
 bgc_merge_temp_qc_1 <- bgc_merge %>% 
   filter(temp_adjusted_qc == '1') %>% 
@@ -266,24 +268,13 @@ bgc_merge_temp_qc_1 <- bgc_merge %>%
          profile_temp_qc,
          profile_ph_in_situ_total_qc)
 
-# table(bgc_merge_temp_qc_1$ph_in_situ_total_adjusted_qc)
-# 12 176 133 occurrences of blank flags 
-# 604 150 occurrences of QC flag 1 
-# table(bgc_merge_temp_qc_1$profile_ph_in_situ_total_qc)
-# 116 900 occurrences of blank profile flags
-# 5 434 683 occurrences of A profile flags 
-# 857 117 occurrences of B profile flags 
-# + some C,D,E profiles 
-# 6 751 876 occurrences of F profiles 
-# 56 003 153 total observations 
+```
 
-bgc_merge_temp_qc_1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
+## QC flag A pH & temperature data 
 
-# create a dataframe with temperature and pH profile flags A and B only 
-# flag A and B: 7 394 514 obs 
-# flag A only: 2 542 782 obs 
-# remove QC flags other than 1 (flag A profiles only): results in 389 396 obs 
+```{r create_flag_A_bgc_argo_dataframe}
+
+# create a dataframe with temperature and pH profile flags A only 
 # keep only temperature observations where good pH data exists: 
 
 # using only complete profiles, and temperature data where pH measurements exist:
@@ -303,37 +294,11 @@ bgc_merge_flag_A <- bgc_merge %>%
 # no NA temperature values
 # 567 327 total observations 
 
-# table((bgc_merge_flag_A$profile_ph_in_situ_total_qc))
-# table(bgc_merge_flag_A$profile_temp_qc)
- 
-# table(bgc_merge_flag_A$temp_adjusted_qc)
-# 389 436 occurrences of flag 1
-# 177 891 occurrences of flag 8
-# table(is.na(bgc_merge_flag_A$temp_adjusted))
-# no NA temperature values 
-# table(bgc_merge_flag_A$ph_in_situ_total_adjusted_qc)
-# 567 217 occurrences of flag 1 
-# 110 occurrences of flag 8 
+```
 
+## QC flag 1 pH & temperature data
 
-bgc_merge_flag_A %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds"))
-
-# bgc_merge_flag_A <- bgc_merge_flag_A %>% 
-#   filter(!is.na(temp_adjusted),
-#          !is.na(ph_in_situ_total_adjusted))
-# 567 327 total observations 
-#table(bgc_merge_flag_A$temp_adjusted_qc)
-# 389 436 occurrences of flag 1 
-# 177 891 occurrences of flag 8 
-#table(bgc_merge_flag_A$ph_in_situ_total_adjusted_qc)
-# 567 217 occurrences of flag 1 
-# 110 occurrences of flag 8 
-#table(round(bgc_merge_flag_A$depth, digits = 0))
-
-
-# create a dataframe with QC flag 1 for both pH and temperature 
-
+```{r create_qc_flag_1_dataframe}
 bgc_merge_qc_1 <- bgc_merge %>% 
   filter(ph_in_situ_total_adjusted_qc == '1',
          temp_adjusted_qc == '1') %>% 
@@ -346,55 +311,9 @@ bgc_merge_qc_1 <- bgc_merge %>%
          lat, lon,
          profile_temp_qc,
          profile_ph_in_situ_total_qc)
-# 604 150 total obs 
-
-#table(bgc_merge_qc_1$ph_in_situ_total_adjusted_qc)
-
-# table(bgc_merge_qc_1$profile_ph_in_situ_total_qc)
-# 590 249 A profiles 
-# 12 787 B profiles 
-# + a few C,D,E profiles 
-# table(bgc_merge_qc_1$profile_temp_qc)
-# 393 065 A profiles 
-# 211 085 B profiles 
-# table(round(bgc_merge_qc_1$depth, digits = 0))
-# table(is.na(bgc_merge_qc_1$ph_in_situ_total_adjusted))
-# no NA pH values 
-# table(is.na(bgc_merge_qc_1$temp_adjusted))
-# no NA temperature values 
-
-bgc_merge_qc_1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
 ```
 
-### pH data
-
-```{r create_pH_data}
-
-# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid 
-ph_merge_1x1 <- bgc_merge %>% 
-  select(-c(doxy_adjusted:nitrate_adjusted_error),
-         -c(profile_doxy_qc, profile_nitrate_qc)) %>% 
-  filter(ph_in_situ_total_adjusted_qc == '1') %>% 
-  mutate(year = year(date),
-         month = month(date),
-         .after = n_prof)
-
-
-# create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
-ph_surface_1x1 <- ph_merge_1x1 %>% 
-  filter(between(depth, 0, 20)) 
-
-# create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid 
-ph_surface_2x2 <- ph_surface_1x1 %>%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)), 
-    lon = as.numeric(as.character(lon))
-   )   # regrid into 2x2º grid 
-
-```
+## Harmonise metadata 
 
 ```{r harmonise_metadata_variables}
 
@@ -415,20 +334,65 @@ bgc_metadata <- bgc_metadata %>%
 
 ```
 
-### Biome information
+## Write Argo data to files 
 
-#### RECCAP biomes 
+```{r write_argo_data_files}
+
+bgc_index %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
+
+# bgc_calibration %>%
+#  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
+
+bgc_data %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+
+bgc_merge %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+
+
+bgc_merge_pH_qc_1 %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+
+
+bgc_merge_temp_qc_1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
+ 
+
+bgc_merge_flag_A %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds"))
+
+
+bgc_merge_qc_1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
+
+ph_merge_1x1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
+
+bgc_metadata %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+
+
+```
+
+# Biomes and regions 
+
+## RECCAP biomes 
+
 Add in RECCAP biome separations to the pH data
 
 ```{r load_in_biome_separations}
-path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
-
 # load in the RECCAP biome separations 
 region_masks_all <-
   stars::read_ncdf(paste(
     path_basin_mask, "RECCAP2_region_masks_all_v20210412.nc", sep = "")) %>%
   as_tibble() %>% 
   mutate(seamask = as.factor(seamask))
+```
+
+### Harmonise RECCAP biomes
+
+```{r harmonise_reccap_biomes}
 
 # harmonise the latitude longitude bands of the biomes to the pH data (2x2 grid)
 region_masks_all_seamask_2x2 <- region_masks_all %>% 
@@ -482,15 +446,101 @@ ph_surface_2x2 <- inner_join(ph_surface_2x2, region_masks_all_2x2)
 ph_surface_1x1 <- inner_join(ph_surface_1x1, region_masks_all_1x1)
 ```
 
-#### Mayot biomes 
+### Maps of RECCAP biomes 
 
-```{r}
+```{r map_coastal_regions}
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+# restrict base map to Southern Ocean
+map <- map +
+  lims(y = c(-85, -30))
+
+region_masks_all_1x1 <- region_masks_all_1x1 %>%
+  filter(region == 'southern',
+         value != 0) %>%
+  mutate(coast = as.character(coast)) %>% 
+  select(-region)
+
+```
+
+
+```{r RECCAP_coast_map, fig.asp=0.4}
+
+map +
+  geom_tile(data = region_masks_all_1x1,
+            aes(x = lon,
+                y = lat,
+                fill = coast))+
+  scale_fill_brewer(palette = 'Dark2')
+
+```
+
+```{r RECCAP_biome_maps, fig.asp=0.4}
+
+map+
+  geom_tile(data = region_masks_all_1x1,
+            aes(x = lon,
+                y = lat,
+                fill = value))+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'RECCAP biomes')
+
+```
+
+```{r RECCAP_biome_polar_projection}
+
+basemap(limits = -30)+
+  geom_spatial_tile(data = region_masks_all_1x1,
+                    aes(x = lon,
+                        y = lat,
+                        fill = value),
+                    col = NA)+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'RECCAP biomes')
+
+```
+
+
+### Write RECCAP biomes to file
+```{r write_reccap_biomes_to_file}
+
+region_masks_all_seamask_1x1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_seamask_1x1.rds"))
+
+region_masks_all_seamask_2x2 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
+
+region_masks_all_1x1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_1x1.rds"))
+
+region_masks_all_2x2 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
+
+# joined RECCAP-biomes to surface pH data 
+ph_surface_1x1 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
+
+ph_surface_2x2 %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
+```
+
+
+## Mayot biomes 
+
+```{r load_Mayot_biomes}
+
 nm_biomes <- tidync::hyper_tibble(paste0(path_argo, "/SouthernOcean_mask_NM.nc"))
 # 1 degree lon/lat grid
 
 # table(nm_regions$LATITUDE) # 1 degree intervals
 # table((nm_regions$LONGITUDE)) # 1 degree longitude intervals
+```
 
+### Harmonise Mayot biomes
+```{r harmonise_Mayot_biomes}
 nm_biomes <- nm_biomes %>% 
   rename(lon = LONGITUDE,
          lat = LATITUDE) %>% 
@@ -507,43 +557,46 @@ nm_biomes <- nm_biomes %>%
 nm_biomes <- nm_biomes %>% 
   filter(biome_mask==1,
          lat <= -30)
+```
 
+### Maps of Mayot biomes
+
+```{r map_Mayot_biomes, fig.asp=0.4}
+map+
+  geom_tile(data = nm_biomes,
+            aes(x = lon,
+                y = lat,
+                fill = biome_name))+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'Mayot biomes')
+```
+
+```{r Mayot_biomes_polar_projection}
+
+basemap(limits = -30)+
+  geom_spatial_tile(data = nm_biomes,
+                    aes(x = lon, 
+                        y = lat, 
+                        fill = biome_name),
+                    col = NA)+
+  scale_fill_brewer(palette = 'Dark2')+
+  labs(title = 'Mayot biomes')
+
+```
+
+
+### Write Mayot biomes to file
+```{r write_Mayot_biomes_to_file}
 # write data to file 
 
 nm_biomes %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
 ```
 
-### Write pH data
 
-```{r write_pH_data_files}
+# OceanSODA 
 
-ph_merge_1x1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
-
-ph_surface_1x1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
-
-ph_surface_2x2 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
-
-bgc_metadata %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
-
-region_masks_all_seamask_1x1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_seamask_1x1.rds"))
-
-region_masks_all_seamask_2x2 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
-
-region_masks_all_1x1 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_1x1.rds"))
-
-region_masks_all_2x2 %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
-```
-
-### OceanSODA temperature data
+## Temperature 
 
 ```{r load_oceanSODA_pH}
 
@@ -573,7 +626,7 @@ OceanSODA_temp %>%
   write_rds(file = paste0(path_argo_preprocessed, '/OceanSODA_temp.rds'))
 ```
 
-### OceanSODA pH data
+## pH 
 
 ```{r load_OceanSODA_temperature}
 
@@ -587,7 +640,7 @@ OceanSODA %>%
 
 # Argo temperature climatology 
 
-## CSIO-MNR temperature climatology
+## CSIO-MNR climatology
 
 CSIO-MNR Argo temperature climatology of Li et al. (2017)
 
@@ -602,12 +655,14 @@ path_argo_clim_temp <- paste0(path_updata, "/argo_climatology/temperature")
 
 boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
 
+
+
 boa_clim_argo_temp_jan %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/boa_clim_argo_temp_jan.rds"))
 
 ```
 
-## Roemmich-Gilson UCSD temperature climatology 
+## Roemmich-Gilson UCSD climatology 
 
 Roemmich and Gilson UCSD argo temperature climatology 
 
@@ -621,6 +676,8 @@ clim_argo_temp_year_mean <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/R
 clim_argo_temp_monthly_anomaly <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
 # monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid
 ```
+
+### Harmonise data 
 
 ```{r re_grid_to_1x1}
 
@@ -670,8 +727,8 @@ clim_argo_temp_year_mean <- clim_argo_temp_year_mean %>%
 
 ```
 
+### Join data 
 ```{r join_annual_and_monthly_clim}
-
 clim_argo_temp_ucsd <- left_join(clim_argo_temp_monthly_anomaly,
                                  clim_argo_temp_year_mean)
 
@@ -682,6 +739,10 @@ clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>%
          month = time + 0.5)
 
 rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)
+```
+
+### Write data to file
+```{r write_ucsd_temp_clim_to_file}
 
 clim_argo_temp_ucsd %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/clim_argo_temp_ucsd.rds"))
