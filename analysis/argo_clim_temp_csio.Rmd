@@ -97,7 +97,7 @@ boa_clim_argo_temp_jan <- boa_clim_argo_temp_jan %>%
          depth = swDepth(pressure = pres, latitude = lat),
          month = rep(1, length(time))) %>% 
   rename(clim_temp_jan = temp) %>% 
-  select(-c(salt, pres, time))
+  select(-c(pres, time))
 
 ```
 
@@ -154,7 +154,7 @@ map+
   labs(title = 'Li et al. CSIO January climatological argo SST')
 ```
 
-### Southern Ocean January climatological profiles
+## Southern Ocean January climatological profiles
 ```{r add_in_basins_and_biomes}
 
 boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO, region_masks_all_1x1)
@@ -171,7 +171,7 @@ boa_clim_temp_jan_SO %>%
              y = depth))+
   geom_point(size = 0.2, pch = 1, fill = NA)+
   scale_y_reverse()+
-  facet_grid(basin_AIP~value)
+  facet_grid(basin_AIP~biome)
 
 ```
 
