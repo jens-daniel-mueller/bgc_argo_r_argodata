@@ -42,18 +42,9 @@ map <-
 
 ```{r load_in_regions_basins}
 
-# RECCAP2-ocean region mask
+# Mayot biome separations 
 
-region_masks_all_1x1 <- read_rds(file = paste0(path_argo_preprocessed,
-                                              "/region_masks_all_1x1.rds"))
-
-region_masks_all_1x1 <- region_masks_all_1x1 %>%
-  rename(biome = value) %>% 
-  mutate(coast = as.character(coast)) %>% 
-  filter(region == 'southern',
-         biome != 0,
-         coast == '0') %>% 
-  select(-region)
+nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
 
 
 # WOA 18 basin mask
@@ -85,19 +76,74 @@ User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Cha
 
 ```{r load_argo_temp_climatology_csio}
 
-boa_clim_argo_temp_jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc"))
+jan <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_01.nc")) %>% 
+  mutate(month = 1) %>% 
+  select(-c(salt, time))
+
+feb <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_02.nc")) %>% 
+  mutate(month = 2) %>% 
+  select(-c(salt, time))
+
+mar <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_03.nc")) %>% 
+  mutate(month = 3) %>% 
+  select(-c(salt, time))
+
+apr <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_04.nc")) %>% 
+  mutate(month = 4) %>% 
+  select(-c(salt, time))
+
+may <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_05.nc")) %>% 
+  mutate(month = 5) %>% 
+  select(-c(salt, time))
+
+jun <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_06.nc")) %>% 
+  mutate(month = 6) %>% 
+  select(-c(salt, time))
+
+jul <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_07.nc")) %>% 
+  mutate(month = 7) %>% 
+  select(-c(salt, time))
+
+aug <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_08.nc")) %>% 
+  mutate(month = 8) %>% 
+  select(-c(salt, time))
+
+sept <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_09.nc")) %>% 
+  mutate(month = 9) %>% 
+  select(-c(salt, time))
+
+oct <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_10.nc")) %>% 
+  mutate(month = 10) %>% 
+  select(-c(salt, time))
+
+nov <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_11.nc")) %>% 
+  mutate(month = 11) %>% 
+  select(-c(salt, time))
+
+dec <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/BOA_Argo_monthly_12.nc")) %>% 
+  mutate(month = 12) %>% 
+  select(-c(salt, time))
 ```
+
+## Join data 
+
+```{r join_months}
+
+boa_temp_clim <- bind_rows(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)
+
+rm(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)
+
+```
+
 
 ## Harmonise data
 
 ```{r harmonise_csio_temp_clim}
 
-boa_clim_argo_temp_jan <- boa_clim_argo_temp_jan %>% 
+boa_temp_clim <- boa_temp_clim %>% 
   mutate(lon = if_else(lon < 20, lon + 360, lon),
-         depth = swDepth(pressure = pres, latitude = lat),
-         month = rep(1, length(time))) %>% 
-  rename(clim_temp_jan = temp) %>% 
-  select(-c(pres, time))
+         depth = swDepth(pressure = pres, latitude = lat)) %>% 
+  rename(clim_temp = temp)
 
 ```
 
@@ -106,72 +152,83 @@ boa_clim_argo_temp_jan <- boa_clim_argo_temp_jan %>%
 
 ```{r write_csio_clim_to_file}
 
-boa_clim_argo_temp_jan %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/boa_clim_argo_temp_jan.rds"))
+boa_temp_clim %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/boa_temp_clim.rds"))
 
 ```
 
-## Southern Ocean January climatological SST
+## Southern Ocean climatological SST
 
 ```{r load_argo_temp_climatology}
 
 # keep only data south of 30ºS
-boa_clim_temp_jan_SO <- boa_clim_argo_temp_jan %>% 
-  filter(lat <= -30) %>% 
-  select(-salt)
-# 766 434 obs of 5 variables 
+boa_temp_clim_SO <- boa_temp_clim %>% 
+  filter(lat <= -30)
+# 9 196 740 obs of 6 variables 
 
 ```
 
 ```{r map_location_of_observations, fig.asp=0.4}
 
 map+
-  geom_point(data = boa_clim_temp_jan_SO %>% filter(depth < 20),
+  geom_point(data = boa_temp_clim_SO %>% filter(depth < 20),
              aes(x = lon,
                  y = lat),
-             size = 0.2,
+             size = 0.1,
              pch = 2,
-             alpha = 0.2)
+             alpha = 0.2) +
+  labs(title = 'CSIO observation coverage')
 
 ```
 
 
-```{r map_surface_climatological_january_temperature}
+```{r map_surface_climatological_csio_temperature, fig.asp=0.4}
 
-boa_clim_sst_jan_SO <- boa_clim_temp_jan_SO %>% 
+boa_sst_clim_SO <- boa_temp_clim_SO %>% 
   filter(depth <= 20) %>% 
-  group_by(lon, lat) %>% 
-  summarise(clim_sst = mean(clim_temp_jan, na.rm = TRUE)) %>% 
+  group_by(lon, lat, month) %>% 
+  summarise(clim_sst = mean(clim_temp, na.rm = TRUE)) %>% 
   ungroup()
 
-map+
-  geom_tile(data = boa_clim_sst_jan_SO,
-            aes(x = lon,
-                y = lat,
-                fill = clim_sst))+
-  scale_fill_viridis_c()+
-  lims(y = c(-80, -25))+
-  labs(title = 'Li et al. CSIO January climatological argo SST')
+boa_sst_clim_SO %>% 
+  group_split(month) %>% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = paste0('Li et al. CSIO clim SST, month:', unique(.x$month)))
+  )
+
 ```
 
 ## Southern Ocean January climatological profiles
 ```{r add_in_basins_and_biomes}
 
-boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO, region_masks_all_1x1)
+boa_temp_clim_SO <- inner_join(boa_temp_clim_SO, nm_biomes)
 
-boa_clim_temp_jan_SO <- inner_join(boa_clim_temp_jan_SO,
+boa_temp_clim_SO <- inner_join(boa_temp_clim_SO,
                                     basinmask)
 
 ```
 
-```{r plot_basin_biome_climatological_profiles}
+```{r plot_basin_biome_climatological_profiles, fig.asp=1}
 
-boa_clim_temp_jan_SO %>% 
-  ggplot(aes(x = clim_temp_jan,
-             y = depth))+
-  geom_point(size = 0.2, pch = 1, fill = NA)+
-  scale_y_reverse()+
-  facet_grid(basin_AIP~biome)
+
+boa_temp_clim_SO %>% 
+  group_split(month) %>% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = paste0('CSIO climatological profiles, month:', unique(.x$month)))
+  )
 
 ```
 
@@ -273,7 +330,7 @@ clim_argo_temp_ucsd %>%
 
 ```
 
-## Southern Ocean January climatological SST 
+## Southern Ocean climatological SST 
 
 ```{r map_location_of_ucsd_clim_observations}
 map+
@@ -283,28 +340,33 @@ map+
                 y = lat),
             size = 0.2)+
   facet_wrap(~time, ncol = 2)+
-  lims(y = c(-80, -30))
+  lims(y = c(-80, -30))+
+  labs(title = 'UCSD climatology obs coverage')
 
 ```
 
  
-```{r january_clim_sst_ucsd}
+```{r january_clim_sst_ucsd, fig.asp=0.4}
 
-clim_jan_sst_ucsd <- clim_argo_temp_ucsd %>% 
-  filter(month == 1,
-         depth <= 20) %>% 
-  group_by(lon, lat) %>% 
-  summarise(clim_sst_jan = mean(temp_monthly_clim, na.rm = TRUE)) %>% 
+clim_sst_ucsd <- clim_argo_temp_ucsd %>% 
+  filter(depth <= 20) %>% 
+  group_by(lon, lat, month) %>% 
+  summarise(clim_sst = mean(temp_monthly_clim, na.rm = TRUE)) %>% 
   ungroup()
 
-map+
-  geom_tile(data = clim_jan_sst_ucsd,
-            aes(x = lon,
-                y = lat, 
-                fill = clim_sst_jan))+
-  scale_fill_viridis_c()+
-  lims(y = c(-80, -29))+
-  labs(title = 'Roemmich & Gilson UCSD January Climatological Argo SST')
+clim_sst_ucsd %>% 
+  group_split(month) %>% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = 'Roemmich & Gilson UCSD clim SST, month:', unique(.x$month))
+  )
+
 ```
 
 ## Southern Ocean January climatological temperature
@@ -325,30 +387,33 @@ clim_argo_temp_ucsd %>%
 
 ```
 
-## Southern Ocean January climatological profiles
+## Southern Ocean climatological profiles
 
 ```{r add_in_basins_biomes_ucsd_temp}
 
-# add in RECCAP biome separations 
-clim_argo_temp_ucsd <- inner_join(clim_argo_temp_ucsd, region_masks_all_1x1)
+# add in Mayot biome separations 
+clim_argo_temp_ucsd <- inner_join(clim_argo_temp_ucsd, nm_biomes)
 
 # add in basin separations
 clim_argo_temp_ucsd <- inner_join(clim_argo_temp_ucsd, basinmask)
 
 ```
 
-```{r plot_climatological_jan_profiles_ucsd}
+```{r plot_climatological_jan_profiles_ucsd, fig.asp=1}
+
+# plot climatological profiles per month and biome 
 
 clim_argo_temp_ucsd %>% 
-  filter(month == 1) %>% 
-  ggplot(aes(x = temp_monthly_clim,
-             y = depth))+
-  geom_point(aes(x = temp_monthly_clim,
-                 y = depth),
-             size = 0.2,
-             pch = 1)+
-  scale_y_reverse()+
-  facet_grid(biome~basin_AIP)
+  group_split(month) %>% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = temp_monthly_clim,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = 'UCSD clim profiles, month:', unique(.x$month))
+  )
 
 ```
 

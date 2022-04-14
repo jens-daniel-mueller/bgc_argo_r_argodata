@@ -245,7 +245,6 @@ basemap(limits = -32)+
                     col = NA)+
   scale_fill_brewer(palette = 'Dark2')
 
-rm(region_masks_all_2x2)
 ```
 
 # OceanSODA
@@ -964,7 +963,7 @@ rm(surface_temp_mean)
 
 ### January overall mean profiles
 
-```{r jan_overall_mean_temp_profiles, fig.asp=1}
+```{r jan_overall_mean_temp_profiles, fig.asp=1, eval=FALSE}
 
 profile_temp_extreme_mean_jan <- profile_temp_extreme %>%
   filter(month == 1) %>% 
@@ -1364,7 +1363,7 @@ rm(profile_temp_extreme_season)
 
 ### Mayot biome - basin January mean profiles
 
-```{r new_biome_basin_january_mean_profiles, fig.asp=1}
+```{r new_biome_basin_january_mean_profiles, fig.asp=1, eval=FALSE}
 
 profile_temp_extreme_biome_basin_jan <- profile_temp_extreme %>%
   filter(month == 1) %>% 
@@ -1403,17 +1402,9 @@ Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature c
 
 ## Argo profiles
 
-```{r filter_january_profiles}
-
-# # keep only january profiles 
-profile_temp_extreme_jan <- profile_temp_extreme %>%
-  filter(month == 1)
-
-```
-
 ```{r average_depth_levels}
 
-profile_temp_extreme_jan_binned <- profile_temp_extreme_jan %>%
+profile_temp_extreme_binned <- profile_temp_extreme %>%
   group_by(lon, lat, year, month, platform_cycle,
            biome_name, basin_AIP, temp_extreme,
            depth) %>%
@@ -1426,37 +1417,37 @@ profile_temp_extreme_jan_binned <- profile_temp_extreme_jan %>%
 
 ```{r load_jan_temp_climatology}
 
-boa_clim_argo_temp_jan <- read_rds(file = paste0(path_argo_preprocessed, '/boa_clim_argo_temp_jan.rds'))
+boa_temp_clim <- read_rds(file = paste0(path_argo_preprocessed, '/boa_temp_clim.rds'))
 
 # compatibility with profile_temp_extreme_jan
-boa_clim_argo_temp_jan_SO <- boa_clim_argo_temp_jan %>% 
-  filter(lat < -30) %>% 
+boa_temp_clim_SO <- boa_temp_clim %>% 
+  filter(lat <= -30) %>% 
   mutate(depth_boa = depth)
 
 # grid average climatological temp into the argo depth bins 
-boa_clim_argo_temp_jan_SO <- boa_clim_argo_temp_jan_SO %>%
+boa_temp_clim_SO <- boa_temp_clim_SO %>%
   mutate(
     depth = cut(
       depth_boa,
       breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
       include.lowest = TRUE,
-      labels = as.factor(unique(profile_temp_extreme_jan$depth))
+      labels = as.factor(unique(profile_temp_extreme$depth))
     ),
     depth = as.numeric(as.character(depth))
   )
 
 
 # calculate mean climatological pH per depth bin
-boa_clim_argo_temp_jan_SO_binned <- boa_clim_argo_temp_jan_SO %>% 
+boa_temp_clim_SO_binned <- boa_temp_clim_SO %>% 
   group_by(lon, lat, depth, month) %>% 
-  summarise(clim_temp_jan_binned = mean(clim_temp_jan, na.rm = TRUE)) %>%
+  summarise(clim_temp_binned = mean(clim_temp, na.rm = TRUE)) %>%
   ungroup()
 
 
 # join climatology and ARGO profiles
 
-remove_clim_jan <- inner_join(profile_temp_extreme_jan_binned,
-                              boa_clim_argo_temp_jan_SO_binned)
+remove_clim <- inner_join(profile_temp_extreme_binned,
+                              boa_temp_clim_SO_binned)
 
 ```
 
@@ -1468,7 +1459,7 @@ Points are the January climatological temperature, lines are the depth-binned Ar
 
 ```{r plot_raw_profiles_with_clim}
 
-remove_clim_jan %>%
+remove_clim %>%
   group_split(biome_name, basin_AIP, year) %>%
   # head(1) %>%
   map(
@@ -1497,7 +1488,7 @@ remove_clim_jan %>%
       ) +
       geom_point(
         data = .x,
-        aes(x = clim_temp_jan_binned,
+        aes(x = clim_temp_binned,
             y = depth,
             col = temp_extreme),
         size = 0.5
@@ -1525,8 +1516,12 @@ remove_clim_jan %>%
 
 # calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
 
-remove_clim_jan <- remove_clim_jan %>% 
-  mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_jan_binned)
+remove_clim <- remove_clim %>% 
+  mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_binned,
+         season = case_when(between(month, 3, 5) ~ 'autumn',
+                            between(month, 6, 8) ~ 'winter',
+                            between(month, 9, 11) ~ 'spring',
+                            month == 12 | 1 | 2 ~ 'summer'))
 
 ```
 
@@ -1534,7 +1529,7 @@ remove_clim_jan <- remove_clim_jan %>%
 
 ```{r plot_january_anomaly_profiles, fig.asp=1}
 
-remove_clim_jan %>% 
+remove_clim %>% 
   group_split(year) %>% 
   # head(1) %>% 
   map(
@@ -1566,12 +1561,12 @@ remove_clim_jan %>%
 
 ```{r plot_overall_mean_clim_removed_profiles, fig.asp=1}
 
-remove_clim_jan_overall_mean <- remove_clim_jan %>% 
+remove_clim_overall_mean <- remove_clim %>% 
   group_by(temp_extreme, depth) %>% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
-remove_clim_jan_overall_mean %>% 
+remove_clim_overall_mean %>% 
   ggplot()+
   geom_path(aes(x = temp_anomaly_mean,
                 y = depth,
@@ -1591,20 +1586,20 @@ remove_clim_jan_overall_mean %>%
   scale_fill_manual(values = HNL_colors)+
   labs(title = 'Overall mean profiles')
 
-rm(remove_clim_jan_overall_mean)
+rm(remove_clim_overall_mean)
 
 ```
 
-### Biome-mean anomaly
+### Biome x season mean anomaly
 
 ```{r plot_biome_mean_clim_removed_profiles, fig.asp=1}
 
-remove_clim_jan_biome_mean <- remove_clim_jan %>% 
-  group_by(temp_extreme, depth, biome_name) %>% 
+remove_clim_biome_mean <- remove_clim %>% 
+  group_by(temp_extreme, depth, season, biome_name) %>% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
-remove_clim_jan_biome_mean %>% 
+remove_clim_biome_mean %>% 
   ggplot(aes(x = temp_anomaly_mean,
                 y = depth,
                 group = temp_extreme,
@@ -1622,22 +1617,22 @@ remove_clim_jan_biome_mean %>%
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
   labs(title = 'Biome-mean profiles')+
-  facet_wrap(~biome_name)
+  facet_grid(season~biome_name)
 
-rm(remove_clim_jan_biome_mean)
+rm(remove_clim_biome_mean)
 
 ```
 
-### Basin-mean anomaly
+### Basin x season mean anomaly
 
 ```{r plot_basin_mean_anomaly_profiles, fig.asp=1}
 
-remove_clim_jan_basin_mean <- remove_clim_jan %>% 
-  group_by(basin_AIP, temp_extreme, depth) %>% 
+remove_clim_basin_mean <- remove_clim %>% 
+  group_by(basin_AIP, temp_extreme, depth, season) %>% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
-remove_clim_jan_basin_mean %>% 
+remove_clim_basin_mean %>% 
   ggplot(aes(x = temp_anomaly_mean,
              y = depth, 
              group = temp_extreme,
@@ -1650,46 +1645,52 @@ remove_clim_jan_basin_mean %>%
               col = NA,
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  facet_wrap(~basin_AIP)+
+  facet_grid(season~basin_AIP)+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
   labs(title = 'Basin-mean profiles')
 
-rm(remove_clim_jan_basin_mean)
+rm(remove_clim_basin_mean)
 
 ```
 
-### Basin-biome-mean anomaly
+### Basin x biome x season mean anomaly
 
 ```{r plot_basin_biome_mean_anomaly_profiles, fig.asp=1}
 
-remove_clim_jan_basin_biome_mean <- remove_clim_jan %>% 
-  group_by(basin_AIP, biome_name, temp_extreme, depth) %>% 
+remove_clim_basin_biome_mean <- remove_clim %>% 
+  group_by(basin_AIP, biome_name, temp_extreme, season, depth) %>% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
-remove_clim_jan_basin_biome_mean %>% 
-  ggplot(aes(x = temp_anomaly_mean,
-             y = depth, 
-             group = temp_extreme,
-             col = temp_extreme))+
-  geom_path()+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+remove_clim_basin_biome_mean %>% 
+  group_by(season) %>% 
+  group_split(season) %>% 
+  map(
+    ~ggplot(data = .x, 
+            aes(x = temp_anomaly_mean,
+                y = depth,
+                group = temp_extreme,
+                col = temp_extreme))+
+      geom_path()+
+      geom_ribbon(data = .x,
+                  aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
                   xmin = temp_anomaly_mean - temp_anomaly_sd,
                   group = temp_extreme,
                   fill = temp_extreme),
               col = NA,
               alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  facet_grid(basin_AIP~biome_name)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  scale_color_manual(values = HNL_colors)+
-  scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Basin-biome-mean profiles')
+      geom_vline(xintercept = 0)+
+      facet_grid(basin_AIP~biome_name)+
+      scale_y_continuous(trans = trans_reverser("sqrt"),
+                         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+      scale_color_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors)+
+      labs(title = paste0('biome-basin mean profiles ', unique(.x$season)))
+    )
 
-rm(remove_clim_jan_basin_biome_mean)
+rm(remove_clim_basin_biome_mean)
 
 ```
