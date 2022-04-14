@@ -205,7 +205,7 @@ boa_sst_clim_SO %>%
 
 ```
 
-## Southern Ocean January climatological profiles
+## Southern Ocean climatological profiles
 ```{r add_in_basins_and_biomes}
 
 boa_temp_clim_SO <- inner_join(boa_temp_clim_SO, nm_biomes)
@@ -346,7 +346,7 @@ map+
 ```
 
  
-```{r january_clim_sst_ucsd, fig.asp=0.4}
+```{r clim_sst_ucsd, fig.asp=0.4}
 
 clim_sst_ucsd <- clim_argo_temp_ucsd %>% 
   filter(depth <= 20) %>% 
@@ -364,7 +364,7 @@ clim_sst_ucsd %>%
                     fill = clim_sst))+
       scale_fill_viridis_c()+
       lims(y = c(-85, -28))+
-      labs(title = 'Roemmich & Gilson UCSD clim SST, month:', unique(.x$month))
+      labs(title = paste0('Roemmich & Gilson UCSD clim SST, month:', unique(.x$month)))
   )
 
 ```
@@ -399,7 +399,7 @@ clim_argo_temp_ucsd <- inner_join(clim_argo_temp_ucsd, basinmask)
 
 ```
 
-```{r plot_climatological_jan_profiles_ucsd, fig.asp=1}
+```{r plot_climatological_profiles_ucsd, fig.asp=1}
 
 # plot climatological profiles per month and biome 
 
@@ -412,7 +412,7 @@ clim_argo_temp_ucsd %>%
       geom_point(size = 0.1, pch = 1, fill = NA)+
       scale_y_reverse()+
       facet_grid(basin_AIP~biome_name)+
-      labs(title = 'UCSD clim profiles, month:', unique(.x$month))
+      labs(title = paste0('UCSD clim profiles, month:', unique(.x$month)))
   )
 
 ```
