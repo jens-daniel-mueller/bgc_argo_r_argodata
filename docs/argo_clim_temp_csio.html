@@ -441,7 +441,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">CSIO-MNR Argo Temperature Climatology</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">11 April, 2022</h4>
+<h4 class="date">14 April, 2022</h4>
 
 </div>
 
@@ -466,7 +466,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-11
+<strong>Last updated:</strong> 2022-04-14
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -557,16 +557,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreed21c526ce3684f9fed175bc5cf71a6bee9827ea9targetblankd21c526a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/d21c526ce3684f9fed175bc5cf71a6bee9827ea9" target="_blank">d21c526</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec2fa269c35833f721fd19050cd66df3276f5532ftargetblankc2fa269a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c2fa269c35833f721fd19050cd66df3276f5532f" target="_blank">c2fa269</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreed21c526ce3684f9fed175bc5cf71a6bee9827ea9targetblankd21c526a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec2fa269c35833f721fd19050cd66df3276f5532ftargetblankc2fa269a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/d21c526ce3684f9fed175bc5cf71a6bee9827ea9" target="_blank">d21c526</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c2fa269c35833f721fd19050cd66df3276f5532f" target="_blank">c2fa269</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -579,15 +579,12 @@ Ignored files:
     Ignored:    output/
 
 Untracked files:
+    Untracked:  analysis/ph_temp_anomaly_fields.Rmd
     Untracked:  code/OceanSODA_argo_extremes.R
     Untracked:  code/creating_dataframe.R
     Untracked:  code/creating_map.R
     Untracked:  code/merging_oceanSODA_Argo.R
     Untracked:  code/pH_data_timeseries.R
-
-Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
@@ -626,6 +623,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c2fa269c35833f721fd19050cd66df3276f5532f/analysis/argo_clim_temp_csio.Rmd" target="_blank">c2fa269</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+<td>
+added full temperature climatology
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/8805f99ea10fef4a7f7b188bd45df79353237014/docs/argo_clim_temp_csio.html" target="_blank">8805f99</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -891,18 +922,9 @@ map &lt;-
   read_rds(paste(path_emlr_utilities,
                  &quot;map_landmask_WOA18.rds&quot;,
                  sep = &quot;&quot;))</code></pre>
-<pre class="r"><code># RECCAP2-ocean region mask
+<pre class="r"><code># Mayot biome separations 
 
-region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed,
-                                              &quot;/region_masks_all_1x1.rds&quot;))
-
-region_masks_all_1x1 &lt;- region_masks_all_1x1 %&gt;%
-  rename(biome = value) %&gt;% 
-  mutate(coast = as.character(coast)) %&gt;% 
-  filter(region == &#39;southern&#39;,
-         biome != 0,
-         coast == &#39;0&#39;) %&gt;% 
-  select(-region)
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))
 
 
 # WOA 18 basin mask
@@ -926,36 +948,86 @@ basinmask &lt;- basinmask %&gt;%
 <p>User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Chaohui Sun，Jianping Xu.(2020). Manual of Global Ocean Argo gridded data set (BOA_Argo) (Version 2019), 14 pp <a href="https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf" class="uri">https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf</a></p>
 <div id="read-data" class="section level2">
 <h2>Read data</h2>
-<pre class="r"><code>boa_clim_argo_temp_jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;))</code></pre>
+<pre class="r"><code>jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;)) %&gt;% 
+  mutate(month = 1) %&gt;% 
+  select(-c(salt, time))
+
+feb &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_02.nc&quot;)) %&gt;% 
+  mutate(month = 2) %&gt;% 
+  select(-c(salt, time))
+
+mar &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_03.nc&quot;)) %&gt;% 
+  mutate(month = 3) %&gt;% 
+  select(-c(salt, time))
+
+apr &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_04.nc&quot;)) %&gt;% 
+  mutate(month = 4) %&gt;% 
+  select(-c(salt, time))
+
+may &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_05.nc&quot;)) %&gt;% 
+  mutate(month = 5) %&gt;% 
+  select(-c(salt, time))
+
+jun &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_06.nc&quot;)) %&gt;% 
+  mutate(month = 6) %&gt;% 
+  select(-c(salt, time))
+
+jul &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_07.nc&quot;)) %&gt;% 
+  mutate(month = 7) %&gt;% 
+  select(-c(salt, time))
+
+aug &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_08.nc&quot;)) %&gt;% 
+  mutate(month = 8) %&gt;% 
+  select(-c(salt, time))
+
+sept &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_09.nc&quot;)) %&gt;% 
+  mutate(month = 9) %&gt;% 
+  select(-c(salt, time))
+
+oct &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_10.nc&quot;)) %&gt;% 
+  mutate(month = 10) %&gt;% 
+  select(-c(salt, time))
+
+nov &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_11.nc&quot;)) %&gt;% 
+  mutate(month = 11) %&gt;% 
+  select(-c(salt, time))
+
+dec &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_12.nc&quot;)) %&gt;% 
+  mutate(month = 12) %&gt;% 
+  select(-c(salt, time))</code></pre>
+</div>
+<div id="join-data" class="section level2">
+<h2>Join data</h2>
+<pre class="r"><code>boa_temp_clim &lt;- bind_rows(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)
+
+rm(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)</code></pre>
 </div>
 <div id="harmonise-data" class="section level2">
 <h2>Harmonise data</h2>
-<pre class="r"><code>boa_clim_argo_temp_jan &lt;- boa_clim_argo_temp_jan %&gt;% 
+<pre class="r"><code>boa_temp_clim &lt;- boa_temp_clim %&gt;% 
   mutate(lon = if_else(lon &lt; 20, lon + 360, lon),
-         depth = swDepth(pressure = pres, latitude = lat),
-         month = rep(1, length(time))) %&gt;% 
-  rename(clim_temp_jan = temp) %&gt;% 
-  select(-c(pres, time))</code></pre>
+         depth = swDepth(pressure = pres, latitude = lat)) %&gt;% 
+  rename(clim_temp = temp)</code></pre>
 </div>
 <div id="write-data-to-file" class="section level2">
 <h2>Write data to file</h2>
-<pre class="r"><code>boa_clim_argo_temp_jan %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/boa_clim_argo_temp_jan.rds&quot;))</code></pre>
+<pre class="r"><code>boa_temp_clim %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/boa_temp_clim.rds&quot;))</code></pre>
 </div>
-<div id="southern-ocean-january-climatological-sst" class="section level2">
-<h2>Southern Ocean January climatological SST</h2>
+<div id="southern-ocean-climatological-sst" class="section level2">
+<h2>Southern Ocean climatological SST</h2>
 <pre class="r"><code># keep only data south of 30ºS
-boa_clim_temp_jan_SO &lt;- boa_clim_argo_temp_jan %&gt;% 
-  filter(lat &lt;= -30) %&gt;% 
-  select(-salt)
-# 766 434 obs of 5 variables </code></pre>
+boa_temp_clim_SO &lt;- boa_temp_clim %&gt;% 
+  filter(lat &lt;= -30)
+# 9 196 740 obs of 6 variables </code></pre>
 <pre class="r"><code>map+
-  geom_point(data = boa_clim_temp_jan_SO %&gt;% filter(depth &lt; 20),
+  geom_point(data = boa_temp_clim_SO %&gt;% filter(depth &lt; 20),
              aes(x = lon,
                  y = lat),
-             size = 0.2,
+             size = 0.1,
              pch = 2,
-             alpha = 0.2)</code></pre>
+             alpha = 0.2) +
+  labs(title = &#39;CSIO observation coverage&#39;)</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/map_location_of_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_of_observations-1">
@@ -979,6 +1051,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/argo_clim_temp_csio.Rmd/map_location_of_observations-1.png" target="_blank">8805f99</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-11
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3edd3f0f28026503b013347700e79839c9fcf308/docs/figure/argo_clim_temp_csio.Rmd/map_location_of_observations-1.png" target="_blank">3edd3f0</a>
@@ -1005,82 +1088,78 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>boa_clim_sst_jan_SO &lt;- boa_clim_temp_jan_SO %&gt;% 
+<pre class="r"><code>boa_sst_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(lon, lat) %&gt;% 
-  summarise(clim_sst = mean(clim_temp_jan, na.rm = TRUE)) %&gt;% 
+  group_by(lon, lat, month) %&gt;% 
+  summarise(clim_sst = mean(clim_temp, na.rm = TRUE)) %&gt;% 
   ungroup()
 
-map+
-  geom_tile(data = boa_clim_sst_jan_SO,
-            aes(x = lon,
-                y = lat,
-                fill = clim_sst))+
-  scale_fill_viridis_c()+
-  lims(y = c(-80, -25))+
-  labs(title = &#39;Li et al. CSIO January climatological argo SST&#39;)</code></pre>
-<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_january_temperature-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_surface_climatological_january_temperature-1">
-Past versions of map_surface_climatological_january_temperature-1.png
-</button>
-</p>
-<div id="fig-map_surface_climatological_january_temperature-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/48573c419440bd1f87b9f8687ee3e7f7d4bbdd6c/docs/figure/argo_clim_temp_csio.Rmd/map_surface_climatological_january_temperature-1.png" target="_blank">48573c4</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6dd09451d97957708014c9795c72ca7c8f1d7440/docs/figure/argo_clim_temp_csio.Rmd/map_surface_climatological_january_temperature-1.png" target="_blank">6dd0945</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-25
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+boa_sst_clim_SO %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = paste0(&#39;Li et al. CSIO clim SST, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-12.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="southern-ocean-january-climatological-profiles" class="section level2">
 <h2>Southern Ocean January climatological profiles</h2>
-<pre class="r"><code>boa_clim_temp_jan_SO &lt;- inner_join(boa_clim_temp_jan_SO, region_masks_all_1x1)
+<pre class="r"><code>boa_temp_clim_SO &lt;- inner_join(boa_temp_clim_SO, nm_biomes)
 
-boa_clim_temp_jan_SO &lt;- inner_join(boa_clim_temp_jan_SO,
+boa_temp_clim_SO &lt;- inner_join(boa_temp_clim_SO,
                                     basinmask)</code></pre>
-<pre class="r"><code>boa_clim_temp_jan_SO %&gt;% 
-  ggplot(aes(x = clim_temp_jan,
-             y = depth))+
-  geom_point(size = 0.2, pch = 1, fill = NA)+
-  scale_y_reverse()+
-  facet_grid(basin_AIP~biome)</code></pre>
+<pre class="r"><code>boa_temp_clim_SO %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = paste0(&#39;CSIO climatological profiles, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_basin_biome_climatological_profiles-1">
@@ -1141,6 +1220,39 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="ucsd-climatology" class="section level1">
@@ -1230,8 +1342,8 @@ rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)</code></pre>
 <pre class="r"><code>clim_argo_temp_ucsd %&gt;% 
   write_rds(file = paste0(path_argo_preprocessed, &quot;/clim_argo_temp_ucsd.rds&quot;))</code></pre>
 </div>
-<div id="southern-ocean-january-climatological-sst-1" class="section level2">
-<h2>Southern Ocean January climatological SST</h2>
+<div id="southern-ocean-climatological-sst-1" class="section level2">
+<h2>Southern Ocean climatological SST</h2>
 <pre class="r"><code>map+
   geom_point(data = clim_argo_temp_ucsd %&gt;% 
               filter(depth &lt; 5),
@@ -1239,7 +1351,8 @@ rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)</code></pre>
                 y = lat),
             size = 0.2)+
   facet_wrap(~time, ncol = 2)+
-  lims(y = c(-80, -30))</code></pre>
+  lims(y = c(-80, -30))+
+  labs(title = &#39;UCSD climatology obs coverage&#39;)</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/map_location_of_ucsd_clim_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_of_ucsd_clim_observations-1">
@@ -1278,21 +1391,25 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>clim_jan_sst_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
-  filter(month == 1,
-         depth &lt;= 20) %&gt;% 
-  group_by(lon, lat) %&gt;% 
-  summarise(clim_sst_jan = mean(temp_monthly_clim, na.rm = TRUE)) %&gt;% 
+<pre class="r"><code>clim_sst_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  filter(depth &lt;= 20) %&gt;% 
+  group_by(lon, lat, month) %&gt;% 
+  summarise(clim_sst = mean(temp_monthly_clim, na.rm = TRUE)) %&gt;% 
   ungroup()
 
-map+
-  geom_tile(data = clim_jan_sst_ucsd,
-            aes(x = lon,
-                y = lat, 
-                fill = clim_sst_jan))+
-  scale_fill_viridis_c()+
-  lims(y = c(-80, -29))+
-  labs(title = &#39;Roemmich &amp; Gilson UCSD January Climatological Argo SST&#39;)</code></pre>
+clim_sst_ucsd %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = &#39;Roemmich &amp; Gilson UCSD clim SST, month:&#39;, unique(.x$month))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-january_clim_sst_ucsd-1">
@@ -1342,6 +1459,39 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/january_clim_sst_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="southern-ocean-january-climatological-temperature" class="section level2">
 <h2>Southern Ocean January climatological temperature</h2>
@@ -7768,23 +7918,27 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="southern-ocean-january-climatological-profiles-1" class="section level2">
-<h2>Southern Ocean January climatological profiles</h2>
-<pre class="r"><code># add in RECCAP biome separations 
-clim_argo_temp_ucsd &lt;- inner_join(clim_argo_temp_ucsd, region_masks_all_1x1)
+<div id="southern-ocean-climatological-profiles" class="section level2">
+<h2>Southern Ocean climatological profiles</h2>
+<pre class="r"><code># add in Mayot biome separations 
+clim_argo_temp_ucsd &lt;- inner_join(clim_argo_temp_ucsd, nm_biomes)
 
 # add in basin separations
 clim_argo_temp_ucsd &lt;- inner_join(clim_argo_temp_ucsd, basinmask)</code></pre>
-<pre class="r"><code>clim_argo_temp_ucsd %&gt;% 
-  filter(month == 1) %&gt;% 
-  ggplot(aes(x = temp_monthly_clim,
-             y = depth))+
-  geom_point(aes(x = temp_monthly_clim,
-                 y = depth),
-             size = 0.2,
-             pch = 1)+
-  scale_y_reverse()+
-  facet_grid(biome~basin_AIP)</code></pre>
+<pre class="r"><code># plot climatological profiles per month and biome 
+
+clim_argo_temp_ucsd %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = temp_monthly_clim,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = &#39;UCSD clim profiles, month:&#39;, unique(.x$month))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_jan_profiles_ucsd-1">
@@ -7823,6 +7977,39 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_jan_profiles_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
