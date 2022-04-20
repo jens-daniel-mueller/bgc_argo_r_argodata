@@ -441,7 +441,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">CSIO-MNR Argo Temperature Climatology</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">14 April, 2022</h4>
+<h4 class="date">20 April, 2022</h4>
 
 </div>
 
@@ -466,7 +466,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-14
+<strong>Last updated:</strong> 2022-04-20
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -557,16 +557,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5920e3ebba0567e068afd3529a461ecb3392399btargetblank5920e3ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5920e3ebba0567e068afd3529a461ecb3392399b" target="_blank">5920e3e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreee81c5022b0b6f38e8e1a3b714ba6cbc8210df4fctargetblanke81c502a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/e81c5022b0b6f38e8e1a3b714ba6cbc8210df4fc" target="_blank">e81c502</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree5920e3ebba0567e068afd3529a461ecb3392399btargetblank5920e3ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreee81c5022b0b6f38e8e1a3b714ba6cbc8210df4fctargetblanke81c502a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/5920e3ebba0567e068afd3529a461ecb3392399b" target="_blank">5920e3e</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/e81c5022b0b6f38e8e1a3b714ba6cbc8210df4fc" target="_blank">e81c502</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -623,6 +623,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e81c5022b0b6f38e8e1a3b714ba6cbc8210df4fc/analysis/argo_clim_temp_csio.Rmd" target="_blank">e81c502</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-20
+</td>
+<td>
+added temperature clim comparison
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/argo_clim_temp_csio.html" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2169,9 +2203,11 @@ pasqualina-vonlanthendinenna
 <div id="read-data-1" class="section level2">
 <h2>Read data</h2>
 <pre class="r"><code>clim_argo_temp_year_mean &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_mean.nc&quot;))
+
 # yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
 
 clim_argo_temp_monthly_anomaly &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_annual.nc&quot;))
+
 # monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid</code></pre>
 </div>
 <div id="harmonise-data-1" class="section level2">
@@ -2329,39 +2365,483 @@ clim_sst_ucsd %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-1">
+Past versions of clim_sst_ucsd-1.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-1.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-2">
+Past versions of clim_sst_ucsd-2.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-2.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-3">
+Past versions of clim_sst_ucsd-3.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-3.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-4">
+Past versions of clim_sst_ucsd-4.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-4.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-5">
+Past versions of clim_sst_ucsd-5.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-5.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-6">
+Past versions of clim_sst_ucsd-6.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-6.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[7]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-7">
+Past versions of clim_sst_ucsd-7.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-7.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[8]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-8">
+Past versions of clim_sst_ucsd-8.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-8.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[9]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-9">
+Past versions of clim_sst_ucsd-9.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-9.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[10]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-10">
+Past versions of clim_sst_ucsd-10.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-10.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[11]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-11">
+Past versions of clim_sst_ucsd-11.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-11.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[12]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-clim_sst_ucsd-12">
+Past versions of clim_sst_ucsd-12.png
+</button>
+</p>
+<div id="fig-clim_sst_ucsd-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/clim_sst_ucsd-12.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="southern-ocean-january-climatological-temperature" class="section level2">
 <h2>Southern Ocean January climatological temperature</h2>
@@ -8810,39 +9290,1139 @@ clim_argo_temp_ucsd %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-1">
+Past versions of plot_climatological_profiles_ucsd-1.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-1.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-2">
+Past versions of plot_climatological_profiles_ucsd-2.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-2.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-3">
+Past versions of plot_climatological_profiles_ucsd-3.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-3.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-4">
+Past versions of plot_climatological_profiles_ucsd-4.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-4.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-5">
+Past versions of plot_climatological_profiles_ucsd-5.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-5.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-6">
+Past versions of plot_climatological_profiles_ucsd-6.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-6.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[7]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-7">
+Past versions of plot_climatological_profiles_ucsd-7.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-7.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[8]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-8">
+Past versions of plot_climatological_profiles_ucsd-8.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-8.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[9]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-9">
+Past versions of plot_climatological_profiles_ucsd-9.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-9.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[10]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-10">
+Past versions of plot_climatological_profiles_ucsd-10.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-10.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[11]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-11">
+Past versions of plot_climatological_profiles_ucsd-11.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-11.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[12]]</code></pre>
 <p><img src="figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_climatological_profiles_ucsd-12">
+Past versions of plot_climatological_profiles_ucsd-12.png
+</button>
+</p>
+<div id="fig-plot_climatological_profiles_ucsd-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/229c9d9ae7d2a3ea63a0640b3cae0c3f88bcba36/docs/figure/argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-12.png" target="_blank">229c9d9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="csio-mnr-vs-ucsd-climatology" class="section level1">
+<h1>CSIO-MNR vs UCSD climatology</h1>
+<pre class="r"><code>boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
+  rename(depth_boa = depth)
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  rename(depth_ucsd = depth)
+
+
+boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
+  mutate(depth = cut(depth_boa,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  mutate(depth = cut(depth_ucsd,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+# table(unique(boa_temp_clim_SO$depth))
+# table(unique(clim_argo_temp_ucsd$depth))
+
+temperature_climatology &lt;- full_join(boa_temp_clim_SO, clim_argo_temp_ucsd)</code></pre>
+<pre class="r"><code>temperature_climatology %&gt;% 
+  group_split(month, depth) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = temp_monthly_clim))+
+      geom_bin2d(data = .x,
+                 aes(x = clim_temp,
+                     y = temp_monthly_clim))+
+      geom_abline(slope = 1, intercept = 0)+
+      scale_fill_viridis_c()+
+      facet_grid(biome_name ~ basin_AIP)+
+      labs(title = paste0(&#39;month: &#39;, unique(.x$month), &#39;| depth: &#39;, unique(.x$depth), &#39;m&#39;),
+           x = &#39;UCSD climatological temp&#39;,
+           y = &#39;CSIO-MNR climatological temp&#39;)
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[37]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[38]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[39]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[40]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[41]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[42]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[43]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[44]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[45]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[46]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[47]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[48]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[49]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[50]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-50.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[51]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-51.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[52]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-52.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[53]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-53.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[54]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-54.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[55]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-55.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[56]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-56.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[57]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-57.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[58]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-58.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[59]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-59.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[60]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-60.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[61]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-61.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[62]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-62.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[63]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-63.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[64]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-64.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[65]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-65.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[66]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-66.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[67]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-67.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[68]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-68.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[69]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-69.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[70]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-70.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[71]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-71.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[72]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-72.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[73]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-73.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[74]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-74.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[75]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-75.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[76]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-76.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[77]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-77.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[78]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-78.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[79]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-79.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[80]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-80.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[81]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-81.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[82]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-82.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[83]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-83.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[84]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-84.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[85]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-85.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[86]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-86.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[87]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-87.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[88]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-88.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[89]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-89.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[90]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-90.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[91]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-91.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[92]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-92.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[93]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-93.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[94]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-94.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[95]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-95.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[96]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-96.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[97]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-97.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[98]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-98.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[99]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-99.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[100]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-100.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[101]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-101.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[102]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-102.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[103]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-103.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[104]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-104.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[105]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-105.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[106]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-106.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[107]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-107.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[108]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-108.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[109]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-109.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[110]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-110.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[111]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-111.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[112]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-112.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[113]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-113.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[114]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-114.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[115]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-115.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[116]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-116.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[117]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-117.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[118]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-118.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[119]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-119.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[120]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-120.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[121]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-121.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[122]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-122.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[123]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-123.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[124]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-124.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[125]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-125.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[126]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-126.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[127]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-127.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[128]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-128.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[129]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-129.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[130]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-130.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[131]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-131.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[132]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-132.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[133]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-133.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[134]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-134.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[135]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-135.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[136]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-136.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[137]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-137.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[138]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-138.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[139]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-139.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[140]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-140.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[141]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-141.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[142]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-142.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[143]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-143.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[144]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-144.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[145]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-145.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[146]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-146.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[147]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-147.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[148]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-148.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[149]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-149.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[150]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-150.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[151]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-151.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[152]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-152.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[153]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-153.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[154]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-154.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[155]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-155.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[156]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-156.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[157]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-157.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[158]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-158.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[159]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-159.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[160]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-160.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[161]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-161.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[162]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-162.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[163]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-163.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[164]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-164.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[165]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-165.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[166]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-166.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[167]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-167.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[168]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-168.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[169]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-169.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[170]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-170.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[171]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-171.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[172]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-172.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[173]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-173.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[174]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-174.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[175]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-175.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[176]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-176.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[177]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-177.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[178]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-178.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[179]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-179.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[180]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-180.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[181]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-181.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[182]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-182.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[183]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-183.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[184]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-184.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[185]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-185.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[186]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-186.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[187]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-187.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[188]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-188.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[189]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-189.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[190]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-190.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[191]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-191.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[192]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-192.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[193]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-193.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[194]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-194.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[195]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-195.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[196]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-196.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[197]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-197.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[198]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-198.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[199]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-199.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[200]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-200.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[201]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-201.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[202]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-202.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[203]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-203.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[204]]</code></pre>
+<p><img src="figure/argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-204.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -8896,7 +10476,6 @@ loaded via a namespace (and not attached):
 [69] utf8_1.2.2        rprojroot_2.0.2   stringi_1.7.6     parallel_4.1.2   
 [73] Rcpp_1.0.8        vctrs_0.3.8       dbplyr_2.1.1      tidyselect_1.1.1 
 [77] xfun_0.29        </code></pre>
-</div>
 </div>
 </div>
 
