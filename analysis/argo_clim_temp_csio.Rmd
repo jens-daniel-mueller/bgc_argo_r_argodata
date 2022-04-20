@@ -243,9 +243,11 @@ Roemmich, D. and J. Gilson, 2009: The 2004-2008 mean and annual cycle of tempera
 ```{r sio_temp_climatology}
 
 clim_argo_temp_year_mean <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_mean.nc"))
+
 # yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
 
 clim_argo_temp_monthly_anomaly <- tidync::hyper_tibble(paste0(path_argo_clim_temp, "/RG_ArgoClim_33pfit_2019_annual.nc"))
+
 # monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid
 ```
 
@@ -413,6 +415,58 @@ clim_argo_temp_ucsd %>%
       scale_y_reverse()+
       facet_grid(basin_AIP~biome_name)+
       labs(title = paste0('UCSD clim profiles, month:', unique(.x$month)))
+  )
+
+```
+
+# CSIO-MNR vs UCSD climatology 
+
+```{r harmonize_depth_levels}
+
+boa_temp_clim_SO <- boa_temp_clim_SO %>% 
+  rename(depth_boa = depth)
+
+clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>% 
+  rename(depth_ucsd = depth)
+
+
+boa_temp_clim_SO <- boa_temp_clim_SO %>% 
+  mutate(depth = cut(depth_boa,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+clim_argo_temp_ucsd <- clim_argo_temp_ucsd %>% 
+  mutate(depth = cut(depth_ucsd,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+# table(unique(boa_temp_clim_SO$depth))
+# table(unique(clim_argo_temp_ucsd$depth))
+
+temperature_climatology <- full_join(boa_temp_clim_SO, clim_argo_temp_ucsd)
+```
+
+```{r plot_ucsd_vs_csio_clim}
+
+temperature_climatology %>% 
+  group_split(month, depth) %>% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = temp_monthly_clim))+
+      geom_bin2d(data = .x,
+                 aes(x = clim_temp,
+                     y = temp_monthly_clim))+
+      geom_abline(slope = 1, intercept = 0)+
+      scale_fill_viridis_c()+
+      facet_grid(biome_name ~ basin_AIP)+
+      labs(title = paste0('month: ', unique(.x$month), '| depth: ', unique(.x$depth), 'm'),
+           x = 'UCSD climatological temp',
+           y = 'CSIO-MNR climatological temp')
   )
 
 ```
