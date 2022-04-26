@@ -9,9 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
 
 
-<title>Home</title>
+<title>Load OceanSODA data</title>
 
 <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -29,6 +30,9 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
@@ -234,6 +238,75 @@ $(document).ready(function () {
 
 
 
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
 
 </head>
 
@@ -241,6 +314,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -365,7 +448,9 @@ $(document).ready(function () {
 
 
 
-<h1 class="title toc-ignore">Home</h1>
+<h1 class="title toc-ignore">Load OceanSODA data</h1>
+<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
+<h4 class="date">26 April, 2022</h4>
 
 </div>
 
@@ -393,7 +478,7 @@ $(document).ready(function () {
 <strong>Last updated:</strong> 2022-04-26
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
 </p>
 <p>
 <strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
@@ -415,6 +500,66 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
 <div class="panel-body">
 <p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
@@ -467,7 +612,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/index.Rmd</code>) and HTML (<code>docs/index.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/load_OceanSODA.Rmd</code>) and HTML (<code>docs/load_OceanSODA.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -493,801 +638,19 @@ Message
 <tbody>
 <tr>
 <td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c03dd24b5d5c754c74163197ae68e75953385b8b/docs/index.html" target="_blank">c03dd24</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-20
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/8805f99ea10fef4a7f7b188bd45df79353237014/docs/index.html" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/6dd09451d97957708014c9795c72ca7c8f1d7440/docs/index.html" target="_blank">6dd0945</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-25
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/index.html" target="_blank">c8451b9</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-03-14
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/905d82f915b374c8bc9463896f629b15986c83ff/docs/index.html" target="_blank">905d82f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-15
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/54ea512efa68ddeebab4d8473d55350827dceac4/docs/index.html" target="_blank">54ea512</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-10
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/f2fa56adb31d8037871ce29c9f09ad12d8aa71a8/docs/index.html" target="_blank">f2fa56a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-10
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ed3fef22045a7d45791d696481cd7bb0d5495825/docs/index.html" target="_blank">ed3fef2</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-07
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/486c9c8500683ff657b1ca9a7a493bc08f61964f/docs/index.html" target="_blank">486c9c8</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-01-07
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/b8a6482ad172efaf87785e61010edf401331ae0a/docs/index.html" target="_blank">b8a6482</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-01-03
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/123e5dbbb1cacc3c54c9262bf8d21bc48c7830d7/docs/index.html" target="_blank">123e5db</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-07
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/930ea26653ac16f4924f17b7b3bbb4fa062e09ca/docs/index.html" target="_blank">930ea26</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e09c60b0584b101f32b57dfb7f4c2cd53999ce00/docs/index.html" target="_blank">e09c60b</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/1305d6b2680148f6b688bbdd6640e81f6f4104a5/docs/index.html" target="_blank">1305d6b</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/5e2b8a502e81111336a9ccc903590058b3b62fdb/docs/index.html" target="_blank">5e2b8a5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/index.html" target="_blank">3df4daf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7a01367ed6852048f198fa401eae74b91c87dd72/docs/index.html" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/284003d8bc6d90b9ff68bef75628cd635eb58629/docs/index.html" target="_blank">284003d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/index.html" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/a103f60f51baf8db626534d2b1a721999626b84e/docs/index.html" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/fbd5bac3eafe5123f29fe4aa5519650a19c50c29/docs/index.html" target="_blank">fbd5bac</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-04
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/68977a190e293c45ba1bea7bbeca5258a0a40440/docs/index.html" target="_blank">68977a1</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/b57291acfd18141be12dc0956ab5cc08f9406ad0/docs/index.html" target="_blank">b57291a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/bba33bf519a74b13e735c1ddb5d1ea9bbb8d0c62/docs/index.html" target="_blank">bba33bf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/index.html" target="_blank">aa7280d</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d84c9048f09b88eef5b79c4182113fe4089d0eb7/docs/index.html" target="_blank">d84c904</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-22
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/8ecdb433fb18a2930224a77e9cf507d4a43f13f3/docs/index.html" target="_blank">8ecdb43</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-22
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c81f21cb0d38fc1b81acc0e621f1cfc5fbfbc3b5/docs/index.html" target="_blank">c81f21c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-21
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/62d85198283469ee853f0cf47ef780244958249d/docs/index.html" target="_blank">62d8519</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/b8feac29ec771727a75245c8768ac90d7d1eb65a/docs/index.html" target="_blank">b8feac2</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/701fffa6aca148e9b13249a8e2bf4b9f82bb5618/docs/index.html" target="_blank">701fffa</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d3a081cda84a60fb87391d57d4793c7e419cc86d/docs/index.html" target="_blank">d3a081c</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-19
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/83724a0b27c7865a19e1586c52b4e3959b20f5f1/docs/index.html" target="_blank">83724a0</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-14
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4840e498ba7ee84ab1c7b9fa3d23742c84e2de48/docs/index.html" target="_blank">4840e49</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-12
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ff925ab19bbc9f3bc6931854ebb5412b9c390acc/docs/index.html" target="_blank">ff925ab</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-11
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/481a8f021c3d561f9c15affcc61af59dbe6bcc6b/docs/index.html" target="_blank">481a8f0</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ff2b2cb315292492c6e7aac77ad2f4819a500eff/docs/index.html" target="_blank">ff2b2cb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/bf0870678c6a3891dace7a34c4cbd2f4e4af4d33/docs/index.html" target="_blank">bf08706</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
 Rmd
 </td>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bd642599d145c280f11218e9c6492aec56120d8c/analysis/index.Rmd" target="_blank">bd64259</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3e1ac1402585748313e4c99ba6af0ba1fd4510ea/analysis/load_OceanSODA.Rmd" target="_blank">3e1ac14</a>
 </td>
 <td>
-jens-daniel-mueller
+pasqualina-vonlanthendinenna
 </td>
 <td>
-2021-10-08
+2022-04-26
 </td>
 <td>
-Publish with source code link
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/b815f6ebb23ed5b1afe253fe86059f5a1e4120cc/docs/index.html" target="_blank">b815f6e</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/fc8b38e248dc0797be8cef437e4bba64bd04d005/docs/index.html" target="_blank">fc8b38e</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d2a6b0579ec098a91fda0979e78821e7953160aa/docs/index.html" target="_blank">d2a6b05</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/a1b3b0bd2ee3926c32980469c82468f1dc6d83af/docs/index.html" target="_blank">a1b3b0b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e2eb73550788ef2f76aa4f65cb6e58879c019a07/docs/index.html" target="_blank">e2eb735</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/5f9056d23955639e8beec71ab0e3e01662ad5805/docs/index.html" target="_blank">5f9056d</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/1b10aef770e44f9cc121c4641cb37f9c61c9916e/docs/index.html" target="_blank">1b10aef</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/16ea3f27c8236c48481fca88363d8ea0b3347971/analysis/index.Rmd" target="_blank">16ea3f2</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-08
-</td>
-<td>
-Start workflowr project.
+separated loading data pages, added mayot biomes, switched to pH and temp flag A
 </td>
 </tr>
 </tbody>
@@ -1297,9 +660,99 @@ Start workflowr project.
 </div>
 </div>
 </div>
-<p>On this website we present our ongoing ambition to XXX</p>
-<p>Please navigate trough the navbar on top to take a look at the various chapters of this project.</p>
-<p>The links in the upper right corner bring you to the source code of this project and back to Jens’ main homepage. (c) Dr. Jens Daniel Müller, 2021</p>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<p>Load in OceanSODA surface pH and SST data</p>
+</div>
+<div id="oceansoda" class="section level1">
+<h1>OceanSODA</h1>
+<div id="temperature" class="section level2">
+<h2>Temperature</h2>
+<pre class="r"><code>OceanSODA &lt;-
+  tidync::hyper_tibble(paste(
+    path_updata,
+    &quot;/pco2_oceansoda-ethz/OS-ETHZ-GRaCER-v2021a_1982-2020.nc&quot;,
+    sep = &quot;&quot;
+  ))
+
+OceanSODA &lt;- OceanSODA %&gt;% 
+  mutate(date = as.Date(time, origin = &#39;1982-01-15&#39;),
+         year = year(date)) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  ) %&gt;% 
+  filter(year &gt;= 1995)
+
+OceanSODA_temp &lt;- OceanSODA %&gt;% 
+  select(year, date, lon, lat, temperature)
+
+OceanSODA_temp %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &#39;/OceanSODA_temp.rds&#39;))</code></pre>
+</div>
+<div id="ph" class="section level2">
+<h2>pH</h2>
+<pre class="r"><code>OceanSODA &lt;- OceanSODA %&gt;% 
+  select(year, date, lat, lon, ph_total, ph_total_uncert) 
+  
+OceanSODA %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &#39;/OceanSODA.rds&#39;))</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.3
+
+Matrix products: default
+BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] lubridate_1.8.0 forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
+ [5] purrr_0.3.4     readr_2.1.1     tidyr_1.1.4     tibble_3.1.6   
+ [9] ggplot2_3.3.5   tidyverse_1.3.1 workflowr_1.7.0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.8       getPass_0.2-2    ps_1.6.0         assertthat_0.2.1
+ [5] rprojroot_2.0.2  digest_0.6.29    utf8_1.2.2       R6_2.5.1        
+ [9] cellranger_1.1.0 backports_1.4.1  reprex_2.0.1     evaluate_0.14   
+[13] httr_1.4.2       pillar_1.6.4     rlang_0.4.12     readxl_1.3.1    
+[17] ncmeta_0.3.0     rstudioapi_0.13  whisker_0.4      callr_3.7.0     
+[21] jquerylib_0.1.4  rmarkdown_2.11   munsell_0.5.0    broom_0.7.11    
+[25] compiler_4.1.2   httpuv_1.6.5     modelr_0.1.8     xfun_0.29       
+[29] pkgconfig_2.0.3  htmltools_0.5.2  tidyselect_1.1.1 fansi_1.0.2     
+[33] crayon_1.4.2     tzdb_0.2.0       dbplyr_2.1.1     withr_2.4.3     
+[37] later_1.3.0      grid_4.1.2       jsonlite_1.7.3   gtable_0.3.0    
+[41] lifecycle_1.0.1  DBI_1.1.2        git2r_0.29.0     magrittr_2.0.1  
+[45] scales_1.1.1     ncdf4_1.19       cli_3.1.1        stringi_1.7.6   
+[49] fs_1.5.2         promises_1.2.0.1 xml2_1.3.3       bslib_0.3.1     
+[53] ellipsis_0.3.2   generics_0.1.1   vctrs_0.3.8      tools_4.1.2     
+[57] glue_1.6.0       RNetCDF_2.5-2    hms_1.1.1        processx_3.5.2  
+[61] fastmap_1.1.0    yaml_2.2.1       colorspace_2.0-2 rvest_1.0.2     
+[65] knitr_1.37       haven_2.4.3      tidync_0.2.4     sass_0.4.0      </code></pre>
+</div>
+</div>
+</div>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
@@ -1317,6 +770,8 @@ footer is added to webpages before the MathJax javascript. -->
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -1354,6 +809,35 @@ $(document).ready(function () {
 });
 </script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

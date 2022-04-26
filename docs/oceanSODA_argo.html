@@ -357,7 +357,10 @@ div.tocify {
       <a href="argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_OceanSODA_biomes.html">OceanSODA &amp; Biome data</a>
+      <a href="load_OceanSODA.html">OceanSODA data</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biome data</a>
     </li>
   </ul>
 </li>
@@ -447,7 +450,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">OceanSODA-Argo pH</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">20 April, 2022</h4>
+<h4 class="date">26 April, 2022</h4>
 
 </div>
 
@@ -472,7 +475,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-20
+<strong>Last updated:</strong> 2022-04-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -563,16 +566,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -593,6 +596,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
+    Deleted:    analysis/load_OceanSODA_biomes.Rmd
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -632,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3e1ac1402585748313e4c99ba6af0ba1fd4510ea/analysis/oceanSODA_argo.Rmd" target="_blank">3e1ac14</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+separated loading data pages, added mayot biomes, switched to pH and temp flag A
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c03dd24b5d5c754c74163197ae68e75953385b8b/docs/oceanSODA_argo.html" target="_blank">c03dd24</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1231,18 +1269,21 @@ path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/fi
 <pre class="r"><code># load in OceanSODA data and Argo pH
 OceanSODA &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA.rds&quot;))
 
-argo &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;)) %&gt;% 
-  select(-c(platform_number:pi_name),
-         -c(direction:platform_type),
-         -c(firmware_version, wmo_inst_type, positioning_system, config_mission_number))
+argo &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A.rds&quot;)) %&gt;% 
+  filter(between(depth, 0, 20)) %&gt;% 
+  mutate(year = year(date),
+         month = month(date)) %&gt;% 
+  select(-c(temp_adjusted, temp_adjusted_qc, temp_adjusted_error, profile_temp_qc))
 
 # for plotting later, load in region and coastline information  
-region_masks_all_seamask_2x2 &lt;- read_rds(file = paste0(
-  path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
+# region_masks_all_seamask_2x2 &lt;- read_rds(file = paste0(
+#   path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
+# 
+# region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))
+# 
+# region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_1x1.rds&quot;))
 
-region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))
-
-region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_1x1.rds&quot;))</code></pre>
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))</code></pre>
 <pre class="r"><code># read in the map from updata
 map &lt;-
   read_rds(paste(path_emlr_utilities,
@@ -1255,10 +1296,7 @@ map &lt;-
   mutate(year_month = format_ISO8601(date, precision = &quot;ym&quot;), .after = &#39;date&#39;) %&gt;%
   group_by(year, month, year_month, date, lat, lon) %&gt;%
   summarise(
-    argo_ph_month = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-    # calculate monthly mean argo parameters
-    argo_temp_month = mean(temp_adjusted, na.rm = TRUE),
-    argo_psal_month = mean(psal_adjusted, na.rm = TRUE)
+    argo_ph_month = mean(ph_in_situ_total_adjusted, na.rm = TRUE)
   ) %&gt;%
   ungroup() %&gt;%
   select(
@@ -1268,14 +1306,13 @@ map &lt;-
     month,
     lon,
     lat,
-    argo_temp_month,
-    argo_psal_month,
     argo_ph_month
   )</code></pre>
 <p>Join the two datasets</p>
 <pre class="r"><code>OceanSODA &lt;- OceanSODA %&gt;% 
   mutate(year_month = format_ISO8601(date, precision = &quot;ym&quot;)) %&gt;% 
-  rename(date_OceanSODA = date)# change date format in OceanSODA to match argo date (yyyy-mm)
+  rename(date_OceanSODA = date) 
+  # change date format in OceanSODA to match argo date (yyyy-mm)
 
 argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
   rename(OceanSODA_ph = ph_total,
@@ -1287,13 +1324,12 @@ argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
 <div id="southern-ocean-surface-ph" class="section level1">
 <h1>Southern Ocean surface pH</h1>
 <p>The focus here is on Southern Ocean surface pH, south of 30ºS, as defined in the RECCAP biome regions</p>
-<pre class="r"><code>region_masks_all_1x1_SO &lt;- region_masks_all_1x1 %&gt;%
-  filter(region == &#39;southern&#39;,
-         value != 0)
+<pre class="r"><code># region_masks_all_1x1_SO &lt;- region_masks_all_1x1 %&gt;%
+#   filter(region == &#39;southern&#39;,
+#          value != 0)
 
 # keep only Southern Ocean data 
-argo_OceanSODA_SO &lt;- 
-  inner_join(region_masks_all_1x1_SO, argo_OceanSODA)</code></pre>
+argo_OceanSODA_SO &lt;- inner_join(argo_OceanSODA, nm_biomes)</code></pre>
 <div id="monthly-climatological-oceansoda-ph" class="section level3">
 <h3>Monthly climatological OceanSODA pH</h3>
 <p>Map monthly mean pH from the OceanSODA data product</p>
@@ -1444,88 +1480,6 @@ basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar p
        fill = &#39;pH&#39;,
        title = &#39;monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_map-1">
-Past versions of polar_projection_map-1.png
-</button>
-</p>
-<div id="fig-polar_projection_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b8a6482ad172efaf87785e61010edf401331ae0a/docs/figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" target="_blank">b8a6482</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-01-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/10ddefb1a0429818d296443af9fc76122adc5816/docs/figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" target="_blank">10ddefb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" target="_blank">3dc093a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/oceanSODA_argo.Rmd/polar_projection_map-1.png" target="_blank">3df4daf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="climatological-monthly-argo-ph" class="section level3">
 <h3>Climatological monthly Argo pH</h3>
@@ -1638,93 +1592,17 @@ pasqualina-vonlanthendinenna
        fill = &#39;pH&#39;,
        title = &#39;monthly climatological \nArgo pH (Apr 2014 - Aug 2021)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_Argo_pH-1">
-Past versions of polar_projection_Argo_pH-1.png
-</button>
-</p>
-<div id="fig-polar_projection_Argo_pH-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b8a6482ad172efaf87785e61010edf401331ae0a/docs/figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" target="_blank">b8a6482</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-01-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/10ddefb1a0429818d296443af9fc76122adc5816/docs/figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" target="_blank">10ddefb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/oceanSODA_argo.Rmd/polar_projection_Argo_pH-1.png" target="_blank">3dc093a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="timeseries-of-monthly-oceansoda-ph" class="section level3">
 <h3>Timeseries of monthly OceanSODA pH</h3>
 <p>Evolution of monthly surface pH, for the three Southern Ocean RECCAP regions</p>
 <pre class="r"><code>map +
-  geom_raster(data = region_masks_all_seamask_2x2 %&gt;%
-                filter(seamask == 0),
-              aes(x = lon, y = lat)) +
-  geom_raster(data = region_masks_all_2x2 %&gt;%
-                filter(region == &#39;southern&#39;,
-                       value != 0),
+  geom_raster(data = nm_biomes,
               aes(x = lon,
                   y = lat,
-                  fill = value)) +
-  labs(title = &#39;Southern Ocean RECCAP regions&#39;,
-       fill = &#39;region&#39;)</code></pre>
+                  fill = biome_name)) +
+  labs(title = &#39;Southern Ocean Mayot biomes&#39;,
+       fill = &#39;biome&#39;)</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/southern_ocean_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-southern_ocean_biomes-1">
@@ -1787,17 +1665,17 @@ pasqualina-vonlanthendinenna
 </div>
 <pre class="r"><code># plot timeseries of monthly OceanSODA pH
 argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
-  select(year, month, value, OceanSODA_ph, argo_ph_month) %&gt;% 
+  select(year, month, biome_name, OceanSODA_ph, argo_ph_month) %&gt;% 
   pivot_longer(c(OceanSODA_ph,argo_ph_month),
                values_to = &quot;ph&quot;,
                names_to = &quot;data_source&quot;) %&gt;% 
-  group_by(year, month, value, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  group_by(year, month, biome_name, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
   summarise(ph = mean(ph, na.rm = TRUE)) %&gt;%
   ungroup()</code></pre>
 <pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
   ggplot(aes(x = year,
              y = ph,
-             col = value)) +
+             col = biome_name)) +
   facet_grid(month ~ data_source) +
   geom_line() +
   geom_point() +
@@ -1806,9 +1684,8 @@ argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
        title = &#39;monthly mean pH (Apr 2014-Aug 2021, Southern Ocean)&#39;,
        col = &#39;region&#39;)</code></pre>
 <pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
-  filter(year != 2014,
-         year != 2021,
-         value != 0) %&gt;%
+  # filter(year != 2014,
+  #        year != 2021) %&gt;%
   ggplot(aes(x = month,
              y = ph,
              group = year,
@@ -1816,7 +1693,7 @@ argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(value~data_source)+
+  facet_grid(biome_name~data_source)+
   labs(x = &#39;month&#39;,
        y = &#39;pH in situ (total scale)&#39;,
        title = &#39;monthly mean OceanSODA pH (Jan 2015-Dec 2020, Southern Ocean)&#39;,
@@ -1904,7 +1781,7 @@ argo_OceanSODA_SO %&gt;%
   drop_na() %&gt;%
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
-  geom_point(aes(x = year_month, y = offset, col = value), size = 0.7, pch = 19) +
+  geom_point(aes(x = year_month, y = offset, col = biome_name), size = 0.7, pch = 19) +
   scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   labs(title = &#39;oceanSODA pH - Argo pH&#39;,
        x = &#39;date&#39;,
@@ -2019,13 +1896,13 @@ pasqualina-vonlanthendinenna
   ggplot(aes(x = OceanSODA_ph, y = argo_ph_month))+
   # geom_point(pch = 19, size = 0.7)+
   geom_bin2d(aes(x = OceanSODA_ph, y = argo_ph_month), size = 0.3, bins = 60)+
+  scale_fill_viridis_c()+
   lims(x = c(7.8, 8.25), 
        y = c(7.8, 8.25)) +
   geom_abline(slope = 1, intercept = 0)+
-  facet_wrap(~value)+
+  facet_wrap(~biome_name)+
   labs(x = &#39;OceanSODA pH (total scale)&#39;,
        y = &#39;Argo pH (total scale)&#39;,
-       col = &#39;region&#39;,
        title = &#39;Southern Ocean regional pH&#39;)</code></pre>
 <p><img src="figure/oceanSODA_argo.Rmd/oceanSODA_vs_argo_ph_plot-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -2100,7 +1977,7 @@ pasqualina-vonlanthendinenna
 </div>
 <p>Mean offset between in-situ OceanSODA pH and in-situ Argo pH</p>
 <pre class="r"><code>mean_insitu_offset &lt;- argo_OceanSODA_SO %&gt;%
-  group_by(year_month, value) %&gt;% 
+  group_by(year_month, biome_name) %&gt;% 
   summarise(mean_offset = mean(offset, na.rm = TRUE),
             std_offset = sd(offset, na.rm = TRUE))
 
@@ -2108,13 +1985,14 @@ mean_insitu_offset %&gt;%
   drop_na() %&gt;%
   ggplot() +
   geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
-  geom_point(aes(x = year_month, y = mean_offset, group = value, col = value), size = 0.7, pch = 19) +
-  geom_line(aes(x = year_month, y = mean_offset, group = value, col = value))+
+  geom_point(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name),
+             size = 0.7, pch = 19) +
+  geom_line(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name))+
   geom_ribbon(aes(x = year_month, 
                   ymin = mean_offset-std_offset, 
                   ymax = mean_offset+std_offset, 
-                  group = value, 
-                  fill =value),
+                  group = biome_name, 
+                  fill = biome_name),
               alpha = 0.2)+
   scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   # facet_wrap(~year)+
@@ -2197,11 +2075,11 @@ pasqualina-vonlanthendinenna
 <p>Offset between climatological Argo and climatological OceanSODA pH:</p>
 <pre class="r"><code># Offset between climatological argo and climatological OceanSODA pH 
 
-argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, region_masks_all_1x1_SO)</code></pre>
+argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, nm_biomes)</code></pre>
 <pre class="r"><code>argo_OceanSODA_SO_clim %&gt;% 
   drop_na() %&gt;%
   ggplot() +
-  geom_point(aes(x = month, y = offset_clim, col = value), size = 0.7, pch = 19) +
+  geom_point(aes(x = month, y = offset_clim, col = biome_name), size = 0.7, pch = 19) +
   geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(title = &#39;clim oceanSODA pH - clim Argo pH&#39;,
@@ -2210,20 +2088,20 @@ argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, region_masks_all
        col = &#39;region&#39;)</code></pre>
 <p>Mean offset between climatological OceanSODA pH and climatological Argo pH</p>
 <pre class="r"><code>mean_clim_offset &lt;- argo_OceanSODA_SO_clim %&gt;% 
-  group_by(month, value) %&gt;% 
+  group_by(month, biome_name) %&gt;% 
   summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
             std_offset_clim = sd(offset_clim, na.rm = TRUE))
 
 mean_clim_offset %&gt;% 
   ggplot()+
-  geom_point(aes(x = month, y = mean_offset_clim, col = value))+
-  geom_line(aes(x = month, y = mean_offset_clim, col = value))+
+  geom_point(aes(x = month, y = mean_offset_clim, col = biome_name))+
+  geom_line(aes(x = month, y = mean_offset_clim, col = biome_name))+
   geom_hline(yintercept = 0, col = &#39;red&#39;) +
   geom_ribbon(aes(x = month, 
                   ymin = mean_offset_clim - std_offset_clim, 
                   ymax = mean_offset_clim + std_offset_clim,
-                  group = value, 
-                  fill = value), 
+                  group = biome_name, 
+                  fill = biome_name), 
               alpha = 0.2) +
   scale_x_continuous(breaks = seq(1, 12, 1)) +
   labs(x = &#39;month&#39;,
@@ -2465,121 +2343,6 @@ pasqualina-vonlanthendinenna
        fill = &#39;offset (pH units)&#39;,
        title = &#39;clim Ocean SODA pH - clim Argo pH&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_climatological_offsets_polar_map-1">
-Past versions of map_climatological_offsets_polar_map-1.png
-</button>
-</p>
-<div id="fig-map_climatological_offsets_polar_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b8a6482ad172efaf87785e61010edf401331ae0a/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">b8a6482</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-01-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/123e5dbbb1cacc3c54c9262bf8d21bc48c7830d7/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">123e5db</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-07
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/38a5110381b3df5f4eaab6fca4363a5c68805069/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">38a5110</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-03
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6a5024ee564d229ed2a8fbd6e7fb6d457ac1af27/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">6a5024e</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/10ddefb1a0429818d296443af9fc76122adc5816/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">10ddefb</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc093a995461b3a0b4a2342b0eaeecf041a6c5a/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">3dc093a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-30
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3df4dafeb6e0b1d30ecdb8aabaac6522382bf0fa/docs/figure/oceanSODA_argo.Rmd/map_climatological_offsets_polar_map-1.png" target="_blank">3df4daf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-26
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <div id="basin-separation" class="section level4">
 <h4>Basin separation</h4>
 <p>Using full OceanSODA data (even where there is no Argo data) Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)</p>
@@ -2593,16 +2356,17 @@ basinmask &lt;- basinmask %&gt;%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
   select(lon, lat, basin_AIP)
 
-OceanSODA_SO &lt;- inner_join(OceanSODA, region_masks_all_1x1) %&gt;% 
-  filter(region == &#39;southern&#39;)
+OceanSODA_SO &lt;- inner_join(OceanSODA, nm_biomes)
 
 OceanSODA_SO &lt;- inner_join(OceanSODA_SO, basinmask) %&gt;% 
   mutate(year = year(date_OceanSODA),
          month = month(date_OceanSODA)) %&gt;% 
-  mutate(date = format_ISO8601(date_OceanSODA, precision = &#39;ym&#39;))</code></pre>
+  mutate(date = format_ISO8601(date_OceanSODA, precision = &#39;ym&#39;)) %&gt;% 
+  filter(year &gt;= 2013)</code></pre>
 <pre class="r"><code># plot timeseries of monthly OceanSODA pH
+
 OceanSODA_SO_clim_subregional &lt;- OceanSODA_SO %&gt;%
-  group_by(year, month, value, basin_AIP) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  group_by(year, month, biome_name, basin_AIP) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
   summarise(ph = mean(ph_total, na.rm = TRUE)) %&gt;%
   ungroup()
 
@@ -2615,7 +2379,7 @@ OceanSODA_SO_clim_subregional %&gt;%
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(value~basin_AIP)+
+  facet_grid(biome_name~basin_AIP)+
   labs(x = &#39;month&#39;,
        y = &#39;pH in situ (total scale)&#39;,
        title = &#39;monthly mean OceanSODA pH (Jan 2013-Dec 2020, Southern Ocean basins)&#39;,
@@ -2681,10 +2445,9 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 <pre class="r"><code>OceanSODA_SO_clim_subregional %&gt;%  
-  filter(value != 0) %&gt;% 
   ggplot(aes(x = year,
              y = ph,
-             col = value)) +
+             col = biome_name)) +
   facet_grid(month ~ basin_AIP) +
   geom_line() +
   geom_point() +
@@ -2760,19 +2523,18 @@ pasqualina-vonlanthendinenna
   mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
          lon = as.numeric(as.character(lon))
   ) %&gt;%
-  group_by(lon, year, month, value) %&gt;%
+  group_by(lon, year, month, biome_name) %&gt;%
   summarise(
     OceanSODA_ph_binned = mean(ph_total, na.rm = TRUE)
   ) %&gt;%
   ungroup()</code></pre>
 <pre class="r"><code>OceanSODA_SO_lon_binned %&gt;%
   drop_na() %&gt;% 
-  filter(value != 0) %&gt;% 
   ggplot(aes(x = month, y = OceanSODA_ph_binned, group = lon, col = as.factor(lon))) +
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(year~value)+
+  facet_grid(year~biome_name)+
   labs(x = &#39;month&#39;,
        y = &#39;OceanSODA pH&#39;,
        col = &#39;longitude bin&#39;)</code></pre>
@@ -2870,37 +2632,29 @@ other attached packages:
 [13] ggplot2_3.3.5     tidyverse_1.3.1   workflowr_1.7.0  
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2              sf_1.0-5              bit64_4.0.5          
- [4] RColorBrewer_1.1-2    httr_1.4.2            rprojroot_2.0.2      
- [7] tools_4.1.2           backports_1.4.1       bslib_0.3.1          
-[10] rgdal_1.5-28          utf8_1.2.2            R6_2.5.1             
-[13] KernSmooth_2.23-20    rgeos_0.5-9           DBI_1.1.2            
-[16] colorspace_2.0-2      raster_3.5-11         withr_2.4.3          
-[19] sp_1.4-6              tidyselect_1.1.1      processx_3.5.2       
-[22] bit_4.0.4             compiler_4.1.2        git2r_0.29.0         
-[25] cli_3.1.1             rvest_1.0.2           RNetCDF_2.5-2        
-[28] xml2_1.3.3            labeling_0.4.2        sass_0.4.0           
-[31] checkmate_2.0.0       scales_1.1.1          classInt_0.4-3       
-[34] ggOceanMapsData_1.0.1 callr_3.7.0           proxy_0.4-26         
-[37] digest_0.6.29         rmarkdown_2.11        pkgconfig_2.0.3      
-[40] htmltools_0.5.2       highr_0.9             dbplyr_2.1.1         
-[43] fastmap_1.1.0         rlang_0.4.12          readxl_1.3.1         
-[46] rstudioapi_0.13       farver_2.1.0          jquerylib_0.1.4      
-[49] generics_0.1.1        jsonlite_1.7.3        vroom_1.5.7          
-[52] magrittr_2.0.1        Rcpp_1.0.8            munsell_0.5.0        
-[55] fansi_1.0.2           lifecycle_1.0.1       terra_1.5-12         
-[58] stringi_1.7.6         whisker_0.4           yaml_2.2.1           
-[61] grid_4.1.2            parallel_4.1.2        promises_1.2.0.1     
-[64] crayon_1.4.2          lattice_0.20-45       haven_2.4.3          
-[67] hms_1.1.1             knitr_1.37            ps_1.6.0             
-[70] pillar_1.6.4          codetools_0.2-18      reprex_2.0.1         
-[73] glue_1.6.0            evaluate_0.14         getPass_0.2-2        
-[76] data.table_1.14.2     modelr_0.1.8          vctrs_0.3.8          
-[79] tzdb_0.2.0            httpuv_1.6.5          cellranger_1.1.0     
-[82] gtable_0.3.0          assertthat_0.2.1      xfun_0.29            
-[85] broom_0.7.11          e1071_1.7-9           later_1.3.0          
-[88] viridisLite_0.4.0     class_7.3-20          units_0.7-2          
-[91] ellipsis_0.3.2       </code></pre>
+ [1] fs_1.5.2           sf_1.0-5           bit64_4.0.5        RColorBrewer_1.1-2
+ [5] httr_1.4.2         rprojroot_2.0.2    tools_4.1.2        backports_1.4.1   
+ [9] bslib_0.3.1        rgdal_1.5-28       utf8_1.2.2         R6_2.5.1          
+[13] KernSmooth_2.23-20 rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2  
+[17] raster_3.5-11      withr_2.4.3        sp_1.4-6           tidyselect_1.1.1  
+[21] processx_3.5.2     bit_4.0.4          compiler_4.1.2     git2r_0.29.0      
+[25] cli_3.1.1          rvest_1.0.2        RNetCDF_2.5-2      xml2_1.3.3        
+[29] labeling_0.4.2     sass_0.4.0         checkmate_2.0.0    scales_1.1.1      
+[33] classInt_0.4-3     callr_3.7.0        proxy_0.4-26       digest_0.6.29     
+[37] rmarkdown_2.11     pkgconfig_2.0.3    htmltools_0.5.2    highr_0.9         
+[41] dbplyr_2.1.1       fastmap_1.1.0      rlang_0.4.12       readxl_1.3.1      
+[45] rstudioapi_0.13    farver_2.1.0       jquerylib_0.1.4    generics_0.1.1    
+[49] jsonlite_1.7.3     vroom_1.5.7        magrittr_2.0.1     Rcpp_1.0.8        
+[53] munsell_0.5.0      fansi_1.0.2        lifecycle_1.0.1    terra_1.5-12      
+[57] stringi_1.7.6      whisker_0.4        yaml_2.2.1         grid_4.1.2        
+[61] parallel_4.1.2     promises_1.2.0.1   crayon_1.4.2       lattice_0.20-45   
+[65] haven_2.4.3        hms_1.1.1          knitr_1.37         ps_1.6.0          
+[69] pillar_1.6.4       codetools_0.2-18   reprex_2.0.1       glue_1.6.0        
+[73] evaluate_0.14      getPass_0.2-2      data.table_1.14.2  modelr_0.1.8      
+[77] vctrs_0.3.8        tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0  
+[81] gtable_0.3.0       assertthat_0.2.1   xfun_0.29          broom_0.7.11      
+[85] e1071_1.7-9        later_1.3.0        viridisLite_0.4.0  class_7.3-20      
+[89] units_0.7-2        ellipsis_0.3.2    </code></pre>
 </div>
 </div>
 </div>

@@ -357,7 +357,10 @@ div.tocify {
       <a href="argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_OceanSODA_biomes.html">OceanSODA &amp; Biome data</a>
+      <a href="load_OceanSODA.html">OceanSODA data</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biome data</a>
     </li>
   </ul>
 </li>
@@ -447,7 +450,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">20 April, 2022</h4>
+<h4 class="date">26 April, 2022</h4>
 
 </div>
 
@@ -472,7 +475,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-20
+<strong>Last updated:</strong> 2022-04-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -563,16 +566,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -593,6 +596,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
+    Deleted:    analysis/load_OceanSODA_biomes.Rmd
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -632,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3e1ac1402585748313e4c99ba6af0ba1fd4510ea/analysis/loading_data.Rmd" target="_blank">3e1ac14</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+separated loading data pages, added mayot biomes, switched to pH and temp flag A
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c03dd24b5d5c754c74163197ae68e75953385b8b/docs/loading_data.html" target="_blank">c03dd24</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2243,6 +2281,7 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 </div>
 <div id="ph-data" class="section level2">
 <h2>pH data</h2>
+<p>All pH data from BGC floats with QC flag 1 (good data) ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1</p>
 <pre class="r"><code>bgc_merge_pH_qc_1 &lt;- bgc_merge %&gt;%
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;% 
   select(date, lat, lon,
@@ -2277,6 +2316,7 @@ ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
 </div>
 <div id="temperature-data" class="section level2">
 <h2>Temperature data</h2>
+<p>All temperature data from BGC floats with QC flag 1</p>
 <pre class="r"><code>bgc_merge_temp_qc_1 &lt;- bgc_merge %&gt;% 
   filter(temp_adjusted_qc == &#39;1&#39;) %&gt;% 
   select(date, lat, lon, 
@@ -2288,6 +2328,7 @@ ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
 </div>
 <div id="qc-flag-a-ph-temperature-data" class="section level2">
 <h2>QC flag A pH &amp; temperature data</h2>
+<p>pH and temperature data from floats where both variables have full profiles with QC flag A</p>
 <pre class="r"><code># create a dataframe with temperature and pH profile flags A only 
 # keep only temperature observations where good pH data exists: 
 
@@ -2310,6 +2351,7 @@ bgc_merge_flag_A &lt;- bgc_merge %&gt;%
 </div>
 <div id="qc-flag-1-ph-temperature-data" class="section level2">
 <h2>QC flag 1 pH &amp; temperature data</h2>
+<p>pH and temperature data where both variables have QC flags 1</p>
 <pre class="r"><code>bgc_merge_qc_1 &lt;- bgc_merge %&gt;% 
   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,
          temp_adjusted_qc == &#39;1&#39;) %&gt;% 
@@ -2385,14 +2427,14 @@ ph_surface_2x2 %&gt;%
 </div>
 <div id="data-set-description" class="section level1">
 <h1>Data set description</h1>
-<div id="columns" class="section level2">
-<h2>Columns</h2>
-<p>The resulting dataframe contains:</p>
+<div id="argo-columns" class="section level2">
+<h2>Argo Columns</h2>
+<p>The resulting bgc_merge dataframe contains:</p>
 <ul>
 <li><p>the file name (<code>file</code> column)</p></li>
 <li><p>the sampling level (<code>n_level</code> column)</p></li>
 <li><p>the number of profiles per file (<code>n_prof</code> column; Each single-cycle synthetic profile has the dimension <code>n_prof = 1</code>).</p></li>
-<li><p>adjusted values for pressure (<code>PRES</code>, in dbar), salinity (<code>PSAL</code>, in psu), temperature (<code>TEMP</code>, in degrees C), dissolved oxygen (<code>DOXY</code>, in µmol kg<sup>-1</sup>), pH (<code>PH_IN_SITU_TOTAL</code>), and nitrate (<code>NITRATE</code>, in µmol kg<sup>-1</sup>) (<code>parameter_adjusted</code> columns). This column is mandatory, so if no adjustment was performed (i.e. <code>parameter_adjusted</code> does not exist), FillValue is inserted (e.g., <code>temp_adjusted:FillValue = 99999.f</code>). If the raw value did not require adjustment in delayed-mode, then <code>parameter_adjusted</code> = <code>parameter</code>.</p></li>
+<li><p>adjusted values for pressure (<code>pres</code>, in dbar), salinity (<code>psal</code>, in psu), temperature (<code>temp</code>, in degrees C), dissolved oxygen (<code>doxy</code>, in µmol kg<sup>-1</sup>), pH (<code>ph_in_situ_total</code>), and nitrate (<code>nitrate</code>, in µmol kg<sup>-1</sup>) (<code>parameter_adjusted</code> columns). This column is mandatory, so if no adjustment was performed (i.e. <code>parameter_adjusted</code> does not exist), FillValue is inserted (e.g., <code>temp_adjusted:FillValue = 99999.f</code>). If the raw value did not require adjustment in delayed-mode, then <code>parameter_adjusted</code> = <code>parameter</code>.</p></li>
 <li><p>a quality control flag associated with these adjusted values (<code>parameter_adjusted_qc</code> columns). If an adjusted value does not exist (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue is inserted (e.g., <code>temp_adjusted_qc = " "</code>).</p></li>
 <li><p>an error estimate on the adjustment of the measurement (<code>parameter_adjusted_error</code> columns). If no adjusted value exists (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue is inserted (e.g., <code>temp_adjusted_error = 99999.f</code>)</p></li>
 <li><p>WMO float identifier (<code>platform_number</code> column)</p></li>

@@ -357,7 +357,10 @@ div.tocify {
       <a href="argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_OceanSODA_biomes.html">OceanSODA &amp; Biome data</a>
+      <a href="load_OceanSODA.html">OceanSODA data</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biome data</a>
     </li>
   </ul>
 </li>
@@ -447,7 +450,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">OceanSODA-Argo SST</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">20 April, 2022</h4>
+<h4 class="date">26 April, 2022</h4>
 
 </div>
 
@@ -472,7 +475,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-20
+<strong>Last updated:</strong> 2022-04-26
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -563,16 +566,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea2049e3621daa494c2da7f21d0ab61a0501df9f8targetblanka2049e3a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3e1ac1402585748313e4c99ba6af0ba1fd4510eatargetblank3e1ac14a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a2049e3621daa494c2da7f21d0ab61a0501df9f8" target="_blank">a2049e3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3e1ac1402585748313e4c99ba6af0ba1fd4510ea" target="_blank">3e1ac14</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -593,6 +596,7 @@ Untracked files:
 
 Unstaged changes:
     Modified:   analysis/_site.yml
+    Deleted:    analysis/load_OceanSODA_biomes.Rmd
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
@@ -632,6 +636,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3e1ac1402585748313e4c99ba6af0ba1fd4510ea/analysis/oceanSODA_argo_temp.Rmd" target="_blank">3e1ac14</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-26
+</td>
+<td>
+separated loading data pages, added mayot biomes, switched to pH and temp flag A
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/c03dd24b5d5c754c74163197ae68e75953385b8b/docs/oceanSODA_argo_temp.html" target="_blank">c03dd24</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -841,18 +879,18 @@ path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/fi
 
 OceanSODA_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA_temp.rds&quot;))
 
-argo_surf_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;)) %&gt;% 
+argo_surf_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A.rds&quot;)) %&gt;% 
   filter(between(depth, 0, 20)) %&gt;% 
   mutate(year = year(date),
-         month = month(date))
+         month = month(date)) %&gt;% 
+  select(-c(ph_in_situ_total_adjusted,
+            ph_in_situ_total_adjusted_qc,
+            ph_in_situ_total_adjusted_error,
+            profile_ph_in_situ_total_qc))
 
-# for plotting later, load in region and coastline information  
-region_masks_all_seamask_2x2 &lt;- read_rds(file = paste0(
-  path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
+# for plotting later, load in region information  
 
-region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))
-
-region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_1x1.rds&quot;))</code></pre>
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))</code></pre>
 <pre class="r"><code># read in the map from updata
 map &lt;-
   read_rds(paste(path_emlr_utilities,
@@ -887,18 +925,16 @@ argo_OceanSODA_temp &lt;- left_join(argo_temp_monthly, OceanSODA_temp) %&gt;%
 <div id="southern-ocean-sst" class="section level1">
 <h1>Southern Ocean SST</h1>
 <p>Focus on the Southern Ocean, south of 30ºS, as defined in the RECCAP biome regions</p>
-<pre class="r"><code>region_masks_all_1x1_SO &lt;- region_masks_all_1x1 %&gt;%
-  filter(region == &#39;southern&#39;,
-         value != 0)
+<pre class="r"><code># keep only Southern Ocean data 
 
-# keep only Southern Ocean data 
 argo_OceanSODA_temp_SO &lt;- 
-  inner_join(region_masks_all_1x1_SO, argo_OceanSODA_temp)</code></pre>
+  inner_join(argo_OceanSODA_temp, nm_biomes)</code></pre>
 <div id="monthly-climatological-oceansoda-sst" class="section level2">
 <h2>Monthly climatological OceanSODA SST</h2>
 <p>Map monthly mean SST from the OceanSODA data product</p>
 <p>Climatological OceanSODA SST</p>
 <pre class="r"><code># calculate average monthly pH between April 2013 and August 2021, and the difference between the two (offset)
+
 argo_OceanSODA_temp_SO_clim &lt;- argo_OceanSODA_temp_SO %&gt;%
   group_by(lon, lat, month) %&gt;%
   summarise(
@@ -1000,44 +1036,6 @@ basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to po
        fill = &#39;SST (ºC)&#39;,
        title = &#39;monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo_temp.Rmd/polar_projection_SST_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_SST_map-1">
-Past versions of polar_projection_SST_map-1.png
-</button>
-</p>
-<div id="fig-polar_projection_SST_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/905d82f915b374c8bc9463896f629b15986c83ff/docs/figure/oceanSODA_argo_temp.Rmd/polar_projection_SST_map-1.png" target="_blank">905d82f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="monthly-climatological-argo-sst" class="section level2">
 <h2>Monthly climatological Argo SST</h2>
@@ -1117,60 +1115,19 @@ pasqualina-vonlanthendinenna
        fill = &#39;SST (ºC)&#39;,
        title = &#39;monthly climatological \nArgo SST (Jan 2013 - Dec 2021)&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo_temp.Rmd/polar_projection_Argo_SST-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-polar_projection_Argo_SST-1">
-Past versions of polar_projection_Argo_SST-1.png
-</button>
-</p>
-<div id="fig-polar_projection_Argo_SST-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/905d82f915b374c8bc9463896f629b15986c83ff/docs/figure/oceanSODA_argo_temp.Rmd/polar_projection_Argo_SST-1.png" target="_blank">905d82f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="timeseries-of-monthly-oceansoda-sst" class="section level2">
 <h2>Timeseries of monthly OceanSODA SST</h2>
 <p>Evolution of monthly SST, for the three Southern Ocean RECCAP regions</p>
 <pre class="r"><code>map +
-  geom_raster(data = region_masks_all_seamask_2x2 %&gt;%
-                filter(seamask == 0),
+  geom_raster(data = nm_biomes,
               aes(x = lon, y = lat)) +
-  geom_raster(data = region_masks_all_2x2 %&gt;%
-                filter(region == &#39;southern&#39;,
-                       value != 0),
+  geom_raster(data = nm_biomes,
               aes(x = lon,
                   y = lat,
-                  fill = value)) +
-  labs(title = &#39;Southern Ocean RECCAP regions&#39;,
-       fill = &#39;region&#39;)</code></pre>
+                  fill = biome_name)) +
+  labs(title = &#39;Southern Ocean Mayot regions&#39;,
+       fill = &#39;biome&#39;)</code></pre>
 <p><img src="figure/oceanSODA_argo_temp.Rmd/southern_ocean_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-southern_ocean_biomes-1">
@@ -1232,28 +1189,28 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 <pre class="r"><code># plot timeseries of monthly OceanSODA pH
+
 argo_OceanSODA_temp_SO_clim_regional &lt;- argo_OceanSODA_temp_SO %&gt;%
-  select(year, month, value, OceanSODA_temp, argo_temp_month) %&gt;% 
+  select(year, month, biome_name, OceanSODA_temp, argo_temp_month) %&gt;% 
   pivot_longer(c(OceanSODA_temp,argo_temp_month),
                values_to = &quot;temp&quot;,
                names_to = &quot;data_source&quot;) %&gt;% 
-  group_by(year, month, value, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  group_by(year, month, biome_name, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
   summarise(temp = mean(temp, na.rm = TRUE)) %&gt;%
   ungroup()</code></pre>
 <pre class="r"><code>argo_OceanSODA_temp_SO_clim_regional %&gt;%   
   ggplot(aes(x = year,
              y = temp,
-             col = value)) +
+             col = biome_name)) +
   facet_grid(month ~ data_source) +
   geom_line() +
   geom_point() +
   labs(x = &#39;year&#39;,
        y = &#39;SST (ºC)&#39;,
        title = &#39;monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)&#39;,
-       col = &#39;region&#39;)</code></pre>
+       col = &#39;biome&#39;)</code></pre>
 <pre class="r"><code>argo_OceanSODA_temp_SO_clim_regional %&gt;%   
-  filter(value != 0,
-         year != 2021) %&gt;%
+  # filter(year != 2021) %&gt;%
   ggplot(aes(x = month,
              y = temp,
              group = year,
@@ -1261,7 +1218,7 @@ argo_OceanSODA_temp_SO_clim_regional &lt;- argo_OceanSODA_temp_SO %&gt;%
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(value~data_source)+
+  facet_grid(biome_name~data_source)+
   lims(y = c(-5, 20))+
   labs(x = &#39;month&#39;,
        y = &#39;SST (ºC)&#39;,
@@ -1329,7 +1286,7 @@ argo_OceanSODA_temp_SO %&gt;%
   # filter(year != &#39;2021&#39;) %&gt;% 
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
-  geom_point(aes(x = year_month, y = offset, col = value), size = 0.7, pch = 19) +
+  geom_point(aes(x = year_month, y = offset, col = biome_name), size = 0.7, pch = 19) +
   scale_x_discrete(breaks = c(&#39;2013-01&#39;, &#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   labs(title = &#39;oceanSODA SST - Argo SST&#39;,
        x = &#39;date&#39;,
@@ -1389,11 +1346,12 @@ pasqualina-vonlanthendinenna
   ggplot(aes(x = OceanSODA_temp, y = argo_temp_month))+
   # geom_point(pch = 19, size = 0.7)+
   geom_bin2d(aes(x = OceanSODA_temp, y = argo_temp_month), size = 0.3, bins = 60)+
+  scale_fill_viridis_c()+
   coord_fixed(ratio = 1,
               xlim = c(-3, 27),
               ylim= c(-3, 27)) +
   geom_abline(slope = 1, intercept = 0)+
-  facet_wrap(~value)+
+  facet_wrap(~biome_name)+
   labs(x = &#39;OceanSODA SST (ºC)&#39;,
        y = &#39;Argo SST (ºC)&#39;,
        title = &#39;Southern Ocean regional SST&#39;)</code></pre>
@@ -1451,11 +1409,12 @@ argo_OceanSODA_temp_SO &lt;- inner_join(argo_OceanSODA_temp_SO, basinmask)
 argo_OceanSODA_temp_SO %&gt;% 
   ggplot(aes(x = OceanSODA_temp, y = argo_temp_month))+
   geom_bin2d(aes(x = OceanSODA_temp, y = argo_temp_month), size = 0.3, bins = 60)+
+  scale_fill_viridis_c()+
   coord_fixed(ratio = 1, 
               xlim = c(-3, 27),
               ylim = c(-3, 27))+
   geom_abline(slope = 1, intercept = 0)+
-  facet_grid(basin_AIP~value)+
+  facet_grid(basin_AIP~biome_name)+
   labs(x = &#39;Argo SST (ºC)&#39;, 
        y = &#39;OceanSODA SST (ºC)&#39;,
        title = &#39;Southern Ocean subregional SST&#39;)</code></pre>
@@ -1499,7 +1458,7 @@ pasqualina-vonlanthendinenna
 </div>
 <p>Mean offset between in-situ OceanSODA SST and in-situ Argo SST</p>
 <pre class="r"><code>mean_insitu_offset &lt;- argo_OceanSODA_temp_SO %&gt;%
-  group_by(year_month, value) %&gt;% 
+  group_by(year_month, biome_name) %&gt;% 
   summarise(mean_offset = mean(offset, na.rm = TRUE),
             std_offset = sd(offset, na.rm = TRUE))
 
@@ -1508,13 +1467,13 @@ mean_insitu_offset %&gt;%
   # filter(year != &#39;2021&#39;) %&gt;% 
   ggplot() +
   geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
-  geom_point(aes(x = year_month, y = mean_offset, group = value, col = value), size = 0.7, pch = 19) +
-  geom_line(aes(x = year_month, y = mean_offset, group = value, col = value))+
+  geom_point(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name), size = 0.7, pch = 19) +
+  geom_line(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name))+
   geom_ribbon(aes(x = year_month, 
                   ymin = mean_offset-std_offset, 
                   ymax = mean_offset+std_offset, 
-                  group = value, 
-                  fill =value),
+                  group = biome_name, 
+                  fill =biome_name),
               alpha = 0.2)+
   scale_x_discrete(breaks = c(&#39;2013-01&#39;, &#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
   # facet_wrap(~year)+
@@ -1586,11 +1545,11 @@ pasqualina-vonlanthendinenna
 <p>Offset between climatological Argo and climatological OceanSODA SST:</p>
 <pre class="r"><code># Offset between climatological argo and climatological OceanSODA SST 
 
-argo_OceanSODA_temp_SO_clim &lt;- inner_join(argo_OceanSODA_temp_SO_clim, region_masks_all_1x1_SO)</code></pre>
+argo_OceanSODA_temp_SO_clim &lt;- inner_join(argo_OceanSODA_temp_SO_clim, nm_biomes)</code></pre>
 <pre class="r"><code>argo_OceanSODA_temp_SO_clim %&gt;% 
   # drop_na() %&gt;%
   ggplot() +
-  geom_point(aes(x = month, y = offset_clim, col = value), size = 0.7, pch = 19) +
+  geom_point(aes(x = month, y = offset_clim, col = biome_name), size = 0.7, pch = 19) +
   geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(title = &#39;clim oceanSODA SST - clim Argo SST&#39;,
@@ -1599,20 +1558,20 @@ argo_OceanSODA_temp_SO_clim &lt;- inner_join(argo_OceanSODA_temp_SO_clim, region
        col = &#39;region&#39;)</code></pre>
 <p>Mean offset between climatological OceanSODA SST and climatological Argo SST</p>
 <pre class="r"><code>mean_clim_offset &lt;- argo_OceanSODA_temp_SO_clim %&gt;% 
-  group_by(month, value) %&gt;% 
+  group_by(month, biome_name) %&gt;% 
   summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
             std_offset_clim = sd(offset_clim, na.rm = TRUE))
 
 mean_clim_offset %&gt;% 
   ggplot()+
-  geom_point(aes(x = month, y = mean_offset_clim, col = value))+
-  geom_line(aes(x = month, y = mean_offset_clim, col = value))+
+  geom_point(aes(x = month, y = mean_offset_clim, col = biome_name))+
+  geom_line(aes(x = month, y = mean_offset_clim, col = biome_name))+
   geom_hline(yintercept = 0, col = &#39;red&#39;) +
   geom_ribbon(aes(x = month, 
                   ymin = mean_offset_clim - std_offset_clim, 
                   ymax = mean_offset_clim + std_offset_clim,
-                  group = value, 
-                  fill = value), 
+                  group = biome_name, 
+                  fill = biome_name), 
               alpha = 0.2) +
   scale_x_continuous(breaks = seq(1, 12, 1)) +
   labs(x = &#39;month&#39;,
@@ -1744,44 +1703,6 @@ pasqualina-vonlanthendinenna
        fill = &#39;offset (ºC)&#39;,
        title = &#39;clim Ocean SODA SST - clim Argo SST&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
-<p><img src="figure/oceanSODA_argo_temp.Rmd/map_climatological_SST_offsets_polar_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_climatological_SST_offsets_polar_map-1">
-Past versions of map_climatological_SST_offsets_polar_map-1.png
-</button>
-</p>
-<div id="fig-map_climatological_SST_offsets_polar_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/905d82f915b374c8bc9463896f629b15986c83ff/docs/figure/oceanSODA_argo_temp.Rmd/map_climatological_SST_offsets_polar_map-1.png" target="_blank">905d82f</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-02-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <div id="basin-separation" class="section level3">
 <h3>Basin separation</h3>
 <p>Using full OceanSODA data (even where there is no Argo data) Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)</p>
@@ -1795,8 +1716,8 @@ basinmask &lt;- basinmask %&gt;%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
   select(lon, lat, basin_AIP)
 
-OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp, region_masks_all_1x1) %&gt;% 
-  filter(region == &#39;southern&#39;)
+OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp, nm_biomes) %&gt;% 
+  filter(year &gt;= 2013)
 
 OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp_SO, basinmask) %&gt;% 
   mutate(year = year(date_OceanSODA),
@@ -1804,8 +1725,7 @@ OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp_SO, basinmask) %&gt;%
   mutate(date = format_ISO8601(date_OceanSODA, precision = &#39;ym&#39;))</code></pre>
 <pre class="r"><code># plot timeseries of monthly OceanSODA SST
 OceanSODA_temp_SO_clim_subregional &lt;- OceanSODA_temp_SO %&gt;%
-  filter(value != 0) %&gt;% 
-  group_by(year, month, value, basin_AIP) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  group_by(year, month, biome_name, basin_AIP) %&gt;%  # compute regional mean OceanSODA SST for the three biomes
   summarise(temp = mean(temperature, na.rm = TRUE)) %&gt;%
   ungroup()
 
@@ -1818,7 +1738,7 @@ OceanSODA_temp_SO_clim_subregional %&gt;%
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(value~basin_AIP)+
+  facet_grid(biome_name~basin_AIP)+
   labs(x = &#39;month&#39;,
        y = &#39;SST (ºC)&#39;,
        title = &#39;monthly mean OceanSODA SST (Jan 2013-Dec 2020, Southern Ocean basins)&#39;,
@@ -1873,10 +1793,9 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 <pre class="r"><code>OceanSODA_temp_SO_clim_subregional %&gt;%  
-  filter(value != 0) %&gt;% 
   ggplot(aes(x = year,
              y = temp,
-             col = value)) +
+             col = biome_name)) +
   facet_grid(month ~ basin_AIP) +
   geom_line() +
   geom_point() +
@@ -1941,19 +1860,18 @@ pasqualina-vonlanthendinenna
   mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
          lon = as.numeric(as.character(lon))
   ) %&gt;%
-  group_by(lon, year, month, value) %&gt;%
+  group_by(lon, year, month, biome_name) %&gt;%
   summarise(
     OceanSODA_temp_binned = mean(temperature, na.rm = TRUE)
   ) %&gt;%
   ungroup()</code></pre>
 <pre class="r"><code>OceanSODA_temp_SO_lon_binned %&gt;%
   # drop_na() %&gt;% 
-  filter(value != 0) %&gt;% 
   ggplot(aes(x = month, y = OceanSODA_temp_binned, group = lon, col = as.factor(lon))) +
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_grid(year~value)+
+  facet_grid(year~biome_name)+
   labs(x = &#39;month&#39;,
        y = &#39;OceanSODA SST (ºC)&#39;,
        col = &#39;longitude bin&#39;)</code></pre>
@@ -2040,36 +1958,29 @@ other attached packages:
 [13] tidyverse_1.3.1   workflowr_1.7.0  
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2              sf_1.0-5              bit64_4.0.5          
- [4] RColorBrewer_1.1-2    httr_1.4.2            rprojroot_2.0.2      
- [7] tools_4.1.2           backports_1.4.1       bslib_0.3.1          
-[10] utf8_1.2.2            rgdal_1.5-28          R6_2.5.1             
-[13] KernSmooth_2.23-20    rgeos_0.5-9           DBI_1.1.2            
-[16] colorspace_2.0-2      raster_3.5-11         withr_2.4.3          
-[19] sp_1.4-6              tidyselect_1.1.1      processx_3.5.2       
-[22] bit_4.0.4             compiler_4.1.2        git2r_0.29.0         
-[25] cli_3.1.1             rvest_1.0.2           xml2_1.3.3           
-[28] labeling_0.4.2        sass_0.4.0            checkmate_2.0.0      
-[31] scales_1.1.1          classInt_0.4-3        ggOceanMapsData_1.0.1
-[34] callr_3.7.0           proxy_0.4-26          digest_0.6.29        
-[37] rmarkdown_2.11        pkgconfig_2.0.3       htmltools_0.5.2      
-[40] highr_0.9             dbplyr_2.1.1          fastmap_1.1.0        
-[43] rlang_0.4.12          readxl_1.3.1          rstudioapi_0.13      
-[46] farver_2.1.0          jquerylib_0.1.4       generics_0.1.1       
-[49] jsonlite_1.7.3        vroom_1.5.7           magrittr_2.0.1       
-[52] Rcpp_1.0.8            munsell_0.5.0         fansi_1.0.2          
-[55] lifecycle_1.0.1       terra_1.5-12          stringi_1.7.6        
-[58] whisker_0.4           yaml_2.2.1            grid_4.1.2           
-[61] parallel_4.1.2        promises_1.2.0.1      crayon_1.4.2         
-[64] lattice_0.20-45       haven_2.4.3           hms_1.1.1            
-[67] knitr_1.37            ps_1.6.0              pillar_1.6.4         
-[70] codetools_0.2-18      reprex_2.0.1          glue_1.6.0           
-[73] evaluate_0.14         getPass_0.2-2         data.table_1.14.2    
-[76] modelr_0.1.8          vctrs_0.3.8           tzdb_0.2.0           
-[79] httpuv_1.6.5          cellranger_1.1.0      gtable_0.3.0         
-[82] assertthat_0.2.1      xfun_0.29             broom_0.7.11         
-[85] e1071_1.7-9           later_1.3.0           viridisLite_0.4.0    
-[88] class_7.3-20          units_0.7-2           ellipsis_0.3.2       </code></pre>
+ [1] fs_1.5.2           sf_1.0-5           bit64_4.0.5        RColorBrewer_1.1-2
+ [5] httr_1.4.2         rprojroot_2.0.2    tools_4.1.2        backports_1.4.1   
+ [9] bslib_0.3.1        utf8_1.2.2         rgdal_1.5-28       R6_2.5.1          
+[13] KernSmooth_2.23-20 rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2  
+[17] raster_3.5-11      withr_2.4.3        sp_1.4-6           tidyselect_1.1.1  
+[21] processx_3.5.2     bit_4.0.4          compiler_4.1.2     git2r_0.29.0      
+[25] cli_3.1.1          rvest_1.0.2        xml2_1.3.3         labeling_0.4.2    
+[29] sass_0.4.0         checkmate_2.0.0    scales_1.1.1       classInt_0.4-3    
+[33] callr_3.7.0        proxy_0.4-26       digest_0.6.29      rmarkdown_2.11    
+[37] pkgconfig_2.0.3    htmltools_0.5.2    highr_0.9          dbplyr_2.1.1      
+[41] fastmap_1.1.0      rlang_0.4.12       readxl_1.3.1       rstudioapi_0.13   
+[45] farver_2.1.0       jquerylib_0.1.4    generics_0.1.1     jsonlite_1.7.3    
+[49] vroom_1.5.7        magrittr_2.0.1     Rcpp_1.0.8         munsell_0.5.0     
+[53] fansi_1.0.2        lifecycle_1.0.1    terra_1.5-12       stringi_1.7.6     
+[57] whisker_0.4        yaml_2.2.1         grid_4.1.2         parallel_4.1.2    
+[61] promises_1.2.0.1   crayon_1.4.2       lattice_0.20-45    haven_2.4.3       
+[65] hms_1.1.1          knitr_1.37         ps_1.6.0           pillar_1.6.4      
+[69] codetools_0.2-18   reprex_2.0.1       glue_1.6.0         evaluate_0.14     
+[73] getPass_0.2-2      data.table_1.14.2  modelr_0.1.8       vctrs_0.3.8       
+[77] tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0   gtable_0.3.0      
+[81] assertthat_0.2.1   xfun_0.29          broom_0.7.11       e1071_1.7-9       
+[85] later_1.3.0        viridisLite_0.4.0  class_7.3-20       units_0.7-2       
+[89] ellipsis_0.3.2    </code></pre>
 </div>
 </div>
 </div>
