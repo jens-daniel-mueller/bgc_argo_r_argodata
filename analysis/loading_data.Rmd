@@ -220,6 +220,9 @@ bgc_merge <- full_join(bgc_data, bgc_metadata) %>%
 
 ## pH data 
 
+All pH data from BGC floats with QC flag 1 (good data)
+ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1  
+
 ```{r create_pH_argo_dataframes}
 
 bgc_merge_pH_qc_1 <- bgc_merge %>%
@@ -257,6 +260,7 @@ ph_surface_2x2 <- ph_surface_1x1 %>%
 
 ## Temperature data 
 
+All temperature data from BGC floats with QC flag 1 
 ```{r create_temp_argo_dataframe}
 
 bgc_merge_temp_qc_1 <- bgc_merge %>% 
@@ -271,6 +275,8 @@ bgc_merge_temp_qc_1 <- bgc_merge %>%
 ```
 
 ## QC flag A pH & temperature data 
+
+pH and temperature data from floats where both variables have full profiles with QC flag A 
 
 ```{r create_flag_A_bgc_argo_dataframe}
 
@@ -297,6 +303,8 @@ bgc_merge_flag_A <- bgc_merge %>%
 ```
 
 ## QC flag 1 pH & temperature data
+
+pH and temperature data where both variables have QC flags 1 
 
 ```{r create_qc_flag_1_dataframe}
 bgc_merge_qc_1 <- bgc_merge %>% 
@@ -382,9 +390,9 @@ ph_surface_2x2 %>%
 
 # Data set description
 
-## Columns
+## Argo Columns
 
-The resulting dataframe contains:
+The resulting bgc_merge dataframe contains:
 
 -   the file name (`file` column)
 
@@ -392,7 +400,7 @@ The resulting dataframe contains:
 
 -   the number of profiles per file (`n_prof` column; Each single-cycle synthetic profile has the dimension `n_prof = 1`).
 
--   adjusted values for pressure (`PRES`, in dbar), salinity (`PSAL`, in psu), temperature (`TEMP`, in degrees C), dissolved oxygen (`DOXY`, in µmol kg^-1^), pH (`PH_IN_SITU_TOTAL`), and nitrate (`NITRATE`, in µmol kg^-1^) (`parameter_adjusted` columns). This column is mandatory, so if no adjustment was performed (i.e. `parameter_adjusted` does not exist), FillValue is inserted (e.g., `temp_adjusted:FillValue = 99999.f`). If the raw value did not require adjustment in delayed-mode, then `parameter_adjusted` = `parameter`.
+-   adjusted values for pressure (`pres`, in dbar), salinity (`psal`, in psu), temperature (`temp`, in degrees C), dissolved oxygen (`doxy`, in µmol kg^-1^), pH (`ph_in_situ_total`), and nitrate (`nitrate`, in µmol kg^-1^) (`parameter_adjusted` columns). This column is mandatory, so if no adjustment was performed (i.e. `parameter_adjusted` does not exist), FillValue is inserted (e.g., `temp_adjusted:FillValue = 99999.f`). If the raw value did not require adjustment in delayed-mode, then `parameter_adjusted` = `parameter`.
 
 -   a quality control flag associated with these adjusted values (`parameter_adjusted_qc` columns). If an adjusted value does not exist (e.g., `temp_adjusted = 99999.f`), then FillValue is inserted (e.g., `temp_adjusted_qc = " "`).
 

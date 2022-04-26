@@ -20,7 +20,6 @@ Explore BGC-Argo pH data through timeseries and monthly climatological maps
 ```{r loading_libraries, include=FALSE}
 # load in the necessary libraries
 library(tidyverse)
-library(argodata)
 library(ggplot2)
 library(lubridate)
 library(oce)
@@ -31,6 +30,7 @@ library(ggOceanMaps)
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 ```
 
 # Load pH data
@@ -39,17 +39,23 @@ Load in delayed-mode adjusted pH data from the data files created in Loading Dat
 
 ```{r load_preprocessed_data}
 # keep only pH data and associated CTD variables 
-path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 # load in surface pH data 
-ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x2.rds'))
+# ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, '/ph_surface_2x2.rds'))
+# 
+# ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
 
-ph_surface_1x1 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
+ph_surface <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
+  filter(between(depth, 0, 20)) %>% 
+  mutate(year = year(date),
+         month = month(date))
 
-region_masks_all_seamask_2x2 <- read_rds(file = paste0(
-  path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
+# region_masks_all_seamask_2x2 <- read_rds(file = paste0(
+#   path_argo_preprocessed, "/region_masks_all_seamask_2x2.rds"))
+# 
+# region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
 
-region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed, "/region_masks_all_2x2.rds"))
+nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
 ```
 
 ```{r set_global_theme, include=FALSE}
@@ -64,10 +70,8 @@ The focus here is on surface pH (in the top 20 m of the watercolumn), in the reg
 
 ```{r select_relevant_ph_data}
 
-# select pH data for the Southern Ocean, as defined by the RECCAP regions  
-ph_surface_SO <- ph_surface_2x2 %>%
-  filter(region == 'southern', 
-         value != 0)
+ph_surface_SO <- ph_surface %>% 
+  filter(lat <= - 30)
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
 #max(ph_surface_SO$lat)
@@ -86,7 +90,7 @@ Plot the difference between in-situ observed pH and the profile-mean surface pH 
 
 # calculate the mean pH for each surface profile 
 mean_profile_ph <- ph_surface_SO %>% 
-  group_by(float_serial_no, cycle_number) %>% 
+  group_by(platform_number, cycle_number) %>% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE), 
          .before = depth) %>% 
   ungroup() %>% 
@@ -107,11 +111,13 @@ mean_profile_ph %>%
 Bin the pH data into 2m-depth intervals and calculate the offset for each pH observation in each depth interval relative to the profile-mean pH
 
 ```{r offset_SO_binned_by_depth}
+
 # bin the ph values into 2m bins and calculate the offset for each 2m bin 
+
 mean_profile_ph_binned <- ph_surface_SO %>% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %>% 
-  group_by(float_serial_no, cycle_number) %>% 
+  group_by(platform_number, cycle_number) %>% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
          .before = depth) %>% 
   ungroup() %>% 
@@ -139,7 +145,7 @@ Mean offset for each 2m depth bin
 profile_ph_binned_ave <- ph_surface_SO %>% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %>% 
-  group_by(float_serial_no, cycle_number) %>% 
+  group_by(platform_number, cycle_number) %>% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
          .before = depth) %>% 
   ungroup() %>% 
@@ -195,7 +201,7 @@ map +
 
 ```
 
-```{r using_ggOceanMaps, fig.asp=2}
+```{r using_ggOceanMaps, fig.asp=2, eval=FALSE}
 
 basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection 
   geom_spatial_tile(data = ph_clim_SO, 
@@ -219,35 +225,34 @@ basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection
 Timeseries of monthly mean pH values, over the three different Southern Ocean regions (separated based on RECCAP biomes):
 
 ```{r map_southern_ocean_biomes}
+
 # plot the region separations on a map 
-ggplot() +
-  geom_raster(data = region_masks_all_seamask_2x2 %>% 
-                filter(seamask == 0), 
-              aes(x = lon, y = lat)) +
-  geom_raster(data = region_masks_all_2x2 %>% 
-                filter(region == 'southern',
-                       value != 0), 
+
+map +
+  geom_raster(data = nm_biomes, 
               aes(x = lon, 
                   y = lat, 
-                  fill = value)) +
-  coord_quickmap(expand = 0) +
-  labs(title = 'Southern Ocean RECCAP regions', 
-       fill = 'region')
+                  fill = biome_name)) +
+  labs(title = 'Southern Ocean Mayot biomes', 
+       fill = 'biome')
 ```
 
 ```{r plot_monthly_ph_timeseries}
 
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
+
+ph_surface_SO <- inner_join(ph_surface_SO, nm_biomes)
+
 ph_month_SO <- ph_surface_SO %>%
-  group_by(year, month, value) %>%
+  group_by(year, month, biome_name) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # timeseries of monthly pH values over 2014-2021 (separate panels for each month)
 ph_month_SO %>%
   ggplot(aes(x = year, 
              y = ph_ave, 
-             group = value, 
-             col = value)) +
+             group = biome_name, 
+             col = biome_name)) +
   facet_wrap(~month) +
   geom_line() +
   geom_point() +
@@ -274,9 +279,8 @@ Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each South
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
 ph_month_SO %>%
-  filter(year != 2014,
-         year != 2021,
-         value != 0) %>%    # remove the two years that are missing data (keep only data for full years)
+  # filter(year != 2014,
+  #        year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
   ggplot(aes(x = month, 
              y = ph_ave, 
              group = year,
@@ -284,7 +288,7 @@ ph_month_SO %>%
   geom_line()+
   geom_point()+
   scale_x_continuous(breaks = seq(1, 12, 2))+
-  facet_wrap(~value)+
+  facet_wrap(~biome_name)+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
        title = 'monthly mean Argo pH (Jan 2015-Dec 2020, Southern Ocean regions)',
@@ -295,12 +299,12 @@ ph_month_SO %>%
 
 # calculate a yearly average ph (one ph value per year, for the whole domain)
 ph_year_SO <- ph_surface_SO %>%
-  group_by(year, value) %>%
+  group_by(year, biome_name) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
 
 # plot a timeseries of the yearly average pH value (one value per year)
 ph_year_SO %>%
-  ggplot(aes(x = year, y = ph_ave, group = value, col = value))+
+  ggplot(aes(x = year, y = ph_ave, group = biome_name, col = biome_name))+
   geom_line()+
   geom_point()+
   labs(x = 'year',
@@ -314,19 +318,13 @@ ph_year_SO %>%
 
 Focus on surface pH in the northeast Pacific Ocean (10ºN - 70ºN, -190ºE - -140ºE)
 
-```{r select_northeast_pacific_pH_data}
+```{r select_northeast_pacific_pH_data, eval=FALSE}
 
-# select only best pH data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 20 m of the watercolumn
-ph_nepacific <- ph_surface_2x2 %>%
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
-  filter(ph_in_situ_total_adjusted_qc == '1',   # keep only 'good' data
-        between(lat, 10, 70),
-        between(lon, 190, 240),               # NE Pacific 
-        depth <= 20) %>%              # keep only data above or at 20 m depth
-  mutate(
-    year = year(date),     # separate the year and month from the date column
-    month = month(date), .after = n_prof
-  )
+# select only pH databetween 10 and 70ºN, and 190 and 140ºW, for the top 20 m of the watercolumn
+
+ph_nepacific <- ph_surface %>%
+  filter(between(lat, 10, 70),
+         between(lon, 190, 240)) 
 # longitudes larger than -180ºE are lon-380
 
 ```
@@ -335,7 +333,7 @@ ph_nepacific <- ph_surface_2x2 %>%
 
 Create a map of climatological monthly surface pH values, in the north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for
 
-```{r northeast_pacific_climatological_pH_map}
+```{r northeast_pacific_climatological_pH_map, eval=FALSE}
 
 # average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean_nepacific <- ph_nepacific %>%
@@ -359,6 +357,7 @@ map +
 ```
 
 ```{r ggOceanMaps_Pacific, eval=FALSE}
+
 # using the ggOceanMaps package
 basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
   geom_spatial_tile(data = ph_mean_nepacific, 
@@ -378,8 +377,10 @@ basemap(limits = c(-180, -110, 7, 60), data = ph_mean_nepacific) +
 
 Timeseries of monthly mean pH, averaged over the whole NE-Pacific region (10ºN - 70ºN, -190ºE - -140ºE), in the upper 20 m of the watercolumn.
 
-```{r monthly_pH_timeseries_pacific}
+```{r monthly_pH_timeseries_pacific, eval=FALSE}
+
 # plot a timeseries of monthly values over the whole southern ocean south of 30ºS
+
 ph_month_nepacific <- ph_nepacific %>%
   group_by(year, month) %>%
   summarise(ph_ave = mean(ph_in_situ_total_adjusted))
@@ -398,12 +399,10 @@ ph_month_nepacific %>%
 
 Monthly average pH, per year, over the NE Pacific region
 
-```{r monthly_pH_timeseries_per_year_nepacific}
+```{r monthly_pH_timeseries_per_year_nepacific, eval=FALSE}
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
-ph_month_nepacific %>%
-  filter(year != 2016,
-         year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
+ph_month_nepacific %>%   
   ggplot(aes(x = month, y = ph_ave, group = year, col = as.character(year)))+
   geom_line()+
   geom_point()+
