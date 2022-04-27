@@ -134,9 +134,16 @@ anomaly_field <- full_join(pH_extreme %>%
 # chisq.test(anomaly_field$ph_extreme, anomaly_field$temp_extreme, correct = FALSE)
 
 anomaly_field <- anomaly_field %>% 
-  mutate(double_extreme = case_when(temp_extreme != 'N' & ph_extreme != 'N' ~ 'E',
+  mutate(double_extreme = case_when(temp_extreme == 'H' & ph_extreme == 'H' ~ 'warm_HpH',
+                                    temp_extreme == 'L' & ph_extreme == 'H' ~ 'cold_HpH',
+                                    temp_extreme == 'H' & ph_extreme == 'L' ~ 'warm_LpH',
+                                    temp_extreme == 'L' & ph_extreme == 'L' ~ 'cold_LpH',
+                                    temp_extreme == 'H' & ph_extreme == 'N' ~ 'warm',
+                                    temp_extreme == 'L' & ph_extreme == 'N' ~ 'cold',
+                                    temp_extreme == 'N' & ph_extreme == 'H' ~ 'HpH',
+                                    temp_extreme == 'N' & ph_extreme == 'L' ~ 'LpH',
                                     TRUE ~ 'N')) %>% 
-  mutate(double_extreme = fct_relevel(double_extreme, 'E', 'N'))
+  mutate(double_extreme = fct_relevel(double_extreme, 'warm_HpH', 'cold_HpH', 'warm_LpH', 'cold_LpH', 'warm', 'cold', 'HpH', 'LpH', 'N'))
 
 ```
 
@@ -154,8 +161,16 @@ anomaly_field %>%
                     y = lat_raw,
                     fill = double_extreme))+
       facet_wrap(~year, ncol = 2)+
-      scale_fill_manual(values = c('N' = 'gray90',
-                                   'E' = 'red'))+
+      scale_fill_manual(values = c('warm_HpH' = 'brown',
+                                   'warm_LpH' = 'yellow',
+                                   'cold_HpH' = 'beige',
+                                   'cold_LpH' = 'cyan',
+                                   'cold' = 'blue',
+                                   'warm' = 'red',
+                                   'LpH' = 'orange',
+                                   'HpH' = 'green',
+                                   'N' = NA),
+                        na.value = NA)+
       lims(y = c(-85, -32))+
       labs(title = paste0('month:', unique(.x$month)),
            fill = 'double extreme')

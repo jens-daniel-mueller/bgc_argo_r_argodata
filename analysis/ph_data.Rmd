@@ -82,7 +82,7 @@ ph_surface_SO <- ph_surface %>%
 # max(ph_surface_SO$date)
 ```
 
-#### Data offset with depth
+#### pH offset with depth
 
 Plot the difference between in-situ observed pH and the profile-mean surface pH for the upper 20 m. This difference represents the variability of the surface pH values with respect to the mean surface pH of the upper 20 m.
 
@@ -170,7 +170,7 @@ profile_ph_binned_ave %>%
 
 #### Monthly climatological map
 
-Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-August 2021)
+Create a climatological monthly map of surface pH, in a 2x2º longitude/latitude grid, for the region south of 30ºS (monthly pH averaged over April 2014-December 2021)
 
 ```{r climatological_monthly_map, fig.asp=2}
 
@@ -185,7 +185,7 @@ map <-
                  "map_landmask_WOA18.rds",
                  sep = ""))
 
-# map a monthly climatology of pH (April 2014 - August 2021)
+# map a monthly climatology of pH (April 2014 - December 2021)
 map +
   geom_tile(data = ph_clim_SO,
             aes(lon, lat, fill = ph_clim_month)) +
@@ -194,7 +194,7 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
-       title = 'Monthly climatological \nArgo pH (Apr 2014 - Aug 2021)') +
+       title = 'Monthly climatological \nArgo pH (Apr 2014 - Dec 2021)') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 
@@ -216,13 +216,13 @@ basemap(limits = -32, data = ph_clim_SO) +   # change to polar projection
   labs(x = 'lon',
        y = 'lat',
        fill = 'pH',
-       title = 'monthly climatological \nArgo pH (Apr 2014 - Aug 2021)')+
+       title = 'monthly climatological \nArgo pH (Apr 2014 - Dec 2021)')+
   facet_wrap(~month, ncol = 2)
 ```
 
 #### Monthly timeseries
 
-Timeseries of monthly mean pH values, over the three different Southern Ocean regions (separated based on RECCAP biomes):
+Timeseries of monthly mean pH values, over the three different Southern Ocean regions (separated based on Mayot biomes):
 
 ```{r map_southern_ocean_biomes}
 
@@ -258,7 +258,7 @@ ph_month_SO %>%
   geom_point() +
   labs(x = 'year', 
        y = 'pH in situ (total scale)', 
-       title = 'monthly mean Argo pH (Apr 2014-Aug 2021, Southern Ocean)', 
+       title = 'monthly mean Argo pH (Apr 2014-Dec 2021, Southern Ocean)', 
        col = 'region')
 
 ```
@@ -279,8 +279,7 @@ Plot the monthly average pH, per year (from Jan 2015 - Dec 2020), for each South
 
 # timeseries of monthly pH values for each year (separate years on the same plot)
 ph_month_SO %>%
-  # filter(year != 2014,
-  #        year != 2021) %>%    # remove the two years that are missing data (keep only data for full years)
+  # filter(year != 2014) %>%    # remove the year that is missing data 
   ggplot(aes(x = month, 
              y = ph_ave, 
              group = year,
@@ -291,7 +290,7 @@ ph_month_SO %>%
   facet_wrap(~biome_name)+
   labs(x = 'month',
        y = 'pH in situ (total scale)',
-       title = 'monthly mean Argo pH (Jan 2015-Dec 2020, Southern Ocean regions)',
+       title = 'monthly mean Argo pH (Jan 2015-Dec 2021, Southern Ocean regions)',
        col = 'year')
 ```
 

@@ -126,7 +126,7 @@ map+
 
 ```
 
-```{r polar_projection_Mayot_biomes_pre_grid_reduction}
+```{r polar_projection_Mayot_biomes_pre_grid_reduction, eval=FALSE}
 
 basemap(limits = -30)+
   geom_spatial_tile(data = nm_biomes,
@@ -170,7 +170,7 @@ map+
 
 ```
 
-```{r polar_projection_mayot_biomes}
+```{r polar_projection_mayot_biomes, eval=FALSE}
 
 basemap(limits = -30)+
   geom_spatial_tile(data = nm_biomes_2x2,
@@ -235,7 +235,7 @@ map+
 
 ```
 
-```{r polar_projection_basin_map}
+```{r polar_projection_basin_map, eval=FALSE}
 
 basemap(limits = -32)+
   geom_spatial_tile(data = basinmask_2x2 %>% filter(lat < -32),
@@ -709,7 +709,7 @@ N profiles correspond to normal surface OceanSODA temperature
 
 profile_temp_extreme %>%
   group_split(biome_name, basin_AIP, year) %>% 
-  # head(1) %>%
+  head(6) %>%
   map(
     ~ ggplot() +
       geom_path(data = .x %>% filter(temp_extreme == 'N'),
@@ -931,6 +931,7 @@ rm(profile_temp_count_mean)
 Surface Argo temperature vs surface OceanSODA temperature (20 m)
 
 ```{r argo_vs_OceanSODA_temp_mean, fig.asp=1}
+
 # calculate surface-mean argo SST, for each profile 
 surface_temp_mean <- profile_temp_extreme %>% 
   filter(depth <= 20) %>% 
@@ -1461,7 +1462,7 @@ Points are the January climatological temperature, lines are the depth-binned Ar
 
 remove_clim %>%
   group_split(biome_name, basin_AIP, year) %>%
-  # head(1) %>%
+  head(6) %>%
   map(
     ~ ggplot() +
       geom_path(
@@ -1503,7 +1504,7 @@ remove_clim %>%
           unique(.x$biome_name),
           "| basin:",
           unique(.x$basin_AIP),
-          " | Jan",
+          " | ",
           unique(.x$year)
         ),
         col = 'OceanSODA temp \nanomaly'
@@ -1531,7 +1532,7 @@ remove_clim <- remove_clim %>%
 
 remove_clim %>% 
   group_split(year) %>% 
-  # head(1) %>% 
+  #head(6) %>% 
   map(
     ~ggplot()+
       geom_path(data = .x %>% filter(temp_extreme == 'N'),
@@ -1584,7 +1585,7 @@ remove_clim_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Overall mean profiles')
+  labs(title = 'Overall mean anomaly profiles')
 
 rm(remove_clim_overall_mean)
 
@@ -1616,7 +1617,7 @@ remove_clim_biome_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
-  labs(title = 'Biome-mean profiles')+
+  labs(title = 'Biome-mean anomaly profiles')+
   facet_grid(season~biome_name)
 
 rm(remove_clim_biome_mean)
@@ -1650,7 +1651,7 @@ remove_clim_basin_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  labs(title = 'Basin-mean profiles')
+  labs(title = 'Basin-mean anomaly profiles')
 
 rm(remove_clim_basin_mean)
 
@@ -1688,7 +1689,7 @@ remove_clim_basin_biome_mean %>%
                          breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
-      labs(title = paste0('biome-basin mean profiles ', unique(.x$season)))
+      labs(title = paste0('biome-basin mean anomaly profiles ', unique(.x$season)))
     )
 
 rm(remove_clim_basin_biome_mean)

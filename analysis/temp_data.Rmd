@@ -1,0 +1,297 @@
+---
+title: "BGC-Argo Temperature Data"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Task
+
+Explore BGC-Argo temperature data through timeseries and monthly climatological maps
+
+
+```{r loading_libraries, include=FALSE}
+# load in the necessary libraries
+library(tidyverse)
+library(ggplot2)
+library(lubridate)
+library(oce)
+library(ggOceanMaps)
+```
+
+
+```{r set_global_theme, include=FALSE}
+
+theme_set(theme_bw())
+```
+
+
+```{r set_root_directory}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+```
+
+# Load BGC-SST data 
+
+Using only temperature data from flag A profiles which have an associated flag A pH profile 
+
+```{r load_temp_data}
+
+# flag A temperature data in the top 20 m 
+sst <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
+  filter(between(depth, 0, 20)) %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  select(-c(ph_in_situ_total_adjusted, ph_in_situ_total_adjusted_error, ph_in_situ_total_adjusted_qc, profile_ph_in_situ_total_qc))
+
+# load in biome separations 
+
+nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
+```
+
+# Southern Ocean SST 
+
+```{r select_SO_sst}
+
+sst_SO <- sst %>% 
+  filter(lat <= -30)
+
+```
+
+## SST offset with depth 
+
+Difference between the in-situ measured sst (20 m) and the profile-mean 20m temperature 
+
+```{r sst_offset_with_depth}
+
+# calculate the mean sst for each surface profile 
+mean_profile_sst <- sst_SO %>% 
+  group_by(platform_number, cycle_number) %>% 
+  mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE), 
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = temp_adjusted-mean_prof_sst,   
+         .after = mean_prof_sst) # subtract the mean profile sst from the measured in situ sst
+
+mean_profile_sst %>%
+  ggplot()+
+  geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 0.6)+
+  labs(x = 'offset (ºC)',
+       y = 'depth (m)',
+       col = 'year',
+       title = 'in situ sst - mean profile sst')
+
+```
+
+Bin the sst data into 2m-depth intervals and calculate the offset for each sst observation in each depth interval relative to the profile-mean sst
+
+```{r binned_offset}
+
+# bin the sst values into 2m bins and calculate the offset for each 2m bin 
+
+mean_profile_sst_binned <- sst_SO %>% 
+  mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
+         depth = as.numeric(as.character(depth))) %>% 
+  group_by(platform_number, cycle_number) %>% 
+  mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE),
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = temp_adjusted-mean_prof_sst, 
+         .after = mean_prof_sst) 
+
+# plot the offset of the depth-binned values 
+mean_profile_sst_binned %>%
+  ggplot()+
+  geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 0.6)+
+  labs(x = 'offset (ºC)',
+       y = 'depth (m)',
+       col = 'year',
+       title = 'in situ sst - mean profile sst (2m depth bins)')
+
+```
+
+ 
+Mean binned offset 
+
+```{r mean_binned_sst_offset}
+
+# bin the ph values into 2m bins and calculate the offset for each 2m bin 
+profile_sst_binned_ave <- sst_SO %>% 
+  mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
+         depth = as.numeric(as.character(depth))) %>% 
+  group_by(platform_number, cycle_number) %>% 
+  mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE),
+         .before = depth) %>% 
+  ungroup() %>% 
+  mutate(offset = temp_adjusted-mean_prof_sst, 
+         .after = mean_prof_sst) %>% 
+  group_by(depth) %>% 
+  summarise(mean_offset = mean(offset))
+
+# plot the offset of the depth-binned values 
+profile_sst_binned_ave %>%
+  ggplot()+
+  geom_point(aes(x = mean_offset, y = depth), size = 1, pch = 19) +
+  geom_line(aes(x = mean_offset, y = depth))+
+  scale_y_reverse()+
+  geom_vline(xintercept = 0, col = 'red', size = 1)+
+  labs(x = 'mean offset (ºC)',
+       y = 'depth (m)',
+       col = 'year',
+       title = 'in situ sst - mean profile sst (2m depth bins)')
+
+```
+
+## Monthly climatological sst 
+
+Map of monthly climatological Argo temperature (BGC floats, flag A pH profiles only), April 2014-December 2021
+
+```{r monthly_clim_sst_maps, fig.asp=2}
+
+# average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
+sst_clim_SO <- sst_SO %>%
+  group_by(lat, lon, month) %>%
+  summarise(sst_clim_month = mean(temp_adjusted))
+
+# read in the map from updata
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+# map a monthly climatology of pH (April 2014 - August 2021)
+map +
+  geom_tile(data = sst_clim_SO,
+            aes(lon, lat, fill = sst_clim_month)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST',
+       title = 'Monthly climatological \nArgo SST (Apr 2014 - Dec 2021)') +
+  theme(legend.position = 'right') +
+  facet_wrap(~month, ncol = 2)
+
+```
+
+
+```{r using_ggOceanMaps, fig.asp=2, eval=FALSE}
+
+basemap(limits = -32, data = sst_clim_SO) +   # change to polar projection 
+  geom_spatial_tile(data = sst_clim_SO, 
+            aes(x = lon,
+                y = lat,
+                fill = sst_clim_month),
+            linejoin = 'mitre',
+            col = 'transparent',
+            detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = 'bottom')+
+  labs(x = 'lon',
+       y = 'lat',
+       fill = 'SST',
+       title = 'monthly climatological \nArgo SST (Apr 2014 - Dec 2021)')+
+  facet_wrap(~month, ncol = 2)
+```
+
+## Monthly timeseries 
+
+Timeseries of monthly SST values, for each Mayot biome 
+
+```{r map_southern_ocean_biomes}
+
+# plot the region separations on a map 
+
+map +
+  geom_raster(data = nm_biomes, 
+              aes(x = lon, 
+                  y = lat, 
+                  fill = biome_name)) +
+  labs(title = 'Southern Ocean Mayot biomes', 
+       fill = 'biome')
+
+```
+
+```{r plot_monthly_sst_timeseries}
+
+# plot a timeseries of monthly values over the whole southern ocean south of 30ºS
+
+sst_SO <- inner_join(sst_SO, nm_biomes)
+
+sst_month_SO <- sst_SO %>%
+  group_by(year, month, biome_name) %>%
+  summarise(sst_ave = mean(temp_adjusted, na.rm = TRUE))
+
+# timeseries of monthly pH values over 2014-2021 (separate panels for each month)
+sst_month_SO %>%
+  ggplot(aes(x = year, 
+             y = sst_ave, 
+             group = biome_name, 
+             col = biome_name)) +
+  facet_wrap(~month) +
+  geom_line() +
+  geom_point() +
+  labs(x = 'year', 
+       y = 'SST (ºC)', 
+       title = 'monthly mean Argo SST (Apr 2014-Dec 2021, Southern Ocean)', 
+       col = 'region')
+
+```
+
+Monthly average Southern Ocean SST, for each biome 
+
+```{r plot_monthly_sst_per_year}
+
+# timeseries of monthly sst values for each year (separate years on the same plot)
+sst_month_SO %>%
+  # filter(year != 2014) %>%    # remove the year that is missing data 
+  ggplot(aes(x = month, 
+             y = sst_ave, 
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_wrap(~biome_name)+
+  labs(x = 'month',
+       y = 'SST (ºC)',
+       title = 'monthly mean Argo SST (Apr 2014-Dec 2021, Southern Ocean regions)',
+       col = 'year')
+
+```
+
+
+```{r yearly_average_sst, eval=FALSE}
+
+# calculate a yearly average SST (one SST value per year, for the whole biome)
+sst_year_SO <- sst_SO %>%
+  group_by(year, biome_name) %>%
+  summarise(sst_ave = mean(temp_adjusted, na.rm = TRUE))
+
+# plot a timeseries of the yearly average SST value (one value per year)
+sst_year_SO %>%
+  ggplot(aes(x = year, y = sst_ave, group = biome_name, col = biome_name))+
+  geom_line()+
+  geom_point()+
+  labs(x = 'year',
+       y = 'SST (ºC)',
+       title = 'yearly mean Argo SST (Apr 2014-Dec 2021, south of 30ºS)', 
+       col = 'region')
+
+```
