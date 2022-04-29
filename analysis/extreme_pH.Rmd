@@ -622,6 +622,34 @@ profile_extreme <- profile_extreme %>%
 
 ```
 
+# Location of Argo profiles
+
+```{r map_location_argo_profiles, fig.asp=1.5}
+
+OceanSODA_2x2_SO_extreme_grid %>% 
+  group_split(month) %>%
+  #head(1) %>%
+  map(
+    ~map +
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = ph_extreme))+
+      geom_point(data = profile_extreme,
+                 aes(x = lon, 
+                     y = lat),
+                 size = 0.2,
+                 pch = 1,
+                 alpha = 0.5)+
+      scale_fill_manual(values = HNL_colors_map)+
+      facet_wrap(~year, ncol = 2)+
+      lims(y = c(-85, -30))+
+      labs(title = paste('month:', unique(.x$month)),
+           fill = 'pH')
+  )
+
+```
+
 # Plot profiles
 
 Argo profiles plotted according to the surface OceanSODA pH

@@ -188,14 +188,52 @@ anomaly_field <- anomaly_field %>%
   filter(year >= 2013)
   
 profile_double_extreme <- inner_join(full_argo %>% 
-                                       select(-c(temp_adjusted_error, temp_adjusted_qc,
-                                                 ph_in_situ_total_adjusted_error, ph_in_situ_total_adjusted_qc,
-                                                 profile_temp_qc, profile_ph_in_situ_total_qc)),
+                                       select(-c(temp_adjusted_error, 
+                                                 temp_adjusted_qc,
+                                                 ph_in_situ_total_adjusted_error,
+                                                 ph_in_situ_total_adjusted_qc,
+                                                 profile_temp_qc,
+                                                 profile_ph_in_situ_total_qc)),
                                      anomaly_field)
 
 profile_double_extreme <- profile_double_extreme %>% 
   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
 ```
+
+```{r anomaly_field_maps_with_argo_locations}
+
+anomaly_field %>% 
+  filter(year >= 2013) %>% 
+  group_split(month) %>% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = double_extreme))+
+      facet_wrap(~year, ncol = 2)+
+      scale_fill_manual(values = c('warm_HpH' = 'brown',
+                                   'warm_LpH' = 'yellow',
+                                   'cold_HpH' = 'beige',
+                                   'cold_LpH' = 'cyan',
+                                   'cold' = 'blue',
+                                   'warm' = 'red',
+                                   'LpH' = 'orange',
+                                   'HpH' = 'green',
+                                   'N' = NA),
+                        na.value = NA)+
+      geom_point(data = profile_double_extreme, 
+                 aes(x = lon,
+                     y = lat),
+                 size = 0.2)+
+      lims(y = c(-85, -32))+
+      labs(title = paste0('month:', unique(.x$month)),
+           fill = 'double extreme')
+  )
+
+
+```
+
 
 # Plot Profiles 
 

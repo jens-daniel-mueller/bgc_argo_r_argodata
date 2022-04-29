@@ -1,0 +1,413 @@
+---
+title: "Broullon DIC/TA climatology"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+
+```{r set_options_global, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```
+
+# Task
+
+Explore the Broullón et al. (2020) DIC / TA climatology 
+
+```{r load_libraries}
+
+library(tidyverse)
+library(lubridate)
+library(stars)
+```
+
+```{r set_root_directories}
+
+path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_updata <- '/nfs/kryo/work/updata'
+path_broullon_clim <- paste0(path_updata, "/broullon_co2_monthly_climatology")
+
+```
+
+```{r}
+theme_set(theme_bw())
+```
+
+
+```{r load_data}
+
+map <- map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
+
+
+# WOA 18 basin mask
+
+basinmask <-
+  read_csv(
+    paste(path_emlr_utilities,
+          "basin_mask_WOA18.csv",
+          sep = ""),
+    col_types = cols("MLR_basins" = col_character())
+  )
+
+basinmask <- basinmask %>%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
+  select(-c(MLR_basins, basin))
+
+```
+
+# Load Data 
+
+## DIC 
+
+```{r load_DIC_data}
+
+DIC_clim <- tidync::hyper_tibble(paste0(path_broullon_clim, "/TCO2_NNGv2LDEO_climatology.nc"))
+
+nc_depth <- read_ncdf(paste0(path_broullon_clim, "/TCO2_NNGv2LDEO_climatology.nc"),
+                             var = c('depth'))
+nc_depth <- as_tibble(nc_depth)
+
+nc_depth <- nc_depth %>% 
+  mutate(depth_level = depth_level+0.5)
+
+DIC_clim <- full_join(DIC_clim, nc_depth)
+
+DIC_clim <- DIC_clim %>% 
+  rename(DIC = TCO2_NNGv2LDEO,
+         month = time)
+
+rm(nc_depth)
+# table(unique(DIC_clim$latitude))
+# table(unique(DIC_clim$longitude))
+# table(unique(DIC_clim$time))
+# table(unique(DIC_clim$depth))
+
+# text <- read_file(paste0(path_broullon_clim, "/README_global_monthly_2020.txt"))
+
+# Depth goes down to 5500 m, but below 1500 m DIC is an annual climatological value, rather than a monthly climatological value 
+
+```
+
+## pCO2 
+
+```{r load_pco2_clim}
+
+pco2_clim <- tidync::hyper_tibble(paste0(path_broullon_clim, "/pCO2_NNGv2LDEO_climatology.nc"))
+
+pco2_clim <- pco2_clim %>% 
+  mutate(depth_level = 1) %>% 
+  rename(pco2 = pCO2_NNGv2LDEO,
+         month = time)
+```
+
+## TA 
+
+```{r load_TA_clim}
+
+TA_clim <- tidync::hyper_tibble(paste0(path_broullon_clim, "/AT_NNGv2_climatology.nc"))
+
+nc_depth <- read_ncdf(paste0(path_broullon_clim, "/AT_NNGv2_climatology.nc"),
+                   var = c('depth'))
+nc_depth <- as_tibble(nc_depth)
+
+nc_depth <- nc_depth %>% 
+  mutate(depth_level = depth_level+0.5)
+
+TA_clim <- full_join(TA_clim, nc_depth)
+
+rm(nc_depth)
+
+# read_file(paste0(path_broullon_clim, "/README_Global_monthly_2019.txt"))
+
+TA_clim <- TA_clim %>% 
+  rename(TA = AT_NNGv2,
+         month = time)
+
+# Depth goes down to 5500 m, but below 1500 m TA is an annual climatological value, rather than a monthly climatological value 
+```
+
+# Join data 
+
+```{r join_full_climatology}
+
+broullon_clim <- full_join(DIC_clim, TA_clim)
+
+broullon_clim <- full_join(broullon_clim, pco2_clim)
+
+rm(DIC_clim, pco2_clim, TA_clim)
+
+```
+
+
+# Harmonise data 
+
+```{r harmonise_broullon_clim}
+
+# put longitude and latitude labels to the center of the grid (.5º)
+
+broullon_clim <- broullon_clim %>% 
+  rename(lon = longitude, 
+         lat = latitude) %>% 
+  mutate(lon = if_else(lon < 20, lon + 360, lon))
+
+broullon_clim_SO <- broullon_clim %>% 
+  filter(lat <= -30)
+```
+
+# Write data 
+
+```{r write_broullon_clim_to_file}
+
+broullon_clim %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/broullon_TA_DIC_clim.rds"))
+
+broullon_clim_SO %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/broullon_TA_DIC_clim_SO.rds"))
+
+```
+
+# Plot data  
+
+```{r join_biomes_basins}
+
+# join regional separations 
+
+broullon_clim_SO <- inner_join(broullon_clim_SO, nm_biomes)
+
+broullon_clim_SO <- inner_join(broullon_clim_SO, basinmask)
+```
+
+
+## DIC 
+
+```{r map_DIC_field, fig.asp=1.5}
+
+broullon_clim_SO %>% 
+  group_split(depth) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = DIC))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0('Broullon et al. (2020) DIC clim, depth: ', unique(.x$depth)))
+  )
+
+```
+
+```{r plot_DIC_profiles}
+
+broullon_clim_SO %>% 
+  # filter(depth <= 1500) %>% 
+  group_split(month) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = DIC,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = DIC,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0('Broullon et al. clim DIC, month: ', unique(.x$month)),
+           x = 'DIC')
+  )
+
+```
+
+## TA 
+
+```{r plot_TA_maps, fig.asp=1.5}
+
+broullon_clim_SO %>% 
+  group_split(depth) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = TA))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0('Broullon et al. (2020) TA clim, depth: ', unique(.x$depth)))
+  )
+
+```
+
+```{r plot_TA_clim_profiles}
+
+broullon_clim_SO %>% 
+  # filter(depth <= 1500) %>% 
+  group_split(month) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = TA,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = TA,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0('Broullon et al. clim TA, month: ', unique(.x$month)))
+  )
+
+```
+
+## pCO2 
+
+```{r map_pCO2_field}
+
+map+
+  geom_tile(data = broullon_clim_SO %>% filter(depth_level == 1),
+            aes(x = lon,
+                y = lat,
+                fill = pco2))+
+  scale_fill_viridis_c()+
+  lims(y = c(-85, -28))+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = 'Broullon et al. pCO2 clim')
+  
+
+```
+
+## Oxygen 
+
+```{r plot_oxygen_map, fig.asp=1.5, eval=FALSE}
+
+broullon_clim_SO %>% 
+  group_split(depth) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = oxygen))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0('Broullon et al. (2020) oxygen clim, depth: ', unique(.x$depth)))
+  )
+
+```
+
+```{r plot_clim_oxygen_profiles, eval=FALSE}
+
+broullon_clim_SO %>% 
+  # filter(depth <= 1500) %>% 
+  group_split(month) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = oxygen,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = oxygen,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0('Broullon et al. clim oxygen, month: ', unique(.x$month)))
+  )
+
+```
+
+## Nitrate
+
+```{r plot_clim_nitrate_map, fig.asp=1.5, eval=FALSE}
+
+broullon_clim_SO %>% 
+  group_split(depth) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = nitrate))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0('Broullon et al. (2020) nitrate clim, depth: ', unique(.x$depth)))
+  )
+
+```
+
+```{r plot_clim_nitrate_profiles, eval=FALSE}
+
+broullon_clim_SO %>% 
+  # filter(depth <= 1500) %>% 
+  group_split(month) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = nitrate,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = nitrate,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0('Broullon et al. clim nitrate, month: ', unique(.x$month)))
+  )
+
+```
+
+## Phosphate
+
+```{r plot_phosphate_clim_map, fig.asp=1.5, eval=FALSE}
+
+broullon_clim_SO %>% 
+  group_split(depth) %>% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = phosphate))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0('Broullon et al. (2020) phosphate clim, depth: ', unique(.x$depth)))
+  )
+
+```
+
+```{r plot_clim_phosphate_profiles, eval=FALSE}
+
+broullon_clim_SO %>% 
+  # filter(depth <= 1500) %>% 
+  group_split(month) %>% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = phosphate,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = phosphate,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0('Broullon et al. clim phosphate, month: ', unique(.x$month)))
+  )
+
+```
+
+
