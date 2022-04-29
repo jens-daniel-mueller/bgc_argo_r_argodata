@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+
+
+<title>Broullon DIC/TA climatology</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">bgc_argo_r_argodata</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Load data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="loading_data.html">BGC-Argo data</a>
+    </li>
+    <li>
+      <a href="argo_clim_pH_ucsd.html">Argo pH Climatology</a>
+    </li>
+    <li>
+      <a href="argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA data</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biome data</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="ph_data.html">BGC-Argo pH</a>
+    </li>
+    <li>
+      <a href="oxygen_data.html">BGC-Argo Oxygen</a>
+    </li>
+    <li>
+      <a href="temp_data.html">BGC-Argo SST</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo.html">OceanSODA-Argo pH</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_temp.html">OceanSODA-Argo SST</a>
+    </li>
+    <li>
+      <a href="extreme_pH.html">Extreme pH Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp.html">Extreme Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="ph_temp_anomaly_fields.html">Double pH/Temp Extremes</a>
+    </li>
+    <li>
+      <a href="variability_temp.html">Argo Temperature Variability</a>
+    </li>
+    <li>
+      <a href="variability_pH.html">Argo pH variability</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata">
+    <span class="fa fa-github"></span>
+     
+    Code
+  </a>
+</li>
+<li>
+  <a href="https://jens-daniel-mueller.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Jens home
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Broullon DIC/TA climatology</h1>
+<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
+<h4 class="date">29 April, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-04-29
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8b582f024c78f366b5823ef4892cbdc35b01f0c8targetblank8b582f0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8b582f024c78f366b5823ef4892cbdc35b01f0c8" target="_blank">8b582f0</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8b582f024c78f366b5823ef4892cbdc35b01f0c8targetblank8b582f0a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8b582f024c78f366b5823ef4892cbdc35b01f0c8" target="_blank">8b582f0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/
+
+Untracked files:
+    Untracked:  code/OceanSODA_argo_extremes.R
+    Untracked:  code/creating_dataframe.R
+    Untracked:  code/creating_map.R
+    Untracked:  code/merging_oceanSODA_Argo.R
+    Untracked:  code/pH_data_timeseries.R
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/load_OceanSODA_biomes.Rmd
+    Modified:   code/Workflowr_project_managment.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/broullon_DIC_TA_clim.Rmd</code>) and HTML (<code>docs/broullon_DIC_TA_clim.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8b582f024c78f366b5823ef4892cbdc35b01f0c8/analysis/broullon_DIC_TA_clim.Rmd" target="_blank">8b582f0</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-04-29
+</td>
+<td>
+added broullon climatology page, argo locations
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<p>Explore the Broullón et al. (2020) DIC / TA climatology</p>
+<pre class="r"><code>library(tidyverse)
+library(lubridate)
+library(stars)</code></pre>
+<pre class="r"><code>path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
+path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
+path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;
+path_updata &lt;- &#39;/nfs/kryo/work/updata&#39;
+path_broullon_clim &lt;- paste0(path_updata, &quot;/broullon_co2_monthly_climatology&quot;)</code></pre>
+<pre class="r"><code>theme_set(theme_bw())</code></pre>
+<pre class="r"><code>map &lt;- map &lt;-
+  read_rds(paste(path_emlr_utilities,
+                 &quot;map_landmask_WOA18.rds&quot;,
+                 sep = &quot;&quot;))
+
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))
+
+
+# WOA 18 basin mask
+
+basinmask &lt;-
+  read_csv(
+    paste(path_emlr_utilities,
+          &quot;basin_mask_WOA18.csv&quot;,
+          sep = &quot;&quot;),
+    col_types = cols(&quot;MLR_basins&quot; = col_character())
+  )
+
+basinmask &lt;- basinmask %&gt;%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
+  select(-c(MLR_basins, basin))</code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load Data</h1>
+<div id="dic" class="section level2">
+<h2>DIC</h2>
+<pre class="r"><code>DIC_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/TCO2_NNGv2LDEO_climatology.nc&quot;))
+
+nc_depth &lt;- read_ncdf(paste0(path_broullon_clim, &quot;/TCO2_NNGv2LDEO_climatology.nc&quot;),
+                             var = c(&#39;depth&#39;))
+nc_depth &lt;- as_tibble(nc_depth)
+
+nc_depth &lt;- nc_depth %&gt;% 
+  mutate(depth_level = depth_level+0.5)
+
+DIC_clim &lt;- full_join(DIC_clim, nc_depth)
+
+DIC_clim &lt;- DIC_clim %&gt;% 
+  rename(DIC = TCO2_NNGv2LDEO,
+         month = time)
+
+rm(nc_depth)
+# table(unique(DIC_clim$latitude))
+# table(unique(DIC_clim$longitude))
+# table(unique(DIC_clim$time))
+# table(unique(DIC_clim$depth))
+
+# text &lt;- read_file(paste0(path_broullon_clim, &quot;/README_global_monthly_2020.txt&quot;))
+
+# Depth goes down to 5500 m, but below 1500 m DIC is an annual climatological value, rather than a monthly climatological value </code></pre>
+</div>
+<div id="pco2" class="section level2">
+<h2>pCO2</h2>
+<pre class="r"><code>pco2_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/pCO2_NNGv2LDEO_climatology.nc&quot;))
+
+pco2_clim &lt;- pco2_clim %&gt;% 
+  mutate(depth_level = 1) %&gt;% 
+  rename(pco2 = pCO2_NNGv2LDEO,
+         month = time)</code></pre>
+</div>
+<div id="ta" class="section level2">
+<h2>TA</h2>
+<pre class="r"><code>TA_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/AT_NNGv2_climatology.nc&quot;))
+
+nc_depth &lt;- read_ncdf(paste0(path_broullon_clim, &quot;/AT_NNGv2_climatology.nc&quot;),
+                   var = c(&#39;depth&#39;))
+nc_depth &lt;- as_tibble(nc_depth)
+
+nc_depth &lt;- nc_depth %&gt;% 
+  mutate(depth_level = depth_level+0.5)
+
+TA_clim &lt;- full_join(TA_clim, nc_depth)
+
+rm(nc_depth)
+
+# read_file(paste0(path_broullon_clim, &quot;/README_Global_monthly_2019.txt&quot;))
+
+TA_clim &lt;- TA_clim %&gt;% 
+  rename(TA = AT_NNGv2,
+         month = time)
+
+# Depth goes down to 5500 m, but below 1500 m TA is an annual climatological value, rather than a monthly climatological value </code></pre>
+</div>
+</div>
+<div id="join-data" class="section level1">
+<h1>Join data</h1>
+<pre class="r"><code>broullon_clim &lt;- full_join(DIC_clim, TA_clim)
+
+broullon_clim &lt;- full_join(broullon_clim, pco2_clim)
+
+rm(DIC_clim, pco2_clim, TA_clim)</code></pre>
+</div>
+<div id="harmonise-data" class="section level1">
+<h1>Harmonise data</h1>
+<pre class="r"><code># put longitude and latitude labels to the center of the grid (.5º)
+
+broullon_clim &lt;- broullon_clim %&gt;% 
+  rename(lon = longitude, 
+         lat = latitude) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon))
+
+broullon_clim_SO &lt;- broullon_clim %&gt;% 
+  filter(lat &lt;= -30)</code></pre>
+</div>
+<div id="write-data" class="section level1">
+<h1>Write data</h1>
+<pre class="r"><code>broullon_clim %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim.rds&quot;))
+
+broullon_clim_SO %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim_SO.rds&quot;))</code></pre>
+</div>
+<div id="plot-data" class="section level1">
+<h1>Plot data</h1>
+<pre class="r"><code># join regional separations 
+
+broullon_clim_SO &lt;- inner_join(broullon_clim_SO, nm_biomes)
+
+broullon_clim_SO &lt;- inner_join(broullon_clim_SO, basinmask)</code></pre>
+<div id="dic-1" class="section level2">
+<h2>DIC</h2>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = DIC))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) DIC clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[37]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[38]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[39]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[40]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[41]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[42]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[43]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[44]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[45]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[46]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[47]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[48]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[49]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[50]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-50.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[51]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-51.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[52]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-52.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[53]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-53.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[54]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-54.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[55]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-55.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[56]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-56.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[57]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-57.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[58]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-58.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[59]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-59.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[60]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-60.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[61]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-61.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[62]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-62.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[63]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-63.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[64]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-64.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[65]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-65.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[66]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-66.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[67]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-67.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[68]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-68.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[69]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-69.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[70]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-70.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[71]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-71.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[72]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-72.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[73]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-73.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[74]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-74.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[75]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-75.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[76]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-76.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[77]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-77.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[78]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-78.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[79]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-79.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[80]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-80.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[81]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-81.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[82]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-82.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[83]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-83.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[84]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-84.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[85]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-85.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[86]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-86.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[87]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-87.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[88]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-88.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[89]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-89.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[90]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-90.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[91]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-91.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[92]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-92.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[93]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-93.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[94]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-94.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[95]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-95.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[96]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-96.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[97]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-97.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[98]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-98.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[99]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-99.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[100]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-100.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[101]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-101.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[102]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-102.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = DIC,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = DIC,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim DIC, month: &#39;, unique(.x$month)),
+           x = &#39;DIC&#39;)
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_DIC_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="ta-1" class="section level2">
+<h2>TA</h2>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = TA))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) TA clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[37]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[38]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[39]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[40]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[41]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[42]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[43]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[44]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[45]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[46]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[47]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[48]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[49]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[50]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-50.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[51]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-51.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[52]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-52.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[53]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-53.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[54]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-54.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[55]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-55.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[56]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-56.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[57]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-57.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[58]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-58.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[59]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-59.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[60]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-60.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[61]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-61.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[62]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-62.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[63]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-63.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[64]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-64.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[65]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-65.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[66]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-66.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[67]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-67.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[68]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-68.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[69]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-69.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[70]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-70.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[71]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-71.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[72]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-72.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[73]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-73.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[74]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-74.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[75]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-75.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[76]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-76.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[77]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-77.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[78]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-78.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[79]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-79.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[80]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-80.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[81]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-81.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[82]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-82.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[83]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-83.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[84]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-84.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[85]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-85.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[86]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-86.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[87]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-87.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[88]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-88.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[89]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-89.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[90]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-90.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[91]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-91.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[92]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-92.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[93]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-93.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[94]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-94.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[95]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-95.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[96]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-96.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[97]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-97.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[98]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-98.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[99]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-99.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[100]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-100.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[101]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-101.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[102]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-102.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = TA,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = TA,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim TA, month: &#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_clim_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="pco2-1" class="section level2">
+<h2>pCO2</h2>
+<pre class="r"><code>map+
+  geom_tile(data = broullon_clim_SO %&gt;% filter(depth_level == 1),
+            aes(x = lon,
+                y = lat,
+                fill = pco2))+
+  scale_fill_viridis_c()+
+  lims(y = c(-85, -28))+
+  facet_wrap(~month, ncol = 2)+
+  labs(title = &#39;Broullon et al. pCO2 clim&#39;)</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_pCO2_field-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="oxygen" class="section level2">
+<h2>Oxygen</h2>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = oxygen))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) oxygen clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = oxygen,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = oxygen,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim oxygen, month: &#39;, unique(.x$month)))
+  )</code></pre>
+</div>
+<div id="nitrate" class="section level2">
+<h2>Nitrate</h2>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = nitrate))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) nitrate clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = nitrate,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = nitrate,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim nitrate, month: &#39;, unique(.x$month)))
+  )</code></pre>
+</div>
+<div id="phosphate" class="section level2">
+<h2>Phosphate</h2>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = phosphate))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) phosphate clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre class="r"><code>broullon_clim_SO %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = phosphate,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = phosphate,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim phosphate, month: &#39;, unique(.x$month)))
+  )</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.3
+
+Matrix products: default
+BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] stars_0.5-5     sf_1.0-5        abind_1.4-5     lubridate_1.8.0
+ [5] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7     purrr_0.3.4    
+ [9] readr_2.1.1     tidyr_1.1.4     tibble_3.1.6    ggplot2_3.3.5  
+[13] tidyverse_1.3.1 workflowr_1.7.0
+
+loaded via a namespace (and not attached):
+ [1] fs_1.5.2           bit64_4.0.5        httr_1.4.2         rprojroot_2.0.2   
+ [5] tools_4.1.2        backports_1.4.1    bslib_0.3.1        utf8_1.2.2        
+ [9] R6_2.5.1           KernSmooth_2.23-20 DBI_1.1.2          colorspace_2.0-2  
+[13] withr_2.4.3        tidyselect_1.1.1   processx_3.5.2     bit_4.0.4         
+[17] compiler_4.1.2     git2r_0.29.0       cli_3.1.1          rvest_1.0.2       
+[21] RNetCDF_2.5-2      xml2_1.3.3         labeling_0.4.2     sass_0.4.0        
+[25] scales_1.1.1       classInt_0.4-3     callr_3.7.0        proxy_0.4-26      
+[29] digest_0.6.29      rmarkdown_2.11     pkgconfig_2.0.3    htmltools_0.5.2   
+[33] highr_0.9          dbplyr_2.1.1       fastmap_1.1.0      rlang_1.0.2       
+[37] tidync_0.2.4       readxl_1.3.1       rstudioapi_0.13    farver_2.1.0      
+[41] jquerylib_0.1.4    generics_0.1.1     jsonlite_1.7.3     vroom_1.5.7       
+[45] magrittr_2.0.1     ncmeta_0.3.0       Rcpp_1.0.8         munsell_0.5.0     
+[49] fansi_1.0.2        lifecycle_1.0.1    stringi_1.7.6      whisker_0.4       
+[53] yaml_2.2.1         grid_4.1.2         parallel_4.1.2     promises_1.2.0.1  
+[57] crayon_1.4.2       haven_2.4.3        hms_1.1.1          knitr_1.37        
+[61] ps_1.6.0           pillar_1.6.4       reprex_2.0.1       glue_1.6.0        
+[65] evaluate_0.14      getPass_0.2-2      modelr_0.1.8       vctrs_0.3.8       
+[69] tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0   gtable_0.3.0      
+[73] assertthat_0.2.1   xfun_0.29          lwgeom_0.2-8       broom_0.7.11      
+[77] e1071_1.7-9        later_1.3.0        class_7.3-20       ncdf4_1.19        
+[81] viridisLite_0.4.0  units_0.7-2        ellipsis_0.3.2    </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
