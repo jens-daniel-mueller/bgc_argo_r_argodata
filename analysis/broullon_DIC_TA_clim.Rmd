@@ -73,7 +73,8 @@ basinmask <- basinmask %>%
 DIC_clim <- tidync::hyper_tibble(paste0(path_broullon_clim, "/TCO2_NNGv2LDEO_climatology.nc"))
 
 nc_depth <- read_ncdf(paste0(path_broullon_clim, "/TCO2_NNGv2LDEO_climatology.nc"),
-                             var = c('depth'))
+                             var = c("depth"))
+
 nc_depth <- as_tibble(nc_depth)
 
 nc_depth <- nc_depth %>% 
@@ -99,7 +100,7 @@ rm(nc_depth)
 
 ## pCO2 
 
-```{r load_pco2_clim}
+```{r load_pco2_clim, eval=FALSE}
 
 pco2_clim <- tidync::hyper_tibble(paste0(path_broullon_clim, "/pCO2_NNGv2LDEO_climatology.nc"))
 
@@ -141,9 +142,9 @@ TA_clim <- TA_clim %>%
 
 broullon_clim <- full_join(DIC_clim, TA_clim)
 
-broullon_clim <- full_join(broullon_clim, pco2_clim)
+# broullon_clim <- full_join(broullon_clim, pco2_clim)
 
-rm(DIC_clim, pco2_clim, TA_clim)
+rm(DIC_clim, TA_clim)
 
 ```
 
@@ -165,7 +166,7 @@ broullon_clim_SO <- broullon_clim %>%
 
 # Write data 
 
-```{r write_broullon_clim_to_file}
+```{r write_broullon_clim_to_file, eval=FALSE}
 
 broullon_clim %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/broullon_TA_DIC_clim.rds"))
@@ -193,6 +194,7 @@ broullon_clim_SO <- inner_join(broullon_clim_SO, basinmask)
 
 broullon_clim_SO %>% 
   group_split(depth) %>% 
+  head(3) %>% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -212,6 +214,7 @@ broullon_clim_SO %>%
 broullon_clim_SO %>% 
   # filter(depth <= 1500) %>% 
   group_split(month) %>% 
+  head(2) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = DIC,
@@ -235,6 +238,7 @@ broullon_clim_SO %>%
 
 broullon_clim_SO %>% 
   group_split(depth) %>% 
+  head(3) %>% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -254,6 +258,7 @@ broullon_clim_SO %>%
 broullon_clim_SO %>% 
   # filter(depth <= 1500) %>% 
   group_split(month) %>% 
+  head(2) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = TA,
@@ -272,7 +277,7 @@ broullon_clim_SO %>%
 
 ## pCO2 
 
-```{r map_pCO2_field}
+```{r map_pCO2_field, eval=FALSE}
 
 map+
   geom_tile(data = broullon_clim_SO %>% filter(depth_level == 1),
@@ -293,6 +298,7 @@ map+
 
 broullon_clim_SO %>% 
   group_split(depth) %>% 
+  head(2) %>% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -312,6 +318,7 @@ broullon_clim_SO %>%
 broullon_clim_SO %>% 
   # filter(depth <= 1500) %>% 
   group_split(month) %>% 
+  head(2) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = oxygen,
@@ -334,6 +341,7 @@ broullon_clim_SO %>%
 
 broullon_clim_SO %>% 
   group_split(depth) %>% 
+  head(2) %>% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -353,6 +361,7 @@ broullon_clim_SO %>%
 broullon_clim_SO %>% 
   # filter(depth <= 1500) %>% 
   group_split(month) %>% 
+  head(2) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = nitrate,
@@ -375,6 +384,7 @@ broullon_clim_SO %>%
 
 broullon_clim_SO %>% 
   group_split(depth) %>% 
+  head(2) %>% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -394,6 +404,7 @@ broullon_clim_SO %>%
 broullon_clim_SO %>% 
   # filter(depth <= 1500) %>% 
   group_split(month) %>% 
+  head(2) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = phosphate,
