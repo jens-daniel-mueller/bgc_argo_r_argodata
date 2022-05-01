@@ -24,6 +24,7 @@ Explore double extremes in the temp and pH anomaly fields
 
 library(tidyverse)
 library(lubridate)
+library(ggnewscale)
 
 ```
 
@@ -133,23 +134,89 @@ anomaly_field <- full_join(pH_extreme %>%
 
 # chisq.test(anomaly_field$ph_extreme, anomaly_field$temp_extreme, correct = FALSE)
 
-anomaly_field <- anomaly_field %>% 
-  mutate(double_extreme = case_when(temp_extreme == 'H' & ph_extreme == 'H' ~ 'warm_HpH',
-                                    temp_extreme == 'L' & ph_extreme == 'H' ~ 'cold_HpH',
-                                    temp_extreme == 'H' & ph_extreme == 'L' ~ 'warm_LpH',
-                                    temp_extreme == 'L' & ph_extreme == 'L' ~ 'cold_LpH',
-                                    temp_extreme == 'H' & ph_extreme == 'N' ~ 'warm',
-                                    temp_extreme == 'L' & ph_extreme == 'N' ~ 'cold',
-                                    temp_extreme == 'N' & ph_extreme == 'H' ~ 'HpH',
-                                    temp_extreme == 'N' & ph_extreme == 'L' ~ 'LpH',
-                                    TRUE ~ 'N')) %>% 
-  mutate(double_extreme = fct_relevel(double_extreme, 'warm_HpH', 'cold_HpH', 'warm_LpH', 'cold_LpH', 'warm', 'cold', 'HpH', 'LpH', 'N'))
+anomaly_field <- anomaly_field %>%
+  mutate(
+    double_extreme = case_when(
+      temp_extreme == 'H' & ph_extreme == 'H' ~ 'warm_HpH',
+      temp_extreme == 'L' &
+        ph_extreme == 'H' ~ 'cold_HpH',
+      temp_extreme == 'H' &
+        ph_extreme == 'L' ~ 'warm_LpH',
+      temp_extreme == 'L' &
+        ph_extreme == 'L' ~ 'cold_LpH',
+      temp_extreme == 'H' &
+        ph_extreme == 'N' ~ 'warm',
+      temp_extreme == 'L' &
+        ph_extreme == 'N' ~ 'cold',
+      temp_extreme == 'N' &
+        ph_extreme == 'H' ~ 'HpH',
+      temp_extreme == 'N' &
+        ph_extreme == 'L' ~ 'LpH',
+      TRUE ~ 'N'
+    )
+  ) %>%
+  mutate(
+    double_extreme = fct_relevel(
+      double_extreme,
+      'warm_HpH',
+      'cold_HpH',
+      'warm_LpH',
+      'cold_LpH',
+      'warm',
+      'cold',
+      'HpH',
+      'LpH',
+      'N'
+    )
+  )
 
 ```
 
-# Double anomaly maps 
+# Compound extreme maps 
 
-```{r}
+```{r compound_extreme_maps_transparent_color_newscale}
+
+HNL_colors_map_temp <- c('H' = "#CD534CFF",
+                    'N' = 'transparent',
+                    'L' = "#0073C2FF")
+
+HNL_colors_map_ph <- c('H' = "#868686FF",
+                    'N' = 'transparent',
+                    'L' = "#EFC000FF")
+
+
+anomaly_field %>%
+  filter(year >= 2013,
+         double_extreme != "N") %>%
+  group_split(month) %>%
+  # head(1) %>%
+  map(
+    ~ map +
+      geom_tile(data = .x,
+                aes(
+                  x = lon_raw,
+                  y = lat_raw,
+                  fill = ph_extreme
+                )) +
+      scale_fill_manual(values = HNL_colors_map_ph) +
+      new_scale_fill() +
+      geom_tile(data = .x,
+                aes(
+                  x = lon_raw,
+                  y = lat_raw,
+                  fill = temp_extreme
+                ), alpha = 0.5) +
+      scale_fill_manual(values = HNL_colors_map_temp) +
+      facet_wrap(~ year, ncol = 2) +
+      lims(y = c(-85, -32)) +
+      labs(title = paste0('month:', unique(.x$month)))
+  )
+
+rm(HNL_colors_map_temp, HNL_colors_map_ph)
+
+```
+
+```{r compound_extreme_maps}
 
 anomaly_field %>% 
   filter(year >= 2013) %>% 

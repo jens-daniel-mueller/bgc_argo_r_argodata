@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "code review: calculate pH")
+wflow_publish(all = TRUE, message = "code review: alternative double extreme color scale")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
