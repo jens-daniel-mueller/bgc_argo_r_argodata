@@ -441,7 +441,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Broullon DIC/TA climatology</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">30 April, 2022</h4>
+<h4 class="date">01 May, 2022</h4>
 
 </div>
 
@@ -466,7 +466,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-04-30
+<strong>Last updated:</strong> 2022-05-01
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -557,16 +557,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9dec350b59b9a8d2cf0ff0de80a33b097c73fe40targetblank9dec350a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9dec350b59b9a8d2cf0ff0de80a33b097c73fe40" target="_blank">9dec350</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebcfe11d536531307369eecb38798ce8eca6581a5targetblankbcfe11da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/bcfe11d536531307369eecb38798ce8eca6581a5" target="_blank">bcfe11d</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9dec350b59b9a8d2cf0ff0de80a33b097c73fe40targetblank9dec350a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebcfe11d536531307369eecb38798ce8eca6581a5targetblankbcfe11da" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9dec350b59b9a8d2cf0ff0de80a33b097c73fe40" target="_blank">9dec350</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/bcfe11d536531307369eecb38798ce8eca6581a5" target="_blank">bcfe11d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -614,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bcfe11d536531307369eecb38798ce8eca6581a5/analysis/broullon_DIC_TA_clim.Rmd" target="_blank">bcfe11d</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+<td>
+code review: calculate pH
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/ed99f51ba00ea978a61d4b908a2efb43cf27a12a/docs/broullon_DIC_TA_clim.html" target="_blank">ed99f51</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-04-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -694,12 +728,16 @@ added broullon climatology page, argo locations
 <p>Explore the Broullón et al. (2020) DIC / TA climatology</p>
 <pre class="r"><code>library(tidyverse)
 library(lubridate)
-library(stars)</code></pre>
+library(stars)
+library(seacarb)
+library(gsw)</code></pre>
 <pre class="r"><code>path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
 path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;
 path_updata &lt;- &#39;/nfs/kryo/work/updata&#39;
-path_broullon_clim &lt;- paste0(path_updata, &quot;/broullon_co2_monthly_climatology&quot;)</code></pre>
+path_broullon_clim &lt;- paste0(path_updata, &quot;/broullon_co2_monthly_climatology&quot;)
+path_woa13_temp &lt;- paste0(path_updata, &quot;/woa2013/temperature/decav/1.00/&quot;)
+path_woa13_sal &lt;- paste0(path_updata, &quot;/woa2013/salinity/decav/1.00/&quot;)</code></pre>
 <pre class="r"><code>theme_set(theme_bw())</code></pre>
 <pre class="r"><code>map &lt;- map &lt;-
   read_rds(paste(path_emlr_utilities,
@@ -723,8 +761,8 @@ basinmask &lt;- basinmask %&gt;%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
   select(-c(MLR_basins, basin))</code></pre>
 </div>
-<div id="load-data" class="section level1">
-<h1>Load Data</h1>
+<div id="load-broullon-data" class="section level1">
+<h1>Load Broullon data</h1>
 <div id="dic" class="section level2">
 <h2>DIC</h2>
 <pre class="r"><code>DIC_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/TCO2_NNGv2LDEO_climatology.nc&quot;))
@@ -753,15 +791,6 @@ rm(nc_depth)
 
 # Depth goes down to 5500 m, but below 1500 m DIC is an annual climatological value, rather than a monthly climatological value </code></pre>
 </div>
-<div id="pco2" class="section level2">
-<h2>pCO2</h2>
-<pre class="r"><code>pco2_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/pCO2_NNGv2LDEO_climatology.nc&quot;))
-
-pco2_clim &lt;- pco2_clim %&gt;% 
-  mutate(depth_level = 1) %&gt;% 
-  rename(pco2 = pCO2_NNGv2LDEO,
-         month = time)</code></pre>
-</div>
 <div id="ta" class="section level2">
 <h2>TA</h2>
 <pre class="r"><code>TA_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/AT_NNGv2_climatology.nc&quot;))
@@ -784,15 +813,88 @@ TA_clim &lt;- TA_clim %&gt;%
          month = time)
 
 # Depth goes down to 5500 m, but below 1500 m TA is an annual climatological value, rather than a monthly climatological value </code></pre>
-</div>
-</div>
-<div id="join-data" class="section level1">
-<h1>Join data</h1>
-<pre class="r"><code>broullon_clim &lt;- full_join(DIC_clim, TA_clim)
+<pre class="r"><code>pco2_clim &lt;- tidync::hyper_tibble(paste0(path_broullon_clim, &quot;/pCO2_NNGv2LDEO_climatology.nc&quot;))
 
+pco2_clim &lt;- pco2_clim %&gt;% 
+  mutate(depth_level = 1) %&gt;% 
+  rename(pco2 = pCO2_NNGv2LDEO,
+         month = time)</code></pre>
+</div>
+<div id="join-data" class="section level2">
+<h2>Join data</h2>
+<pre class="r"><code>broullon_clim &lt;- full_join(DIC_clim, TA_clim)
 # broullon_clim &lt;- full_join(broullon_clim, pco2_clim)
 
 rm(DIC_clim, TA_clim)</code></pre>
+</div>
+</div>
+<div id="load-woa13-data" class="section level1">
+<h1>Load WOA13 data</h1>
+<pre class="r"><code>months &lt;- sprintf(&quot;%02d&quot;, seq(1,12,1))
+
+for (i_month in months) {
+  # i_month &lt;- months[1]
+
+  
+  # read temperature climatology
+  woa13_temp &lt;-
+    read_ncdf(
+      paste0(path_woa13_temp, &quot;woa13_decav_t&quot;, i_month, &quot;_01.nc&quot;),
+      var = &quot;t_an&quot;,
+      make_units = FALSE,
+      make_time = FALSE
+    )
+  
+  
+  woa13_temp &lt;- woa13_temp %&gt;%
+    as_tibble()
+  
+  woa13_temp &lt;- woa13_temp %&gt;%
+    mutate(month = i_month) %&gt;%
+    select(-time) %&gt;%
+    rename(temp = t_an) %&gt;%
+    drop_na()
+  
+  
+  # read salinity climatology
+  woa13_sal &lt;-
+    read_ncdf(
+      paste0(path_woa13_sal, &quot;woa13_decav_s&quot;, i_month, &quot;_01.nc&quot;),
+      var = &quot;s_an&quot;,
+      make_units = FALSE,
+      make_time = FALSE
+    )
+  
+  woa13_sal &lt;- woa13_sal %&gt;%
+    as_tibble()
+  
+  woa13_sal &lt;- woa13_sal %&gt;%
+    mutate(month = i_month) %&gt;%
+    select(-time) %&gt;%
+    rename(sal = s_an) %&gt;%
+    drop_na()
+  
+  
+  # join temperature and salinity climatology
+  woa13_temp &lt;- full_join(woa13_temp,
+                           woa13_sal)
+  
+  # bind months into joined data frame
+  if (exists(&quot;woa13&quot;)) {
+    woa13 &lt;- bind_rows(woa13, woa13_temp)
+  }
+  
+  if (!exists(&quot;woa13&quot;)) {
+    woa13 &lt;- woa13_temp
+  }
+  
+}
+
+
+woa13 &lt;- woa13 %&gt;% 
+  mutate(month = as.numeric(month))
+
+rm(woa13_temp, woa13_sal, months, i_month)</code></pre>
 </div>
 <div id="harmonise-data" class="section level1">
 <h1>Harmonise data</h1>
@@ -801,31 +903,191 @@ rm(DIC_clim, TA_clim)</code></pre>
 broullon_clim &lt;- broullon_clim %&gt;% 
   rename(lon = longitude, 
          lat = latitude) %&gt;% 
+  select(-depth_level) %&gt;% 
   mutate(lon = if_else(lon &lt; 20, lon + 360, lon))
 
-broullon_clim_SO &lt;- broullon_clim %&gt;% 
-  filter(lat &lt;= -30)</code></pre>
-</div>
-<div id="write-data" class="section level1">
-<h1>Write data</h1>
-<pre class="r"><code>broullon_clim %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim.rds&quot;))
+broullon_clim &lt;- broullon_clim %&gt;% 
+  drop_na()</code></pre>
+<pre class="r"><code># put longitude and latitude labels to the center of the grid (.5º)
 
-broullon_clim_SO %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim_SO.rds&quot;))</code></pre>
+woa13 &lt;- woa13 %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon))</code></pre>
 </div>
-<div id="plot-data" class="section level1">
-<h1>Plot data</h1>
-<pre class="r"><code># join regional separations 
+<div id="join-broullonwoa13" class="section level1">
+<h1>Join Broullon/WOA13</h1>
+<pre class="r"><code>broullon_clim &lt;- full_join(broullon_clim,
+                                   woa13)
+
+# remove grid cells with only one sal value to allow for interpolation
+broullon_clim &lt;- broullon_clim %&gt;%
+  group_by(month, lat, lon) %&gt;%
+  mutate(n = sum(!is.na(sal))) %&gt;%
+  ungroup()
+
+broullon_clim &lt;- broullon_clim %&gt;%
+  filter(n &gt; 1) %&gt;%
+  select(-n)
+
+# interpolate sal/temp to broullon depth levels
+broullon_clim &lt;- broullon_clim %&gt;%
+  group_by(lon, lat, month) %&gt;%
+  arrange(depth) %&gt;%
+  mutate(sal := approxfun(depth, sal, rule = 2)(depth),
+         temp := approxfun(depth, temp, rule = 2)(depth)) %&gt;%
+  ungroup()
+
+# remove sal/temp data on original woa13 depth levels
+broullon_clim &lt;- broullon_clim %&gt;% 
+  filter(!is.na(DIC))</code></pre>
+</div>
+<div id="apply-basin-mask" class="section level1">
+<h1>Apply basin mask</h1>
+<pre class="r"><code># subset Southerh Ocean data
+broullon_clim_SO &lt;- broullon_clim %&gt;% 
+  filter(lat &lt;= -30,
+         depth &lt;= 2000)
+
+# join regional separations 
 
 broullon_clim_SO &lt;- inner_join(broullon_clim_SO, nm_biomes)
 
-broullon_clim_SO &lt;- inner_join(broullon_clim_SO, basinmask)</code></pre>
+broullon_clim_SO &lt;- inner_join(broullon_clim_SO, basinmask)
+
+broullon_clim &lt;- inner_join(broullon_clim, basinmask)</code></pre>
+</div>
+<div id="write-all-data" class="section level1">
+<h1>Write all data</h1>
+<pre class="r"><code>broullon_clim %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim_all.rds&quot;))</code></pre>
+</div>
+<div id="calculate-ph" class="section level1">
+<h1>Calculate pH</h1>
+<pre class="r"><code>rm(broullon_clim, woa13)
+
+# calculate pressure from depth
+broullon_clim_SO &lt;- broullon_clim_SO %&gt;% 
+  mutate(pressure = gsw_p_from_z(z = -depth,
+                                 latitude = lat))
+
+# broullon_clim_SO &lt;- broullon_clim_SO %&gt;% 
+#   arrange(lon, lat)
+# 
+# # calculate pHT from DIC, TA and ancillary parameters
+# for (i_lon in unique(broullon_clim_SO$lon)) {
+#   print(&quot;***&quot;)
+#   print(i_lon)
+#   
+#   broullon_clim_SO_lon &lt;- broullon_clim_SO %&gt;%
+#     filter(lon == i_lon)
+#   
+#   for (i_lat in unique(broullon_clim_SO_lon$lat)) {
+#     print(i_lat)
+#     
+#     broullon_clim_SO_lon_lat &lt;- 
+#       broullon_clim_SO_lon %&gt;%
+#       filter(lat == i_lat) %&gt;%
+#       mutate(
+#         pH = carb(
+#           flag = 15,
+#           var1 = TA * 1e-6,
+#           var2 = DIC * 1e-6,
+#           S = sal,
+#           T = temp,
+#           P = pressure / 10,
+#           Pt = phosphate * 1e-6,
+#           Sit = silicate * 1e-6,
+#           k1k2 = &quot;l&quot;
+#         )[,6]
+#       )
+#     
+#       # bind months into joined data frame
+#   if (exists(&quot;broullon_clim_SO_pH&quot;)) {
+#     broullon_clim_SO_pH &lt;- bind_rows(broullon_clim_SO_pH, broullon_clim_SO_lon_lat)
+#   }
+#   
+#   if (!exists(&quot;broullon_clim_SO_pH&quot;)) {
+#     broullon_clim_SO_pH &lt;- broullon_clim_SO_lon_lat
+#   }
+#     
+#   }
+# }
+
+broullon_clim_SO_pH &lt;-
+  broullon_clim_SO %&gt;%
+  mutate(
+    pH = carb(
+      flag = 15,
+      var1 = TA * 1e-6,
+      var2 = DIC * 1e-6,
+      S = sal,
+      T = temp,
+      P = pressure / 10,
+      Pt = phosphate * 1e-6,
+      Sit = silicate * 1e-6,
+      k1k2 = &quot;l&quot;
+    )[, 6]
+  )
+
+
+# rm(broullon_clim_SO_lon_lat, broullon_clim_SO_lon)</code></pre>
+</div>
+<div id="write-so-data" class="section level1">
+<h1>Write SO data</h1>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/broullon_TA_DIC_clim_SO_pH.rds&quot;))</code></pre>
+</div>
+<div id="plot-data" class="section level1">
+<h1>Plot data</h1>
+<div id="ph" class="section level2">
+<h2>pH</h2>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
+  group_split(depth) %&gt;% 
+  head(2) %&gt;% 
+  map(
+    ~map +
+      geom_tile(data = .x, 
+                aes(x = lon, 
+                    y = lat, 
+                    fill = pH))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      facet_wrap(~month, ncol = 2)+
+      labs(title = paste0(&#39;Broullon et al. (2020) pH clim, depth: &#39;, unique(.x$depth)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_pH_field-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_pH_field-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
+  # filter(depth &lt;= 1500) %&gt;% 
+  group_split(month) %&gt;% 
+  head(2) %&gt;% 
+  map(
+    ~ ggplot(data = .x,
+             aes(x = pH,
+                 y = depth))+
+      geom_point(data = .x, 
+                 aes(x = pH,
+                     y = depth),
+                 size = 0.2,
+                 pch = 1)+
+      scale_y_reverse()+
+      facet_grid(biome_name~basin_AIP)+
+      labs(title = paste0(&#39;Broullon et al. clim pH, month: &#39;, unique(.x$month)),
+           x = &#39;pH&#39;)
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_pH_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_pH_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 <div id="dic-1" class="section level2">
 <h2>DIC</h2>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   group_split(depth) %&gt;% 
-  head(3) %&gt;% 
+  head(2) %&gt;% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -916,47 +1178,7 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_DIC_field-3">
-Past versions of map_DIC_field-3.png
-</button>
-</p>
-<div id="fig-map_DIC_field-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/broullon_DIC_TA_clim.Rmd/map_DIC_field-3.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   # filter(depth &lt;= 1500) %&gt;% 
   group_split(month) %&gt;% 
   head(2) %&gt;% 
@@ -1056,9 +1278,9 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="ta-1" class="section level2">
 <h2>TA</h2>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   group_split(depth) %&gt;% 
-  head(3) %&gt;% 
+  head(2) %&gt;% 
   map(
     ~map +
       geom_tile(data = .x, 
@@ -1149,47 +1371,7 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_TA_maps-3">
-Past versions of plot_TA_maps-3.png
-</button>
-</p>
-<div id="fig-plot_TA_maps-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/broullon_DIC_TA_clim.Rmd/plot_TA_maps-3.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   # filter(depth &lt;= 1500) %&gt;% 
   group_split(month) %&gt;% 
   head(2) %&gt;% 
@@ -1286,21 +1468,9 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="pco2-1" class="section level2">
-<h2>pCO2</h2>
-<pre class="r"><code>map+
-  geom_tile(data = broullon_clim_SO %&gt;% filter(depth_level == 1),
-            aes(x = lon,
-                y = lat,
-                fill = pco2))+
-  scale_fill_viridis_c()+
-  lims(y = c(-85, -28))+
-  facet_wrap(~month, ncol = 2)+
-  labs(title = &#39;Broullon et al. pCO2 clim&#39;)</code></pre>
-</div>
 <div id="oxygen" class="section level2">
 <h2>Oxygen</h2>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   group_split(depth) %&gt;% 
   head(2) %&gt;% 
   map(
@@ -1314,7 +1484,12 @@ pasqualina-vonlanthendinenna
       facet_wrap(~month, ncol = 2)+
       labs(title = paste0(&#39;Broullon et al. (2020) oxygen clim, depth: &#39;, unique(.x$depth)))
   )</code></pre>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_oxygen_map-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_oxygen_map-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   # filter(depth &lt;= 1500) %&gt;% 
   group_split(month) %&gt;% 
   head(2) %&gt;% 
@@ -1331,10 +1506,15 @@ pasqualina-vonlanthendinenna
       facet_grid(biome_name~basin_AIP)+
       labs(title = paste0(&#39;Broullon et al. clim oxygen, month: &#39;, unique(.x$month)))
   )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_oxygen_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_oxygen_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="nitrate" class="section level2">
 <h2>Nitrate</h2>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   group_split(depth) %&gt;% 
   head(2) %&gt;% 
   map(
@@ -1348,7 +1528,12 @@ pasqualina-vonlanthendinenna
       facet_wrap(~month, ncol = 2)+
       labs(title = paste0(&#39;Broullon et al. (2020) nitrate clim, depth: &#39;, unique(.x$depth)))
   )</code></pre>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_nitrate_map-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_nitrate_map-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   # filter(depth &lt;= 1500) %&gt;% 
   group_split(month) %&gt;% 
   head(2) %&gt;% 
@@ -1365,10 +1550,15 @@ pasqualina-vonlanthendinenna
       facet_grid(biome_name~basin_AIP)+
       labs(title = paste0(&#39;Broullon et al. clim nitrate, month: &#39;, unique(.x$month)))
   )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_nitrate_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_nitrate_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="phosphate" class="section level2">
 <h2>Phosphate</h2>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   group_split(depth) %&gt;% 
   head(2) %&gt;% 
   map(
@@ -1382,7 +1572,12 @@ pasqualina-vonlanthendinenna
       facet_wrap(~month, ncol = 2)+
       labs(title = paste0(&#39;Broullon et al. (2020) phosphate clim, depth: &#39;, unique(.x$depth)))
   )</code></pre>
-<pre class="r"><code>broullon_clim_SO %&gt;% 
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_phosphate_clim_map-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_phosphate_clim_map-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>broullon_clim_SO_pH %&gt;% 
   # filter(depth &lt;= 1500) %&gt;% 
   group_split(month) %&gt;% 
   head(2) %&gt;% 
@@ -1399,6 +1594,11 @@ pasqualina-vonlanthendinenna
       facet_grid(biome_name~basin_AIP)+
       labs(title = paste0(&#39;Broullon et al. clim phosphate, month: &#39;, unique(.x$month)))
   )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_phosphate_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/broullon_DIC_TA_clim.Rmd/plot_clim_phosphate_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1427,10 +1627,11 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] stars_0.5-5     sf_1.0-5        abind_1.4-5     lubridate_1.8.0
- [5] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7     purrr_0.3.4    
- [9] readr_2.1.1     tidyr_1.1.4     tibble_3.1.6    ggplot2_3.3.5  
-[13] tidyverse_1.3.1 workflowr_1.7.0
+ [1] seacarb_3.3.0    SolveSAPHE_2.1.0 oce_1.5-0        gsw_1.0-6       
+ [5] stars_0.5-5      sf_1.0-5         abind_1.4-5      lubridate_1.8.0 
+ [9] forcats_0.5.1    stringr_1.4.0    dplyr_1.0.7      purrr_0.3.4     
+[13] readr_2.1.1      tidyr_1.1.4      tibble_3.1.6     ggplot2_3.3.5   
+[17] tidyverse_1.3.1  workflowr_1.7.0 
 
 loaded via a namespace (and not attached):
  [1] fs_1.5.2           bit64_4.0.5        httr_1.4.2         rprojroot_2.0.2   
@@ -1452,8 +1653,8 @@ loaded via a namespace (and not attached):
 [65] evaluate_0.14      getPass_0.2-2      modelr_0.1.8       vctrs_0.3.8       
 [69] tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0   gtable_0.3.0      
 [73] assertthat_0.2.1   xfun_0.29          lwgeom_0.2-8       broom_0.7.11      
-[77] e1071_1.7-9        later_1.3.0        class_7.3-20       ncdf4_1.19        
-[81] viridisLite_0.4.0  units_0.7-2        ellipsis_0.3.2    </code></pre>
+[77] e1071_1.7-9        later_1.3.0        viridisLite_0.4.0  ncdf4_1.19        
+[81] class_7.3-20       units_0.7-2        ellipsis_0.3.2    </code></pre>
 </div>
 </div>
 </div>
