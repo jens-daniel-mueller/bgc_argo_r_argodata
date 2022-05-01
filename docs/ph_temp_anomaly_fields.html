@@ -557,16 +557,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef1227c51d531d80dd8fc3062144aec7e89e39bb0targetblankf1227c5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f1227c51d531d80dd8fc3062144aec7e89e39bb0" target="_blank">f1227c5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec94c9cd34142143577966d9e0139e4a74c053c46targetblankc94c9cda"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c94c9cd34142143577966d9e0139e4a74c053c46" target="_blank">c94c9cd</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef1227c51d531d80dd8fc3062144aec7e89e39bb0targetblankf1227c5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec94c9cd34142143577966d9e0139e4a74c053c46targetblankc94c9cda" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f1227c51d531d80dd8fc3062144aec7e89e39bb0" target="_blank">f1227c5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c94c9cd34142143577966d9e0139e4a74c053c46" target="_blank">c94c9cd</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -614,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c94c9cd34142143577966d9e0139e4a74c053c46/analysis/ph_temp_anomaly_fields.Rmd" target="_blank">c94c9cd</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+<td>
+code review: revised alternative double extreme color scale
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d4eaed4d6277b8b5b72ec477713db66799731322/docs/ph_temp_anomaly_fields.html" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1860,7 +1894,7 @@ anomaly_field &lt;- anomaly_field %&gt;%
                     &#39;N&#39; = &#39;transparent&#39;,
                     &#39;L&#39; = &quot;#0073C2FF&quot;)
 
-HNL_colors_map_ph &lt;- c(&#39;H&#39; = &quot;#868686FF&quot;,
+HNL_colors_map_ph &lt;- c(&#39;H&#39; = &quot;#009E73&quot;,
                     &#39;N&#39; = &#39;transparent&#39;,
                     &#39;L&#39; = &quot;#EFC000FF&quot;)
 
@@ -1869,7 +1903,7 @@ anomaly_field %&gt;%
   filter(year &gt;= 2013,
          double_extreme != &quot;N&quot;) %&gt;%
   group_split(month) %&gt;%
-  # head(1) %&gt;%
+  # tail(1) %&gt;%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -1877,7 +1911,7 @@ anomaly_field %&gt;%
                   x = lon_raw,
                   y = lat_raw,
                   fill = ph_extreme
-                )) +
+                ), alpha = 0.4) +
       scale_fill_manual(values = HNL_colors_map_ph) +
       new_scale_fill() +
       geom_tile(data = .x,
@@ -1885,7 +1919,7 @@ anomaly_field %&gt;%
                   x = lon_raw,
                   y = lat_raw,
                   fill = temp_extreme
-                ), alpha = 0.5) +
+                ), alpha = 0.4) +
       scale_fill_manual(values = HNL_colors_map_temp) +
       facet_wrap(~ year, ncol = 2) +
       lims(y = c(-85, -32)) +
@@ -1893,39 +1927,483 @@ anomaly_field %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-1">
+Past versions of compound_extreme_maps_transparent_color_newscale-1.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-1.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-2">
+Past versions of compound_extreme_maps_transparent_color_newscale-2.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-2.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-3">
+Past versions of compound_extreme_maps_transparent_color_newscale-3.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-3.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-4">
+Past versions of compound_extreme_maps_transparent_color_newscale-4.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-4.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-5">
+Past versions of compound_extreme_maps_transparent_color_newscale-5.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-5.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-6">
+Past versions of compound_extreme_maps_transparent_color_newscale-6.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-6.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[7]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-7">
+Past versions of compound_extreme_maps_transparent_color_newscale-7.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-7.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[8]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-8">
+Past versions of compound_extreme_maps_transparent_color_newscale-8.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-8.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[9]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-9">
+Past versions of compound_extreme_maps_transparent_color_newscale-9.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-9.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[10]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-10">
+Past versions of compound_extreme_maps_transparent_color_newscale-10.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-10.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[11]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-11">
+Past versions of compound_extreme_maps_transparent_color_newscale-11.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-11.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[12]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps_transparent_color_newscale-12">
+Past versions of compound_extreme_maps_transparent_color_newscale-12.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps_transparent_color_newscale-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps_transparent_color_newscale-12.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(HNL_colors_map_temp, HNL_colors_map_ph)</code></pre>
 <pre class="r"><code>anomaly_field %&gt;% 
   filter(year &gt;= 2013) %&gt;% 
@@ -1953,39 +2431,483 @@ anomaly_field %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-1">
+Past versions of compound_extreme_maps-1.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-1.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-2">
+Past versions of compound_extreme_maps-2.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-2.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-3">
+Past versions of compound_extreme_maps-3.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-3.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-4">
+Past versions of compound_extreme_maps-4.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-4.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-5">
+Past versions of compound_extreme_maps-5.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-5.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-6">
+Past versions of compound_extreme_maps-6.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-6.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[7]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-7">
+Past versions of compound_extreme_maps-7.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-7.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[8]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-8">
+Past versions of compound_extreme_maps-8.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-8.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[9]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-9">
+Past versions of compound_extreme_maps-9.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-9.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[10]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-10">
+Past versions of compound_extreme_maps-10.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-10.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[11]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-11">
+Past versions of compound_extreme_maps-11.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-11.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[12]]</code></pre>
 <p><img src="figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-compound_extreme_maps-12">
+Past versions of compound_extreme_maps-12.png
+</button>
+</p>
+<div id="fig-compound_extreme_maps-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/d4eaed4d6277b8b5b72ec477713db66799731322/docs/figure/ph_temp_anomaly_fields.Rmd/compound_extreme_maps-12.png" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="join-argo-profile-data" class="section level1">
 <h1>Join Argo profile data</h1>
