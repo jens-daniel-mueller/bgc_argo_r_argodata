@@ -180,7 +180,7 @@ HNL_colors_map_temp <- c('H' = "#CD534CFF",
                     'N' = 'transparent',
                     'L' = "#0073C2FF")
 
-HNL_colors_map_ph <- c('H' = "#868686FF",
+HNL_colors_map_ph <- c('H' = "#009E73",
                     'N' = 'transparent',
                     'L' = "#EFC000FF")
 
@@ -189,7 +189,7 @@ anomaly_field %>%
   filter(year >= 2013,
          double_extreme != "N") %>%
   group_split(month) %>%
-  # head(1) %>%
+  # tail(1) %>%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -197,7 +197,7 @@ anomaly_field %>%
                   x = lon_raw,
                   y = lat_raw,
                   fill = ph_extreme
-                )) +
+                ), alpha = 0.4) +
       scale_fill_manual(values = HNL_colors_map_ph) +
       new_scale_fill() +
       geom_tile(data = .x,
@@ -205,7 +205,7 @@ anomaly_field %>%
                   x = lon_raw,
                   y = lat_raw,
                   fill = temp_extreme
-                ), alpha = 0.5) +
+                ), alpha = 0.4) +
       scale_fill_manual(values = HNL_colors_map_temp) +
       facet_wrap(~ year, ncol = 2) +
       lims(y = c(-85, -32)) +
