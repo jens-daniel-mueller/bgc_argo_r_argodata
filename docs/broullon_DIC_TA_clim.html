@@ -348,13 +348,22 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="loading_data.html">Argo/OceanSODA/Biome data</a>
+      <a href="loading_data.html">BGC-Argo data</a>
     </li>
     <li>
       <a href="argo_clim_pH_ucsd.html">Argo pH Climatology</a>
     </li>
     <li>
       <a href="argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA data</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biome data</a>
     </li>
   </ul>
 </li>
@@ -387,6 +396,9 @@ div.tocify {
       <a href="oxygen_data.html">BGC-Argo Oxygen</a>
     </li>
     <li>
+      <a href="temp_data.html">BGC-Argo SST</a>
+    </li>
+    <li>
       <a href="oceanSODA_argo.html">OceanSODA-Argo pH</a>
     </li>
     <li>
@@ -397,6 +409,9 @@ div.tocify {
     </li>
     <li>
       <a href="extreme_temp.html">Extreme Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="ph_temp_anomaly_fields.html">Double pH/Temp Extremes</a>
     </li>
     <li>
       <a href="variability_temp.html">Argo Temperature Variability</a>
@@ -441,7 +456,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Broullon DIC/TA climatology</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">01 May, 2022</h4>
+<h4 class="date">02 May, 2022</h4>
 
 </div>
 
@@ -466,7 +481,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-05-01
+<strong>Last updated:</strong> 2022-05-02
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -557,25 +572,33 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef1227c51d531d80dd8fc3062144aec7e89e39bb0targetblankf1227c5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f1227c51d531d80dd8fc3062144aec7e89e39bb0" target="_blank">f1227c5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9229c9dd9a20a180e4371ea3ef764b07292b2995targetblank9229c9da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9229c9dd9a20a180e4371ea3ef764b07292b2995" target="_blank">9229c9d</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef1227c51d531d80dd8fc3062144aec7e89e39bb0targetblankf1227c5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9229c9dd9a20a180e4371ea3ef764b07292b2995targetblank9229c9da" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f1227c51d531d80dd8fc3062144aec7e89e39bb0" target="_blank">f1227c5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9229c9dd9a20a180e4371ea3ef764b07292b2995" target="_blank">9229c9d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 </p>
 <pre><code>
 Ignored files:
+    Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
+
+Untracked files:
+    Untracked:  code/OceanSODA_argo_extremes.R
+    Untracked:  code/creating_dataframe.R
+    Untracked:  code/creating_map.R
+    Untracked:  code/merging_oceanSODA_Argo.R
+    Untracked:  code/pH_data_timeseries.R
 
 </code></pre>
 <p>
@@ -614,6 +637,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9229c9dd9a20a180e4371ea3ef764b07292b2995/analysis/broullon_DIC_TA_clim.Rmd" target="_blank">9229c9d</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-02
+</td>
+<td>
+write pH data to files
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/d4eaed4d6277b8b5b72ec477713db66799731322/docs/broullon_DIC_TA_clim.html" target="_blank">d4eaed4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
