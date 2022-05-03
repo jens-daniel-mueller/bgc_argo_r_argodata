@@ -572,16 +572,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6c57ac450cda35863ed8f611f0e8a29ae3a9e645targetblank6c57ac4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6c57ac450cda35863ed8f611f0e8a29ae3a9e645" target="_blank">6c57ac4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea0139c20a7eec0f5bbabc8e638faacaf72841dfetargetblanka0139c2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a0139c20a7eec0f5bbabc8e638faacaf72841dfe" target="_blank">a0139c2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6c57ac450cda35863ed8f611f0e8a29ae3a9e645targetblank6c57ac4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea0139c20a7eec0f5bbabc8e638faacaf72841dfetargetblanka0139c2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6c57ac450cda35863ed8f611f0e8a29ae3a9e645" target="_blank">6c57ac4</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a0139c20a7eec0f5bbabc8e638faacaf72841dfe" target="_blank">a0139c2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -637,6 +637,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a0139c20a7eec0f5bbabc8e638faacaf72841dfe/analysis/extreme_pH.Rmd" target="_blank">a0139c2</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+<td>
+updated figure aspect for pH profiles
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/extreme_pH.html" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -7181,19 +7215,22 @@ profile_extreme &lt;- profile_extreme %&gt;%
 <h1>Location of Argo profiles</h1>
 <pre class="r"><code>OceanSODA_2x2_SO_extreme_grid %&gt;% 
   group_split(month) %&gt;%
-  #head(1) %&gt;%
+  head(1) %&gt;%
   map(
     ~map +
       geom_tile(data = .x,
                 aes(x = lon,
                     y = lat,
                     fill = ph_extreme))+
-      geom_point(data = profile_extreme,
+      geom_point(data = profile_extreme %&gt;% 
+                   filter(between(depth, 0, 50)),
                  aes(x = lon, 
                      y = lat),
-                 size = 0.2,
-                 pch = 1,
-                 alpha = 0.5)+
+                 shape = 21,
+                 size = 0.5,
+                 alpha = 0.2,
+                 col = &#39;black&#39;,
+                 fill = NA)+
       scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~year, ncol = 2)+
       lims(y = c(-85, -30))+
@@ -7227,446 +7264,6 @@ Date
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-1.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-2">
-Past versions of map_location_argo_profiles-2.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-2.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-3">
-Past versions of map_location_argo_profiles-3.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-3.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[4]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-4">
-Past versions of map_location_argo_profiles-4.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-4.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[5]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-5">
-Past versions of map_location_argo_profiles-5.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-5.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[6]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-6">
-Past versions of map_location_argo_profiles-6.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-6.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[7]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-7">
-Past versions of map_location_argo_profiles-7.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-7.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[8]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-8">
-Past versions of map_location_argo_profiles-8.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-8.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[9]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-9">
-Past versions of map_location_argo_profiles-9.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-9.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[10]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-10">
-Past versions of map_location_argo_profiles-10.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-10.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[11]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-11">
-Past versions of map_location_argo_profiles-11.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-11.png" target="_blank">2d44f8a</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[12]]</code></pre>
-<p><img src="figure/extreme_pH.Rmd/map_location_argo_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_location_argo_profiles-12">
-Past versions of map_location_argo_profiles-12.png
-</button>
-</p>
-<div id="fig-map_location_argo_profiles-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d44f8a9ca61ad5086a28b43689cc25cb217d124/docs/figure/extreme_pH.Rmd/map_location_argo_profiles-12.png" target="_blank">2d44f8a</a>
 </td>
 <td>
 pasqualina-vonlanthendinenna
@@ -16606,21 +16203,243 @@ remove_clim &lt;- inner_join(profile_extreme_binned,
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-1">
+Past versions of plot_raw_profiles_with_broullon_clim-1.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-2">
+Past versions of plot_raw_profiles_with_broullon_clim-2.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-2.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-3">
+Past versions of plot_raw_profiles_with_broullon_clim-3.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-3.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-4">
+Past versions of plot_raw_profiles_with_broullon_clim-4.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-4.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-5">
+Past versions of plot_raw_profiles_with_broullon_clim-5.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-5.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_with_broullon_clim-6">
+Past versions of plot_raw_profiles_with_broullon_clim-6.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_with_broullon_clim-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-6.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="profiles---anomaly" class="section level3">
 <h3>Profiles - Anomaly</h3>
@@ -16653,39 +16472,483 @@ remove_clim &lt;- inner_join(profile_extreme_binned,
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-1">
+Past versions of plot_anomaly_profiles_broullon_clim-1.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-2">
+Past versions of plot_anomaly_profiles_broullon_clim-2.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-2.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-3">
+Past versions of plot_anomaly_profiles_broullon_clim-3.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-3.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-4">
+Past versions of plot_anomaly_profiles_broullon_clim-4.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-4.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-5">
+Past versions of plot_anomaly_profiles_broullon_clim-5.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-5.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-6">
+Past versions of plot_anomaly_profiles_broullon_clim-6.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-6.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[7]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-7">
+Past versions of plot_anomaly_profiles_broullon_clim-7.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-7.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[8]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-8">
+Past versions of plot_anomaly_profiles_broullon_clim-8.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-8.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[9]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-9">
+Past versions of plot_anomaly_profiles_broullon_clim-9.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-9.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[10]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-10">
+Past versions of plot_anomaly_profiles_broullon_clim-10.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-10.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[11]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-11">
+Past versions of plot_anomaly_profiles_broullon_clim-11.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-11.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[12]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_anomaly_profiles_broullon_clim-12">
+Past versions of plot_anomaly_profiles_broullon_clim-12.png
+</button>
+</p>
+<div id="fig-plot_anomaly_profiles_broullon_clim-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-12.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="overall-mean-anomaly-profiles" class="section level3">
 <h3>Overall mean anomaly profiles</h3>
@@ -16714,6 +16977,43 @@ remove_clim_overall_mean %&gt;%
   scale_fill_manual(values = HNL_colors)+
   labs(title = &#39;Overall Mean Anomaly Profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/overall_mean_anomaly_profiles_broullon-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overall_mean_anomaly_profiles_broullon-1">
+Past versions of overall_mean_anomaly_profiles_broullon-1.png
+</button>
+</p>
+<div id="fig-overall_mean_anomaly_profiles_broullon-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/overall_mean_anomaly_profiles_broullon-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(remove_clim_overall_mean)</code></pre>
 </div>
 <div id="biome-mean-anomaly-profiles" class="section level3">
@@ -16744,6 +17044,43 @@ remove_clim_biome %&gt;%
   scale_fill_manual(values = HNL_colors)+
   labs(title = &#39;Biome-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/biome_mean_broullon_anomaly-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-biome_mean_broullon_anomaly-1">
+Past versions of biome_mean_broullon_anomaly-1.png
+</button>
+</p>
+<div id="fig-biome_mean_broullon_anomaly-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/biome_mean_broullon_anomaly-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(remove_clim_biome)</code></pre>
 </div>
 <div id="basin-mean-anomaly-profiles" class="section level3">
@@ -16774,6 +17111,43 @@ remove_clim_basin %&gt;%
   scale_fill_manual(values = HNL_colors)+
   labs(title = &#39;Basin-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_mean_anomaly_profiles_broullon-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-basin_mean_anomaly_profiles_broullon-1">
+Past versions of basin_mean_anomaly_profiles_broullon-1.png
+</button>
+</p>
+<div id="fig-basin_mean_anomaly_profiles_broullon-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/basin_mean_anomaly_profiles_broullon-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(remove_clim_basin)</code></pre>
 </div>
 <div id="basin-biome-mean-anomaly-profiles" class="section level3">
@@ -16811,15 +17185,163 @@ remove_clim_basin_biome %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_biome_mean_broullon-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-basin_biome_mean_broullon-1">
+Past versions of basin_biome_mean_broullon-1.png
+</button>
+</p>
+<div id="fig-basin_biome_mean_broullon-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-1.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_biome_mean_broullon-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-basin_biome_mean_broullon-2">
+Past versions of basin_biome_mean_broullon-2.png
+</button>
+</p>
+<div id="fig-basin_biome_mean_broullon-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-2.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_biome_mean_broullon-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-basin_biome_mean_broullon-3">
+Past versions of basin_biome_mean_broullon-3.png
+</button>
+</p>
+<div id="fig-basin_biome_mean_broullon-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-3.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_biome_mean_broullon-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-basin_biome_mean_broullon-4">
+Past versions of basin_biome_mean_broullon-4.png
+</button>
+</p>
+<div id="fig-basin_biome_mean_broullon-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a107add9e52e48e7a306f384e0f170c5221cc92f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-4.png" target="_blank">a107add</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm(remove_clim_basin_biome)</code></pre>
 <br>
 <p>
