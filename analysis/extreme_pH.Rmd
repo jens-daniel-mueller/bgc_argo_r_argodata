@@ -1711,3 +1711,287 @@ remove_clim_jan_basin_biome_mean %>%
 rm(remove_clim_jan_basin_biome_mean)
 
 ```
+
+## Broullón TA-DIC pH climatology
+
+```{r average_ph_argo_depth_levels}
+
+profile_extreme_binned <- profile_extreme %>%
+  group_by(lon, lat, year, month, platform_cycle,
+           biome_name, basin_AIP, ph_extreme,
+           depth, season) %>%
+  summarise(ph_adjusted_binned = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
+  ungroup()
+
+```
+
+```{r load_broullon_clim}
+
+broullon_clim <- read_rds(file = paste0(path_argo_preprocessed, 
+                                        '/broullon_TA_DIC_clim_SO_pH.rds'))
+
+# compatibility with profile_extreme
+broullon_clim <- broullon_clim %>% 
+  mutate(depth_broullon = depth)
+
+# grid average climatological temp into the argo depth bins 
+broullon_clim <- broullon_clim %>%
+  mutate(
+    depth = cut(
+      depth_broullon,
+      breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
+      include.lowest = TRUE,
+      labels = as.factor(unique(profile_extreme$depth))
+    ),
+    depth = as.numeric(as.character(depth))
+  )
+
+
+# calculate mean climatological pH per depth bin
+broullon_clim_binned <- broullon_clim %>% 
+  group_by(lon, lat, depth, month, basin_AIP, biome_name) %>% 
+  summarise(clim_ph_binned = mean(pH, na.rm = TRUE)) %>%
+  ungroup()
+
+
+# join climatology and ARGO profiles
+
+remove_clim <- inner_join(profile_extreme_binned, 
+                              broullon_clim_binned)
+
+```
+
+### Profiles - Absolute
+
+```{r plot_raw_profiles_with_broullon_clim}
+
+remove_clim %>%
+  group_split(biome_name, basin_AIP, year) %>%
+  head(6) %>%
+  map(
+    ~ ggplot() +
+      geom_path(
+        data = .x %>%
+          filter(ph_extreme == 'N'),
+        aes(
+          x = ph_adjusted_binned,
+          y = depth,
+          group = platform_cycle,
+          col = ph_extreme
+        ),
+        size = 0.3
+      ) +
+      geom_path(
+        data = .x %>%
+          filter(ph_extreme == 'H' | ph_extreme == 'L'),
+        aes(
+          x = ph_adjusted_binned,
+          y = depth,
+          group = platform_cycle,
+          col = ph_extreme
+        ),
+        size = 0.5
+      ) +
+      geom_point(
+        data = .x,
+        aes(x = clim_ph_binned,
+            y = depth,
+            col = ph_extreme),
+        size = 0.5
+      ) +
+      scale_y_reverse() +
+      scale_color_manual(values = HNL_colors) +
+      labs(
+        x = 'Argo pH',
+        y = 'depth (m)',
+        title = paste(
+          "Biome:",
+          unique(.x$biome_name),
+          "| basin:",
+          unique(.x$basin_AIP),
+          " | ",
+          unique(.x$year)
+        ),
+        col = 'OceanSODA pH \nanomaly'
+      )
+  )
+
+```
+
+### Profiles - Anomaly
+
+```{r remove_broullon_ph_clim}
+
+remove_clim <- remove_clim %>% 
+  mutate(argo_ph_anomaly = ph_adjusted_binned - clim_ph_binned)
+
+```
+
+```{r plot_anomaly_profiles_broullon_clim, fig.asp=1}
+
+remove_clim %>% 
+  group_split(month) %>% 
+  #head(1) %>% 
+  map(
+    ~ggplot()+
+      geom_path(data = .x %>% filter(ph_extreme == 'N'),
+                aes(x = argo_ph_anomaly,
+                    y = depth,
+                    group = platform_cycle,
+                    col = ph_extreme),
+                size = 0.2)+
+      geom_path(data = .x %>% filter(ph_extreme == 'H'| ph_extreme == 'L'),
+                 aes(x = argo_ph_anomaly,
+                     y = depth,
+                     group = platform_cycle,
+                     col = ph_extreme),
+                 size = 0.3)+
+      geom_vline(xintercept = 0)+
+      scale_y_continuous(trans = trans_reverser("sqrt"),
+                         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+      scale_color_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors)+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = paste('month:', unique(.x$month)))
+  )
+
+```
+
+### Overall mean anomaly profiles
+
+```{r overall_mean_anomaly_profiles_broullon}
+
+remove_clim_overall_mean <- remove_clim %>% 
+  group_by(ph_extreme, depth) %>% 
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+
+remove_clim_overall_mean %>% 
+  ggplot()+
+  geom_path(aes(x = ph_anomaly_mean,
+                y = depth,
+                group = ph_extreme,
+                col = ph_extreme))+
+  geom_ribbon(aes(xmax = ph_anomaly_mean + ph_anomaly_sd,
+                  xmin = ph_anomaly_mean - ph_anomaly_sd,
+                  y = depth,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_continuous(trans = trans_reverser("sqrt"),
+                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+  scale_color_manual(values = HNL_colors)+
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = 'Overall Mean Anomaly Profiles')
+
+rm(remove_clim_overall_mean)
+
+
+```
+
+### Biome-mean anomaly profiles
+
+```{r biome_mean_broullon_anomaly}
+
+remove_clim_biome <- remove_clim %>% 
+  group_by(depth, ph_extreme, biome_name, season) %>% 
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+
+remove_clim_biome %>% 
+  ggplot()+
+  geom_path(aes(x = ph_anomaly_mean,
+                y = depth,
+                group = ph_extreme,
+                col = ph_extreme))+
+  geom_ribbon(aes(xmax = ph_anomaly_mean + ph_anomaly_sd,
+                  xmin = ph_anomaly_mean - ph_anomaly_sd,
+                  y = depth, 
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_continuous(trans = trans_reverser('sqrt'),
+                     breaks = c(10, 100, 250, seq(1000, 5000, 500)))+
+  facet_grid(season~biome_name)+
+  scale_color_manual(values = HNL_colors)+
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = 'Biome-mean anomaly profiles')
+
+rm(remove_clim_biome)
+```
+
+### Basin-mean anomaly profiles
+
+```{r basin_mean_anomaly_profiles_broullon}
+
+remove_clim_basin <-  remove_clim %>% 
+  group_by(depth, ph_extreme, basin_AIP, season) %>% 
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+
+remove_clim_basin %>% 
+  ggplot()+
+  geom_path(aes(x = ph_anomaly_mean,
+                y = depth,
+                group = ph_extreme,
+                col = ph_extreme))+
+  geom_ribbon(aes(xmax = ph_anomaly_mean + ph_anomaly_sd,
+                  xmin = ph_anomaly_mean - ph_anomaly_sd,
+                  y = depth,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+  scale_y_continuous(trans = trans_reverser('sqrt'),
+                     breaks = c(10, 100, 250, seq(1000, 5000, 500)))+
+  geom_vline(xintercept = 0)+
+  facet_grid(season~basin_AIP)+
+  scale_color_manual(values = HNL_colors)+
+  scale_fill_manual(values = HNL_colors)+
+  labs(title = 'Basin-mean anomaly profiles')
+
+rm(remove_clim_basin)
+```
+
+### Basin-biome-mean anomaly profiles
+
+```{r basin_biome_mean_broullon}
+
+remove_clim_basin_biome <- remove_clim %>% 
+  group_by(depth, ph_extreme, season, basin_AIP, biome_name) %>% 
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm=TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+
+remove_clim_basin_biome %>% 
+  group_by(season) %>% 
+  group_split(season) %>% 
+  map(
+    ~ggplot()+
+      geom_path(data = .x,
+            aes(x = ph_anomaly_mean,
+                y = depth,
+                group = ph_extreme,
+                col = ph_extreme))+
+      geom_ribbon(data = .x,
+              aes(xmax = ph_anomaly_mean+ph_anomaly_sd,
+                  xmin = ph_anomaly_mean-ph_anomaly_sd,
+                  y = depth,
+                  group = ph_extreme,
+                  fill = ph_extreme),
+              col = NA,
+              alpha = 0.2)+
+      geom_vline(xintercept = 0)+
+      scale_y_continuous(trans = trans_reverser('sqrt'),
+                     breaks = c(10, 100, 250, seq(1000, 5000, 500)))+
+      facet_grid(biome_name~basin_AIP)+
+      scale_color_manual(values = HNL_colors)+
+      scale_fill_manual(values = HNL_colors)+
+      labs(title = paste0('basin-biome-mean profiles ', unique(.x$season)))
+  )
+
+rm(remove_clim_basin_biome)
+```
