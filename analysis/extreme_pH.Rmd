@@ -628,19 +628,22 @@ profile_extreme <- profile_extreme %>%
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(month) %>%
-  #head(1) %>%
+  head(1) %>%
   map(
     ~map +
       geom_tile(data = .x,
                 aes(x = lon,
                     y = lat,
                     fill = ph_extreme))+
-      geom_point(data = profile_extreme,
+      geom_point(data = profile_extreme %>% 
+                   filter(between(depth, 0, 50)),
                  aes(x = lon, 
                      y = lat),
-                 size = 0.2,
-                 pch = 1,
-                 alpha = 0.5)+
+                 shape = 21,
+                 size = 0.5,
+                 alpha = 0.2,
+                 col = 'black',
+                 fill = NA)+
       scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~year, ncol = 2)+
       lims(y = c(-85, -30))+
@@ -1859,7 +1862,7 @@ remove_clim %>%
 
 ### Overall mean anomaly profiles
 
-```{r overall_mean_anomaly_profiles_broullon}
+```{r overall_mean_anomaly_profiles_broullon, fig.asp=1}
 
 remove_clim_overall_mean <- remove_clim %>% 
   group_by(ph_extreme, depth) %>% 
@@ -1893,7 +1896,7 @@ rm(remove_clim_overall_mean)
 
 ### Biome-mean anomaly profiles
 
-```{r biome_mean_broullon_anomaly}
+```{r biome_mean_broullon_anomaly, fig.asp=1}
 
 remove_clim_biome <- remove_clim %>% 
   group_by(depth, ph_extreme, biome_name, season) %>% 
@@ -1926,7 +1929,7 @@ rm(remove_clim_biome)
 
 ### Basin-mean anomaly profiles
 
-```{r basin_mean_anomaly_profiles_broullon}
+```{r basin_mean_anomaly_profiles_broullon, fig.asp=1}
 
 remove_clim_basin <-  remove_clim %>% 
   group_by(depth, ph_extreme, basin_AIP, season) %>% 
@@ -1959,7 +1962,7 @@ rm(remove_clim_basin)
 
 ### Basin-biome-mean anomaly profiles
 
-```{r basin_biome_mean_broullon}
+```{r basin_biome_mean_broullon, fig.asp=1}
 
 remove_clim_basin_biome <- remove_clim %>% 
   group_by(depth, ph_extreme, season, basin_AIP, biome_name) %>% 
