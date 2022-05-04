@@ -24,6 +24,7 @@ library(scico)
 library(metR)
 library(ggforce)
 library(oce)
+library(ggrepel)
 
 ```
 
@@ -954,7 +955,7 @@ profile_temp_count_mean %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles')
 
-rm(profile_temp_count_mean)
+# rm(profile_temp_count_mean)
 ```
 
 Surface Argo temperature vs surface OceanSODA temperature (20 m)
@@ -1083,7 +1084,7 @@ profile_temp_count_biome %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x Mayot biome')
 
-rm(profile_temp_count_biome)
+# rm(profile_temp_count_biome)
 
 ```
 
@@ -1172,7 +1173,7 @@ profile_temp_count_basin %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x basin')
 
-rm(profile_temp_count_basin)
+# rm(profile_temp_count_basin)
 
 ```
 
@@ -1280,7 +1281,7 @@ profile_temp_count_season %>%
            title = paste('season:', unique(.x$season)))
   )
 
-rm(profile_temp_count_season)
+# rm(profile_temp_count_season)
 
 
 ```
@@ -1560,7 +1561,7 @@ remove_clim <- remove_clim %>%
 ```{r plot_january_anomaly_profiles, fig.asp=1}
 
 remove_clim %>% 
-  group_split(year) %>% 
+  group_split(month) %>% 
   #head(6) %>% 
   map(
     ~ggplot()+
@@ -1582,7 +1583,7 @@ remove_clim %>%
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
       facet_grid(basin_AIP~biome_name)+
-      labs(title = unique(.x$year))
+      labs(title = paste0('month: ', unique(.x$month)))
   )
 
 ```
@@ -1614,9 +1615,16 @@ remove_clim_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
+  geom_text_repel(data = profile_temp_count_mean,
+            aes(x = 1, 
+                y = 1500, 
+                label = paste0(n), 
+                col = temp_extreme),
+            size = 7,
+            segment.color = 'transparent')+
   labs(title = 'Overall mean anomaly profiles')
 
-rm(remove_clim_overall_mean)
+rm(remove_clim_overall_mean, profile_temp_count_mean)
 
 ```
 
@@ -1647,9 +1655,16 @@ remove_clim_biome_mean %>%
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
   labs(title = 'Biome-mean anomaly profiles')+
+  geom_text_repel(data = profile_temp_count_biome,
+                  aes(x = 2.5,
+                      y = 1500,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4,
+                  segment.color = 'transparent')+
   facet_grid(season~biome_name)
 
-rm(remove_clim_biome_mean)
+rm(remove_clim_biome_mean, profile_temp_count_biome)
 
 ```
 
@@ -1680,9 +1695,16 @@ remove_clim_basin_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
+  geom_text_repel(data = profile_temp_count_basin,
+                  aes(x = 2,
+                      y = 1500,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4,
+                  segment.color = 'transparent')+
   labs(title = 'Basin-mean anomaly profiles')
 
-rm(remove_clim_basin_mean)
+rm(remove_clim_basin_mean, profile_temp_count_basin)
 
 ```
 
@@ -1718,9 +1740,17 @@ remove_clim_basin_biome_mean %>%
                          breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
+      # geom_text_repel(data = profile_temp_count_season,
+      #                 aes(x = 1,
+      #                     y = 1400,
+      #                     label = paste0(n),
+      #                     col = temp_extreme,
+      #                     group = temp_extreme),
+      #                 size = 4,
+      #                 segment.color = 'transparent')+
       labs(title = paste0('biome-basin mean anomaly profiles ', unique(.x$season)))
     )
 
-rm(remove_clim_basin_biome_mean)
+rm(remove_clim_basin_biome_mean, profile_temp_count_season)
 
 ```

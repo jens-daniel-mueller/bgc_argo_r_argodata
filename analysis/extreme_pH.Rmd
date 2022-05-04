@@ -23,6 +23,7 @@ library(ggOceanMaps)
 library(scico)
 library(metR)
 library(ggforce)
+library(ggrepel)
 ```
 
 ```{r set_global_theme}
@@ -948,7 +949,7 @@ profile_count_mean %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles')
 
-rm(profile_count_mean)
+# rm(profile_count_mean)
 ```
 
 Surface Argo pH vs surface OceanSODA pH (20 m)
@@ -1081,7 +1082,7 @@ profile_count_biome %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x biome')
 
-rm(profile_count_biome)
+# rm(profile_count_biome)
 ```
 
 Surface Argo vs surface OceanSODA pH (20 m) season x biome
@@ -1169,7 +1170,7 @@ profile_count_basin %>%
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x basin')
 
-rm(profile_count_basin)
+# rm(profile_count_basin)
 ```
 
 Surface Argo vs surface OceanSODA pH (20 m) season x basin
@@ -1314,7 +1315,7 @@ profile_count_season %>%
            title = paste('season:', unique(.x$season)))
   )
 
-rm(profile_count_season)
+# rm(profile_count_season)
 ```
 
 Surface OceanSODA pH vs surface Argo pH (20 m)
@@ -1887,9 +1888,16 @@ remove_clim_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
+  geom_text_repel(data = profile_count_mean,
+                  aes(x = -0.075,
+                      y = 1500,
+                      label = paste0(n),
+                      col = ph_extreme),
+                  size = 7,
+                  segment.color = 'transparent')+
   labs(title = 'Overall Mean Anomaly Profiles')
 
-rm(remove_clim_overall_mean)
+rm(remove_clim_overall_mean, profile_count_mean)
 
 
 ```
@@ -1922,9 +1930,16 @@ remove_clim_biome %>%
   facet_grid(season~biome_name)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
+  geom_text_repel(data = profile_count_biome,
+                  aes(x = -0.085,
+                      y = 1500,
+                      label = paste0(n),
+                      col = ph_extreme),
+                  size = 4,
+                  segment.color = 'transparent')+
   labs(title = 'Biome-mean anomaly profiles')
 
-rm(remove_clim_biome)
+rm(remove_clim_biome, profile_count_biome)
 ```
 
 ### Basin-mean anomaly profiles
@@ -1955,9 +1970,16 @@ remove_clim_basin %>%
   facet_grid(season~basin_AIP)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
+  geom_text_repel(data = profile_count_basin,
+                  aes(x = -0.1,
+                      y = 1500,
+                      label = paste0(n),
+                      col = ph_extreme),
+                  size = 4,
+                  segment.color = 'transparent')+
   labs(title = 'Basin-mean anomaly profiles')
 
-rm(remove_clim_basin)
+rm(remove_clim_basin, profile_count_basin)
 ```
 
 ### Basin-biome-mean anomaly profiles
