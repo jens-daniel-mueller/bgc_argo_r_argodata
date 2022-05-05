@@ -36,7 +36,7 @@ HNL_colors <- c("H" = "#b2182b",
                 "L" = "#2166ac")
 
 HNL_colors_map <- c('H' = 'red3',
-                    'N' = 'gray90',
+                    'N' = 'transparent',
                     'L' = 'blue3')
 ```
 
@@ -694,7 +694,7 @@ profile_temp_extreme <- profile_temp_extreme %>%
 
 # Location of Argo profiles 
 
-```{r map_location_argo_profiles, fig.asp=1.5}
+```{r map_location_argo_profiles, fig.asp=2}
 
 OceanSODA_temp_SO_extreme_grid %>% 
   group_split(month) %>%
@@ -709,10 +709,12 @@ OceanSODA_temp_SO_extreme_grid %>%
       geom_tile(data = profile_temp_extreme %>% filter(depth < 10),
                  aes(x = lon,
                      y = lat,
-                     fill = 'black'),
+                     fill = 'black',
+                     height = 1,
+                     width = 1),
                  alpha = 0.5)+
       scale_fill_manual(values = HNL_colors_map)+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 1)+
       lims(y = c(-85, -30))+
       labs(title = paste('month:', unique(.x$month)),
            fill = 'temperature')

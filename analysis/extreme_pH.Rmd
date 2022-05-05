@@ -625,7 +625,7 @@ profile_extreme <- profile_extreme %>%
 
 # Location of Argo profiles
 
-```{r map_location_argo_profiles, fig.asp=1.5}
+```{r map_location_argo_profiles, fig.asp=2}
 
 OceanSODA_2x2_SO_extreme_grid %>% 
   group_split(month) %>%
@@ -641,10 +641,12 @@ OceanSODA_2x2_SO_extreme_grid %>%
                    filter(depth < 10),
                  aes(x = lon, 
                      y = lat,
-                     fill = 'black'),
+                     fill = 'black',
+                     height = 1,
+                     width = 1),
                  alpha = 0.3)+
       scale_fill_manual(values = HNL_colors_map)+
-      facet_wrap(~year, ncol = 2)+
+      facet_wrap(~year, ncol = 1)+
       lims(y = c(-85, -30))+
       labs(title = paste('month:', unique(.x$month)),
            fill = 'pH')
