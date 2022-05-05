@@ -635,16 +635,16 @@ OceanSODA_2x2_SO_extreme_grid %>%
       geom_tile(data = .x,
                 aes(x = lon,
                     y = lat,
-                    fill = ph_extreme))+
+                    fill = ph_extreme),
+                alpha = 0.5)+
       geom_point(data = profile_extreme %>% 
-                   filter(between(depth, 0, 50)),
+                   filter(depth < 10),
                  aes(x = lon, 
                      y = lat),
-                 shape = 21,
-                 size = 0.5,
-                 alpha = 0.2,
-                 col = 'black',
-                 fill = NA)+
+                 shape = 4,
+                 size = 0.3,
+                 alpha = 0.3,
+                 col = 'black')+
       scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~year, ncol = 2)+
       lims(y = c(-85, -30))+

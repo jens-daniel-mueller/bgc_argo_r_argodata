@@ -698,19 +698,21 @@ profile_temp_extreme <- profile_temp_extreme %>%
 
 OceanSODA_temp_SO_extreme_grid %>% 
   group_split(month) %>%
-  #head(1) %>%
+  head(1) %>%
   map(
     ~map +
       geom_tile(data = .x,
                 aes(x = lon,
                     y = lat,
-                    fill = temp_extreme))+
-      geom_point(data = profile_temp_extreme,
-                 aes(x = lon, 
+                    fill = temp_extreme),
+                alpha = 0.5)+
+      geom_point(data = profile_temp_extreme %>% filter(depth < 10),
+                 aes(x = lon,
                      y = lat),
-                 size = 0.2,
-                 pch = 1,
-                 alpha = 0.5)+
+                 alpha = 0.3,
+                 size = 0.3,
+                 shape = 4,
+                 col = 'black')+
       scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~year, ncol = 2)+
       lims(y = c(-85, -30))+
