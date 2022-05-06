@@ -98,9 +98,9 @@ theme_set(theme_bw())
 # count the number of profiles per parameter 
 
 bgc_profile_counts <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date,
+  select(platform_number, cycle_number, date, profile_temp_qc,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+  pivot_longer(cols = profile_temp_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
                names_prefix = "profile_") %>% 
@@ -178,9 +178,9 @@ knitr::kable(usable_data_count,
 ```{r count_A_flag_data}
 # count the number of profiles with QC flag A 
 A_data_count <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date,
+  select(platform_number, cycle_number, date, profile_temp_qc,
          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(cols = profile_doxy_qc:profile_nitrate_qc,
+  pivot_longer(cols = profile_temp_qc:profile_nitrate_qc,
                names_to = "parameter",
                values_to = "profile_flag",
                names_prefix = "profile_") %>% 
@@ -196,6 +196,35 @@ A_data_count <- bgc_metadata %>%
 knitr::kable(A_data_count, 
              caption = 'total number of profiles with QC flag A',
              format = 'markdown')
+```
+
+```{r flag_A_dataframe}
+
+flag_A <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds"))
+
+flag_A <- flag_A %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE) %>% 
+  mutate(year = year(date),
+         month = month(date)) 
+
+flag_A_n <- flag_A %>% 
+  distinct(year, month, platform_cycle) %>% 
+  group_by(year, month) %>%
+  count(platform_cycle) %>% 
+  group_by(year, month) %>% 
+  summarise(n = sum(n))
+
+
+# total number of profiles 
+print(sum(flag_A_n$n))
+
+flag_A_n %>% 
+  ggplot(aes(x = month, y = n))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~year, ncol = 9)+
+  labs(title = 'bgc_merge_flag_A.rds dataframe (temp & pH flag A)')
+
 ```
 
 
