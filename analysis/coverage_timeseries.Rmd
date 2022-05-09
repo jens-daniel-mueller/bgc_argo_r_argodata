@@ -225,6 +225,32 @@ flag_A_n %>%
   facet_wrap(~year, ncol = 9)+
   labs(title = 'bgc_merge_flag_A.rds dataframe (temp & pH flag A)')
 
+################################
+# using the flag A pH and temperature dataframe which doesn't remove NA values 
+
+# flag_A_test <- bgc_merge_flag_A_test %>%
+#   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE) %>%
+#   mutate(year = year(date),
+#          month = month(date))
+# 
+# flag_A_test_n <- flag_A_test %>%
+#   distinct(year, month, platform_cycle) %>%
+#   group_by(year, month) %>%
+#   count(platform_cycle) %>%
+#   group_by(year, month) %>%
+#   summarise(n = sum(n))
+# 
+# 
+# # total number of profiles
+# print(sum(flag_A_test_n$n))
+# 
+# flag_A_test_n %>%
+#   ggplot(aes(x = month, y = n))+
+#   geom_point()+
+#   geom_line()+
+#   facet_wrap(~year, ncol = 10)+
+#   labs(title = 'bgc_merge_flag_A.rds dataframe (temp & pH flag A)')
+
 ```
 
 
