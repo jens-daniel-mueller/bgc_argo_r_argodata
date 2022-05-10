@@ -128,6 +128,52 @@ bgc_profile_counts_total <- bgc_metadata %>%
 
 ```
 
+
+```{r bgc_data_counts_using_bgc_merge}
+
+# bgc_merge <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+# 
+# bgc_profile_counts_test <- bgc_merge %>% 
+#   select(platform_number, cycle_number, date, profile_temp_qc,
+#          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
+#   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE) %>% 
+#   mutate(year = year(date),
+#          month = month(date))
+# 
+# bgc_profile_counts_test_n <- bgc_profile_counts_test %>% 
+#   pivot_longer(cols = profile_temp_qc:profile_nitrate_qc,
+#                values_to = 'profile_flag',
+#                names_to = 'parameter',
+#                names_prefix = 'profile_') %>% 
+#   distinct(year, month, platform_cycle, parameter, profile_flag) %>% 
+#   group_by(year, month, parameter, profile_flag) %>%
+#   count(platform_cycle) %>% 
+#   group_by(year, month, parameter, profile_flag) %>% 
+#   summarise(n = sum(n)) %>% 
+#   filter(!is.na(profile_flag),
+#          profile_flag != "")
+# 
+# 
+# # total number of profiles 
+# print(sum(bgc_profile_counts_test_n$n))
+# 
+# bgc_profile_counts_test_n %>% 
+#   group_by(parameter) %>% 
+#   group_split(parameter) %>% 
+#   map(
+#     ~ ggplot(data = .x,
+#             aes(x = month, y = n, col = profile_flag))+
+#       geom_line()+
+#       geom_point()+
+#       facet_wrap(~year, 
+#                  ncol = 10)+
+#       labs(title = paste0('parameter:', unique(.x$parameter)))
+#   )
+
+# gives the same result as using bgc_metadata 
+
+```
+
 #### Total number of profiles
 ```{r count_data}
 
@@ -222,7 +268,7 @@ flag_A_n %>%
   ggplot(aes(x = month, y = n))+
   geom_point()+
   geom_line()+
-  facet_wrap(~year, ncol = 9)+
+  facet_wrap(~year, ncol = 10)+
   labs(title = 'bgc_merge_flag_A.rds dataframe (temp & pH flag A)')
 
 ################################
