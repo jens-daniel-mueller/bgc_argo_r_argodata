@@ -456,7 +456,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temporal data coverage</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">09 May, 2022</h4>
+<h4 class="date">10 May, 2022</h4>
 
 </div>
 
@@ -481,7 +481,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-05-09
+<strong>Last updated:</strong> 2022-05-10
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -572,16 +572,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea66f31cd8df28865ea9a770cd1b81b53065670d6targetblanka66f31ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a66f31cd8df28865ea9a770cd1b81b53065670d6" target="_blank">a66f31c</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebbafe7cf6c51c93ff66c84eaf37e9bb7ba0d9198targetblankbbafe7ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/bbafe7cf6c51c93ff66c84eaf37e9bb7ba0d9198" target="_blank">bbafe7c</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea66f31cd8df28865ea9a770cd1b81b53065670d6targetblanka66f31ca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreebbafe7cf6c51c93ff66c84eaf37e9bb7ba0d9198targetblankbbafe7ca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a66f31cd8df28865ea9a770cd1b81b53065670d6" target="_blank">a66f31c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/bbafe7cf6c51c93ff66c84eaf37e9bb7ba0d9198" target="_blank">bbafe7c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -637,6 +637,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bbafe7cf6c51c93ff66c84eaf37e9bb7ba0d9198/analysis/coverage_timeseries.Rmd" target="_blank">bbafe7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-10
+</td>
+<td>
+updated profile counts timeseries
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/f196b7c392b888ef5ffe757bcc791e138119f116/docs/coverage_timeseries.html" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1577,6 +1611,46 @@ bgc_profile_counts_total &lt;- bgc_metadata %&gt;%
   count(parameter, profile_flag) %&gt;%   # count the number of occurrences of flags for each parameter
   filter(!is.na(profile_flag),
          profile_flag != &quot;&quot;)</code></pre>
+<pre class="r"><code># bgc_merge &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
+# 
+# bgc_profile_counts_test &lt;- bgc_merge %&gt;% 
+#   select(platform_number, cycle_number, date, profile_temp_qc,
+#          profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
+#   unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE) %&gt;% 
+#   mutate(year = year(date),
+#          month = month(date))
+# 
+# bgc_profile_counts_test_n &lt;- bgc_profile_counts_test %&gt;% 
+#   pivot_longer(cols = profile_temp_qc:profile_nitrate_qc,
+#                values_to = &#39;profile_flag&#39;,
+#                names_to = &#39;parameter&#39;,
+#                names_prefix = &#39;profile_&#39;) %&gt;% 
+#   distinct(year, month, platform_cycle, parameter, profile_flag) %&gt;% 
+#   group_by(year, month, parameter, profile_flag) %&gt;%
+#   count(platform_cycle) %&gt;% 
+#   group_by(year, month, parameter, profile_flag) %&gt;% 
+#   summarise(n = sum(n)) %&gt;% 
+#   filter(!is.na(profile_flag),
+#          profile_flag != &quot;&quot;)
+# 
+# 
+# # total number of profiles 
+# print(sum(bgc_profile_counts_test_n$n))
+# 
+# bgc_profile_counts_test_n %&gt;% 
+#   group_by(parameter) %&gt;% 
+#   group_split(parameter) %&gt;% 
+#   map(
+#     ~ ggplot(data = .x,
+#             aes(x = month, y = n, col = profile_flag))+
+#       geom_line()+
+#       geom_point()+
+#       facet_wrap(~year, 
+#                  ncol = 10)+
+#       labs(title = paste0(&#39;parameter:&#39;, unique(.x$parameter)))
+#   )
+
+# gives the same result as using bgc_metadata </code></pre>
 <div id="total-number-of-profiles" class="section level4">
 <h4>Total number of profiles</h4>
 <pre class="r"><code># count the total number of profiles, regardless of QC flag 
@@ -1731,7 +1805,7 @@ print(sum(flag_A_n$n))</code></pre>
   ggplot(aes(x = month, y = n))+
   geom_point()+
   geom_line()+
-  facet_wrap(~year, ncol = 9)+
+  facet_wrap(~year, ncol = 10)+
   labs(title = &#39;bgc_merge_flag_A.rds dataframe (temp &amp; pH flag A)&#39;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/flag_A_dataframe-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1756,6 +1830,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/flag_A_dataframe-1.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3f012baccda70e7d68d9552450217bea9f7e5619/docs/figure/coverage_timeseries.Rmd/flag_A_dataframe-1.png" target="_blank">3f012ba</a>
@@ -1892,6 +1977,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-1.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-1.png" target="_blank">7f3cfe7</a>
 </td>
 <td>
@@ -1996,6 +2092,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-2.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-2.png" target="_blank">7f3cfe7</a>
@@ -2104,6 +2211,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-3.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-3.png" target="_blank">7f3cfe7</a>
 </td>
 <td>
@@ -2210,6 +2328,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-4.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3f012baccda70e7d68d9552450217bea9f7e5619/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_per_parameter-4.png" target="_blank">3f012ba</a>
 </td>
 <td>
@@ -2281,6 +2410,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_total_A-1.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_total_A-1.png" target="_blank">7f3cfe7</a>
@@ -2425,6 +2565,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/plot_region_map-1.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_timeseries.Rmd/plot_region_map-1.png" target="_blank">8805f99</a>
 </td>
 <td>
@@ -2542,6 +2693,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f196b7c392b888ef5ffe757bcc791e138119f116/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_total_A_per_region-1.png" target="_blank">f196b7c</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-05-09
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_timeseries.Rmd/profiles_timeseries_total_A_per_region-1.png" target="_blank">7f3cfe7</a>
