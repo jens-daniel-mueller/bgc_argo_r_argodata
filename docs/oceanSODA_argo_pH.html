@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+
+
+<title>OceanSODA-Argo pH</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">bgc_argo_r_argodata</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Load data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="load_argo.html">BGC-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_pH_ucsd.html">Argo pH Climatology</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="argo_ph.html">Argo pH</a>
+    </li>
+    <li>
+      <a href="argo_oxygen.html">Argo Oxygen</a>
+    </li>
+    <li>
+      <a href="argo_temp.html">Argo SST</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_pH.html">OceanSODA-Argo pH</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_temp.html">OceanSODA-Argo SST</a>
+    </li>
+    <li>
+      <a href="extreme_pH.html">Extreme pH Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp.html">Extreme Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_compound.html">Compound extremes</a>
+    </li>
+    <li>
+      <a href="variability_temp.html">Argo Temperature Variability</a>
+    </li>
+    <li>
+      <a href="variability_pH.html">Argo pH variability</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata">
+    <span class="fa fa-github"></span>
+     
+    Code
+  </a>
+</li>
+<li>
+  <a href="https://jens-daniel-mueller.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Jens home
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">OceanSODA-Argo pH</h1>
+<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
+<h4 class="date">11 May, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-05-11
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2f20a764a7244e46ca8ee466a639c5043beab02atargetblank2f20a76a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2f20a764a7244e46ca8ee466a639c5043beab02a" target="_blank">2f20a76</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2f20a764a7244e46ca8ee466a639c5043beab02atargetblank2f20a76a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2f20a764a7244e46ca8ee466a639c5043beab02a" target="_blank">2f20a76</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/
+
+Untracked files:
+    Untracked:  analysis/load_argo.Rmd
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/argo_clim_pH_ucsd.Rmd
+    Deleted:    analysis/argo_clim_temp_csio.Rmd
+    Deleted:    analysis/broullon_DIC_TA_clim.Rmd
+    Deleted:    analysis/loading_data.Rmd
+    Deleted:    analysis/oceanSODA_argo.Rmd
+    Deleted:    analysis/oxygen_data.Rmd
+    Deleted:    analysis/ph_data.Rmd
+    Deleted:    analysis/ph_temp_anomaly_fields.Rmd
+    Deleted:    analysis/temp_data.Rmd
+    Modified:   code/Workflowr_project_managment.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/oceanSODA_argo_pH.Rmd</code>) and HTML (<code>docs/oceanSODA_argo_pH.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f20a764a7244e46ca8ee466a639c5043beab02a/analysis/oceanSODA_argo_pH.Rmd" target="_blank">2f20a76</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+<td>
+rebuild all after subsetting AB profiles and code cleaning
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<p>Compare BGC-Argo pH data to pH from the OceanSODA surface data product</p>
+<pre class="r"><code>theme_set(theme_bw())</code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<p>Load in surface Argo pH and the OceanSODA pH, gridded to 1x1º</p>
+<pre class="r"><code>path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
+path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
+path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;</code></pre>
+<pre class="r"><code># load in OceanSODA data and Argo pH
+OceanSODA &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA.rds&quot;))
+
+
+argo &lt;-
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
+  filter(between(depth, 0, 20)) %&gt;%
+  mutate(year = year(date),
+         month = month(date)) %&gt;%
+  select(-c(
+    temp_adjusted,
+    temp_adjusted_qc,
+    temp_adjusted_error,
+    profile_temp_qc
+  ))
+
+# for plotting later, load in region and coastline information  
+# region_masks_all_seamask_2x2 &lt;- read_rds(file = paste0(
+#   path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
+# 
+# region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))
+# 
+# region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_1x1.rds&quot;))
+
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))</code></pre>
+<pre class="r"><code># read in the map from updata
+map &lt;-
+  read_rds(paste(path_emlr_utilities,
+                 &quot;map_landmask_WOA18.rds&quot;,
+                 sep = &quot;&quot;))</code></pre>
+<div id="harmonise-the-two-datasets" class="section level2">
+<h2>Harmonise the two datasets</h2>
+<p>Calculate monthly average pH for Argo pH for each lon/lat grid, centered on the 15th of each month, to match the format of OceanSODA</p>
+<pre class="r"><code>argo_monthly &lt;- argo %&gt;%
+  mutate(year_month = format_ISO8601(date, precision = &quot;ym&quot;), .after = &#39;date&#39;) %&gt;%
+  group_by(year, month, year_month, date, lat, lon) %&gt;%
+  summarise(
+    argo_ph_month = mean(ph_in_situ_total_adjusted, na.rm = TRUE)
+  ) %&gt;%
+  ungroup() %&gt;%
+  select(
+    date,
+    year_month,
+    year,
+    month,
+    lon,
+    lat,
+    argo_ph_month
+  )</code></pre>
+<p>Join the two datasets</p>
+<pre class="r"><code>OceanSODA &lt;- OceanSODA %&gt;% 
+  mutate(year_month = format_ISO8601(date, precision = &quot;ym&quot;)) %&gt;% 
+  rename(date_OceanSODA = date) 
+  # change date format in OceanSODA to match argo date (yyyy-mm)
+
+argo_OceanSODA &lt;- left_join(argo_monthly, OceanSODA) %&gt;%
+  rename(OceanSODA_ph = ph_total,
+         OceanSODA_ph_error = ph_total_uncert) </code></pre>
+<pre class="r"><code>argo_OceanSODA %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/argo_OceanSODA.rds&quot;))</code></pre>
+</div>
+</div>
+<div id="southern-ocean-surface-ph" class="section level1">
+<h1>Southern Ocean surface pH</h1>
+<p>The focus here is on Southern Ocean surface pH, south of 30ºS, as defined in the RECCAP biome regions</p>
+<pre class="r"><code># region_masks_all_1x1_SO &lt;- region_masks_all_1x1 %&gt;%
+#   filter(region == &#39;southern&#39;,
+#          value != 0)
+
+# keep only Southern Ocean data 
+argo_OceanSODA_SO &lt;- inner_join(argo_OceanSODA, nm_biomes)</code></pre>
+<div id="monthly-climatological-oceansoda-ph" class="section level3">
+<h3>Monthly climatological OceanSODA pH</h3>
+<p>Map monthly mean pH from the OceanSODA data product</p>
+<p>Climatological OceanSODA pH</p>
+<pre class="r"><code># calculate average monthly pH between April 2014 and August 2021 
+argo_OceanSODA_SO_clim &lt;- argo_OceanSODA_SO %&gt;%
+  group_by(lon, lat, month) %&gt;%
+  summarise(
+    clim_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE),
+    clim_argo_ph = mean(argo_ph_month, na.rm = TRUE),
+    offset_clim = clim_OceanSODA_ph - clim_argo_ph
+  ) %&gt;%
+  ungroup()
+
+# regrid to a 2x2 grid for mapping 
+argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim %&gt;%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+    lon = as.numeric(as.character(lon))
+  ) %&gt;%
+  group_by(lon, lat, month) %&gt;%
+  summarise(
+    clim_OceanSODA_ph = mean(clim_OceanSODA_ph, na.rm = TRUE),
+    clim_argo_ph = mean(clim_argo_ph, na.rm = TRUE),
+    offset_clim = mean(offset_clim, na.rm = TRUE)
+  ) %&gt;%
+  ungroup()
+
+map +
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
+            aes(lon, lat, fill = clim_OceanSODA_ph)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;pH&#39;,
+       title = &#39;Monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)&#39;) +
+  theme(legend.position = &#39;right&#39;) +
+  facet_wrap(~month, ncol = 2)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/climatological_map-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot the climatological monthly OceanSODA pH on a polar projection 
+basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = clim_OceanSODA_ph),
+                    linejoin = &#39;mitre&#39;,
+                    col = &#39;transparent&#39;,
+                    detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = &#39;right&#39;)+
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;pH&#39;,
+       title = &#39;monthly climatological \nOceanSODA pH (Apr 2014 - Aug 2021)&#39;)+
+  facet_wrap(~month, ncol = 2)</code></pre>
+</div>
+<div id="climatological-monthly-argo-ph" class="section level3">
+<h3>Climatological monthly Argo pH</h3>
+<p>Climatological Argo pH</p>
+<pre class="r"><code>map +
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
+            aes(lon, lat, fill = clim_argo_ph)) +
+  lims(y = c(-85, -25)) +
+  scale_fill_viridis_c() +
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;pH&#39;,
+       title = &#39;Monthly climatological \nArgo pH (Apr 2014 - Aug 2021)&#39;) +
+  theme(legend.position = &#39;right&#39;) +
+  facet_wrap(~month, ncol = 2)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/clim_map_argo_pH-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = clim_argo_ph),
+                    linejoin = &#39;mitre&#39;,
+                    col = &#39;transparent&#39;,
+                    detail = 60)+
+  scale_fill_viridis_c()+
+  theme(legend.position = &#39;right&#39;)+
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;pH&#39;,
+       title = &#39;monthly climatological \nArgo pH (Apr 2014 - Aug 2021)&#39;)+
+  facet_wrap(~month, ncol = 2)</code></pre>
+</div>
+<div id="timeseries-of-monthly-oceansoda-ph" class="section level3">
+<h3>Timeseries of monthly OceanSODA pH</h3>
+<p>Evolution of monthly surface pH, for the three Southern Ocean RECCAP regions</p>
+<pre class="r"><code>map +
+  geom_raster(data = nm_biomes,
+              aes(x = lon,
+                  y = lat,
+                  fill = biome_name)) +
+  labs(title = &#39;Southern Ocean Mayot biomes&#39;,
+       fill = &#39;biome&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/southern_ocean_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot timeseries of monthly OceanSODA pH
+argo_OceanSODA_SO_clim_regional &lt;- argo_OceanSODA_SO %&gt;%
+  select(year, month, biome_name, OceanSODA_ph, argo_ph_month) %&gt;% 
+  pivot_longer(c(OceanSODA_ph,argo_ph_month),
+               values_to = &quot;ph&quot;,
+               names_to = &quot;data_source&quot;) %&gt;% 
+  group_by(year, month, biome_name, data_source) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  summarise(ph = mean(ph, na.rm = TRUE)) %&gt;%
+  ungroup()</code></pre>
+<pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
+  ggplot(aes(x = year,
+             y = ph,
+             col = biome_name)) +
+  facet_grid(month ~ data_source) +
+  geom_line() +
+  geom_point() +
+  labs(x = &#39;year&#39;,
+       y = &#39;pH in situ (total scale)&#39;,
+       title = &#39;monthly mean pH (Apr 2014-Aug 2021, Southern Ocean)&#39;,
+       col = &#39;region&#39;)</code></pre>
+<pre class="r"><code>argo_OceanSODA_SO_clim_regional %&gt;%   
+  # filter(year != 2014,
+  #        year != 2021) %&gt;%
+  ggplot(aes(x = month,
+             y = ph,
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(biome_name~data_source)+
+  labs(x = &#39;month&#39;,
+       y = &#39;pH in situ (total scale)&#39;,
+       title = &#39;monthly mean OceanSODA pH (Jan 2015-Dec 2020, Southern Ocean)&#39;,
+       col = &#39;year&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/yearly_timeseries_monthly_oceanSODA_pH-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comparison-between-argo-and-oceansoda-ph" class="section level3">
+<h3>Comparison between Argo and OceanSODA pH</h3>
+<p>Calculate the difference between Argo and OceanSODA pH values</p>
+<p>Offset between in-situ monthly pH:</p>
+<pre class="r"><code>argo_OceanSODA_SO &lt;- argo_OceanSODA_SO %&gt;%
+  mutate(offset = OceanSODA_ph - argo_ph_month)
+
+argo_OceanSODA_SO %&gt;%
+  drop_na() %&gt;%
+  ggplot() +
+  geom_hline(yintercept = 0, size = 1)+
+  geom_point(aes(x = year_month, y = offset, col = biome_name), size = 0.7, pch = 19) +
+  scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
+  labs(title = &#39;oceanSODA pH - Argo pH&#39;,
+       x = &#39;date&#39;,
+       y = &#39;offset (pH units)&#39;,
+       col = &#39;region&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/calculate_in_situ_offset-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>argo_OceanSODA_SO %&gt;% 
+  drop_na() %&gt;% 
+  ggplot(aes(x = OceanSODA_ph, y = argo_ph_month))+
+  # geom_point(pch = 19, size = 0.7)+
+  geom_bin2d(aes(x = OceanSODA_ph, y = argo_ph_month), size = 0.3, bins = 60)+
+  scale_fill_viridis_c()+
+  lims(x = c(7.8, 8.25), 
+       y = c(7.8, 8.25)) +
+  geom_abline(slope = 1, intercept = 0)+
+  facet_wrap(~biome_name)+
+  labs(x = &#39;OceanSODA pH (total scale)&#39;,
+       y = &#39;Argo pH (total scale)&#39;,
+       title = &#39;Southern Ocean regional pH&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/oceanSODA_vs_argo_ph_plot-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Mean offset between in-situ OceanSODA pH and in-situ Argo pH</p>
+<pre class="r"><code>mean_insitu_offset &lt;- argo_OceanSODA_SO %&gt;%
+  group_by(year_month, biome_name) %&gt;% 
+  summarise(mean_offset = mean(offset, na.rm = TRUE),
+            std_offset = sd(offset, na.rm = TRUE))
+
+mean_insitu_offset %&gt;%
+  drop_na() %&gt;%
+  ggplot() +
+  geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
+  geom_point(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name),
+             size = 0.7, pch = 19) +
+  geom_line(aes(x = year_month, y = mean_offset, group = biome_name, col = biome_name))+
+  geom_ribbon(aes(x = year_month, 
+                  ymin = mean_offset-std_offset, 
+                  ymax = mean_offset+std_offset, 
+                  group = biome_name, 
+                  fill = biome_name),
+              alpha = 0.2)+
+  scale_x_discrete(breaks = c(&#39;2014-01&#39;, &#39;2015-01&#39;, &#39;2016-01&#39;, &#39;2017-01&#39;, &#39;2018-01&#39;, &#39;2019-01&#39;, &#39;2020-01&#39;))+
+  # facet_wrap(~year)+
+  labs(title = &#39;Mean offset (in situ oceanSODA pH - in situ Argo pH)&#39;,
+       x = &#39;date&#39;,
+       y = &#39;offset (pH units)&#39;,
+       col = &#39;region&#39;,
+       fill = &#39;± 1 std&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/mean_in_situ_offset-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Offset between climatological Argo and climatological OceanSODA pH:</p>
+<pre class="r"><code># Offset between climatological argo and climatological OceanSODA pH 
+
+argo_OceanSODA_SO_clim &lt;- inner_join(argo_OceanSODA_SO_clim, nm_biomes)</code></pre>
+<pre class="r"><code>argo_OceanSODA_SO_clim %&gt;% 
+  drop_na() %&gt;%
+  ggplot() +
+  geom_point(aes(x = month, y = offset_clim, col = biome_name), size = 0.7, pch = 19) +
+  geom_hline(yintercept = 0, size = 1, col = &#39;red&#39;)+
+  scale_x_continuous(breaks = seq(1, 12, 1))+
+  labs(title = &#39;clim oceanSODA pH - clim Argo pH&#39;,
+       x = &#39;month&#39;,
+       y = &#39;offset (pH units)&#39;,
+       col = &#39;region&#39;)</code></pre>
+<p>Mean offset between climatological OceanSODA pH and climatological Argo pH</p>
+<pre class="r"><code>mean_clim_offset &lt;- argo_OceanSODA_SO_clim %&gt;% 
+  group_by(month, biome_name) %&gt;% 
+  summarise(mean_offset_clim = mean(offset_clim, na.rm = TRUE),
+            std_offset_clim = sd(offset_clim, na.rm = TRUE))
+
+mean_clim_offset %&gt;% 
+  ggplot()+
+  geom_point(aes(x = month, y = mean_offset_clim, col = biome_name))+
+  geom_line(aes(x = month, y = mean_offset_clim, col = biome_name))+
+  geom_hline(yintercept = 0, col = &#39;red&#39;) +
+  geom_ribbon(aes(x = month, 
+                  ymin = mean_offset_clim - std_offset_clim, 
+                  ymax = mean_offset_clim + std_offset_clim,
+                  group = biome_name, 
+                  fill = biome_name), 
+              alpha = 0.2) +
+  scale_x_continuous(breaks = seq(1, 12, 1)) +
+  labs(x = &#39;month&#39;,
+       y = &#39;mean offset (pH units)&#39;,
+       title = &#39;Mean offset (clim OceanSODA pH - clim Argo pH)&#39;, 
+       col = &#39;region&#39;,
+       fill = &#39;± 1 std&#39;) </code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/climatological_offset_all_years-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Mapped offset between climatological OceanSODA pH and climatological Argo pH</p>
+<pre class="r"><code># bin the offsets for better plotting  
+# plot the offsets on a map of the Southern Ocean
+
+argo_OceanSODA_SO_clim_2x2 &lt;- argo_OceanSODA_SO_clim_2x2 %&gt;% 
+  mutate(offset_clim_binned = 
+           cut(offset_clim, 
+               breaks = c(-Inf, -0.025, -0.005, 0.000, 0.005, 0.025, 0.035, 0.05, Inf))) %&gt;%    # bin the offsets into intervals (create a discrete variable instead of continuous)
+         # offset_clim_binned = as.factor(as.character(offset_clim_binned))) %&gt;% 
+  drop_na()
+
+map +
+  geom_tile(data = argo_OceanSODA_SO_clim_2x2,
+            aes(lon, lat, fill = offset_clim_binned)) +
+  lims(y = c(-85, -30)) +
+  scale_fill_brewer(palette = &#39;RdBu&#39;, drop = FALSE) +
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;offset (pH units)&#39;,
+       title = &#39;clim OceanSODA ph - clim Argo pH&#39;) +
+  theme(legend.position = &#39;right&#39;)+
+  facet_wrap(~month, ncol = 2)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/map_climatological_offset-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>basemap(limits = -32, data = argo_OceanSODA_SO_clim_2x2) +   # change to polar projection
+  geom_spatial_tile(data = argo_OceanSODA_SO_clim_2x2,
+                    aes(x = lon,
+                        y = lat,
+                        fill = offset_clim_binned),
+                    linejoin = &#39;mitre&#39;,
+                    col = &#39;transparent&#39;,
+                    detail = 60)+
+  scale_fill_brewer(palette = &#39;RdBu&#39;, drop = FALSE)+
+  theme(legend.position = &#39;right&#39;)+
+  labs(x = &#39;lon&#39;,
+       y = &#39;lat&#39;,
+       fill = &#39;offset (pH units)&#39;,
+       title = &#39;clim Ocean SODA pH - clim Argo pH&#39;)+
+  facet_wrap(~month, ncol = 2)</code></pre>
+<div id="basin-separation" class="section level4">
+<h4>Basin separation</h4>
+<p>Using full OceanSODA data (even where there is no Argo data) Each RECCAP biome (1, 2, 3) is separated into basins (Atlantic, Pacific, Indian)</p>
+<pre class="r"><code>basinmask &lt;-
+  read_csv(paste(path_emlr_utilities,
+                 &quot;basin_mask_WOA18.csv&quot;,
+                 sep = &quot;&quot;),
+           col_types = cols(&quot;MLR_basins&quot; = col_character()))
+
+basinmask &lt;- basinmask %&gt;% 
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
+  select(lon, lat, basin_AIP)
+
+OceanSODA_SO &lt;- inner_join(OceanSODA, nm_biomes)
+
+OceanSODA_SO &lt;- inner_join(OceanSODA_SO, basinmask) %&gt;% 
+  mutate(year = year(date_OceanSODA),
+         month = month(date_OceanSODA)) %&gt;% 
+  mutate(date = format_ISO8601(date_OceanSODA, precision = &#39;ym&#39;)) %&gt;% 
+  filter(year &gt;= 2013)</code></pre>
+<pre class="r"><code># plot timeseries of monthly OceanSODA pH
+
+OceanSODA_SO_clim_subregional &lt;- OceanSODA_SO %&gt;%
+  group_by(year, month, biome_name, basin_AIP) %&gt;%  # compute regional mean OceanSODA pH for the three biomes
+  summarise(ph = mean(ph_total, na.rm = TRUE)) %&gt;%
+  ungroup()
+
+# plot a timeseries of monthly average OceanSODA pH, per region and per basin
+OceanSODA_SO_clim_subregional %&gt;% 
+  ggplot(aes(x = month,
+             y = ph,
+             group = year,
+             col = as.character(year)))+
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(biome_name~basin_AIP)+
+  labs(x = &#39;month&#39;,
+       y = &#39;pH in situ (total scale)&#39;,
+       title = &#39;monthly mean OceanSODA pH (Jan 2013-Dec 2020, Southern Ocean basins)&#39;,
+       col = &#39;year&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/monthly_OceanSODA_basin-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>OceanSODA_SO_clim_subregional %&gt;%  
+  ggplot(aes(x = year,
+             y = ph,
+             col = biome_name)) +
+  facet_grid(month ~ basin_AIP) +
+  geom_line() +
+  geom_point() +
+  labs(x = &#39;year&#39;,
+       y = &#39;pH in situ (total scale)&#39;,
+       title = &#39;monthly mean pH (Jan 2013-Dec 2020, Southern Ocean basins)&#39;,
+       col = &#39;region&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/monthly_OceanSODA_basin_per_year-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="longitudinal-separation" class="section level4">
+<h4>Longitudinal separation</h4>
+<p>Bin the pH data into 20º longitude bins (20º - 380º)</p>
+<pre class="r"><code>OceanSODA_SO_lon_binned &lt;- OceanSODA_SO %&gt;%
+  mutate(lon = cut(lon, seq(20, 380, 20), seq(30, 370, 20)),
+         lon = as.numeric(as.character(lon))
+  ) %&gt;%
+  group_by(lon, year, month, biome_name) %&gt;%
+  summarise(
+    OceanSODA_ph_binned = mean(ph_total, na.rm = TRUE)
+  ) %&gt;%
+  ungroup()</code></pre>
+<pre class="r"><code>OceanSODA_SO_lon_binned %&gt;%
+  drop_na() %&gt;% 
+  ggplot(aes(x = month, y = OceanSODA_ph_binned, group = lon, col = as.factor(lon))) +
+  geom_line()+
+  geom_point()+
+  scale_x_continuous(breaks = seq(1, 12, 2))+
+  facet_grid(year~biome_name)+
+  labs(x = &#39;month&#39;,
+       y = &#39;OceanSODA pH&#39;,
+       col = &#39;longitude bin&#39;)</code></pre>
+<p><img src="figure/oceanSODA_argo_pH.Rmd/plot_lon_binned_data-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.3
+
+Matrix products: default
+BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] metR_0.11.0       ggOceanMaps_1.2.6 ggspatial_1.1.5   lubridate_1.8.0  
+ [5] argodata_0.1.0    forcats_0.5.1     stringr_1.4.0     dplyr_1.0.7      
+ [9] purrr_0.3.4       readr_2.1.1       tidyr_1.1.4       tibble_3.1.6     
+[13] ggplot2_3.3.5     tidyverse_1.3.1   workflowr_1.7.0  
+
+loaded via a namespace (and not attached):
+ [1] fs_1.5.2           sf_1.0-5           bit64_4.0.5        RColorBrewer_1.1-2
+ [5] httr_1.4.2         rprojroot_2.0.2    tools_4.1.2        backports_1.4.1   
+ [9] bslib_0.3.1        rgdal_1.5-28       utf8_1.2.2         R6_2.5.1          
+[13] KernSmooth_2.23-20 rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2  
+[17] raster_3.5-11      withr_2.4.3        sp_1.4-6           tidyselect_1.1.1  
+[21] processx_3.5.2     bit_4.0.4          compiler_4.1.2     git2r_0.29.0      
+[25] cli_3.1.1          rvest_1.0.2        RNetCDF_2.5-2      xml2_1.3.3        
+[29] labeling_0.4.2     sass_0.4.0         checkmate_2.0.0    scales_1.1.1      
+[33] classInt_0.4-3     callr_3.7.0        proxy_0.4-26       digest_0.6.29     
+[37] rmarkdown_2.11     pkgconfig_2.0.3    htmltools_0.5.2    highr_0.9         
+[41] dbplyr_2.1.1       fastmap_1.1.0      rlang_1.0.2        readxl_1.3.1      
+[45] rstudioapi_0.13    farver_2.1.0       jquerylib_0.1.4    generics_0.1.1    
+[49] jsonlite_1.7.3     vroom_1.5.7        magrittr_2.0.1     Rcpp_1.0.8        
+[53] munsell_0.5.0      fansi_1.0.2        lifecycle_1.0.1    terra_1.5-12      
+[57] stringi_1.7.6      whisker_0.4        yaml_2.2.1         grid_4.1.2        
+[61] parallel_4.1.2     promises_1.2.0.1   crayon_1.4.2       lattice_0.20-45   
+[65] haven_2.4.3        hms_1.1.1          knitr_1.37         ps_1.6.0          
+[69] pillar_1.6.4       codetools_0.2-18   reprex_2.0.1       glue_1.6.0        
+[73] evaluate_0.14      getPass_0.2-2      data.table_1.14.2  modelr_0.1.8      
+[77] vctrs_0.3.8        tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0  
+[81] gtable_0.3.0       assertthat_0.2.1   xfun_0.29          broom_0.7.11      
+[85] e1071_1.7-9        later_1.3.0        viridisLite_0.4.0  class_7.3-20      
+[89] units_0.7-2        ellipsis_0.3.2    </code></pre>
+</div>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

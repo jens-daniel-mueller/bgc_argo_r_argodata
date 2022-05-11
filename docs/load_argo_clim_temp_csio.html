@@ -1,0 +1,2419 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+
+
+<title>CSIO-MNR Argo Temperature Climatology</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">bgc_argo_r_argodata</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Load data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="load_argo.html">BGC-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_pH_ucsd.html">Argo pH Climatology</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="argo_ph.html">Argo pH</a>
+    </li>
+    <li>
+      <a href="argo_oxygen.html">Argo Oxygen</a>
+    </li>
+    <li>
+      <a href="argo_temp.html">Argo SST</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_pH.html">OceanSODA-Argo pH</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_temp.html">OceanSODA-Argo SST</a>
+    </li>
+    <li>
+      <a href="extreme_pH.html">Extreme pH Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp.html">Extreme Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_compound.html">Compound extremes</a>
+    </li>
+    <li>
+      <a href="variability_temp.html">Argo Temperature Variability</a>
+    </li>
+    <li>
+      <a href="variability_pH.html">Argo pH variability</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata">
+    <span class="fa fa-github"></span>
+     
+    Code
+  </a>
+</li>
+<li>
+  <a href="https://jens-daniel-mueller.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Jens home
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">CSIO-MNR Argo Temperature Climatology</h1>
+<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
+<h4 class="date">11 May, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-05-11
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2f20a764a7244e46ca8ee466a639c5043beab02atargetblank2f20a76a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2f20a764a7244e46ca8ee466a639c5043beab02a" target="_blank">2f20a76</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2f20a764a7244e46ca8ee466a639c5043beab02atargetblank2f20a76a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2f20a764a7244e46ca8ee466a639c5043beab02a" target="_blank">2f20a76</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/
+
+Untracked files:
+    Untracked:  analysis/load_argo.Rmd
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Deleted:    analysis/argo_clim_pH_ucsd.Rmd
+    Deleted:    analysis/argo_clim_temp_csio.Rmd
+    Deleted:    analysis/broullon_DIC_TA_clim.Rmd
+    Deleted:    analysis/loading_data.Rmd
+    Deleted:    analysis/oceanSODA_argo.Rmd
+    Deleted:    analysis/oxygen_data.Rmd
+    Deleted:    analysis/ph_data.Rmd
+    Deleted:    analysis/ph_temp_anomaly_fields.Rmd
+    Deleted:    analysis/temp_data.Rmd
+    Modified:   code/Workflowr_project_managment.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/load_argo_clim_temp_csio.Rmd</code>) and HTML (<code>docs/load_argo_clim_temp_csio.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f20a764a7244e46ca8ee466a639c5043beab02a/analysis/load_argo_clim_temp_csio.Rmd" target="_blank">2f20a76</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+<td>
+rebuild all after subsetting AB profiles and code cleaning
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<pre class="r"><code>library(tidyverse)
+# library(ggOceanMaps)
+library(oce)</code></pre>
+</div>
+<div id="load-data" class="section level1">
+<h1>Load data</h1>
+<pre class="r"><code>path_updata &lt;- &quot;/nfs/kryo/work/updata&quot;
+path_argo_clim_temp &lt;- paste0(path_updata, &quot;/argo_climatology/temperature&quot;)
+path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;
+path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
+path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
+
+theme_set(theme_bw())
+
+map &lt;-
+  read_rds(paste(path_emlr_utilities,
+                 &quot;map_landmask_WOA18.rds&quot;,
+                 sep = &quot;&quot;))</code></pre>
+<pre class="r"><code># Mayot biome separations 
+
+nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))
+
+
+# WOA 18 basin mask
+
+basinmask &lt;-
+  read_csv(
+    paste(path_emlr_utilities,
+          &quot;basin_mask_WOA18.csv&quot;,
+          sep = &quot;&quot;),
+    col_types = cols(&quot;MLR_basins&quot; = col_character())
+  )
+
+basinmask &lt;- basinmask %&gt;%
+  filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
+  select(-c(MLR_basins, basin))</code></pre>
+</div>
+<div id="csio-mnr-climatology" class="section level1">
+<h1>CSIO-MNR climatology</h1>
+<p>CSIO-MNR Argo temperature climatology of Li et al. (2017)</p>
+<p>Li, H., F. Xu, W. Zhou, D. Wang, J. S. Wright, Z. Liu, and Y. Lin (2017), Development of a global gridded Argo data set with Barnes successive corrections, J. Geophys. Res.Oceans, 122, doi: 10.1002/2016JC012285.6</p>
+<p>User Manual: Shaolei Lu，Zenghong Liu，Hong Li，Zhaoqin Li，Xiaofen Wu，Chaohui Sun，Jianping Xu.(2020). Manual of Global Ocean Argo gridded data set (BOA_Argo) (Version 2019), 14 pp <a href="https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf" class="uri">https://argo.ucsd.edu/wp-content/uploads/sites/361/2020/07/User_Manual_BOA_Argo-2020.pdf</a></p>
+<div id="read-data" class="section level2">
+<h2>Read data</h2>
+<pre class="r"><code>jan &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_01.nc&quot;)) %&gt;% 
+  mutate(month = 1) %&gt;% 
+  select(-c(salt, time))
+
+feb &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_02.nc&quot;)) %&gt;% 
+  mutate(month = 2) %&gt;% 
+  select(-c(salt, time))
+
+mar &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_03.nc&quot;)) %&gt;% 
+  mutate(month = 3) %&gt;% 
+  select(-c(salt, time))
+
+apr &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_04.nc&quot;)) %&gt;% 
+  mutate(month = 4) %&gt;% 
+  select(-c(salt, time))
+
+may &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_05.nc&quot;)) %&gt;% 
+  mutate(month = 5) %&gt;% 
+  select(-c(salt, time))
+
+jun &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_06.nc&quot;)) %&gt;% 
+  mutate(month = 6) %&gt;% 
+  select(-c(salt, time))
+
+jul &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_07.nc&quot;)) %&gt;% 
+  mutate(month = 7) %&gt;% 
+  select(-c(salt, time))
+
+aug &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_08.nc&quot;)) %&gt;% 
+  mutate(month = 8) %&gt;% 
+  select(-c(salt, time))
+
+sept &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_09.nc&quot;)) %&gt;% 
+  mutate(month = 9) %&gt;% 
+  select(-c(salt, time))
+
+oct &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_10.nc&quot;)) %&gt;% 
+  mutate(month = 10) %&gt;% 
+  select(-c(salt, time))
+
+nov &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_11.nc&quot;)) %&gt;% 
+  mutate(month = 11) %&gt;% 
+  select(-c(salt, time))
+
+dec &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/BOA_Argo_monthly_12.nc&quot;)) %&gt;% 
+  mutate(month = 12) %&gt;% 
+  select(-c(salt, time))</code></pre>
+</div>
+<div id="join-data" class="section level2">
+<h2>Join data</h2>
+<pre class="r"><code>boa_temp_clim &lt;- bind_rows(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)
+
+rm(jan, feb, mar, apr, may, jun, jul, aug, sept, oct, nov, dec)</code></pre>
+</div>
+<div id="harmonise-data" class="section level2">
+<h2>Harmonise data</h2>
+<pre class="r"><code>boa_temp_clim &lt;- boa_temp_clim %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon),
+         depth = swDepth(pressure = pres, latitude = lat)) %&gt;% 
+  rename(clim_temp = temp)</code></pre>
+</div>
+<div id="write-data-to-file" class="section level2">
+<h2>Write data to file</h2>
+<pre class="r"><code>boa_temp_clim %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/boa_temp_clim.rds&quot;))</code></pre>
+</div>
+<div id="southern-ocean-climatological-sst" class="section level2">
+<h2>Southern Ocean climatological SST</h2>
+<pre class="r"><code># keep only data south of 30ºS
+boa_temp_clim_SO &lt;- boa_temp_clim %&gt;% 
+  filter(lat &lt;= -30)
+# 9 196 740 obs of 6 variables </code></pre>
+<pre class="r"><code>map+
+  geom_point(data = boa_temp_clim_SO %&gt;% filter(depth &lt; 20),
+             aes(x = lon,
+                 y = lat),
+             size = 0.1,
+             pch = 2,
+             alpha = 0.2) +
+  labs(title = &#39;CSIO observation coverage&#39;)</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_location_of_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>boa_sst_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
+  filter(depth &lt;= 20) %&gt;% 
+  group_by(lon, lat, month) %&gt;% 
+  summarise(clim_sst = mean(clim_temp, na.rm = TRUE)) %&gt;% 
+  ungroup()
+
+boa_sst_clim_SO %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = paste0(&#39;Li et al. CSIO clim SST, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_surface_climatological_csio_temperature-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="southern-ocean-climatological-profiles" class="section level2">
+<h2>Southern Ocean climatological profiles</h2>
+<pre class="r"><code>boa_temp_clim_SO &lt;- inner_join(boa_temp_clim_SO, nm_biomes)
+
+boa_temp_clim_SO &lt;- inner_join(boa_temp_clim_SO,
+                                    basinmask)</code></pre>
+<pre class="r"><code>boa_temp_clim_SO %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = paste0(&#39;CSIO climatological profiles, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_basin_biome_climatological_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="ucsd-climatology" class="section level1">
+<h1>UCSD climatology</h1>
+<p>Roemmich and Gilson UCSD argo temperature climatology</p>
+<p>Roemmich, D. and J. Gilson, 2009: The 2004-2008 mean and annual cycle of temperature, salinity, and steric height in the global ocean from the Argo Program. Progress in Oceanography, 82, 81-100</p>
+<div id="read-data-1" class="section level2">
+<h2>Read data</h2>
+<pre class="r"><code>clim_argo_temp_year_mean &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_mean.nc&quot;))
+
+# yearly mean temperature values in each 1/6 lat/lon grid (1 value for the year) 
+
+clim_argo_temp_monthly_anomaly &lt;- tidync::hyper_tibble(paste0(path_argo_clim_temp, &quot;/RG_ArgoClim_33pfit_2019_annual.nc&quot;))
+
+# monthly temperature anomaly from the annual mean, from January (time = 0.5) to December (time = 11.5), in each 1/2 lon/lat grid</code></pre>
+</div>
+<div id="harmonise-data-1" class="section level2">
+<h2>Harmonise data</h2>
+<pre class="r"><code># put both dataframes onto 1/1 lon/lat grid and calculate mean temperature / mean anomaly in each grid 
+
+clim_argo_temp_monthly_anomaly &lt;- clim_argo_temp_monthly_anomaly %&gt;% 
+  select(-ARGO_SALINITY_ANNUAL_ANOMALY) %&gt;% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         pressure = PRESSURE,
+         temp_annual_anomaly = ARGO_TEMPERATURE_ANNUAL_ANOMALY,
+         time = TIME) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %&gt;% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %&gt;% 
+  filter(lat &lt; -30)
+
+# calculate mean temperature anomaly in each 1x1 grid 
+clim_argo_temp_monthly_anomaly &lt;- clim_argo_temp_monthly_anomaly %&gt;% 
+  group_by(lon, lat, depth, time) %&gt;% 
+  summarise(temp_monthly_anomaly = mean(temp_annual_anomaly, na.rm = TRUE)) %&gt;% 
+  ungroup()
+
+# re-grid annual mean temperature to 1x1 grid and compute depth 
+clim_argo_temp_year_mean &lt;- clim_argo_temp_year_mean %&gt;% 
+  select(-ARGO_SALINITY_MEAN) %&gt;% 
+  rename(lon = LONGITUDE,
+         lat = LATITUDE,
+         temp_annual_mean = ARGO_TEMPERATURE_MEAN,
+         pressure = PRESSURE) %&gt;% 
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;% 
+  mutate(lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+         lat = as.numeric(as.character(lat)),
+         lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+         lon = as.numeric(as.character(lon))) %&gt;% 
+  mutate(depth = swDepth(pressure = pressure, latitude = lat),
+         .after = pressure) %&gt;% 
+  filter(lat &lt; -30)
+
+# calculate mean yearly temperature in each lat/lon grid 
+clim_argo_temp_year_mean &lt;- clim_argo_temp_year_mean %&gt;% 
+  group_by(lon, lat, depth) %&gt;% 
+  summarise(temp_annual_clim = mean(temp_annual_mean, na.rm = TRUE)) %&gt;% 
+  ungroup()
+
+# check the compatability of the two depths in the two datasets
+depth_year &lt;- table(unique(round(clim_argo_temp_monthly_anomaly$depth, digits = 0)))
+
+depth_month &lt;- table(unique(round(clim_argo_temp_year_mean$depth, digits = 0)))
+
+all.equal(depth_year, depth_month)</code></pre>
+<pre><code>[1] TRUE</code></pre>
+<pre class="r"><code># same depth axis in both 
+
+rm(depth_year, depth_month)
+
+clim_argo_temp_ucsd &lt;- left_join(clim_argo_temp_monthly_anomaly,
+                                 clim_argo_temp_year_mean)
+
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  mutate(temp_monthly_clim = temp_annual_clim + temp_monthly_anomaly,
+         depth = round(depth, digits = 0),
+         month = time + 0.5)
+
+rm(clim_argo_temp_monthly_anomaly, clim_argo_temp_year_mean)</code></pre>
+</div>
+<div id="write-data-to-file-1" class="section level2">
+<h2>Write data to file</h2>
+<pre class="r"><code>clim_argo_temp_ucsd %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/clim_argo_temp_ucsd.rds&quot;))</code></pre>
+</div>
+<div id="southern-ocean-climatological-sst-1" class="section level2">
+<h2>Southern Ocean climatological SST</h2>
+<pre class="r"><code>map+
+  geom_point(data = clim_argo_temp_ucsd %&gt;% 
+              filter(depth &lt; 5),
+            aes(x = lon,
+                y = lat),
+            size = 0.2)+
+  facet_wrap(~time, ncol = 2)+
+  lims(y = c(-80, -30))+
+  labs(title = &#39;UCSD climatology obs coverage&#39;)</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/map_location_of_ucsd_clim_observations-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>clim_sst_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  filter(depth &lt;= 20) %&gt;% 
+  group_by(lon, lat, month) %&gt;% 
+  summarise(clim_sst = mean(temp_monthly_clim, na.rm = TRUE)) %&gt;% 
+  ungroup()
+
+clim_sst_ucsd %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~map+
+      geom_tile(data = .x,
+                aes(x = lon,
+                    y = lat,
+                    fill = clim_sst))+
+      scale_fill_viridis_c()+
+      lims(y = c(-85, -28))+
+      labs(title = paste0(&#39;Roemmich &amp; Gilson UCSD clim SST, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/clim_sst_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="southern-ocean-january-climatological-temperature" class="section level2">
+<h2>Southern Ocean January climatological temperature</h2>
+<pre class="r"><code>clim_argo_temp_ucsd %&gt;% 
+  group_split(depth) %&gt;% 
+  map(
+    ~map+
+      geom_tile(data = .x %&gt;% filter(month == 1),
+                aes(x = lon,
+                    y = lat,
+                    fill = temp_monthly_clim))+
+      scale_fill_viridis_c()+
+      lims(y = c(-80, -29))+
+      labs(title = paste0(&#39;UCSD January climatological temperature &#39;, unique(.x$depth), &#39;m&#39;))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[37]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[38]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[39]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[40]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[41]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[42]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[43]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[44]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[45]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[46]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[47]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[48]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[49]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[50]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-50.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[51]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-51.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[52]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-52.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[53]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-53.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[54]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-54.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[55]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-55.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[56]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-56.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[57]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-57.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[58]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-58.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[59]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-59.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[60]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-60.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[61]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-61.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[62]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-62.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[63]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-63.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[64]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-64.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[65]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-65.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[66]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-66.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[67]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-67.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[68]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-68.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[69]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-69.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[70]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-70.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[71]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-71.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[72]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-72.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[73]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-73.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[74]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-74.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[75]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-75.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[76]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-76.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[77]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-77.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[78]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-78.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[79]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-79.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[80]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-80.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[81]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-81.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[82]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-82.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[83]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-83.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[84]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-84.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[85]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-85.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[86]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-86.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[87]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-87.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[88]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-88.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[89]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-89.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[90]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-90.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[91]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-91.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[92]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-92.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[93]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-93.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[94]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-94.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[95]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-95.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[96]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-96.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[97]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-97.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[98]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-98.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[99]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-99.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[100]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-100.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[101]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-101.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[102]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-102.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[103]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-103.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[104]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-104.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[105]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-105.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[106]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-106.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[107]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-107.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[108]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-108.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[109]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-109.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[110]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-110.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[111]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-111.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[112]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-112.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[113]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-113.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[114]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-114.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[115]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-115.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[116]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-116.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[117]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-117.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[118]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-118.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[119]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-119.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[120]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-120.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[121]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-121.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[122]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-122.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[123]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-123.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[124]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-124.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[125]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-125.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[126]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-126.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[127]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-127.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[128]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-128.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[129]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-129.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[130]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-130.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[131]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-131.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[132]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-132.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[133]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-133.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[134]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-134.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[135]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-135.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[136]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-136.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[137]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-137.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[138]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-138.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[139]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-139.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[140]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-140.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[141]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-141.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[142]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-142.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[143]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-143.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[144]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-144.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[145]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-145.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[146]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-146.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[147]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-147.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[148]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-148.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[149]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-149.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[150]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-150.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[151]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-151.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[152]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-152.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[153]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-153.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[154]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-154.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[155]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-155.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[156]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-156.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[157]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-157.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[158]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-158.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[159]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-159.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[160]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/january_clim_depth_levels-160.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="southern-ocean-climatological-profiles-1" class="section level2">
+<h2>Southern Ocean climatological profiles</h2>
+<pre class="r"><code># add in Mayot biome separations 
+clim_argo_temp_ucsd &lt;- inner_join(clim_argo_temp_ucsd, nm_biomes)
+
+# add in basin separations
+clim_argo_temp_ucsd &lt;- inner_join(clim_argo_temp_ucsd, basinmask)</code></pre>
+<pre class="r"><code># plot climatological profiles per month and biome 
+
+clim_argo_temp_ucsd %&gt;% 
+  group_split(month) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = temp_monthly_clim,
+                y = depth))+
+      geom_point(size = 0.1, pch = 1, fill = NA)+
+      scale_y_reverse()+
+      facet_grid(basin_AIP~biome_name)+
+      labs(title = paste0(&#39;UCSD clim profiles, month:&#39;, unique(.x$month)))
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_climatological_profiles_ucsd-12.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="csio-mnr-vs-ucsd-climatology" class="section level1">
+<h1>CSIO-MNR vs UCSD climatology</h1>
+<pre class="r"><code>boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
+  rename(depth_boa = depth)
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  rename(depth_ucsd = depth)
+
+
+boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;% 
+  mutate(depth = cut(depth_boa,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+clim_argo_temp_ucsd &lt;- clim_argo_temp_ucsd %&gt;% 
+  mutate(depth = cut(depth_ucsd,
+                     breaks = c(0, 10, 20, 30, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000),
+                     include.lowest = TRUE,
+                     labels = c(5, 15, 25, 40, 60, 85, 150, 250, 350, 450, 550, 650, 750, 850, 950, 1250, 1750)),
+         depth = as.numeric(as.character(depth)))
+
+# table(unique(boa_temp_clim_SO$depth))
+# table(unique(clim_argo_temp_ucsd$depth))
+
+temperature_climatology &lt;- full_join(boa_temp_clim_SO, clim_argo_temp_ucsd)</code></pre>
+<pre class="r"><code>temperature_climatology %&gt;% 
+  group_split(month, depth) %&gt;% 
+  map(
+    ~ggplot(data = .x,
+            aes(x = clim_temp,
+                y = temp_monthly_clim))+
+      geom_bin2d(data = .x,
+                 aes(x = clim_temp,
+                     y = temp_monthly_clim))+
+      geom_abline(slope = 1, intercept = 0)+
+      scale_fill_viridis_c()+
+      facet_grid(biome_name ~ basin_AIP)+
+      labs(title = paste0(&#39;month: &#39;, unique(.x$month), &#39;| depth: &#39;, unique(.x$depth), &#39;m&#39;),
+           x = &#39;UCSD climatological temp&#39;,
+           y = &#39;CSIO-MNR climatological temp&#39;)
+  )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[19]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[20]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[21]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[22]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[23]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[24]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-24.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[25]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-25.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[26]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-26.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[27]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-27.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[28]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-28.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[29]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-29.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[30]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-30.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[31]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-31.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[32]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-32.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[33]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-33.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[34]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-34.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[35]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-35.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[36]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-36.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[37]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-37.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[38]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-38.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[39]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-39.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[40]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-40.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[41]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-41.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[42]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-42.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[43]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-43.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[44]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-44.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[45]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-45.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[46]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-46.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[47]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-47.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[48]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-48.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[49]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-49.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[50]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-50.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[51]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-51.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[52]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-52.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[53]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-53.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[54]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-54.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[55]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-55.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[56]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-56.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[57]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-57.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[58]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-58.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[59]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-59.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[60]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-60.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[61]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-61.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[62]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-62.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[63]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-63.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[64]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-64.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[65]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-65.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[66]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-66.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[67]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-67.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[68]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-68.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[69]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-69.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[70]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-70.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[71]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-71.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[72]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-72.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[73]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-73.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[74]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-74.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[75]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-75.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[76]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-76.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[77]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-77.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[78]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-78.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[79]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-79.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[80]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-80.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[81]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-81.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[82]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-82.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[83]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-83.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[84]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-84.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[85]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-85.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[86]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-86.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[87]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-87.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[88]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-88.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[89]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-89.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[90]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-90.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[91]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-91.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[92]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-92.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[93]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-93.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[94]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-94.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[95]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-95.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[96]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-96.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[97]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-97.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[98]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-98.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[99]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-99.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[100]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-100.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[101]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-101.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[102]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-102.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[103]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-103.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[104]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-104.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[105]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-105.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[106]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-106.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[107]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-107.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[108]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-108.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[109]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-109.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[110]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-110.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[111]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-111.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[112]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-112.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[113]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-113.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[114]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-114.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[115]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-115.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[116]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-116.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[117]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-117.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[118]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-118.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[119]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-119.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[120]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-120.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[121]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-121.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[122]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-122.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[123]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-123.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[124]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-124.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[125]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-125.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[126]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-126.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[127]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-127.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[128]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-128.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[129]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-129.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[130]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-130.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[131]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-131.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[132]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-132.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[133]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-133.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[134]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-134.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[135]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-135.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[136]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-136.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[137]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-137.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[138]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-138.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[139]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-139.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[140]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-140.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[141]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-141.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[142]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-142.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[143]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-143.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[144]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-144.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[145]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-145.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[146]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-146.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[147]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-147.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[148]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-148.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[149]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-149.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[150]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-150.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[151]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-151.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[152]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-152.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[153]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-153.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[154]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-154.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[155]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-155.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[156]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-156.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[157]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-157.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[158]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-158.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[159]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-159.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[160]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-160.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[161]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-161.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[162]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-162.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[163]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-163.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[164]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-164.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[165]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-165.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[166]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-166.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[167]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-167.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[168]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-168.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[169]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-169.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[170]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-170.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[171]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-171.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[172]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-172.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[173]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-173.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[174]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-174.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[175]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-175.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[176]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-176.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[177]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-177.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[178]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-178.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[179]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-179.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[180]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-180.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[181]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-181.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[182]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-182.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[183]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-183.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[184]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-184.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[185]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-185.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[186]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-186.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[187]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-187.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[188]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-188.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[189]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-189.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[190]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-190.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[191]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-191.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[192]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-192.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[193]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-193.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[194]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-194.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[195]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-195.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[196]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-196.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[197]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-197.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[198]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-198.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[199]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-199.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[200]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-200.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[201]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-201.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[202]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-202.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[203]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-203.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[204]]</code></pre>
+<p><img src="figure/load_argo_clim_temp_csio.Rmd/plot_ucsd_vs_csio_clim-204.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.3
+
+Matrix products: default
+BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] oce_1.5-0       gsw_1.0-6       forcats_0.5.1   stringr_1.4.0  
+ [5] dplyr_1.0.7     purrr_0.3.4     readr_2.1.1     tidyr_1.1.4    
+ [9] tibble_3.1.6    ggplot2_3.3.5   tidyverse_1.3.1 workflowr_1.7.0
+
+loaded via a namespace (and not attached):
+ [1] httr_1.4.2        sass_0.4.0        viridisLite_0.4.0 bit64_4.0.5      
+ [5] vroom_1.5.7       jsonlite_1.7.3    modelr_0.1.8      bslib_0.3.1      
+ [9] assertthat_0.2.1  getPass_0.2-2     highr_0.9         cellranger_1.1.0 
+[13] yaml_2.2.1        pillar_1.6.4      backports_1.4.1   glue_1.6.0       
+[17] digest_0.6.29     promises_1.2.0.1  rvest_1.0.2       colorspace_2.0-2 
+[21] htmltools_0.5.2   httpuv_1.6.5      pkgconfig_2.0.3   broom_0.7.11     
+[25] haven_2.4.3       scales_1.1.1      processx_3.5.2    whisker_0.4      
+[29] later_1.3.0       tzdb_0.2.0        git2r_0.29.0      farver_2.1.0     
+[33] generics_0.1.1    ellipsis_0.3.2    withr_2.4.3       cli_3.1.1        
+[37] magrittr_2.0.1    crayon_1.4.2      readxl_1.3.1      evaluate_0.14    
+[41] ps_1.6.0          fs_1.5.2          ncdf4_1.19        fansi_1.0.2      
+[45] xml2_1.3.3        tidync_0.2.4      tools_4.1.2       hms_1.1.1        
+[49] lifecycle_1.0.1   munsell_0.5.0     reprex_2.0.1      callr_3.7.0      
+[53] compiler_4.1.2    jquerylib_0.1.4   RNetCDF_2.5-2     rlang_1.0.2      
+[57] grid_4.1.2        rstudioapi_0.13   labeling_0.4.2    rmarkdown_2.11   
+[61] gtable_0.3.0      DBI_1.1.2         R6_2.5.1          ncmeta_0.3.0     
+[65] lubridate_1.8.0   knitr_1.37        fastmap_1.1.0     bit_4.0.4        
+[69] utf8_1.2.2        rprojroot_2.0.2   stringi_1.7.6     parallel_4.1.2   
+[73] Rcpp_1.0.8        vctrs_0.3.8       dbplyr_2.1.1      tidyselect_1.1.1 
+[77] xfun_0.29        </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
