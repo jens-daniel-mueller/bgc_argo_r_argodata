@@ -255,10 +255,7 @@ flag_A <- flag_A %>%
 
 flag_A_n <- flag_A %>% 
   distinct(year, month, platform_cycle) %>% 
-  group_by(year, month) %>%
-  count(platform_cycle) %>% 
-  group_by(year, month) %>% 
-  summarise(n = sum(n))
+  count(year, month)
 
 
 # total number of profiles 
