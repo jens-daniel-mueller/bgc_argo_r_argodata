@@ -66,8 +66,14 @@ basinmask <- basinmask %>%
   select(-c(MLR_basins, basin))
 
 # full argo data (temperature)
-full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds")) %>% 
-  select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error, profile_ph_in_situ_total_qc))
+full_argo <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
+  select(
+    -c(
+      ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+      profile_ph_in_situ_total_qc
+    )
+  )
 
 # change the date format for compatibility with OceanSODA data
 full_argo <- full_argo %>%
@@ -152,7 +158,7 @@ full_argo_SO <- full_argo_SO %>%
 
 full_argo_SO %>% 
   group_split(biome, basin_AIP, year) %>% 
-  # head(6) %>% 
+  head(3) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
@@ -183,7 +189,7 @@ full_argo_SO %>%
 
 full_argo_SO %>% 
   group_split(biome, basin_AIP, year) %>% 
-  # head(6) %>% 
+  head(3) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
@@ -215,7 +221,7 @@ full_argo_SO %>%
 # plot all years in each month 
 full_argo_SO %>% 
   group_split(biome, basin_AIP) %>% 
-  # head(2) %>% 
+  head(3) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
