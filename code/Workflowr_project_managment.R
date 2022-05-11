@@ -11,47 +11,54 @@ wflow_publish(here::here(
   "analysis",
   c(
     "index.Rmd",
-    'loading_data.Rmd',
-    'argo_clim_temp_csio.Rmd',
-    'argo_clim_pH_ucsd.Rmd',
-    'load_OceanSODA.Rmd',
+    'load_argo.Rmd',
     'load_biomes.Rmd',
-    'broullon_DIC_TA_clim.Rmd',
+    'load_argo_clim_temp_csio.Rmd',
+    'load_argo_clim_pH_ucsd.Rmd',
+    'load_OceanSODA.Rmd',
+    'load_broullon_DIC_TA_clim.Rmd',
     'coverage_timeseries.Rmd',
     'coverage_maps.Rmd',
-    'ph_data.Rmd',
-    'oxygen_data.Rmd',
-    'temp_data.Rmd',
-    'oceanSODA_argo.Rmd',
+    'argo_ph.Rmd',
+    'argo_oxygen.Rmd',
+    'argo_temp.Rmd',
+    'oceanSODA_argo_pH.Rmd',
     'oceanSODA_argo_temp.Rmd',
     'extreme_pH.Rmd',
     'extreme_temp.Rmd',
+    'extreme_compound.Rmd',
     'variability_temp.Rmd',
     'variability_pH.Rmd'
   )
 ),
-message = "cleaned up code",
+message = "rebuild all after subsetting AB profiles and code cleaning",
 republish = TRUE)
+
 
 wflow_publish(here::here(
   "analysis",
   c(
     "index.Rmd",
+    'load_biomes.Rmd',
+    'load_argo_clim_temp_csio.Rmd',
+    'load_argo_clim_pH_ucsd.Rmd',
+    'load_OceanSODA.Rmd',
+    'load_broullon_DIC_TA_clim.Rmd',
+    'coverage_timeseries.Rmd',
+    'coverage_maps.Rmd',
+    'argo_ph.Rmd',
+    'argo_oxygen.Rmd',
+    'argo_temp.Rmd',
+    'oceanSODA_argo_pH.Rmd',
+    'oceanSODA_argo_temp.Rmd',
     'extreme_pH.Rmd',
     'extreme_temp.Rmd',
+    'extreme_compound.Rmd',
     'variability_temp.Rmd',
-    'variability_pH.Rmd',
-    'argo_clim_temp_csio.Rmd',
-    'argo_clim_pH_ucsd.Rmd'
+    'variability_pH.Rmd'
   )
 ),
-message = "added climatology pages")
-
-wflow_publish(here::here(
-  "analysis",
-  c('extreme_temp.Rmd')
-),
-message = "re-build extreme temp page")
+message = "rebuild all after subsetting AB profiles and code cleaning")
 
 
 # Push latest version to GitHub

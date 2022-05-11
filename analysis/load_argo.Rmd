@@ -199,20 +199,23 @@ Join the metadata and data together into one dataset
 
 ```{r create_dataset}
 
-bgc_merge <- full_join(bgc_data, bgc_metadata) 
+bgc_merge <- full_join(bgc_data, bgc_metadata)
 
-bgc_merge <- bgc_merge %>% 
-  select(-c(profile_chla_qc:profile_cdom_qc),
-        -c(profile_cndc_qc:profile_up_radiance555_qc)) %>% 
-    rename(lon = longitude, 
-          lat = latitude) %>% 
-  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% 
+bgc_merge <- bgc_merge %>%
+  select(
+    -c(profile_chla_qc:profile_cdom_qc),
+    -c(profile_cndc_qc:profile_up_radiance555_qc)
+  ) %>%
+  rename(lon = longitude,
+         lat = latitude) %>%
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
   mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), 
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
     lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), 
-    lon = as.numeric(as.character(lon))) %>% 
-  mutate(depth = swDepth(pres_adjusted, latitude =  lat), 
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  ) %>%
+  mutate(depth = swDepth(pres_adjusted, latitude =  lat),
          .before = pres_adjusted)
 
 
@@ -228,36 +231,48 @@ ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1
 ```{r create_pH_argo_dataframes}
 
 bgc_merge_pH_qc_1 <- bgc_merge %>%
-  filter(ph_in_situ_total_adjusted_qc == '1') %>% 
-  select(date, lat, lon,
-         depth, psal_adjusted, temp_adjusted, temp_adjusted_qc,
-         ph_in_situ_total_adjusted, ph_in_situ_total_adjusted_qc,
-         platform_number, cycle_number,
-         profile_ph_in_situ_total_qc,
-         profile_temp_qc)
+  filter(ph_in_situ_total_adjusted_qc == '1') %>%
+  select(
+    date,
+    lat,
+    lon,
+    depth,
+    psal_adjusted,
+    temp_adjusted,
+    temp_adjusted_qc,
+    ph_in_situ_total_adjusted,
+    ph_in_situ_total_adjusted_qc,
+    platform_number,
+    cycle_number,
+    profile_ph_in_situ_total_qc,
+    profile_temp_qc
+  )
 
-# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid 
-ph_merge_1x1 <- bgc_merge %>% 
-  select(-c(doxy_adjusted:nitrate_adjusted_error),
-         -c(profile_doxy_qc, profile_nitrate_qc)) %>% 
-  filter(ph_in_situ_total_adjusted_qc == '1') %>% 
+# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid
+ph_merge_1x1 <- bgc_merge %>%
+  select(
+    -c(doxy_adjusted:nitrate_adjusted_error),
+    -c(profile_doxy_qc, profile_nitrate_qc)
+  ) %>%
+  filter(ph_in_situ_total_adjusted_qc == '1') %>%
   mutate(year = year(date),
          month = month(date),
          .after = n_prof)
 
 
 # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
-ph_surface_1x1 <- ph_merge_1x1 %>% 
+ph_surface_1x1 <- ph_merge_1x1 %>%
   filter(between(depth, 0, 20))
 
-# create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid 
+# create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid
 ph_surface_2x2 <- ph_surface_1x1 %>%
   mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)), 
+    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
     lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)), 
+    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
     lon = as.numeric(as.character(lon))
-   )   # regrid into 2x2º grid 
+  )   # regrid into 2x2º grid
+
 ```
 
 ## Temperature data 
@@ -286,9 +301,10 @@ pH and temperature data from floats where both variables have full profiles with
 # keep only temperature observations where good pH data exists: 
 
 # using only complete profiles, and temperature data where pH measurements exist:
-bgc_merge_flag_A <- bgc_merge %>%
-  filter(profile_ph_in_situ_total_qc == 'A',
-         profile_temp_qc == 'A') %>%
+
+bgc_merge_flag_AB <- bgc_merge %>%
+  filter(profile_ph_in_situ_total_qc %in% c('A', 'B'),
+         profile_temp_qc %in% c('A', 'B')) %>%
   select(depth,
          temp_adjusted:temp_adjusted_error,
          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
@@ -391,8 +407,8 @@ bgc_merge_temp_qc_1 %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
  
 
-bgc_merge_flag_A %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A.rds"))
+bgc_merge_flag_AB %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
 
 # bgc_merge_flag_A_test %>%
 #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A_test.rds"))
