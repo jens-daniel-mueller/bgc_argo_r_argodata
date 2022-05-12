@@ -31,6 +31,7 @@ library(gsw)
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+path_emlr_preprocessing <- "/nfs/kryo/work/jenmueller/emlr_cant/observations/preprocessing/"
 path_updata <- '/nfs/kryo/work/updata'
 path_broullon_clim <- paste0(path_updata, "/broullon_co2_monthly_climatology")
 path_woa13_temp <- paste0(path_updata, "/woa2013/temperature/decav/1.00/")
@@ -287,7 +288,6 @@ broullon_clim <- broullon_clim %>%
 ```
 
 
-
 # Apply basin mask
 
 ```{r join_biomes_basins}
@@ -313,6 +313,65 @@ broullon_clim <- inner_join(broullon_clim, basinmask)
 
 broullon_clim %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/broullon_TA_DIC_clim_all.rds"))
+
+
+```
+
+# Load Gruber 2019
+
+```{r load_Gruber_2019_delta_Cant}
+
+G19_dcant_3d <-
+  read_csv(paste0(path_emlr_preprocessing,
+                  "G19_dcant_3d.csv"))
+
+
+G19_dcant_3d <- G19_dcant_3d %>% 
+  select(lon, lat, depth, dcant = dcant_pos)
+
+
+G19_dcant_3d <- inner_join(G19_dcant_3d,
+                           nm_biomes %>% select(lon, lat))
+
+
+```
+
+# Scale DIC to 2016
+
+```{r scale_DIC}
+
+# unique(G19_dcant_3d$depth)
+# unique(broullon_clim_SO$depth)
+
+broullon_clim_SO <-
+  full_join(broullon_clim_SO,
+            G19_dcant_3d %>% filter(depth <= 2000))
+
+# remove grid cells with only one sal value to allow for interpolation
+broullon_clim_SO <- broullon_clim_SO %>%
+  group_by(month, lat, lon) %>%
+  mutate(n = sum(!is.na(dcant))) %>%
+  ungroup()
+
+broullon_clim_SO <- broullon_clim_SO %>%
+  filter(n > 1) %>%
+  select(-n)
+
+# interpolate dcant to Broullon clim depth levels
+broullon_clim_SO <- broullon_clim_SO %>%
+  group_by(lon, lat, month) %>%
+  arrange(depth) %>%
+  mutate(dcant := approxfun(depth, dcant, rule = 2)(depth)) %>%
+  ungroup()
+
+# remove sal/temp data on original woa13 depth levels
+broullon_clim_SO <- broullon_clim_SO %>% 
+  filter(!is.na(DIC))
+
+broullon_clim_SO <- broullon_clim_SO %>% 
+  mutate(DIC = DIC + dcant * ((2016-1994)/(2007-1994))) %>% 
+  select(-dcant)
+
 
 
 ```

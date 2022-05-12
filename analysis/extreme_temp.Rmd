@@ -707,14 +707,14 @@ OceanSODA_temp_SO_extreme_grid %>%
                     y = lat,
                     fill = temp_extreme),
                 alpha = 0.5)+
+      scale_fill_manual(values = HNL_colors_map)+
       geom_tile(data = profile_temp_extreme %>% filter(depth < 10),
                  aes(x = lon,
                      y = lat,
-                     fill = 'black',
+                     fill = 'springgreen4',
                      height = 1,
                      width = 1),
                  alpha = 0.5)+
-      scale_fill_manual(values = HNL_colors_map)+
       facet_wrap(~year, ncol = 1)+
       lims(y = c(-85, -30))+
       labs(title = paste('month:', unique(.x$month)),
