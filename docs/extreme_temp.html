@@ -572,16 +572,16 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78acca945bab0fbf93c9e277072950255da5f522targetblank78acca9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78acca945bab0fbf93c9e277072950255da5f522" target="_blank">78acca9</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree944e0a2a06b48c569c03f5a0b2d6696f8aef6b9ctargetblank944e0a2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/944e0a2a06b48c569c03f5a0b2d6696f8aef6b9c" target="_blank">944e0a2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree78acca945bab0fbf93c9e277072950255da5f522targetblank78acca9a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree944e0a2a06b48c569c03f5a0b2d6696f8aef6b9ctargetblank944e0a2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/78acca945bab0fbf93c9e277072950255da5f522" target="_blank">78acca9</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/944e0a2a06b48c569c03f5a0b2d6696f8aef6b9c" target="_blank">944e0a2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -632,6 +632,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/944e0a2a06b48c569c03f5a0b2d6696f8aef6b9c/analysis/extreme_temp.Rmd" target="_blank">944e0a2</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-12
+</td>
+<td>
+revised color scale for argo location map
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1bdcd6ea340df6c0eb746746706a056d4c3e8796/analysis/extreme_temp.Rmd" target="_blank">1bdcd6e</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-12
+</td>
+<td>
+revised color scale for argo location map
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4173c20619f292321da15486062dd1ac9531e1c5/docs/extreme_temp.html" target="_blank">4173c20</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -8121,28 +8172,38 @@ profile_temp_extreme &lt;- profile_temp_extreme %&gt;%
 </div>
 <div id="location-of-argo-profiles" class="section level1">
 <h1>Location of Argo profiles</h1>
-<pre class="r"><code>OceanSODA_temp_SO_extreme_grid %&gt;% 
+<pre class="r"><code>OceanSODA_temp_SO_extreme_grid %&gt;%
   group_split(month) %&gt;%
-  #head(1) %&gt;%
+  # head(1) %&gt;%
   map(
-    ~map +
-      geom_tile(data = .x,
-                aes(x = lon,
-                    y = lat,
-                    fill = temp_extreme),
-                alpha = 0.5)+
-      scale_fill_manual(values = HNL_colors_map)+
-      geom_tile(data = profile_temp_extreme %&gt;% filter(depth &lt; 10),
-                 aes(x = lon,
-                     y = lat,
-                     fill = &#39;springgreen4&#39;,
-                     height = 1,
-                     width = 1),
-                 alpha = 0.5)+
-      facet_wrap(~year, ncol = 1)+
-      lims(y = c(-85, -30))+
-      labs(title = paste(&#39;month:&#39;, unique(.x$month)),
-           fill = &#39;temperature&#39;)
+    ~ map +
+      geom_tile(
+        data = .x,
+        aes(x = lon,
+            y = lat,
+            fill = temp_extreme),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = HNL_colors_map) +
+      new_scale_fill() +
+      geom_tile(
+        data = profile_temp_extreme %&gt;%
+          distinct(lon, lat, platform_cycle, year, month),
+        aes(
+          x = lon,
+          y = lat,
+          fill = &#39;argo\nprofiles&#39;,
+          height = 1,
+          width = 1
+        ),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = &quot;springgreen4&quot;,
+                        name = &quot;&quot;) +
+      facet_wrap(~ year, ncol = 1) +
+      lims(y = c(-85, -30)) +
+      labs(title = paste(&#39;month:&#39;, unique(.x$month))
+      )
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/extreme_temp.Rmd/map_location_argo_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -17356,11 +17417,12 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] ggrepel_0.9.1     oce_1.5-0         gsw_1.0-6         ggforce_0.3.3    
- [5] metR_0.11.0       scico_1.3.0       ggOceanMaps_1.2.6 ggspatial_1.1.5  
- [9] broom_0.7.11      lubridate_1.8.0   forcats_0.5.1     stringr_1.4.0    
-[13] dplyr_1.0.7       purrr_0.3.4       readr_2.1.1       tidyr_1.1.4      
-[17] tibble_3.1.6      ggplot2_3.3.5     tidyverse_1.3.1   workflowr_1.7.0  
+ [1] ggnewscale_0.4.5  ggrepel_0.9.1     oce_1.5-0         gsw_1.0-6        
+ [5] ggforce_0.3.3     metR_0.11.0       scico_1.3.0       ggOceanMaps_1.2.6
+ [9] ggspatial_1.1.5   broom_0.7.11      lubridate_1.8.0   forcats_0.5.1    
+[13] stringr_1.4.0     dplyr_1.0.7       purrr_0.3.4       readr_2.1.1      
+[17] tidyr_1.1.4       tibble_3.1.6      ggplot2_3.3.5     tidyverse_1.3.1  
+[21] workflowr_1.7.0  
 
 loaded via a namespace (and not attached):
   [1] colorspace_2.0-2    ellipsis_0.3.2      class_7.3-20       
