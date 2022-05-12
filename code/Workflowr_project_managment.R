@@ -40,21 +40,10 @@ wflow_publish(here::here(
   "analysis",
   c(
     'load_broullon_DIC_TA_clim.Rmd',
-    'coverage_timeseries.Rmd',
-    'coverage_maps.Rmd',
-    'argo_ph.Rmd',
-    'argo_oxygen.Rmd',
-    'argo_temp.Rmd',
-    'oceanSODA_argo_pH.Rmd',
-    'oceanSODA_argo_temp.Rmd',
-    'extreme_pH.Rmd',
-    'extreme_temp.Rmd',
-    'extreme_compound.Rmd',
-    'variability_temp.Rmd',
-    'variability_pH.Rmd'
+    'extreme_pH.Rmd'
   )
 ),
-message = "run with DIC clim scaled to 2016")
+message = "scaled DIC to 2019 (rather than 2015)")
 
 
 # Push latest version to GitHub
