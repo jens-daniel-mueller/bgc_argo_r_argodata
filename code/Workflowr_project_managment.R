@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "updated profile counts timeseries")
+wflow_publish(all = TRUE, message = "revised color scale for argo location map")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -31,18 +31,14 @@ wflow_publish(here::here(
     'variability_pH.Rmd'
   )
 ),
-message = "rebuild all after subsetting AB profiles and code cleaning",
+message = "rebuild all in one go, after subsetting AB profiles and code cleaning",
 republish = TRUE)
+
 
 
 wflow_publish(here::here(
   "analysis",
   c(
-    "index.Rmd",
-    'load_biomes.Rmd',
-    'load_argo_clim_temp_csio.Rmd',
-    'load_argo_clim_pH_ucsd.Rmd',
-    'load_OceanSODA.Rmd',
     'load_broullon_DIC_TA_clim.Rmd',
     'coverage_timeseries.Rmd',
     'coverage_maps.Rmd',
@@ -58,7 +54,7 @@ wflow_publish(here::here(
     'variability_pH.Rmd'
   )
 ),
-message = "rebuild all after subsetting AB profiles and code cleaning")
+message = "run with DIC clim scaled to 2016")
 
 
 # Push latest version to GitHub

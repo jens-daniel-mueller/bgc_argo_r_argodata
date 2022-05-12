@@ -24,6 +24,7 @@ library(scico)
 library(metR)
 library(ggforce)
 library(ggrepel)
+library(ggnewscale)
 ```
 
 ```{r set_global_theme}
@@ -650,29 +651,38 @@ profile_extreme <- profile_extreme %>%
 
 ```{r map_location_argo_profiles, fig.asp=2}
 
-OceanSODA_2x2_SO_extreme_grid %>% 
+
+OceanSODA_2x2_SO_extreme_grid %>%
   group_split(month) %>%
-  # head(1) %>%
+  head(1) %>%
   map(
-    ~map +
-      geom_tile(data = .x,
-                aes(x = lon,
-                    y = lat,
-                    fill = ph_extreme),
-                alpha = 0.5)+
-      geom_tile(data = profile_extreme %>% 
-                   filter(depth < 10),
-                 aes(x = lon, 
-                     y = lat,
-                     fill = 'springgreen4',
-                     height = 1,
-                     width = 1),
-                 alpha = 0.3)+
-      scale_fill_manual(values = HNL_colors_map)+
-      facet_wrap(~year, ncol = 1)+
-      lims(y = c(-85, -30))+
-      labs(title = paste('month:', unique(.x$month)),
-           fill = 'pH')
+    ~ map +
+      geom_tile(
+        data = .x,
+        aes(x = lon,
+            y = lat,
+            fill = ph_extreme),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = HNL_colors_map) +
+      new_scale_fill() +
+      geom_tile(
+        data = profile_extreme %>%
+          distinct(lon, lat, platform_cycle, year, month),
+        aes(
+          x = lon,
+          y = lat,
+          fill = 'argo\nprofiles',
+          height = 1,
+          width = 1
+        ),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = "springgreen4",
+                        name = "") +
+      facet_wrap( ~ year, ncol = 1) +
+      lims(y = c(-85, -30)) +
+      labs(title = paste('month:', unique(.x$month)))
   )
 
 ```
