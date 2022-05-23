@@ -291,13 +291,31 @@ bgc_merge_temp_qc_1 <- bgc_merge %>%
 
 ```
 
-## QC flag A pH & temperature data 
+## QC flag A and B temperature data
+
+BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
+
+```{r temp_flag_AB_without_ph}
+
+bgc_merge_temp_AB <- bgc_merge %>% 
+  filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
+  filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
+  select(date, lat, lon,
+         depth, temp_adjusted, temp_adjusted_qc,
+         platform_number, cycle_number,
+         profile_temp_qc)
+
+```
+
+
+
+## QC flag A and B pH & temperature data 
 
 pH and temperature data from floats where both variables have full profiles with QC flag A 
 
 ```{r create_flag_A_bgc_argo_dataframe}
 
-# create a dataframe with temperature and pH profile flags A only 
+# create a dataframe with temperature and pH profile flags A and B only 
 # keep only temperature observations where good pH data exists: 
 
 # using only complete profiles, and temperature data where pH measurements exist:
@@ -405,7 +423,10 @@ bgc_merge_pH_qc_1 %>%
 
 bgc_merge_temp_qc_1 %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
- 
+
+bgc_merge_temp_AB %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
+
 
 bgc_merge_flag_AB %>%
   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))

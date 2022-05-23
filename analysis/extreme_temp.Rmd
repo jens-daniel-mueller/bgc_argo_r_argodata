@@ -101,6 +101,14 @@ full_argo <- full_argo %>%
          month = month(date)) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
+# load in bgc-temperature data with profile QC flags of A and B, irrespective of whether a corresponding pH measurement exists 
+argo_temp <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
+
+argo_temp <- argo_temp %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  mutate(date = ymd(format(date, '%Y-%m-15')))
+
 # base map for plotting
 map <-
   read_rds(paste(path_emlr_utilities,
@@ -628,7 +636,7 @@ OceanSODA_temp_SO_extreme_grid %>%
   theme(legend.position = 'bottom')
 ```
 
-# Argo
+# Argo (BGC-temperature with pH)
 
 ## Grid reduction
 
@@ -693,7 +701,7 @@ profile_temp_extreme <- profile_temp_extreme %>%
 
 ```
 
-# Location of Argo profiles 
+# Location of BGC-temperature profiles (with pH)
 
 ```{r map_location_argo_profiles, fig.asp=2}
 
@@ -1767,3 +1775,66 @@ remove_clim_basin_biome_mean %>%
 rm(remove_clim_basin_biome_mean, profile_temp_count_season)
 
 ```
+
+# Argo (BGC-temperature irrespective of pH)
+
+```{r temperature_without_ph}
+
+all_profile_temp_extreme <- inner_join(
+  argo_temp %>% 
+    select(c(year, month, date, lon, lat, depth,
+           temp_adjusted,
+           platform_number,
+           cycle_number)),                 # 567 327 obs 
+  OceanSODA_temp_SO_extreme_grid %>% 
+    select(c(year, month, date, lon, lat,
+           OceanSODA_temp, temp_extreme,
+           clim_temp, clim_diff,
+           basin_AIP, biome_name)))
+
+all_profile_temp_extreme <- profile_temp_extreme %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+
+```
+
+# Location of all BGC-temp profiles (regardless of pH)
+
+```{r map_all_temp_profiles, fig.asp=2}
+
+OceanSODA_temp_SO_extreme_grid %>%
+  group_split(month) %>%
+  # head(1) %>%
+  map(
+    ~ map +
+      geom_tile(
+        data = .x,
+        aes(x = lon,
+            y = lat,
+            fill = temp_extreme),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = HNL_colors_map) +
+      new_scale_fill() +
+      geom_tile(
+        data = all_profile_temp_extreme %>%
+          distinct(lon, lat, platform_cycle, year, month),
+        aes(
+          x = lon,
+          y = lat,
+          fill = 'argo\nprofiles',
+          height = 1,
+          width = 1
+        ),
+        alpha = 0.5
+      ) +
+      scale_fill_manual(values = "springgreen4",
+                        name = "") +
+      facet_wrap(~ year, ncol = 1) +
+      lims(y = c(-85, -30)) +
+      labs(title = paste('month:', unique(.x$month))
+      )
+  )
+
+```
+
+
