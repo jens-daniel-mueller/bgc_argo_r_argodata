@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+
+
+<title>Load Core-Argo Data</title>
+
+<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">bgc_argo_r_argodata</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Load data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="load_argo.html">BGC-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_core.html">Core-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_pH_ucsd.html">Argo pH Climatology</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="argo_ph.html">Argo pH</a>
+    </li>
+    <li>
+      <a href="argo_oxygen.html">Argo Oxygen</a>
+    </li>
+    <li>
+      <a href="argo_temp.html">Argo BGC-SST</a>
+    </li>
+    <li>
+      <a href="argo_temp_core.html">Argo Core-SST</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_pH.html">OceanSODA-Argo pH</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_temp.html">OceanSODA-BGC-Argo SST</a>
+    </li>
+    <li>
+      <a href="extreme_pH.html">Extreme pH Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp.html">Extreme BGC-Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp_core.html">Extreme Core-Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_compound.html">Compound extremes</a>
+    </li>
+    <li>
+      <a href="variability_temp.html">Argo Temperature Variability</a>
+    </li>
+    <li>
+      <a href="variability_pH.html">Argo pH variability</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata">
+    <span class="fa fa-github"></span>
+     
+    Code
+  </a>
+</li>
+<li>
+  <a href="https://jens-daniel-mueller.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Jens home
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Load Core-Argo Data</h1>
+<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
+<h4 class="date">29 August, 2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-08-29
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .RData
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/
+
+Untracked files:
+    Untracked:  code/OceanSODA_argo_extremes.R
+    Untracked:  code/creating_dataframe.R
+    Untracked:  code/creating_map.R
+    Untracked:  code/merging_oceanSODA_Argo.R
+    Untracked:  code/pH_data_timeseries.R
+
+Unstaged changes:
+    Modified:   analysis/_site.yml
+    Modified:   code/Workflowr_project_managment.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/load_argo_core.Rmd</code>) and HTML (<code>docs/load_argo_core.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8e815707d1fdc0b9ee057445b0eff0fac2b9376f/analysis/load_argo_core.Rmd" target="_blank">8e81570</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+<td>
+load and add in core-argo data (1 month)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<p>Load core-Argo temperature data for comparison with BGC-Argo temperature data</p>
+<div id="set-cache-directory" class="section level2">
+<h2>Set cache directory</h2>
+<p>Directory where the core-Argo profile files are stored</p>
+<pre class="r"><code># set cache directory
+argo_set_cache_dir(cache_dir = path_argo_core)
+
+# check cache directory
+argo_cache_dir()</code></pre>
+<pre><code>[1] &quot;/nfs/kryo/work/updata/core_argo_r_argodata&quot;</code></pre>
+<pre class="r"><code># check argo mirror
+argo_mirror()</code></pre>
+<pre><code>[1] &quot;https://data-argo.ifremer.fr&quot;</code></pre>
+<pre class="r"><code>argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+# ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
+argo_update_data(max_data_cache_age = Inf)</code></pre>
+</div>
+<div id="load-index-file" class="section level2">
+<h2>Load index file</h2>
+<p>Load in delayed-mode core-Argo (CTD) data index file</p>
+<pre class="r"><code># core_index &lt;- argo_global_prof() %&gt;%
+#   argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%  # load in delayed-mode data
+#   argo_filter_date(date_min = &#39;2013-01-01&#39;,
+#                    date_max = Sys.time())  
+
+core_index &lt;- argo_global_prof() %&gt;% 
+  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+  argo_filter_date(date_min = &#39;2013-01-01&#39;,
+                   date_max = &#39;2013-02-01&#39;)
+# 1 month worth of data for test purposes 
+
+# check dates 
+# max(core_index$date, na.rm = TRUE)
+# min(core_index$date, na.rm = TRUE)</code></pre>
+</div>
+<div id="read-data" class="section level2">
+<h2>Read data</h2>
+<p>Read in the core CTD variables corresponding to the index defined above</p>
+<pre class="r"><code>core_data &lt;- argo_prof_levels(
+  path = core_index,
+  vars =
+    c(
+      &#39;PRES_ADJUSTED&#39;,
+      &#39;PRES_ADJUSTED_QC&#39;,
+      &#39;PSAL_ADJUSTED&#39;,
+      &#39;PSAL_ADJUSTED_QC&#39;,
+      &#39;TEMP_ADJUSTED&#39;,
+      &#39;TEMP_ADJUSTED_QC&#39;),
+  quiet = TRUE
+) 
+# read in the profiles (takes a while)</code></pre>
+</div>
+<div id="read-metadata" class="section level2">
+<h2>Read metadata</h2>
+<p>Read in the corresponding metadata:</p>
+<pre class="r"><code>core_metadata &lt;- argo_prof_prof(path = core_index)</code></pre>
+</div>
+<div id="join-data" class="section level2">
+<h2>Join data</h2>
+<pre class="r"><code>core_merge &lt;- full_join(core_data, core_metadata)
+
+core_merge &lt;- core_merge %&gt;%
+  rename(lon = longitude,
+         lat = latitude) %&gt;%
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  ) %&gt;%
+  mutate(depth = swDepth(pres_adjusted, latitude =  lat),
+         .before = pres_adjusted)</code></pre>
+</div>
+<div id="harmonise-metadata" class="section level2">
+<h2>Harmonise metadata</h2>
+<pre class="r"><code>core_metadata &lt;- core_metadata %&gt;%
+  rename(lon = longitude,
+         lat = latitude) %&gt;%
+  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+  mutate(
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  )</code></pre>
+</div>
+<div id="write-data" class="section level2">
+<h2>Write data</h2>
+<pre class="r"><code>core_data %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data.rds&quot;))
+
+core_metadata %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+
+core_merge %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_merge.rds&quot;))</code></pre>
+</div>
+<div id="core-temperature-flag-a-profiles" class="section level2">
+<h2>Core-Temperature Flag A profiles</h2>
+<pre class="r"><code>core_merge_flag_A &lt;- core_merge %&gt;% 
+  filter(profile_temp_qc == &#39;A&#39;) %&gt;% 
+  select(lat, lon, date, 
+         depth, temp_adjusted, temp_adjusted_qc,
+         platform_number, cycle_number,
+         profile_temp_qc)
+
+core_merge_flag_A %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_merge_flag_A.rds&quot;))</code></pre>
+</div>
+<div id="core-temperature-flag-a-and-b" class="section level2">
+<h2>Core-Temperature Flag A and B</h2>
+<pre class="r"><code>core_merge_flag_AB &lt;- core_merge %&gt;% 
+  filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) %&gt;% 
+  filter(temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;) %&gt;% 
+  select(lat, lon, date,
+         depth, temp_adjusted, temp_adjusted_qc,
+         platform_number, cycle_number,
+         profile_temp_qc)
+
+core_merge_flag_AB %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_merge_flag_AB.rds&quot;))</code></pre>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.1.2 (2021-11-01)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.3
+
+Matrix products: default
+BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] oce_1.5-0       gsw_1.0-6       sf_1.0-5        lubridate_1.8.0
+ [5] argodata_0.1.0  forcats_0.5.1   stringr_1.4.0   dplyr_1.0.7    
+ [9] purrr_0.3.4     readr_2.1.1     tidyr_1.1.4     tibble_3.1.6   
+[13] ggplot2_3.3.5   tidyverse_1.3.1 workflowr_1.7.0
+
+loaded via a namespace (and not attached):
+ [1] httr_1.4.2         sass_0.4.0         bit64_4.0.5        vroom_1.5.7       
+ [5] jsonlite_1.7.3     modelr_0.1.8       bslib_0.3.1        assertthat_0.2.1  
+ [9] getPass_0.2-2      cellranger_1.1.0   progress_1.2.2     yaml_2.2.1        
+[13] pillar_1.6.4       backports_1.4.1    glue_1.6.0         digest_0.6.29     
+[17] promises_1.2.0.1   rvest_1.0.2        colorspace_2.0-2   htmltools_0.5.2   
+[21] httpuv_1.6.5       pkgconfig_2.0.3    broom_0.7.11       haven_2.4.3       
+[25] scales_1.1.1       processx_3.5.2     whisker_0.4        later_1.3.0       
+[29] tzdb_0.2.0         git2r_0.29.0       proxy_0.4-26       generics_0.1.1    
+[33] ellipsis_0.3.2     withr_2.4.3        cli_3.1.1          magrittr_2.0.1    
+[37] crayon_1.4.2       readxl_1.3.1       evaluate_0.14      ps_1.6.0          
+[41] fs_1.5.2           fansi_1.0.2        xml2_1.3.3         class_7.3-20      
+[45] prettyunits_1.1.1  tools_4.1.2        hms_1.1.1          lifecycle_1.0.1   
+[49] munsell_0.5.0      reprex_2.0.1       callr_3.7.0        compiler_4.1.2    
+[53] jquerylib_0.1.4    e1071_1.7-9        RNetCDF_2.5-2      rlang_1.0.2       
+[57] classInt_0.4-3     units_0.7-2        grid_4.1.2         rstudioapi_0.13   
+[61] rmarkdown_2.11     gtable_0.3.0       DBI_1.1.2          R6_2.5.1          
+[65] knitr_1.37         bit_4.0.4          fastmap_1.1.0      utf8_1.2.2        
+[69] rprojroot_2.0.2    KernSmooth_2.23-20 stringi_1.7.6      parallel_4.1.2    
+[73] Rcpp_1.0.8         vctrs_0.3.8        dbplyr_2.1.1       tidyselect_1.1.1  
+[77] xfun_0.29         </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
