@@ -27,22 +27,38 @@ library(lubridate)
 ```{r set_updata_root_directory, include=FALSE}
 
 path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
+path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
+
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+path_argo_core_preprocessed <- paste0(path_argo_core, 
+                                      "/preprocessed_core_data")
 
 ```
 
 # Load data
 
+## BGC-Argo data
+
 Read the files created in loading_data.html:
 
-```{r load_preprpocessed_data}
-
-path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+```{r load_preprocessed_data}
 
 bgc_metadata <-
   read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
 ```
+
+## Core-Argo data
+
+```{r load_core_temp_data}
+
+core_metadata <- read_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
+
+```
+
+## Basin data
 
 ```{r load_map_and_basin_mask}
 
@@ -67,7 +83,6 @@ map <-
 theme_set(theme_bw())
 ```
 
-
 # QC flags
 
 **QC flags** for values ('`flag`' column) are between 1 and 8, where:
@@ -87,10 +102,10 @@ theme_set(theme_bw())
 -   'B' means 75-\<100% of profile levels contain good data,
 -   'C' means 50-75% of profile levels contain good data,
 -   'D' means 25-50% of profile levels contain good data,
--   'E' means \>0-50% of profile levels contain good data,
+-   'E' means >0-50% of profile levels contain good data,
 -   'F' means 0% of profile levels contain good data.
 
-# Number of profiles
+# Number of BGC-profiles
 
 ## Per parameter
 
@@ -127,7 +142,6 @@ bgc_profile_counts_total <- bgc_metadata %>%
          profile_flag != "")
 
 ```
-
 
 ```{r bgc_data_counts_using_bgc_merge}
 
@@ -175,6 +189,9 @@ bgc_profile_counts_total <- bgc_metadata %>%
 ```
 
 #### Total number of profiles
+
+Total number of BGC-profiles (all flags A-F)
+
 ```{r count_data}
 
 # count the total number of profiles, regardless of QC flag 
@@ -196,6 +213,7 @@ total_data_count <- bgc_metadata %>%
 knitr::kable(total_data_count, caption = 'total number of profiles', format = 'markdown')
 ```
 
+Total number of profiles with usable data (flags A-E)
 
 ```{r count_usable_data}
 # count the number of profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
@@ -220,6 +238,7 @@ knitr::kable(usable_data_count,
              format = 'markdown')
 ```
 
+Total number of BGC-profiles with flag A (100% good data)
 
 ```{r count_A_flag_data}
 # count the number of profiles with QC flag A 
@@ -296,6 +315,7 @@ flag_AB_n %>%
 
 ```
 
+Total number of F-flag BGC profiles (unusable data)
 
 ```{r count_F_flag_data}
 # count the number of profiles with QC Flag F (not usable data)
@@ -320,7 +340,6 @@ knitr::kable(F_data_count,
              format = 'markdown')
 
 ```
-
 
 Plot the evolution of the number of profiles over time
 
@@ -499,7 +518,6 @@ bgc_profile_counts_total_A_region <-
 
 ```
 
-
 ```{r profiles_timeseries_total_A_per_region, fig.asp=0.5}
 
 bgc_profile_counts_total_A_region %>% 
@@ -516,6 +534,307 @@ bgc_profile_counts_total_A_region %>%
 ggsave("output/figures/time_series_profiles_per_region.png",
        width = 7,
        height = 4)
+
+
+```
+
+## Remove BGC data
+
+```{r remove_bgc_data}
+
+rm(list = ls(pattern = 'bgc_'))
+rm(list = ls(pattern = '_count'))
+
+```
+
+# Number of Core-Profiles
+
+## Core- temperature and salinity
+
+```{r number_core_temp_profiles}
+
+core_profile_counts <- core_metadata %>% 
+  select(platform_number, cycle_number, date, 
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(year, month, parameter, profile_flag) %>%   # count the number of occurrences of unique flags for each parameter, in each month of each year 
+  filter(!is.na(profile_flag),
+         profile_flag != "")
+
+
+core_profile_counts_total <- core_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag != "")
+  
+  
+```
+
+### Total number of profiles
+
+Total number of profiles, regardless of QC flags
+
+```{r total_core_profiles}
+
+# count the total number of core profiles, regardless of QC flag 
+
+total_data_count_core <- core_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = 'parameter',
+               values_to = 'profile_flag',
+               names_prefix = 'profile_') %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag != "") %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n))
+
+knitr::kable(total_data_count_core, caption = 'total number of profiles', format = 'markdown')
+
+```
+
+Number of core profiles with usable data (flags A, B, C, D, and E)
+
+```{r count_usable_core_data}
+
+# count the number of core tempa and sal profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
+
+usable_data_count_core <- core_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag !="",
+         profile_flag != "F") %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n))
+
+knitr::kable(usable_data_count_core, 
+             caption = 'total number of core profiles with QC flags A, B, C, D, E', 
+             format = 'markdown')
+
+```
+
+Total number of core-profiles with flag A (best data)
+
+```{r count_core_data_flag_A}
+
+# count the number of core profiles with QC flag A 
+
+A_data_count_core <- core_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag != "",
+         profile_flag == 'A') %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n))
+
+
+knitr::kable(A_data_count_core, 
+             caption = 'total number of core profiles with QC flag A',
+             format = 'markdown')
+
+```
+
+Total number of F-flag core profiles (0% good data)
+
+```{r count_core_data_flag_F}
+
+# count the number of core profiles with QC Flag F (not usable data)
+
+F_data_count_core <- core_metadata %>% 
+  select(platform_number, cycle_number, date, 
+         profile_temp_qc, profile_psal_qc) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  count(parameter, profile_flag) %>% 
+  filter(!is.na(profile_flag),
+         profile_flag !="",
+         profile_flag == 'F') %>% 
+  group_by(parameter) %>% 
+  summarise(n = sum(n))
+
+knitr::kable(F_data_count_core, 
+             caption = 'total number of core profiles with QC flag F',
+             format = 'markdown')
+
+```
+
+Plot the evolution of the total number of core profiles over time
+
+```{r plot_core_profile_counts, fig.asp=0.5}
+
+# draw separate plots for the separate parameters
+
+core_profile_counts %>%
+  group_split(parameter) %>%   # creates a separate flag count for each parameter 
+  map(
+    ~ ggplot(data = .x,       # repeats the ggplot for each separate parameter 
+             aes(
+               x = month, y = n, col = profile_flag
+             )) +
+      geom_line() +
+      geom_point() +
+      facet_grid(. ~ year,
+                 scales = "free_y") +
+      labs(title = paste("Parameter: ", unique(.x$parameter)), 
+           x = 'month', y = 'number of profiles', 
+           col = 'profile QC flag') +
+      scale_x_continuous(breaks = seq(1,12,4))
+  )
+
+ggsave("output/figures/time_series_core_profiles_per_parameter.png",
+width = 7,
+height = 4)
+
+```
+
+## All flag A
+
+```{r count_A_flag_core_profiles, fig.asp=0.5}
+
+# count the number of profiles which have a QC flag of A for all three BGC parameters
+# the if_all(starts_with()) notation allows to filter over a range of columns simultaneously
+
+core_profile_counts_total_A <- core_metadata %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc) %>% 
+  filter(if_all(starts_with("profile_"), ~. == 'A')) %>% 
+  pivot_longer(cols = starts_with("profile_"),
+               names_to = "parameter",
+               values_to = "profile_flag",
+               names_prefix = "profile_") %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  distinct(platform_number, cycle_number, year, month) %>% 
+  count(year, month)
+
+core_profile_counts_total_A %>% 
+  ggplot(aes(x = month, y = n)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = "free_y") +
+  scale_x_continuous(breaks = seq(1,12,4)) +
+  labs(x = 'month', y = 'number of profiles',
+       title = "Number of profiles",
+       subtitle = "Core temp + sal profiles (QC flag A)")
+
+ggsave("output/figures/time_series_flag_A_core_profiles.png",
+width = 7,
+height = 4)
+
+
+```
+
+## All Core-temp flag A
+
+```{r core_temp_profiles_flag_A_timeseries, fig.asp=0.5}
+
+core_profile_counts_total_A_temp <- core_metadata %>% 
+  filter(profile_temp_qc == 'A') %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc) %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  distinct(platform_number, cycle_number, year, month, profile_temp_qc) %>% 
+  count(year, month, profile_temp_qc)
+
+# timeseries plot 
+
+core_profile_counts_total_A_temp %>% 
+  ggplot(aes(x = month, y = n, col = profile_temp_qc)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = "free_y") +
+  scale_x_continuous(breaks = seq(1,12,4)) +
+  labs(x = 'month', y = 'number of profiles',
+       title = "Number of profiles",
+       subtitle = "Core-temp (QC flag A)")
+
+ggsave("output/figures/time_series_flag_A_core_profiles_temp.png",
+width = 7,
+height = 4)
+
+```
+
+## By Region
+
+Number of A-Flag Core profiles by region
+
+```{r count_core_profiles_by_region, fig.asp=0.5}
+
+core_profile_counts_total_A_region <- 
+  inner_join(core_metadata, basinmask) %>% 
+  select(platform_number, cycle_number, date,
+         profile_temp_qc, profile_psal_qc, basin_AIP) %>% 
+  filter(if_all(starts_with("profile_"), ~. == 'A')) %>% 
+  pivot_longer(cols = profile_temp_qc:profile_psal_qc,
+               names_to = 'parameter',
+               values_to = 'profile_flag',
+               names_prefix = 'profile_') %>% 
+  mutate(year = year(date),
+         month = month(date)) %>% 
+  distinct(platform_number, cycle_number, year, month, basin_AIP) %>% 
+  count(year, month, basin_AIP)
+
+
+core_profile_counts_total_A_region %>% 
+  ggplot(aes(x = month, y = n, col = basin_AIP)) +
+  geom_line() +
+  geom_point() +
+  facet_grid(. ~ year,
+             scales = "free_y") +
+  scale_x_continuous(breaks = seq(1,12,2)) +
+  labs(x = 'month', y = 'number of profiles',
+       title = "Number of profiles",
+       subtitle = "Core temp + sal (QC flag A)")
+
+ggsave("output/figures/time_series_core_profiles_per_region.png",
+       width = 7,
+       height = 4)
+```
+
+```{r remove_core_data}
+
+rm(list = ls(pattern = 'core_'))
+rm(list = ls(pattern = '_core'))
 
 
 ```
