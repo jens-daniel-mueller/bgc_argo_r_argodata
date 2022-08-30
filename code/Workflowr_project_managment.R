@@ -4,7 +4,7 @@
 # https://jdblischak.github.io/workflowr/articles/wflow-01-getting-started.html
 
 # commit regular changes of modified .Rmd files(locally) and rebuild site
-wflow_publish(all = TRUE, message = "revised color scale for argo location map")
+wflow_publish(all = TRUE, message = "added 6 months of core data (still have to fix the dates")
 
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
 wflow_publish(here::here(
@@ -12,6 +12,7 @@ wflow_publish(here::here(
   c(
     "index.Rmd",
     'load_argo.Rmd',
+    'load_argo_core.Rmd',
     'load_biomes.Rmd',
     'load_argo_clim_temp_csio.Rmd',
     'load_argo_clim_pH_ucsd.Rmd',
@@ -22,16 +23,18 @@ wflow_publish(here::here(
     'argo_ph.Rmd',
     'argo_oxygen.Rmd',
     'argo_temp.Rmd',
+    'argo_temp_core.Rmd',
     'oceanSODA_argo_pH.Rmd',
     'oceanSODA_argo_temp.Rmd',
     'extreme_pH.Rmd',
     'extreme_temp.Rmd',
+    'extreme_temp_core.Rmd',
     'extreme_compound.Rmd',
     'variability_temp.Rmd',
     'variability_pH.Rmd'
   )
 ),
-message = "rebuild all in one go, after subsetting AB profiles and code cleaning",
+message = "load and add in core-argo data (1 month)",
 republish = TRUE)
 
 
