@@ -14,7 +14,7 @@
 
 <title>Temporal data coverage</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -77,6 +77,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -97,6 +98,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -154,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -187,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -196,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -331,7 +332,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -341,7 +342,7 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Load data
      
     <span class="caret"></span>
@@ -371,7 +372,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data coverage
      
     <span class="caret"></span>
@@ -386,7 +387,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data
      
     <span class="caret"></span>
@@ -454,7 +455,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -465,14 +466,16 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temporal data coverage</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">29 August, 2022</h4>
+<h4 class="date">02 October, 2023</h4>
 
 </div>
 
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -481,7 +484,9 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -490,17 +495,27 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-08-29
+<strong>Last updated:</strong> 2023-10-02
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
 </p>
 <p>
-This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -509,113 +524,157 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
 </p>
 </div>
 <div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20211008)</code> </a>
 </p>
 </div>
-<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div id="strongSeedstrongcodesetseed20211008code"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p>The command <code>set.seed(20211008)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
 </p>
 </div>
-<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
 </p>
 </div>
 <div id="strongCachestrongnone" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
 <div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6377b31822d41048c5ca0180bf6d0f19ee7dc33ctargetblank6377b31a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6377b31822d41048c5ca0180bf6d0f19ee7dc33c" target="_blank">6377b31</a>
+</a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a" class="panel-collapse collapse">
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6377b31822d41048c5ca0180bf6d0f19ee7dc33ctargetblank6377b31a"
+class="panel-collapse collapse">
 <div class="panel-body">
 <p>
-Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6377b31822d41048c5ca0180bf6d0f19ee7dc33c" target="_blank">6377b31</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
 </p>
 <p>
-Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
 </p>
 <pre><code>
 Ignored files:
-    Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
 
 Untracked files:
-    Untracked:  code/OceanSODA_argo_extremes.R
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
-    Untracked:  code/merging_oceanSODA_Argo.R
-    Untracked:  code/pH_data_timeseries.R
+    Untracked:  analysis/vertical_alignment.Rmd
 
 Unstaged changes:
-    Modified:   analysis/_site.yml
+    Modified:   analysis/load_argo.Rmd
     Modified:   code/Workflowr_project_managment.R
 
 </code></pre>
 <p>
-Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
 </p>
 </div>
 </div>
@@ -626,7 +685,12 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/coverage_timeseries.Rmd</code>) and HTML (<code>docs/coverage_timeseries.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/coverage_timeseries.Rmd</code>)
+and HTML (<code>docs/coverage_timeseries.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -650,6 +714,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/coverage_timeseries.html" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1696,7 +1777,8 @@ adding revised code
 </div>
 <div id="task" class="section level1">
 <h1>Task</h1>
-<p>Count the number of bgc-argo profiles, and plot their evolution over time.</p>
+<p>Count the number of bgc-argo profiles, and plot their evolution over
+time.</p>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -1730,7 +1812,8 @@ map &lt;-
 </div>
 <div id="qc-flags" class="section level1">
 <h1>QC flags</h1>
-<p><strong>QC flags</strong> for values (‘<code>flag</code>’ column) are between 1 and 8, where:</p>
+<p><strong>QC flags</strong> for values (‘<code>flag</code>’ column) are
+between 1 and 8, where:</p>
 <ul>
 <li>1 is ‘good’ data</li>
 <li>2 is ‘probably good’ data,</li>
@@ -1741,7 +1824,10 @@ map &lt;-
 <li>9 is ‘missing value’.</li>
 <li>(6 and 7 are not used)</li>
 </ul>
-<p><strong>Profile QC flags</strong> (‘<code>profile_flag</code>’ column) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8):</p>
+<p><strong>Profile QC flags</strong> (‘<code>profile_flag</code>’
+column) are QC codes attributed to the entire profile, and indicate the
+number of depth levels (in %) where the value is considered to be good
+data (QC flags of 1, 2, 5, and 8):</p>
 <ul>
 <li>‘A’ means 100% of profile levels contain good data,</li>
 <li>‘B’ means 75-&lt;100% of profile levels contain good data,</li>
@@ -1856,15 +1942,15 @@ knitr::kable(total_data_count, caption = &#39;total number of profiles&#39;, for
 <tbody>
 <tr class="odd">
 <td align="left">doxy_qc</td>
-<td align="right">133428</td>
+<td align="right">161823</td>
 </tr>
 <tr class="even">
 <td align="left">nitrate_qc</td>
-<td align="right">42302</td>
+<td align="right">54269</td>
 </tr>
 <tr class="odd">
 <td align="left">ph_in_situ_total_qc</td>
-<td align="right">27538</td>
+<td align="right">40452</td>
 </tr>
 </tbody>
 </table>
@@ -1900,15 +1986,15 @@ knitr::kable(usable_data_count,
 <tbody>
 <tr class="odd">
 <td align="left">doxy_qc</td>
-<td align="right">113126</td>
+<td align="right">143567</td>
 </tr>
 <tr class="even">
 <td align="left">nitrate_qc</td>
-<td align="right">36606</td>
+<td align="right">47877</td>
 </tr>
 <tr class="odd">
 <td align="left">ph_in_situ_total_qc</td>
-<td align="right">13365</td>
+<td align="right">21349</td>
 </tr>
 </tbody>
 </table>
@@ -1944,19 +2030,19 @@ knitr::kable(A_data_count,
 <tbody>
 <tr class="odd">
 <td align="left">doxy_qc</td>
-<td align="right">86243</td>
+<td align="right">112828</td>
 </tr>
 <tr class="even">
 <td align="left">nitrate_qc</td>
-<td align="right">34668</td>
+<td align="right">45908</td>
 </tr>
 <tr class="odd">
 <td align="left">ph_in_situ_total_qc</td>
-<td align="right">11195</td>
+<td align="right">15843</td>
 </tr>
 <tr class="even">
 <td align="left">temp_qc</td>
-<td align="right">45117</td>
+<td align="right">51664</td>
 </tr>
 </tbody>
 </table>
@@ -1974,7 +2060,7 @@ flag_AB_n &lt;- flag_AB %&gt;%
 
 # total number of profiles 
 print(sum(flag_AB_n$n))</code></pre>
-<pre><code>[1] 11802</code></pre>
+<pre><code>[1] 18801</code></pre>
 <pre class="r"><code>flag_AB_n %&gt;% 
   ggplot(aes(x = month, y = n))+
   geom_point()+
@@ -2120,15 +2206,15 @@ knitr::kable(F_data_count,
 <tbody>
 <tr class="odd">
 <td align="left">doxy_qc</td>
-<td align="right">20302</td>
+<td align="right">18256</td>
 </tr>
 <tr class="even">
 <td align="left">nitrate_qc</td>
-<td align="right">5696</td>
+<td align="right">6392</td>
 </tr>
 <tr class="odd">
 <td align="left">ph_in_situ_total_qc</td>
-<td align="right">14173</td>
+<td align="right">19103</td>
 </tr>
 </tbody>
 </table>
@@ -3122,15 +3208,16 @@ knitr::kable(total_data_count_core, caption = &#39;total number of profiles&#39;
 <tbody>
 <tr class="odd">
 <td align="left">psal_qc</td>
-<td align="right">15241</td>
+<td align="right">87668</td>
 </tr>
 <tr class="even">
 <td align="left">temp_qc</td>
-<td align="right">15934</td>
+<td align="right">91686</td>
 </tr>
 </tbody>
 </table>
-<p>Number of core profiles with usable data (flags A, B, C, D, and E)</p>
+<p>Number of core profiles with usable data (flags A, B, C, D, and
+E)</p>
 <pre class="r"><code># count the number of core tempa and sal profiles which have QC flags of A, B, C, D, or E (profiles which contain data that can be used)
 
 usable_data_count_core &lt;- core_metadata %&gt;% 
@@ -3153,7 +3240,8 @@ knitr::kable(usable_data_count_core,
              caption = &#39;total number of core profiles with QC flags A, B, C, D, E&#39;, 
              format = &#39;markdown&#39;)</code></pre>
 <table>
-<caption>total number of core profiles with QC flags A, B, C, D, E</caption>
+<caption>total number of core profiles with QC flags A, B, C, D,
+E</caption>
 <thead>
 <tr class="header">
 <th align="left">parameter</th>
@@ -3163,11 +3251,11 @@ knitr::kable(usable_data_count_core,
 <tbody>
 <tr class="odd">
 <td align="left">psal_qc</td>
-<td align="right">13733</td>
+<td align="right">78306</td>
 </tr>
 <tr class="even">
 <td align="left">temp_qc</td>
-<td align="right">15558</td>
+<td align="right">89753</td>
 </tr>
 </tbody>
 </table>
@@ -3205,11 +3293,11 @@ knitr::kable(A_data_count_core,
 <tbody>
 <tr class="odd">
 <td align="left">psal_qc</td>
-<td align="right">11084</td>
+<td align="right">63665</td>
 </tr>
 <tr class="even">
 <td align="left">temp_qc</td>
-<td align="right">11811</td>
+<td align="right">67924</td>
 </tr>
 </tbody>
 </table>
@@ -3246,11 +3334,11 @@ knitr::kable(F_data_count_core,
 <tbody>
 <tr class="odd">
 <td align="left">psal_qc</td>
-<td align="right">1508</td>
+<td align="right">9362</td>
 </tr>
 <tr class="even">
 <td align="left">temp_qc</td>
-<td align="right">376</td>
+<td align="right">1933</td>
 </tr>
 </tbody>
 </table>
@@ -3275,9 +3363,83 @@ core_profile_counts %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/plot_core_profile_counts-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_core_profile_counts-1">
+Past versions of plot_core_profile_counts-1.png
+</button>
+</p>
+<div id="fig-plot_core_profile_counts-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_timeseries.Rmd/plot_core_profile_counts-1.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/plot_core_profile_counts-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_core_profile_counts-2">
+Past versions of plot_core_profile_counts-2.png
+</button>
+</p>
+<div id="fig-plot_core_profile_counts-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_timeseries.Rmd/plot_core_profile_counts-2.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggsave(&quot;output/figures/time_series_core_profiles_per_parameter.png&quot;,
 width = 7,
 height = 4)</code></pre>
@@ -3312,6 +3474,43 @@ core_profile_counts_total_A %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Core temp + sal profiles (QC flag A)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/count_A_flag_core_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-count_A_flag_core_profiles-1">
+Past versions of count_A_flag_core_profiles-1.png
+</button>
+</p>
+<div id="fig-count_A_flag_core_profiles-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_timeseries.Rmd/count_A_flag_core_profiles-1.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggsave(&quot;output/figures/time_series_flag_A_core_profiles.png&quot;,
 width = 7,
 height = 4)</code></pre>
@@ -3340,6 +3539,43 @@ core_profile_counts_total_A_temp %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Core-temp (QC flag A)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/core_temp_profiles_flag_A_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_temp_profiles_flag_A_timeseries-1">
+Past versions of core_temp_profiles_flag_A_timeseries-1.png
+</button>
+</p>
+<div id="fig-core_temp_profiles_flag_A_timeseries-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_timeseries.Rmd/core_temp_profiles_flag_A_timeseries-1.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggsave(&quot;output/figures/time_series_flag_A_core_profiles_temp.png&quot;,
 width = 7,
 height = 4)</code></pre>
@@ -3373,6 +3609,43 @@ core_profile_counts_total_A_region %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Core temp + sal (QC flag A)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/count_core_profiles_by_region-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-count_core_profiles_by_region-1">
+Past versions of count_core_profiles_by_region-1.png
+</button>
+</p>
+<div id="fig-count_core_profiles_by_region-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_timeseries.Rmd/count_core_profiles_by_region-1.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggsave(&quot;output/figures/time_series_core_profiles_per_region.png&quot;,
        width = 7,
        height = 4)</code></pre>
@@ -3381,18 +3654,19 @@ rm(list = ls(pattern = &#39;_core&#39;))</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
-<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.1.2 (2021-11-01)
+<pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.3
+Running under: openSUSE Leap 15.4
 
 Matrix products: default
-BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
-LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.2.2/lib64/R/lib/libRlapack.so
 
 locale:
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -3406,30 +3680,39 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] lubridate_1.8.0 argodata_0.1.0  forcats_0.5.1   stringr_1.4.0  
- [5] dplyr_1.0.7     purrr_0.3.4     readr_2.1.1     tidyr_1.1.4    
- [9] tibble_3.1.6    ggplot2_3.3.5   tidyverse_1.3.1 workflowr_1.7.0
+ [1] lubridate_1.9.0  timechange_0.1.1 argodata_0.1.0   forcats_0.5.2   
+ [5] stringr_1.4.1    dplyr_1.0.10     purrr_0.3.5      readr_2.1.3     
+ [9] tidyr_1.2.1      tibble_3.1.8     ggplot2_3.4.0    tidyverse_1.3.2 
+[13] workflowr_1.7.0 
 
 loaded via a namespace (and not attached):
- [1] httr_1.4.2         sass_0.4.0         bit64_4.0.5        vroom_1.5.7       
- [5] jsonlite_1.7.3     modelr_0.1.8       bslib_0.3.1        assertthat_0.2.1  
- [9] getPass_0.2-2      highr_0.9          cellranger_1.1.0   yaml_2.2.1        
-[13] pillar_1.6.4       backports_1.4.1    glue_1.6.0         digest_0.6.29     
-[17] RColorBrewer_1.1-2 promises_1.2.0.1   rvest_1.0.2        colorspace_2.0-2  
-[21] htmltools_0.5.2    httpuv_1.6.5       pkgconfig_2.0.3    broom_0.7.11      
-[25] haven_2.4.3        scales_1.1.1       processx_3.5.2     whisker_0.4       
-[29] later_1.3.0        tzdb_0.2.0         git2r_0.29.0       generics_0.1.1    
-[33] farver_2.1.0       ellipsis_0.3.2     withr_2.4.3        cli_3.1.1         
-[37] magrittr_2.0.1     crayon_1.4.2       readxl_1.3.1       evaluate_0.14     
-[41] ps_1.6.0           fs_1.5.2           fansi_1.0.2        xml2_1.3.3        
-[45] tools_4.1.2        hms_1.1.1          lifecycle_1.0.1    munsell_0.5.0     
-[49] reprex_2.0.1       callr_3.7.0        compiler_4.1.2     jquerylib_0.1.4   
-[53] RNetCDF_2.5-2      rlang_1.0.2        grid_4.1.2         rstudioapi_0.13   
-[57] labeling_0.4.2     rmarkdown_2.11     gtable_0.3.0       DBI_1.1.2         
-[61] R6_2.5.1           knitr_1.37         fastmap_1.1.0      bit_4.0.4         
-[65] utf8_1.2.2         rprojroot_2.0.2    stringi_1.7.6      parallel_4.1.2    
-[69] Rcpp_1.0.8         vctrs_0.3.8        dbplyr_2.1.1       tidyselect_1.1.1  
-[73] xfun_0.29         </code></pre>
+ [1] httr_1.4.4          sass_0.4.4          bit64_4.0.5        
+ [4] vroom_1.6.0         jsonlite_1.8.3      modelr_0.1.10      
+ [7] bslib_0.4.1         assertthat_0.2.1    getPass_0.2-2      
+[10] highr_0.9           googlesheets4_1.0.1 cellranger_1.1.0   
+[13] yaml_2.3.6          pillar_1.8.1        backports_1.4.1    
+[16] glue_1.6.2          digest_0.6.30       RColorBrewer_1.1-3 
+[19] promises_1.2.0.1    rvest_1.0.3         colorspace_2.0-3   
+[22] htmltools_0.5.3     httpuv_1.6.6        pkgconfig_2.0.3    
+[25] broom_1.0.1         haven_2.5.1         scales_1.2.1       
+[28] processx_3.8.0      whisker_0.4         later_1.3.0        
+[31] tzdb_0.3.0          git2r_0.30.1        googledrive_2.0.0  
+[34] farver_2.1.1        generics_0.1.3      ellipsis_0.3.2     
+[37] cachem_1.0.6        withr_2.5.0         cli_3.4.1          
+[40] magrittr_2.0.3      crayon_1.5.2        readxl_1.4.1       
+[43] evaluate_0.18       ps_1.7.2            fs_1.5.2           
+[46] fansi_1.0.3         xml2_1.3.3          textshaping_0.3.6  
+[49] tools_4.2.2         hms_1.1.2           gargle_1.2.1       
+[52] lifecycle_1.0.3     munsell_0.5.0       reprex_2.0.2       
+[55] callr_3.7.3         compiler_4.2.2      jquerylib_0.1.4    
+[58] RNetCDF_2.6-1       systemfonts_1.0.4   rlang_1.1.1        
+[61] grid_4.2.2          rstudioapi_0.14     labeling_0.4.2     
+[64] rmarkdown_2.18      gtable_0.3.1        DBI_1.1.3          
+[67] R6_2.5.1            knitr_1.41          fastmap_1.1.0      
+[70] bit_4.0.5           utf8_1.2.2          rprojroot_2.0.3    
+[73] ragg_1.2.4          stringi_1.7.8       parallel_4.2.2     
+[76] Rcpp_1.0.10         vctrs_0.5.1         dbplyr_2.2.1       
+[79] tidyselect_1.2.0    xfun_0.35          </code></pre>
 </div>
 </div>
 </div>
