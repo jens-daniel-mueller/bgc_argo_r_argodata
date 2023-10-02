@@ -42,11 +42,11 @@ republish = TRUE)
 wflow_publish(here::here(
   "analysis",
   c(
-    'load_broullon_DIC_TA_clim.Rmd',
-    'extreme_pH.Rmd'
+    'coverage_maps.Rmd',
+    'coverage_timeseries.Rmd'
   )
 ),
-message = "scaled DIC to 2019 (rather than 2015)")
+message = "update with 2023 data")
 
 
 # Push latest version to GitHub
@@ -55,3 +55,5 @@ wflow_git_push()
 jens-daniel-mueller
 
 pasqualina-vonlanthendinenna
+
+ds2n19
