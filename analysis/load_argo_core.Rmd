@@ -41,8 +41,11 @@ library(oce)
 
 # dir.create('/nfs/kryo/work/updata/core_argo_r_argodata')
 
-path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
-path_updata <- '/nfs/kryo/work/updata'
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_core <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
+
+#path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
+#path_updata <- '/nfs/kryo/work/updata'
 # dir.create(paste0(path_argo_core, "/preprocessed_core_data"))
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 # path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
@@ -75,6 +78,11 @@ Load in delayed-mode core-Argo (CTD) data index file
 
 ```{r load_core_index}
 
+#------------------------------------------------------------------------------
+# Imnportant - file are loaded for the given year and saved in the preprocessed folder with a year prefix.
+#------------------------------------------------------------------------------
+load_year = "2022"
+
 # core_index <- argo_global_prof() %>%
 #   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
 #   argo_filter_date(date_min = '2013-01-01',
@@ -82,8 +90,8 @@ Load in delayed-mode core-Argo (CTD) data index file
 
 core_index <- argo_global_prof() %>% 
   argo_filter_data_mode(data_mode = 'delayed') %>% 
-  argo_filter_date(date_min = '2013-01-01',
-                   date_max = '2013-07-01')
+  argo_filter_date(date_min = paste0(load_year, "-01-01"),
+                   date_max = paste0(load_year, "-12-31"))
 # 1 month worth of data for test purposes 
 
 # check dates 
@@ -169,13 +177,13 @@ core_metadata <- core_metadata %>%
 ```{r write_core_data}
 
 core_data %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/core_data.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_data.rds"))
 
 core_metadata %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_metadata.rds"))
 
 core_merge %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/core_merge.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge.rds"))
 
 ```
 
@@ -191,7 +199,7 @@ core_merge_flag_A <- core_merge %>%
          profile_temp_qc)
 
 core_merge_flag_A %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/core_merge_flag_A.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_A.rds"))
 ```
 
 ## Core-Temperature Flag A and B 
@@ -207,7 +215,7 @@ core_merge_flag_AB <- core_merge %>%
          profile_temp_qc)
 
 core_merge_flag_AB %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/core_merge_flag_AB.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_AB.rds"))
 
 ```
 
