@@ -1,6 +1,6 @@
 ---
 title: "Load Core-Argo Data"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "David Stappard, Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -29,6 +29,7 @@ library(lubridate)
 # install.packages("oce")
 library(sf)
 library(oce)
+library(gsw)
 # install.packages('ggspatial')
 # devtools::install_github("MikkoVihtakari/ggOceanMapsData")
 # devtools::install_github("MikkoVihtakari/ggOceanMaps")
@@ -39,17 +40,10 @@ library(oce)
 
 ```{r set_updata_root_directory, include=FALSE}
 
-# dir.create('/nfs/kryo/work/updata/core_argo_r_argodata')
-
 path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
 path_argo_core <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
-
-#path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
-#path_updata <- '/nfs/kryo/work/updata'
-# dir.create(paste0(path_argo_core, "/preprocessed_core_data"))
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
-# path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
-# path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
 ```
 
 ## Set cache directory 
@@ -72,26 +66,175 @@ argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cache
 argo_update_data(max_data_cache_age = Inf)
 ```
 
-## Load index file 
+<!-- ## Load index file  -->
 
-Load in delayed-mode core-Argo (CTD) data index file  
+<!-- Load in delayed-mode core-Argo (CTD) data index file   -->
 
-```{r load_core_index}
+<!-- ```{r load_core_index} -->
+
+<!-- #------------------------------------------------------------------------------ -->
+<!-- # Imnportant - file are loaded for the given year and saved in the preprocessed folder with a year prefix. -->
+<!-- #------------------------------------------------------------------------------ -->
+<!-- load_year = "2014" -->
+
+<!-- # core_index <- argo_global_prof() %>% -->
+<!-- #   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data -->
+<!-- #   argo_filter_date(date_min = '2013-01-01', -->
+<!-- #                    date_max = Sys.time())   -->
+
+<!-- core_index <- argo_global_prof() %>%  -->
+<!--   argo_filter_data_mode(data_mode = 'delayed') %>%  -->
+<!--   argo_filter_date(date_min = paste0(load_year, "-01-01"), -->
+<!--                    date_max = paste0(load_year, "-12-31")) -->
+<!-- # 1 month worth of data for test purposes  -->
+
+<!-- # check dates  -->
+<!-- # max(core_index$date, na.rm = TRUE) -->
+<!-- # min(core_index$date, na.rm = TRUE) -->
+
+
+<!-- ``` -->
+
+<!-- ## Read data  -->
+
+<!-- Read in the core CTD variables corresponding to the index defined above  -->
+
+<!-- ```{r load_core_argo_data} -->
+
+<!-- core_data <- argo_prof_levels( -->
+<!--   path = core_index, -->
+<!--   vars = -->
+<!--     c( -->
+<!--       'PRES_ADJUSTED', -->
+<!--       'PRES_ADJUSTED_QC', -->
+<!--       'PSAL_ADJUSTED', -->
+<!--       'PSAL_ADJUSTED_QC', -->
+<!--       'TEMP_ADJUSTED', -->
+<!--       'TEMP_ADJUSTED_QC'), -->
+<!--   quiet = TRUE -->
+<!-- )  -->
+<!-- # read in the profiles (takes a while) -->
+
+
+<!-- ``` -->
+
+<!-- ## Read metadata  -->
+
+<!-- Read in the corresponding metadata: -->
+
+<!-- ```{r} -->
+
+<!-- core_metadata <- argo_prof_prof(path = core_index) -->
+
+<!-- ``` -->
+
+<!-- ## Join data  -->
+
+<!-- ```{r join_core_data} -->
+
+<!-- core_merge <- full_join(core_data, core_metadata) -->
+
+<!-- core_merge <- core_merge %>% -->
+<!--   rename(lon = longitude, -->
+<!--          lat = latitude) %>% -->
+<!--   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% -->
+<!--   mutate( -->
+<!--     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), -->
+<!--     lat = as.numeric(as.character(lat)), -->
+<!--     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), -->
+<!--     lon = as.numeric(as.character(lon)) -->
+<!--   ) %>% -->
+<!--   mutate(depth = swDepth(pres_adjusted, latitude =  lat), -->
+<!--          .before = pres_adjusted) -->
+
+<!-- ``` -->
+
+<!-- ## Harmonise metadata -->
+
+<!-- ```{r harmonise_core_metadata} -->
+
+<!-- core_metadata <- core_metadata %>% -->
+<!--   rename(lon = longitude, -->
+<!--          lat = latitude) %>% -->
+<!--   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% -->
+<!--   mutate( -->
+<!--     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), -->
+<!--     lat = as.numeric(as.character(lat)), -->
+<!--     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), -->
+<!--     lon = as.numeric(as.character(lon)) -->
+<!--   ) -->
+<!-- ``` -->
+
+
+<!-- ## Write data  -->
+
+<!-- ```{r write_core_data} -->
+
+<!-- core_data %>%  -->
+<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_data.rds")) -->
+
+<!-- core_metadata %>%  -->
+<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_metadata.rds")) -->
+
+<!-- core_merge %>%  -->
+<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge.rds")) -->
+
+<!-- ``` -->
+
+<!-- ## Core-Temperature Flag A profiles  -->
+
+<!-- ```{r flag_A_core_temp_profiles} -->
+
+<!-- core_merge_flag_A <- core_merge %>%  -->
+<!--   filter(profile_temp_qc == 'A') %>%  -->
+<!--   select(lat, lon, date,  -->
+<!--          depth, temp_adjusted, temp_adjusted_qc, -->
+<!--          platform_number, cycle_number, -->
+<!--          profile_temp_qc) -->
+
+<!-- core_merge_flag_A %>%  -->
+<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_A.rds")) -->
+<!-- ``` -->
+
+<!-- ## Core-Temperature Flag A and B  -->
+
+<!-- ```{r flag_AB_core_temp_profiles} -->
+
+<!-- core_merge_flag_AB <- core_merge %>%  -->
+<!--   filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>%  -->
+<!--   filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>%  -->
+<!--   select(lat, lon, date, -->
+<!--          depth, temp_adjusted, temp_adjusted_qc, -->
+<!--          platform_number, cycle_number, -->
+<!--          profile_temp_qc) -->
+
+<!-- core_merge_flag_AB %>%  -->
+<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_AB.rds")) -->
+
+<!-- ``` -->
+
+
+## Load core data one year at a time and build a consolidated temperature, salinity and metadata data
+
+
+```{r load_core_by_year}
 
 #------------------------------------------------------------------------------
-# Imnportant - file are loaded for the given year and saved in the preprocessed folder with a year prefix.
+# Imnportant - file are loaded for the given year processed and then appended to the all years files
 #------------------------------------------------------------------------------
-load_year = "2014"
+min_year = 2013
+max_year = 2023
+target_year = 2014
+consolidated_created = 0
 
-# core_index <- argo_global_prof() %>%
-#   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
-#   argo_filter_date(date_min = '2013-01-01',
-#                    date_max = Sys.time())  
+for (target_year in min_year:max_year) {
+
 
 core_index <- argo_global_prof() %>% 
   argo_filter_data_mode(data_mode = 'delayed') %>% 
-  argo_filter_date(date_min = paste0(load_year, "-01-01"),
-                   date_max = paste0(load_year, "-12-31"))
+  argo_filter_date(date_min = paste0(target_year, "-01-01"),
+                   date_max = paste0(target_year, "-12-31"))
+
 # 1 month worth of data for test purposes 
 
 # check dates 
@@ -99,15 +242,7 @@ core_index <- argo_global_prof() %>%
 # min(core_index$date, na.rm = TRUE)
 
 
-```
-
-## Read data 
-
-Read in the core CTD variables corresponding to the index defined above 
-
-```{r load_core_argo_data}
-
-core_data <- argo_prof_levels(
+core_data_yr <- argo_prof_levels(
   path = core_index,
   vars =
     c(
@@ -121,26 +256,44 @@ core_data <- argo_prof_levels(
 ) 
 # read in the profiles (takes a while)
 
+# read associated metadata
+core_metadata_yr <- argo_prof_prof(path = core_index)
 
-```
+# We only want the synthesised profiles i.e. n_prof == 1
+core_data_yr <- core_data_yr %>%
+filter(n_prof == 1)
+core_metadata_yr <- core_metadata_yr %>%
+filter(n_prof == 1)
 
-## Read metadata 
+# ------------------------------------------------------------------------------
+# Process temperature file
+# ------------------------------------------------------------------------------
+core_data_temp_yr <- core_data_yr %>%
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &
+    temp_adjusted_qc %in% c(1, 8)
+  ) %>%
+  select (
+    file,
+    n_levels,
+    pres_adjusted,
+    temp_adjusted
+  )
 
-Read in the corresponding metadata:
+core_data_temp_yr <- left_join(core_data_temp_yr, core_index)
 
-```{r}
+core_data_temp_yr <- core_data_temp_yr %>%
+  select(    
+    file,
+    date,
+    latitude,
+    longitude,
+    n_levels,
+    pres_adjusted,
+    temp_adjusted
+)
 
-core_metadata <- argo_prof_prof(path = core_index)
-
-```
-
-## Join data 
-
-```{r join_core_data}
-
-core_merge <- full_join(core_data, core_metadata)
-
-core_merge <- core_merge %>%
+core_merge_temp_yr <- core_data_temp_yr %>%
   rename(lon = longitude,
          lat = latitude) %>%
   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
@@ -150,16 +303,38 @@ core_merge <- core_merge %>%
     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
     lon = as.numeric(as.character(lon))
   ) %>%
-  mutate(depth = swDepth(pres_adjusted, latitude =  lat),
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
          .before = pres_adjusted)
 
-```
+# ------------------------------------------------------------------------------
+# Process salinity file
+# ------------------------------------------------------------------------------
+core_data_psal_yr <- core_data_yr %>%
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &
+    psal_adjusted_qc %in% c(1, 8)
+  ) %>%
+  select (
+    file,
+    n_levels,
+    pres_adjusted,
+    psal_adjusted
+  )
 
-## Harmonise metadata
+core_data_psal_yr <- left_join(core_data_psal_yr, core_index)
 
-```{r harmonise_core_metadata}
+core_data_psal_yr <- core_data_psal_yr %>%
+  select(    
+    file,
+    date,
+    latitude,
+    longitude,
+    n_levels,
+    pres_adjusted,
+    psal_adjusted
+)
 
-core_metadata <- core_metadata %>%
+core_merge_psal_yr <- core_data_psal_yr %>%
   rename(lon = longitude,
          lat = latitude) %>%
   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
@@ -168,54 +343,64 @@ core_metadata <- core_metadata %>%
     lat = as.numeric(as.character(lat)),
     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
     lon = as.numeric(as.character(lon))
-  )
-```
+  ) %>%
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
+         .before = pres_adjusted)
 
+# ------------------------------------------------------------------------------
+# Process metadata file
+# ------------------------------------------------------------------------------
+core_metadata_yr <- core_metadata_yr %>%
+  rename(lon = longitude,
+         lat = latitude) %>%
+  mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+  mutate( 
+    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+    lat = as.numeric(as.character(lat)),
+    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+    lon = as.numeric(as.character(lon))
+  )
+
+core_metadata_yr <- core_metadata_yr %>%
+  select (
+    file,
+    date,
+    date_qc,
+    lat,
+    lon,
+    position_qc,
+    profile_pres_qc,
+    profile_temp_qc,
+    profile_psal_qc
+  )
+
+  # Combine into a consolodated all years file
+  if (consolidated_created == 0) {
+    core_data_temp <- core_data_temp_yr
+    core_data_psal <- core_data_psal_yr
+    core_metadata <- core_metadata_yr
+    consolidated_created = 1
+  } else {
+    core_data_temp <- rbind(core_data_temp, core_data_temp_yr)
+    core_data_psal <- rbind(core_data_psal, core_data_psal_yr)
+    core_metadata <- rbind(core_metadata, core_metadata_yr)
+  }
+
+}
+
+```
 
 ## Write data 
 
 ```{r write_core_data}
 
-core_data %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_data.rds"))
+core_data_temp %>% 
+  write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_temp.rds"))
+
+core_data_psal %>% 
+  write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_psal.rds"))
 
 core_metadata %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_metadata.rds"))
-
-core_merge %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge.rds"))
+  write_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
 
 ```
-
-## Core-Temperature Flag A profiles 
-
-```{r flag_A_core_temp_profiles}
-
-core_merge_flag_A <- core_merge %>% 
-  filter(profile_temp_qc == 'A') %>% 
-  select(lat, lon, date, 
-         depth, temp_adjusted, temp_adjusted_qc,
-         platform_number, cycle_number,
-         profile_temp_qc)
-
-core_merge_flag_A %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_A.rds"))
-```
-
-## Core-Temperature Flag A and B 
-
-```{r flag_AB_core_temp_profiles}
-
-core_merge_flag_AB <- core_merge %>% 
-  filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
-  filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
-  select(lat, lon, date,
-         depth, temp_adjusted, temp_adjusted_qc,
-         platform_number, cycle_number,
-         profile_temp_qc)
-
-core_merge_flag_AB %>% 
-  write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_AB.rds"))
-
-```
-
