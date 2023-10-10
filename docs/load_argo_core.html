@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea5002daec7dd647781cabdeef4ef8fed438faf66targetblanka5002daa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef5edbe349f1fee19a832498c9f21392ebaf67e1btargetblankf5edbe3a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a5002daec7dd647781cabdeef4ef8fed438faf66" target="_blank">a5002da</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f5edbe349f1fee19a832498c9f21392ebaf67e1b" target="_blank">f5edbe3</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreea5002daec7dd647781cabdeef4ef8fed438faf66targetblanka5002daa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef5edbe349f1fee19a832498c9f21392ebaf67e1btargetblankf5edbe3a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/a5002daec7dd647781cabdeef4ef8fed438faf66" target="_blank">a5002da</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f5edbe349f1fee19a832498c9f21392ebaf67e1b" target="_blank">f5edbe3</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -727,6 +727,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f5edbe349f1fee19a832498c9f21392ebaf67e1b/analysis/load_argo_core.Rmd" target="_blank">f5edbe3</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-10
+</td>
+<td>
+Create simplified data sets and run for 2013 - 2023
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7394ba8178c64e04dd882a5a3865336c7472f703/docs/load_argo_core.html" target="_blank">7394ba8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -891,6 +925,41 @@ load and add in core-argo data (1 month)
 <h1>Task</h1>
 <p>Load core-Argo temperature data for comparison with BGC-Argo
 temperature data</p>
+<div id="set-load-options" class="section level2">
+<h2>Set load options</h2>
+<p>Determine if files are refreshed from dac or cache directory is used.
+Are metadata, temperature and salinity year files renewed? Are the
+consolidated all year files created from the individual year files?</p>
+<pre class="r"><code># opt_refresh_cache
+#   0 = do not refresh cache.
+#   1 = refresh cache. (any none zero value will force a refresh)
+opt_refresh_cache = 0
+
+# opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_metadata
+#   0 = do not refresh the yearly files. (any value &lt;&gt; 1 will omit annual refresh)
+#   1 = refresh yearly files for given parameter.
+#   year to be refreshed are set by opt_min_year and opt_max_year
+opt_refresh_years_temp = 1
+opt_refresh_years_psal = 1
+opt_refresh_years_metadata = 1
+opt_min_year = 2013
+opt_max_year = 2023
+
+# opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_metadata
+# Yearly files must have already been created!
+#   0 = do not build consolidated file from previously written yearly files. (any value &lt;&gt; 1 will omit consolidation)
+#   1 = build consolidated file from previously written yearly files for given parameter.
+#   year to be included in the consolidation are set by opt_min_year and opt_max_year
+opt_consolidate_temp = 0
+opt_consolidate_psal = 0
+opt_consolidate_metadata = 0
+
+# opt_A_AB_files
+# consolidated temp files must have already been created!
+#   0 = do not build temp_A and temp_AB file from previously written consolidated files. (any value &lt;&gt; 1 will omit A and AB files)
+#   1 = build temp_A and temp_AB file from previously written consolidated files.
+opt_A_AB_files = 0</code></pre>
+</div>
 <div id="set-cache-directory" class="section level2">
 <h2>Set cache directory</h2>
 <p>Directory where the core-Argo profile files are stored</p>
@@ -903,9 +972,15 @@ argo_cache_dir()</code></pre>
 <pre class="r"><code># check argo mirror
 argo_mirror()</code></pre>
 <pre><code>[1] &quot;https://data-argo.ifremer.fr&quot;</code></pre>
-<pre class="r"><code>argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+<pre class="r"><code># age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
 # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
-argo_update_data(max_data_cache_age = Inf)</code></pre>
+if (opt_refresh_cache == 0){
+  argo_update_global(max_global_cache_age = Inf)  
+  argo_update_data(max_data_cache_age = Inf)
+} else {
+  argo_update_global(max_global_cache_age = -Inf)  
+  argo_update_data(max_data_cache_age = -Inf)
+}</code></pre>
 <!-- ## Load index file  -->
 <!-- Load in delayed-mode core-Argo (CTD) data index file   -->
 <!-- ```{r load_core_index} -->
@@ -986,222 +1061,360 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 <!-- core_merge %>%  -->
 <!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge.rds")) -->
 <!-- ``` -->
-<!-- ## Core-Temperature Flag A profiles  -->
-<!-- ```{r flag_A_core_temp_profiles} -->
-<!-- core_merge_flag_A <- core_merge %>%  -->
-<!--   filter(profile_temp_qc == 'A') %>%  -->
-<!--   select(lat, lon, date,  -->
-<!--          depth, temp_adjusted, temp_adjusted_qc, -->
-<!--          platform_number, cycle_number, -->
-<!--          profile_temp_qc) -->
-<!-- core_merge_flag_A %>%  -->
-<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_A.rds")) -->
-<!-- ``` -->
-<!-- ## Core-Temperature Flag A and B  -->
-<!-- ```{r flag_AB_core_temp_profiles} -->
-<!-- core_merge_flag_AB <- core_merge %>%  -->
-<!--   filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>%  -->
-<!--   filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>%  -->
-<!--   select(lat, lon, date, -->
-<!--          depth, temp_adjusted, temp_adjusted_qc, -->
-<!--          platform_number, cycle_number, -->
-<!--          profile_temp_qc) -->
-<!-- core_merge_flag_AB %>%  -->
-<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge_flag_AB.rds")) -->
 <!-- ``` -->
 </div>
 <div
-id="load-core-data-one-year-at-a-time-and-build-a-consolidated-temperature-salinity-and-metadata-data"
+id="load-core-data-one-year-at-a-time---temperature-salinity-and-metadata-data"
 class="section level2">
-<h2>Load core data one year at a time and build a consolidated
-temperature, salinity and metadata data</h2>
+<h2>Load core data one year at a time - temperature, salinity and
+metadata data</h2>
 <pre class="r"><code>#------------------------------------------------------------------------------
-# Imnportant - file are loaded for the given year processed and then appended to the all years files
+# Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
-min_year = 2013
-max_year = 2023
-# target_year = 2014
-consolidated_created = 0
 
-for (target_year in min_year:max_year) {
+for (target_year in opt_min_year:opt_max_year) {
 
 
-core_index &lt;- argo_global_prof() %&gt;% 
-  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
-  argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
-                   date_max = paste0(target_year, &quot;-12-31&quot;))
+  # if updating any year files it will be based on the initial index file core_index
+  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1 | opt_refresh_years_metadata == 1)
+  {
+    core_index &lt;- argo_global_prof() %&gt;% 
+      argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+      argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
+                       date_max = paste0(target_year, &quot;-12-31&quot;))
+  }
 
-# 1 month worth of data for test purposes 
+  # if temp or psal are being updated get the profile data
+  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
+  {
+    # read in the profiles (takes a while)
+    core_data_yr &lt;- argo_prof_levels(
+      path = core_index,
+      vars =
+        c(
+          &#39;PRES_ADJUSTED&#39;,
+          &#39;PRES_ADJUSTED_QC&#39;,
+          &#39;PSAL_ADJUSTED&#39;,
+          &#39;PSAL_ADJUSTED_QC&#39;,
+          &#39;TEMP_ADJUSTED&#39;,
+          &#39;TEMP_ADJUSTED_QC&#39;),
+      quiet = TRUE
+    )
+    
+    # We only want the synthesized profiles i.e. n_prof == 1
+    core_data_yr &lt;- core_data_yr %&gt;%
+    filter(n_prof == 1)
 
-# check dates 
-# max(core_index$date, na.rm = TRUE)
-# min(core_index$date, na.rm = TRUE)
+  } 
+
+  # if updating metadata get the file based on core_index
+  if (opt_refresh_years_metadata == 1)
+  {
+    # read associated metadata
+    core_metadata_yr &lt;- argo_prof_prof(path = core_index)
+    
+    # We only want the synthesized profiles i.e. n_prof == 1
+    core_metadata_yr &lt;- core_metadata_yr %&gt;%
+    filter(n_prof == 1)
+
+  }
+
+  # ------------------------------------------------------------------------------
+  # Process temperature file
+  # ------------------------------------------------------------------------------
+  if (opt_refresh_years_temp == 1)
+  {    
+    # Base temperature data where qc flag = good
+    core_data_temp_yr &lt;- core_data_yr %&gt;%
+      filter(
+        pres_adjusted_qc %in% c(1, 8) &amp;
+        temp_adjusted_qc %in% c(1, 8)
+      ) %&gt;%
+      select (
+        file,
+        n_levels,
+        pres_adjusted,
+        temp_adjusted
+      )
+    
+    # join to index to incorporate date, lat and lon
+    core_data_temp_yr &lt;- left_join(core_data_temp_yr, core_index)
+    core_data_temp_yr &lt;- core_data_temp_yr %&gt;%
+      select(    
+        file,
+        date,
+        latitude,
+        longitude,
+        n_levels,
+        pres_adjusted,
+        temp_adjusted
+    )
+    
+    # resolve lat and lon and derive depth using TEOS=10
+    core_merge_temp_yr &lt;- core_data_temp_yr %&gt;%
+      rename(lon = longitude,
+             lat = latitude) %&gt;%
+      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+      mutate(
+        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+        lon = as.numeric(as.character(lon))
+      ) %&gt;%
+      mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
+             .before = pres_adjusted)
+  
+    # write this years file
+    core_merge_temp_yr %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
+
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process salinity file
+  # ------------------------------------------------------------------------------
+  if (opt_refresh_years_psal == 1)
+  {    
+    # Base salinity data where qc flag = good
+    core_data_psal_yr &lt;- core_data_yr %&gt;%
+      filter(
+        pres_adjusted_qc %in% c(1, 8) &amp;
+        psal_adjusted_qc %in% c(1, 8)
+      ) %&gt;%
+      select (
+        file,
+        n_levels,
+        pres_adjusted,
+        psal_adjusted
+      )
+
+    # join to index to incorporate date, lat and lon
+    core_data_psal_yr &lt;- left_join(core_data_psal_yr, core_index)
+    core_data_psal_yr &lt;- core_data_psal_yr %&gt;%
+      select(    
+        file,
+        date,
+        latitude,
+        longitude,
+        n_levels,
+        pres_adjusted,
+        psal_adjusted
+    )
+
+    # resolve lat and lon and derive depth using TEOS=10
+    core_merge_psal_yr &lt;- core_data_psal_yr %&gt;%
+      rename(lon = longitude,
+             lat = latitude) %&gt;%
+      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+      mutate(
+        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+        lon = as.numeric(as.character(lon))
+      ) %&gt;%
+      mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
+             .before = pres_adjusted)
+    
+    # write this years file
+    core_merge_psal_yr %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
+
+  }
 
 
-core_data_yr &lt;- argo_prof_levels(
-  path = core_index,
-  vars =
-    c(
-      &#39;PRES_ADJUSTED&#39;,
-      &#39;PRES_ADJUSTED_QC&#39;,
-      &#39;PSAL_ADJUSTED&#39;,
-      &#39;PSAL_ADJUSTED_QC&#39;,
-      &#39;TEMP_ADJUSTED&#39;,
-      &#39;TEMP_ADJUSTED_QC&#39;),
-  quiet = TRUE
-) 
-# read in the profiles (takes a while)
+  # ------------------------------------------------------------------------------
+  # Process metadata file
+  # ------------------------------------------------------------------------------
+  if (opt_refresh_years_metadata == 1)
+  {
+    # resolve lat and lon so that it is hamonised with data files
+    core_metadata_yr &lt;- core_metadata_yr %&gt;%
+      rename(lon = longitude,
+             lat = latitude) %&gt;%
+      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+      mutate( 
+        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+        lon = as.numeric(as.character(lon))
+      )
+  
+    # Select just the columns we are interested in
+    core_metadata_yr &lt;- core_metadata_yr %&gt;%
+      select (
+        file,
+        date,
+        lat,
+        lon,
+        platform_number, 
+        cycle_number,
+        position_qc,
+        profile_pres_qc,
+        profile_temp_qc,
+        profile_psal_qc
+      )
 
-# read associated metadata
-core_metadata_yr &lt;- argo_prof_prof(path = core_index)
+    # write this years file
+    core_metadata_yr %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
 
-# We only want the synthesised profiles i.e. n_prof == 1
-core_data_yr &lt;- core_data_yr %&gt;%
-filter(n_prof == 1)
-core_metadata_yr &lt;- core_metadata_yr %&gt;%
-filter(n_prof == 1)
-
-# ------------------------------------------------------------------------------
+  }
+  
+}</code></pre>
+</div>
+<div
+id="build-consolidated-all-year-file-from-series-of-yearly-files---temperature-salinity-and-metadata-data"
+class="section level2">
+<h2>Build consolidated all year file from series of yearly files -
+temperature, salinity and metadata data</h2>
+<pre class="r"><code># ------------------------------------------------------------------------------
 # Process temperature file
 # ------------------------------------------------------------------------------
-core_data_temp_yr &lt;- core_data_yr %&gt;%
-  filter(
-    pres_adjusted_qc %in% c(1, 8) &amp;
-    temp_adjusted_qc %in% c(1, 8)
-  ) %&gt;%
-  select (
-    file,
-    n_levels,
-    pres_adjusted,
-    temp_adjusted
-  )
+if (opt_consolidate_temp == 1){
+  consolidated_created = 0
+  
+  for (target_year in opt_min_year:opt_max_year) {
 
-core_data_temp_yr &lt;- left_join(core_data_temp_yr, core_index)
+    # read the yearly file based on target_year
+    core_data_temp_yr &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
 
-core_data_temp_yr &lt;- core_data_temp_yr %&gt;%
-  select(    
-    file,
-    date,
-    latitude,
-    longitude,
-    n_levels,
-    pres_adjusted,
-    temp_adjusted
-)
+    # Combine into a consolidated all years file
+    if (consolidated_created == 0) {
+      core_data_temp &lt;- core_data_temp_yr
+      consolidated_created = 1
+    } else {
+      core_data_temp &lt;- rbind(core_data_temp, core_data_temp_yr)
+    }
+  }
+  
+  # write consolidated files  
+  core_data_temp %&gt;% 
+    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
 
-core_merge_temp_yr &lt;- core_data_temp_yr %&gt;%
-  rename(lon = longitude,
-         lat = latitude) %&gt;%
-  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-    lon = as.numeric(as.character(lon))
-  ) %&gt;%
-  mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
-         .before = pres_adjusted)
+  # remove files to free space
+  rm(core_data_temp)
+  rm(core_data_temp_yr)
+  
+}
 
 # ------------------------------------------------------------------------------
 # Process salinity file
 # ------------------------------------------------------------------------------
-core_data_psal_yr &lt;- core_data_yr %&gt;%
-  filter(
-    pres_adjusted_qc %in% c(1, 8) &amp;
-    psal_adjusted_qc %in% c(1, 8)
-  ) %&gt;%
-  select (
-    file,
-    n_levels,
-    pres_adjusted,
-    psal_adjusted
-  )
+if (opt_consolidate_psal == 1){
+  consolidated_created = 0
+  
+  for (target_year in opt_min_year:opt_max_year) {
 
-core_data_psal_yr &lt;- left_join(core_data_psal_yr, core_index)
+    # read the yearly file based on target_year
+    core_data_psal_yr &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
 
-core_data_psal_yr &lt;- core_data_psal_yr %&gt;%
-  select(    
-    file,
-    date,
-    latitude,
-    longitude,
-    n_levels,
-    pres_adjusted,
-    psal_adjusted
-)
+    # Combine into a consolidated all years file
+    if (consolidated_created == 0) {
+      core_data_psal &lt;- core_data_psal_yr
+      consolidated_created = 1
+    } else {
+      core_data_psal &lt;- rbind(core_data_psal, core_data_psal_yr)
+    }
+  }
+  
+  # write consolidated files  
+  core_data_psal %&gt;% 
+    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_psal.rds&quot;))
 
-core_merge_psal_yr &lt;- core_data_psal_yr %&gt;%
-  rename(lon = longitude,
-         lat = latitude) %&gt;%
-  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-    lon = as.numeric(as.character(lon))
-  ) %&gt;%
-  mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat)*-1.0,
-         .before = pres_adjusted)
+  # remove files to free space
+  rm(core_data_psal)
+  rm(core_data_psal_yr)
+  
+}
 
 # ------------------------------------------------------------------------------
 # Process metadata file
 # ------------------------------------------------------------------------------
-core_metadata_yr &lt;- core_metadata_yr %&gt;%
-  rename(lon = longitude,
-         lat = latitude) %&gt;%
-  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-  mutate( 
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-    lon = as.numeric(as.character(lon))
-  )
-
-core_metadata_yr &lt;- core_metadata_yr %&gt;%
-  select (
-    file,
-    date,
-    date_qc,
-    lat,
-    lon,
-    position_qc,
-    profile_pres_qc,
-    profile_temp_qc,
-    profile_psal_qc
-  )
-
-  # write this years files
-  core_data_temp_yr %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
+if (opt_consolidate_metadata == 1){
+  consolidated_created = 0
   
-  core_data_psal_yr %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
-  
-  core_metadata_yr %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
+  for (target_year in opt_min_year:opt_max_year) {
 
+    # read the yearly file based on target_year
+    core_metadata_yr &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
 
-  # Combine into a consolodated all years file
-  if (consolidated_created == 0) {
-    core_data_temp &lt;- core_data_temp_yr
-    core_data_psal &lt;- core_data_psal_yr
-    core_metadata &lt;- core_metadata_yr
-    consolidated_created = 1
-  } else {
-    core_data_temp &lt;- rbind(core_data_temp, core_data_temp_yr)
-    core_data_psal &lt;- rbind(core_data_psal, core_data_psal_yr)
-    core_metadata &lt;- rbind(core_metadata, core_metadata_yr)
+    # Combine into a consolidated all years file
+    if (consolidated_created == 0) {
+      core_metadata &lt;- core_metadata_yr
+      consolidated_created = 1
+    } else {
+      core_metadata &lt;- rbind(core_metadata, core_metadata_yr)
+    }
   }
-
-  # write current version of consolidated files  
-  core_data_temp %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
   
-  core_data_psal %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_psal.rds&quot;))
-  
+  # write consolidated files  
   core_metadata %&gt;% 
     write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+
+  # remove files to free space
+  rm(core_metadata)
+  rm(core_metadata_yr)
+  
+}</code></pre>
+</div>
+<div id="a-and-ab-flag-focused-temperature-files"
+class="section level2">
+<h2>A and AB flag focused temperature files</h2>
+<pre class="r"><code>if (opt_A_AB_files == 1){
+
+#   # Read temp and meta data and merge
+#   core_data_temp &lt;-
+#   read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
+#   core_metadata &lt;-
+#   read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+# 
+#   core_merge &lt;- left_join(core_data_temp, core_metadata)
+#   rm(core_data_temp)
+#   rm(core_metadata)
+#   rm(core_merge)
+# 
+#   core_data_psal &lt;-
+#   read_rds(file = paste0(path_argo_core_preprocessed, &quot;/2023_core_data_psal.rds&quot;))
+#   
+#   
+#   # Select just A profiles into core_temp_flag_A
+#   core_temp_flag_A &lt;- core_merge %&gt;% 
+#     filter(profile_temp_qc == &#39;A&#39;) %&gt;% 
+#     select(lat, 
+#            lon, 
+#            date, 
+#            depth, 
+#            temp_adjusted, 
+#            temp_adjusted_qc,
+# #           platform_number, 
+# #           cycle_number,
+#            profile_temp_qc)
+# 
+#   # write core_temp_flag_A
+#   core_temp_flag_A %&gt;% 
+#     write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_A.rds&quot;))
+#   rm(core_temp_flag_A)
+# 
+#   # Select just AB profiles into core_temp_flag_A
+#   core_temp_flag_AB &lt;- core_merge %&gt;% 
+#     filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) %&gt;% 
+#     select(lat, 
+#            lon, 
+#            date, 
+#            depth, 
+#            temp_adjusted, 
+#            temp_adjusted_qc,
+# #           platform_number, 
+# #           cycle_number,
+#            profile_temp_qc)
+# 
+#   # write core_temp_flag_AB
+#   core_temp_flag_AB %&gt;% 
+#     write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_AB.rds&quot;))
+#   rm(list = ls(pattern = &#39;core_&#39;))
   
 }</code></pre>
 <br>
@@ -1239,33 +1452,32 @@ other attached packages:
 [13] tibble_3.1.8     ggplot2_3.4.0    tidyverse_1.3.2 
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2            bit64_4.0.5         progress_1.2.2     
- [4] httr_1.4.4          rprojroot_2.0.3     tools_4.2.2        
- [7] backports_1.4.1     bslib_0.4.1         utf8_1.2.2         
-[10] R6_2.5.1            KernSmooth_2.23-20  DBI_1.1.3          
-[13] colorspace_2.0-3    withr_2.5.0         tidyselect_1.2.0   
-[16] prettyunits_1.1.1   bit_4.0.5           curl_4.3.3         
-[19] compiler_4.2.2      git2r_0.30.1        cli_3.4.1          
-[22] rvest_1.0.3         RNetCDF_2.6-1       xml2_1.3.3         
-[25] sass_0.4.4          scales_1.2.1        classInt_0.4-8     
-[28] proxy_0.4-27        digest_0.6.30       rmarkdown_2.18     
-[31] pkgconfig_2.0.3     htmltools_0.5.3     dbplyr_2.2.1       
-[34] fastmap_1.1.0       rlang_1.1.1         readxl_1.4.1       
-[37] rstudioapi_0.14     jquerylib_0.1.4     generics_0.1.3     
-[40] jsonlite_1.8.3      vroom_1.6.0         googlesheets4_1.0.1
-[43] magrittr_2.0.3      Rcpp_1.0.10         munsell_0.5.0      
-[46] fansi_1.0.3         lifecycle_1.0.3     stringi_1.7.8      
-[49] whisker_0.4         yaml_2.3.6          grid_4.2.2         
-[52] parallel_4.2.2      promises_1.2.0.1    crayon_1.5.2       
-[55] haven_2.5.1         hms_1.1.2           knitr_1.41         
-[58] pillar_1.8.1        reprex_2.0.2        glue_1.6.2         
-[61] evaluate_0.18       modelr_0.1.10       vctrs_0.5.1        
-[64] tzdb_0.3.0          httpuv_1.6.6        cellranger_1.1.0   
-[67] gtable_0.3.1        assertthat_0.2.1    cachem_1.0.6       
-[70] xfun_0.35           broom_1.0.1         e1071_1.7-12       
-[73] later_1.3.0         class_7.3-20        googledrive_2.0.0  
-[76] gargle_1.2.1        workflowr_1.7.0     units_0.8-0        
-[79] ellipsis_0.3.2     </code></pre>
+ [1] httr_1.4.4          sass_0.4.4          bit64_4.0.5        
+ [4] vroom_1.6.0         jsonlite_1.8.3      modelr_0.1.10      
+ [7] bslib_0.4.1         assertthat_0.2.1    googlesheets4_1.0.1
+[10] cellranger_1.1.0    progress_1.2.2      yaml_2.3.6         
+[13] pillar_1.8.1        backports_1.4.1     glue_1.6.2         
+[16] digest_0.6.30       promises_1.2.0.1    rvest_1.0.3        
+[19] colorspace_2.0-3    htmltools_0.5.3     httpuv_1.6.6       
+[22] pkgconfig_2.0.3     broom_1.0.1         haven_2.5.1        
+[25] scales_1.2.1        whisker_0.4         later_1.3.0        
+[28] tzdb_0.3.0          git2r_0.30.1        proxy_0.4-27       
+[31] googledrive_2.0.0   generics_0.1.3      ellipsis_0.3.2     
+[34] cachem_1.0.6        withr_2.5.0         cli_3.4.1          
+[37] magrittr_2.0.3      crayon_1.5.2        readxl_1.4.1       
+[40] evaluate_0.18       fs_1.5.2            fansi_1.0.3        
+[43] xml2_1.3.3          class_7.3-20        prettyunits_1.1.1  
+[46] tools_4.2.2         hms_1.1.2           gargle_1.2.1       
+[49] lifecycle_1.0.3     munsell_0.5.0       reprex_2.0.2       
+[52] compiler_4.2.2      jquerylib_0.1.4     e1071_1.7-12       
+[55] RNetCDF_2.6-1       rlang_1.1.1         classInt_0.4-8     
+[58] units_0.8-0         grid_4.2.2          rstudioapi_0.14    
+[61] rmarkdown_2.18      gtable_0.3.1        DBI_1.1.3          
+[64] R6_2.5.1            knitr_1.41          bit_4.0.5          
+[67] fastmap_1.1.0       utf8_1.2.2          workflowr_1.7.0    
+[70] rprojroot_2.0.3     KernSmooth_2.23-20  stringi_1.7.8      
+[73] parallel_4.2.2      Rcpp_1.0.10         vctrs_0.5.1        
+[76] dbplyr_2.2.1        tidyselect_1.2.0    xfun_0.35          </code></pre>
 </div>
 </div>
 </div>
