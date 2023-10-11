@@ -38,11 +38,32 @@ message = "load and add in core-argo data (1 month)",
 republish = TRUE)
 
 
+wflow_publish(here::here(
+  "analysis",
+  c(
+    'coverage_timeseries.Rmd',
+    'coverage_maps.Rmd',
+    'argo_ph.Rmd',
+    'argo_oxygen.Rmd',
+    'argo_temp.Rmd',
+    'argo_temp_core.Rmd',
+    'oceanSODA_argo_pH.Rmd',
+    'oceanSODA_argo_temp.Rmd',
+    'extreme_pH.Rmd',
+    'extreme_temp.Rmd',
+    'extreme_temp_core.Rmd',
+    'extreme_compound.Rmd',
+    'variability_temp.Rmd',
+    'variability_pH.Rmd'
+  )
+),
+message = "update with 2023 data",
+republish = TRUE)
+
 
 wflow_publish(here::here(
   "analysis",
   c(
-    'coverage_maps.Rmd',
     'coverage_timeseries.Rmd'
   )
 ),

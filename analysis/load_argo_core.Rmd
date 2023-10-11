@@ -74,21 +74,31 @@ opt_max_year = 2023
 #   0 = do not build consolidated file from previously written yearly files. (any value <> 1 will omit consolidation)
 #   1 = build consolidated file from previously written yearly files for given parameter.
 #   year to be included in the consolidation are set by opt_min_year and opt_max_year
-opt_consolidate_temp = 0
-opt_consolidate_psal = 0
-opt_consolidate_metadata = 0
+opt_consolidate_temp = 1
+opt_consolidate_psal = 1
+opt_consolidate_metadata = 1
 
 # opt_A_AB_files
 # consolidated temp files must have already been created!
 #   0 = do not build temp_A and temp_AB file from previously written consolidated files. (any value <> 1 will omit A and AB files)
 #   1 = build temp_A and temp_AB file from previously written consolidated files.
-opt_A_AB_files = 0
+opt_A_AB_files = 1
+
+# opt_review_mode
+# if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
+# of output and processing time
+opt_review_mode = 1
+opt_review_dir = "/review_mode"
+
+if (opt_review_mode == 1) {
+  path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data", opt_review_dir)
+}
 
 ```
 
 ## Set cache directory 
 
-Directory where the core-Argo profile files are stored 
+Directory where the core-Argo profile files are stored. Either use the cached files or force a refresh from dac (long process)
 
 ```{r set_core_cache_directory}
 
@@ -112,129 +122,12 @@ if (opt_refresh_cache == 0){
 }
 ```
 
-<!-- ## Load index file  -->
-
-<!-- Load in delayed-mode core-Argo (CTD) data index file   -->
-
-<!-- ```{r load_core_index} -->
-
-<!-- #------------------------------------------------------------------------------ -->
-<!-- # Imnportant - file are loaded for the given year and saved in the preprocessed folder with a year prefix. -->
-<!-- #------------------------------------------------------------------------------ -->
-<!-- load_year = "2014" -->
-
-<!-- # core_index <- argo_global_prof() %>% -->
-<!-- #   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data -->
-<!-- #   argo_filter_date(date_min = '2013-01-01', -->
-<!-- #                    date_max = Sys.time())   -->
-
-<!-- core_index <- argo_global_prof() %>%  -->
-<!--   argo_filter_data_mode(data_mode = 'delayed') %>%  -->
-<!--   argo_filter_date(date_min = paste0(load_year, "-01-01"), -->
-<!--                    date_max = paste0(load_year, "-12-31")) -->
-<!-- # 1 month worth of data for test purposes  -->
-
-<!-- # check dates  -->
-<!-- # max(core_index$date, na.rm = TRUE) -->
-<!-- # min(core_index$date, na.rm = TRUE) -->
-
-
-<!-- ``` -->
-
-<!-- ## Read data  -->
-
-<!-- Read in the core CTD variables corresponding to the index defined above  -->
-
-<!-- ```{r load_core_argo_data} -->
-
-<!-- core_data <- argo_prof_levels( -->
-<!--   path = core_index, -->
-<!--   vars = -->
-<!--     c( -->
-<!--       'PRES_ADJUSTED', -->
-<!--       'PRES_ADJUSTED_QC', -->
-<!--       'PSAL_ADJUSTED', -->
-<!--       'PSAL_ADJUSTED_QC', -->
-<!--       'TEMP_ADJUSTED', -->
-<!--       'TEMP_ADJUSTED_QC'), -->
-<!--   quiet = TRUE -->
-<!-- )  -->
-<!-- # read in the profiles (takes a while) -->
-
-
-<!-- ``` -->
-
-<!-- ## Read metadata  -->
-
-<!-- Read in the corresponding metadata: -->
-
-<!-- ```{r} -->
-
-<!-- core_metadata <- argo_prof_prof(path = core_index) -->
-
-<!-- ``` -->
-
-<!-- ## Join data  -->
-
-<!-- ```{r join_core_data} -->
-
-<!-- core_merge <- full_join(core_data, core_metadata) -->
-
-<!-- core_merge <- core_merge %>% -->
-<!--   rename(lon = longitude, -->
-<!--          lat = latitude) %>% -->
-<!--   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% -->
-<!--   mutate( -->
-<!--     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), -->
-<!--     lat = as.numeric(as.character(lat)), -->
-<!--     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), -->
-<!--     lon = as.numeric(as.character(lon)) -->
-<!--   ) %>% -->
-<!--   mutate(depth = swDepth(pres_adjusted, latitude =  lat), -->
-<!--          .before = pres_adjusted) -->
-
-<!-- ``` -->
-
-<!-- ## Harmonise metadata -->
-
-<!-- ```{r harmonise_core_metadata} -->
-
-<!-- core_metadata <- core_metadata %>% -->
-<!--   rename(lon = longitude, -->
-<!--          lat = latitude) %>% -->
-<!--   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>% -->
-<!--   mutate( -->
-<!--     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)), -->
-<!--     lat = as.numeric(as.character(lat)), -->
-<!--     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)), -->
-<!--     lon = as.numeric(as.character(lon)) -->
-<!--   ) -->
-<!-- ``` -->
-
-
-<!-- ## Write data  -->
-
-<!-- ```{r write_core_data} -->
-
-<!-- core_data %>%  -->
-<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_data.rds")) -->
-
-<!-- core_metadata %>%  -->
-<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_metadata.rds")) -->
-
-<!-- core_merge %>%  -->
-<!--   write_rds(file = paste0(path_argo_core_preprocessed, "/", load_year, "_core_merge.rds")) -->
-
-<!-- ``` -->
-
-<!-- ``` -->
-
 
 ## Load core data one year at a time - temperature, salinity and metadata data
 
+Builds yearly files for temperature, salinity and metadata that can be consolidated in the next code chunk (consolidate_into_allyears)
 
 ```{r load_core_by_year}
-
 #------------------------------------------------------------------------------
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
@@ -245,10 +138,18 @@ for (target_year in opt_min_year:opt_max_year) {
   # if updating any year files it will be based on the initial index file core_index
   if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1 | opt_refresh_years_metadata == 1)
   {
-    core_index <- argo_global_prof() %>% 
-      argo_filter_data_mode(data_mode = 'delayed') %>% 
-      argo_filter_date(date_min = paste0(target_year, "-01-01"),
-                       date_max = paste0(target_year, "-12-31"))
+    # if working in reiew mode only consider first 10 days of the year
+    if (opt_review_mode == 1) {
+      core_index <- argo_global_prof() %>% 
+        argo_filter_data_mode(data_mode = 'delayed') %>% 
+        argo_filter_date(date_min = paste0(target_year, "-01-01"),
+                         date_max = paste0(target_year, "-01-10"))
+    } else {
+      core_index <- argo_global_prof() %>% 
+        argo_filter_data_mode(data_mode = 'delayed') %>% 
+        argo_filter_date(date_min = paste0(target_year, "-01-01"),
+                         date_max = paste0(target_year, "-12-31"))
+    }
   }
 
   # if temp or psal are being updated get the profile data
@@ -433,6 +334,46 @@ for (target_year in opt_min_year:opt_max_year) {
 
 ## Build consolidated all year file from series of yearly files - temperature, salinity and metadata data
 
+This process create three files in the path_argo_core_preprocessed directory that will be used for further analysis
+
+core_data_temp.rds
+------------------
+Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
+    file - the source file
+    date - date of profile
+    lat - aligned to closest 0.5° lat
+    lon - aligned to closest 0.5° lon
+    n_levels - sequential number of sampling points 1 = shallowest
+    depth - calculated from pres_adjusted and latitude
+    pres_adjusted - recorded and adjusted (after qc proccess) pressure
+    temp_adjusted - recorded and adjusted (after qc proccess) temperature
+
+core_data_psal.rds
+------------------
+Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
+    file - the source file
+    date - date of profile
+    lat - aligned to closest 0.5° lat
+    lon - aligned to closest 0.5° lon
+    n_levels - sequential number of sampling points 1 = shallowest
+    depth - calculated from pres_adjusted and latitude
+    pres_adjusted - recorded and adjusted (after qc proccess) pressure
+    psal_adjusted - recorded and adjusted (after qc proccess) salinity
+
+core_metadata.rds
+-----------------
+Contains 1 row per profile. Fields listed below
+    file - the source file
+    date - date of profile
+    lat - aligned to closest 0.5° lat
+    lon - aligned to closest 0.5° lon
+    platform_number - identifier of float
+    cycle_number - the profile number for the given float
+    position_qc - qc flag associated with the positioning of the float profile
+    profile_pres_qc - qc flag associated with the pressure readings of the profile (A-F)
+    profile_temp_qc - qc flag associated with the temperature readings of the profile (A-F)
+    profile_psal_qc - qc flag associated with the salinity readings of the profile (A-F)
+
 
 ```{r consolidate_into_allyears}
 
@@ -464,6 +405,7 @@ if (opt_consolidate_temp == 1){
   # remove files to free space
   rm(core_data_temp)
   rm(core_data_temp_yr)
+  gc()
   
 }
 
@@ -495,6 +437,7 @@ if (opt_consolidate_psal == 1){
   # remove files to free space
   rm(core_data_psal)
   rm(core_data_psal_yr)
+  gc()
   
 }
 
@@ -526,6 +469,7 @@ if (opt_consolidate_metadata == 1){
   # remove files to free space
   rm(core_metadata)
   rm(core_metadata_yr)
+  gc()
   
 }
 
@@ -534,61 +478,84 @@ if (opt_consolidate_metadata == 1){
 
 ## A and AB flag focused temperature files
 
+This process create two additional files in the path_argo_core_preprocessed directory that will be used for further analysis
+
+core_temp_flag_A.rds
+--------------------
+only ontains profile where profile_pres_qc and profile_temp_qc both equal A (100%). Fields listed below
+    lat - aligned to closest 0.5° lat
+    lon - aligned to closest 0.5° lon
+    date - date of profile
+    depth - depth of observation
+    temp_adjusted - recorded and adjusted (after qc proccess) temperature
+    platform_number - identifier of float
+    cycle_number - the profile number for the given float
+    profile_temp_qc - qc flag associated with the temperature readings of the profile (A-F) - will always be A
+
+core_temp_flag_AB.rds
+--------------------
+only ontains profile where profile_pres_qc and profile_temp_qc both either A (100%) or B (> 75%). Fields listed below
+    lat - aligned to closest 0.5° lat
+    lon - aligned to closest 0.5° lon
+    date - date of profile
+    depth - depth of observation
+    temp_adjusted - recorded and adjusted (after qc proccess) temperature
+    platform_number - identifier of float
+    cycle_number - the profile number for the given float
+    profile_temp_qc - qc flag associated with the temperature readings of the profile (A-F) - will be A or B
+
 
 ```{r temp_A_AB_files}
 
 if (opt_A_AB_files == 1){
 
-#   # Read temp and meta data and merge
-#   core_data_temp <-
-#   read_rds(file = paste0(path_argo_core_preprocessed, "/core_data_temp.rds"))
-#   core_metadata <-
-#   read_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
-# 
-#   core_merge <- left_join(core_data_temp, core_metadata)
-#   rm(core_data_temp)
-#   rm(core_metadata)
-#   rm(core_merge)
-# 
-#   core_data_psal <-
-#   read_rds(file = paste0(path_argo_core_preprocessed, "/2023_core_data_psal.rds"))
-#   
-#   
-#   # Select just A profiles into core_temp_flag_A
-#   core_temp_flag_A <- core_merge %>% 
-#     filter(profile_temp_qc == 'A') %>% 
-#     select(lat, 
-#            lon, 
-#            date, 
-#            depth, 
-#            temp_adjusted, 
-#            temp_adjusted_qc,
-# #           platform_number, 
-# #           cycle_number,
-#            profile_temp_qc)
-# 
-#   # write core_temp_flag_A
-#   core_temp_flag_A %>% 
-#     write_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_A.rds"))
-#   rm(core_temp_flag_A)
-# 
-#   # Select just AB profiles into core_temp_flag_A
-#   core_temp_flag_AB <- core_merge %>% 
-#     filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
-#     select(lat, 
-#            lon, 
-#            date, 
-#            depth, 
-#            temp_adjusted, 
-#            temp_adjusted_qc,
-# #           platform_number, 
-# #           cycle_number,
-#            profile_temp_qc)
-# 
-#   # write core_temp_flag_AB
-#   core_temp_flag_AB %>% 
-#     write_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_AB.rds"))
-#   rm(list = ls(pattern = 'core_'))
+  # Read temp and meta_data
+  core_data_temp <-
+  read_rds(file = paste0(path_argo_core_preprocessed, "/core_data_temp.rds"))
+  core_metadata <-
+  read_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
+
+  # Join temp and meta_data to form merge
+  core_merge <- left_join(x = core_data_temp, y = core_metadata, by = c("file" = "file"))
+  rm(core_data_temp)
+  rm(core_metadata)
+  gc()
+
+  # Select just A profiles into core_temp_flag_A
+  core_temp_flag_A <- core_merge %>%
+    filter(profile_temp_qc == 'A' & profile_pres_qc == 'A') %>%
+    select(lat = lat.x,
+           lon = lon.x,
+           date = date.x,
+           depth,
+           temp_adjusted,
+           platform_number,
+           cycle_number,
+           profile_temp_qc)
+
+  # write core_temp_flag_A
+  core_temp_flag_A %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_A.rds"))
+  rm(core_temp_flag_A)
+  gc()
+
+  # Select just AB profiles into core_temp_flag_A
+  core_temp_flag_AB <- core_merge %>%
+    filter((profile_temp_qc == 'A' | profile_temp_qc == 'B') & (profile_pres_qc == 'A' | profile_pres_qc == 'B')) %>%
+    select(lat = lat.x,
+           lon = lon.x,
+           date = date.x,
+           depth,
+           temp_adjusted,
+           platform_number,
+           cycle_number,
+           profile_temp_qc)
+
+  # write core_temp_flag_AB
+  core_temp_flag_AB %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_AB.rds"))
+  rm(list = ls(pattern = 'core_'))
+  gc()
   
 }
   
