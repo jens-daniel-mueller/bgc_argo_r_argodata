@@ -78,3 +78,8 @@ jens-daniel-mueller
 pasqualina-vonlanthendinenna
 
 ds2n19
+
+
+### Change permissions for files
+chmod -R g+w /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo
+chmod -R g+w /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata/preprocessed_core_data/review_mode
