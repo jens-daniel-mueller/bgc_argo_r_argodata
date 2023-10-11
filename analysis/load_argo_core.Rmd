@@ -82,17 +82,25 @@ opt_consolidate_metadata = 1
 # consolidated temp files must have already been created!
 #   0 = do not build temp_A and temp_AB file from previously written consolidated files. (any value <> 1 will omit A and AB files)
 #   1 = build temp_A and temp_AB file from previously written consolidated files.
-opt_A_AB_files = 1
+opt_A_AB_files = 0
 
 # opt_review_mode
 # if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
 # of output and processing time
-opt_review_mode = 1
+opt_review_mode = 0
 opt_review_dir = "/review_mode"
 
 if (opt_review_mode == 1) {
   path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data", opt_review_dir)
 }
+  
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
 
 ```
 
@@ -123,7 +131,7 @@ if (opt_refresh_cache == 0){
 ```
 
 
-## Load core data one year at a time - temperature, salinity and metadata data
+## Load by year
 
 Builds yearly files for temperature, salinity and metadata that can be consolidated in the next code chunk (consolidate_into_allyears)
 
@@ -171,12 +179,9 @@ for (target_year in opt_min_year:opt_max_year) {
       quiet = TRUE
     )
     
-    # We only want the synthesized profiles i.e. n_prof == 1
-    # Can you provide here a brief reminder what "synthesized" means?
-    # Is this equivalent to the argument data_mode = 'delayed' provided to argo_filter_data_mode()
-    # Do you think we should specify n_prof == 1 as a load option?
+    # see option section above for rational of why we want n_prof = 1 profiles
     core_data_yr <- core_data_yr %>%
-    filter(n_prof == 1)
+    filter(n_prof == opt_n_prof_sel)
 
   } 
 
@@ -186,9 +191,9 @@ for (target_year in opt_min_year:opt_max_year) {
     # read associated metadata
     core_metadata_yr <- argo_prof_prof(path = core_index)
     
-    # We only want the synthesized profiles i.e. n_prof == 1
+    # see option section above for rational of why we want n_prof = 1 profiles
     core_metadata_yr <- core_metadata_yr %>%
-    filter(n_prof == 1)
+    filter(n_prof == opt_n_prof_sel)
 
   }
   
@@ -258,7 +263,7 @@ for (target_year in opt_min_year:opt_max_year) {
         psal_adjusted_qc %in% c(1, 8)
       ) %>%
       select(
-        -contains(c("_qc", "psal"))
+        -contains(c("_qc", "temp"))
       )
 
     # write this years file
@@ -310,7 +315,7 @@ for (target_year in opt_min_year:opt_max_year) {
 
 ```
 
-## Build consolidated all year file from series of yearly files - temperature, salinity and metadata data
+## Consolidate years
 
 This process create three files in the path_argo_core_preprocessed directory that will be used for further analysis
 
@@ -452,7 +457,7 @@ if (opt_consolidate_metadata == 1){
 
 ```
 
-## A and AB flag focused temperature files
+## A and AB flag files
 
 This process create two additional files in the path_argo_core_preprocessed directory that will be used for further analysis
 
