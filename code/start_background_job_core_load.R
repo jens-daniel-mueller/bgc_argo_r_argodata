@@ -24,7 +24,17 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'load_argo_core.Rmd'
+       'coverage_timeseries.Rmd',
+       'coverage_maps.Rmd'
   )
 ),
-message = "Create simplified data sets and run for 2013 - 2023")
+message = "refresh of coverage statistics to include full bcg and code loads 2013 - 2023")
+
+# Push latest version to GitHub
+wflow_git_push()
+
+jens-daniel-mueller
+
+pasqualina-vonlanthendinenna
+
+ds2n19
