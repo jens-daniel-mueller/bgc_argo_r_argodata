@@ -14,7 +14,7 @@
 
 <title>Argo Temperature Variability</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -77,6 +77,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -97,6 +98,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -154,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -187,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -196,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -331,7 +332,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -341,7 +342,7 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Load data
      
     <span class="caret"></span>
@@ -371,7 +372,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data coverage
      
     <span class="caret"></span>
@@ -386,7 +387,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data
      
     <span class="caret"></span>
@@ -454,7 +455,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -465,14 +466,16 @@ div.tocify {
 
 <h1 class="title toc-ignore">Argo Temperature Variability</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">29 August, 2022</h4>
+<h4 class="date">12 October, 2023</h4>
 
 </div>
 
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -481,7 +484,9 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -490,17 +495,27 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-08-29
+<strong>Last updated:</strong> 2023-10-12
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
 </p>
 <p>
-This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -509,113 +524,155 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
 </p>
 </div>
 <div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20211008)</code> </a>
 </p>
 </div>
-<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div id="strongSeedstrongcodesetseed20211008code"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p>The command <code>set.seed(20211008)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
 </p>
 </div>
-<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
 </p>
 </div>
 <div id="strongCachestrongnone" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
 <div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>
+</a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a" class="panel-collapse collapse">
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a"
+class="panel-collapse collapse">
 <div class="panel-body">
 <p>
-Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
 </p>
 <p>
-Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
 </p>
 <pre><code>
 Ignored files:
-    Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  code/OceanSODA_argo_extremes.R
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
-    Untracked:  code/merging_oceanSODA_Argo.R
-    Untracked:  code/pH_data_timeseries.R
-
 Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/Workflowr_project_managment.R
+    Modified:   analysis/load_argo.Rmd
+    Modified:   analysis/load_argo_core.Rmd
+    Modified:   code/start_background_job.R
 
 </code></pre>
 <p>
-Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
 </p>
 </div>
 </div>
@@ -626,7 +683,12 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/variability_temp.Rmd</code>) and HTML (<code>docs/variability_temp.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/variability_temp.Rmd</code>) and
+HTML (<code>docs/variability_temp.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -650,6 +712,58 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/analysis/variability_temp.Rmd" target="_blank">1ae81b3</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-11
+</td>
+<td>
+reworked core load process to work initially by year and then finally
+create consolidated all years files.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/analysis/variability_temp.Rmd" target="_blank">44f5720</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-09
+</td>
+<td>
+manual commit
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/variability_temp.html" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -956,7 +1070,11 @@ added variability pages
 <pre class="r"><code>path_argo &lt;- &#39;/nfs/kryo/work/updata/bgc_argo_r_argodata&#39;
 path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)
 path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/&quot;
-path_updata &lt;- &#39;/nfs/kryo/work/updata&#39;</code></pre>
+path_updata &lt;- &#39;/nfs/kryo/work/updata&#39;
+
+path_argo &lt;- &#39;/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo&#39;
+# /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo/preprocessed_bgc_data
+path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)</code></pre>
 <pre class="r"><code>region_masks_all_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed,
                                                &quot;/region_masks_all_1x1.rds&quot;))
 
@@ -1551,18 +1669,19 @@ full_argo_SO %&gt;%
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
-<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.1.2 (2021-11-01)
+<pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.3
+Running under: openSUSE Leap 15.4
 
 Matrix products: default
-BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
-LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.2.2/lib64/R/lib/libRlapack.so
 
 locale:
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -1576,36 +1695,44 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] ggforce_0.3.3     metR_0.11.0       scico_1.3.0       ggOceanMaps_1.2.6
- [5] ggspatial_1.1.5   broom_0.7.11      lubridate_1.8.0   forcats_0.5.1    
- [9] stringr_1.4.0     dplyr_1.0.7       purrr_0.3.4       readr_2.1.1      
-[13] tidyr_1.1.4       tibble_3.1.6      ggplot2_3.3.5     tidyverse_1.3.1  
-[17] workflowr_1.7.0  
+ [1] ggforce_0.4.1     metR_0.13.0       scico_1.3.1       ggOceanMaps_1.3.4
+ [5] ggspatial_1.1.7   broom_1.0.1       lubridate_1.9.0   timechange_0.1.1 
+ [9] forcats_0.5.2     stringr_1.4.1     dplyr_1.0.10      purrr_0.3.5      
+[13] readr_2.1.3       tidyr_1.2.1       tibble_3.1.8      ggplot2_3.4.0    
+[17] tidyverse_1.3.2  
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2           sf_1.0-5           bit64_4.0.5        RColorBrewer_1.1-2
- [5] httr_1.4.2         rprojroot_2.0.2    tools_4.1.2        backports_1.4.1   
- [9] bslib_0.3.1        utf8_1.2.2         rgdal_1.5-28       R6_2.5.1          
-[13] KernSmooth_2.23-20 rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2  
-[17] raster_3.5-11      withr_2.4.3        sp_1.4-6           tidyselect_1.1.1  
-[21] processx_3.5.2     bit_4.0.4          compiler_4.1.2     git2r_0.29.0      
-[25] cli_3.1.1          rvest_1.0.2        xml2_1.3.3         labeling_0.4.2    
-[29] sass_0.4.0         checkmate_2.0.0    scales_1.1.1       classInt_0.4-3    
-[33] callr_3.7.0        proxy_0.4-26       digest_0.6.29      rmarkdown_2.11    
-[37] pkgconfig_2.0.3    htmltools_0.5.2    highr_0.9          dbplyr_2.1.1      
-[41] fastmap_1.1.0      rlang_1.0.2        readxl_1.3.1       rstudioapi_0.13   
-[45] farver_2.1.0       jquerylib_0.1.4    generics_0.1.1     jsonlite_1.7.3    
-[49] vroom_1.5.7        magrittr_2.0.1     Rcpp_1.0.8         munsell_0.5.0     
-[53] fansi_1.0.2        lifecycle_1.0.1    terra_1.5-12       stringi_1.7.6     
-[57] whisker_0.4        yaml_2.2.1         MASS_7.3-55        grid_4.1.2        
-[61] parallel_4.1.2     promises_1.2.0.1   crayon_1.4.2       lattice_0.20-45   
-[65] haven_2.4.3        hms_1.1.1          knitr_1.37         ps_1.6.0          
-[69] pillar_1.6.4       codetools_0.2-18   reprex_2.0.1       glue_1.6.0        
-[73] evaluate_0.14      getPass_0.2-2      data.table_1.14.2  modelr_0.1.8      
-[77] tweenr_1.0.2       vctrs_0.3.8        tzdb_0.2.0         httpuv_1.6.5      
-[81] cellranger_1.1.0   polyclip_1.10-0    gtable_0.3.0       assertthat_0.2.1  
-[85] xfun_0.29          e1071_1.7-9        later_1.3.0        viridisLite_0.4.0 
-[89] class_7.3-20       units_0.7-2        ellipsis_0.3.2    </code></pre>
+ [1] fs_1.5.2            sf_1.0-9            bit64_4.0.5        
+ [4] RColorBrewer_1.1-3  httr_1.4.4          rprojroot_2.0.3    
+ [7] tools_4.2.2         backports_1.4.1     bslib_0.4.1        
+[10] utf8_1.2.2          R6_2.5.1            KernSmooth_2.23-20 
+[13] rgeos_0.5-9         DBI_1.1.3           colorspace_2.0-3   
+[16] raster_3.6-11       withr_2.5.0         sp_1.5-1           
+[19] tidyselect_1.2.0    bit_4.0.5           compiler_4.2.2     
+[22] git2r_0.30.1        cli_3.4.1           rvest_1.0.3        
+[25] xml2_1.3.3          labeling_0.4.2      sass_0.4.4         
+[28] checkmate_2.1.0     scales_1.2.1        classInt_0.4-8     
+[31] proxy_0.4-27        digest_0.6.30       rmarkdown_2.18     
+[34] pkgconfig_2.0.3     htmltools_0.5.3     highr_0.9          
+[37] dbplyr_2.2.1        fastmap_1.1.0       rlang_1.1.1        
+[40] readxl_1.4.1        rstudioapi_0.14     farver_2.1.1       
+[43] jquerylib_0.1.4     generics_0.1.3      jsonlite_1.8.3     
+[46] vroom_1.6.0         googlesheets4_1.0.1 magrittr_2.0.3     
+[49] Rcpp_1.0.10         munsell_0.5.0       fansi_1.0.3        
+[52] lifecycle_1.0.3     terra_1.7-39        stringi_1.7.8      
+[55] whisker_0.4         yaml_2.3.6          MASS_7.3-58.1      
+[58] grid_4.2.2          parallel_4.2.2      promises_1.2.0.1   
+[61] crayon_1.5.2        lattice_0.20-45     haven_2.5.1        
+[64] hms_1.1.2           knitr_1.41          pillar_1.8.1       
+[67] codetools_0.2-18    reprex_2.0.2        glue_1.6.2         
+[70] evaluate_0.18       data.table_1.14.6   modelr_0.1.10      
+[73] tweenr_2.0.2        vctrs_0.5.1         tzdb_0.3.0         
+[76] httpuv_1.6.6        cellranger_1.1.0    polyclip_1.10-4    
+[79] gtable_0.3.1        assertthat_0.2.1    cachem_1.0.6       
+[82] xfun_0.35           e1071_1.7-12        later_1.3.0        
+[85] viridisLite_0.4.1   class_7.3-20        googledrive_2.0.0  
+[88] gargle_1.2.1        memoise_2.0.1       workflowr_1.7.0    
+[91] units_0.8-0         ellipsis_0.3.2     </code></pre>
 </div>
 </div>
 </div>
