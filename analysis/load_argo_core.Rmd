@@ -82,7 +82,7 @@ opt_consolidate_metadata = 1
 # consolidated temp files must have already been created!
 #   0 = do not build temp_A and temp_AB file from previously written consolidated files. (any value <> 1 will omit A and AB files)
 #   1 = build temp_A and temp_AB file from previously written consolidated files.
-opt_A_AB_files = 0
+opt_A_AB_files = 1
 
 # opt_review_mode
 # if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
@@ -197,38 +197,42 @@ for (target_year in opt_min_year:opt_max_year) {
 
   }
   
+  # if temp or psal are being updated get the profile data
+  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
+  {
   
-  # remove columns that are not needed in merged temperature and salinity files
-  core_index <- core_index %>%
-    select(file,
-           date,
-           latitude,
-           longitude)
+    # remove columns that are not needed in merged temperature and salinity files
+    core_index <- core_index %>%
+      select(file,
+             date,
+             latitude,
+             longitude)
+    
+    # resolve lat and lon
+    core_index <- core_index %>%
+      rename(lon = longitude,
+             lat = latitude) %>%
+      mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+      mutate(
+        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+        lon = as.numeric(as.character(lon))
+      )
+    
+    # join to index to incorporate date, lat and lon
+    core_data_yr <- left_join(core_data_yr, core_index)
+    
+    # derive depth using TEOS=10
+    core_data_yr <- core_data_yr %>%
+      mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
+             .before = pres_adjusted)
+    
+    core_data_yr <-
+      core_data_yr %>%
+      select(-c(n_levels, n_prof, pres_adjusted))
+  }
   
-  # resolve lat and lon
-  core_index <- core_index %>%
-    rename(lon = longitude,
-           lat = latitude) %>%
-    mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-    mutate(
-      lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-      lat = as.numeric(as.character(lat)),
-      lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-      lon = as.numeric(as.character(lon))
-    )
-  
-  # join to index to incorporate date, lat and lon
-  core_data_yr <- left_join(core_data_yr, core_index)
-  
-  # derive depth using TEOS=10
-  core_data_yr <- core_data_yr %>%
-    mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
-           .before = pres_adjusted)
-  
-  core_data_yr <-
-    core_data_yr %>%
-    select(-c(n_levels, n_prof, pres_adjusted))
-
   # ------------------------------------------------------------------------------
   # Process temperature file
   # ------------------------------------------------------------------------------
