@@ -58,7 +58,7 @@ Using only core-temperature flag A profiles
 
 # flag A temperature data in the top 20 m 
 sst <-
-  read_rds(file = paste0(path_argo_core_preprocessed, "/core_merge_flag_A.rds")) %>%
+  read_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_A.rds")) %>%
   filter(between(depth, 0, 20)) %>%
   mutate(year = year(date),
          month = month(date))
@@ -96,7 +96,7 @@ mean_profile_sst %>%
   ggplot()+
   geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
   scale_y_reverse()+
-  geom_vline(xintercept = 0, col = 'red', size = 0.6)+
+  geom_vline(xintercept = 0, col = 'red', linewidth = 0.6)+
   labs(x = 'offset (ºC)',
        y = 'depth (m)',
        col = 'year',
@@ -126,7 +126,7 @@ mean_profile_sst_binned %>%
   ggplot()+
   geom_point(aes(x = offset, y = depth, col = as.character(year)), size = 0.3, pch = 19) +
   scale_y_reverse()+
-  geom_vline(xintercept = 0, col = 'red', size = 0.6)+
+  geom_vline(xintercept = 0, col = 'red', linewidth = 0.6)+
   labs(x = 'offset (ºC)',
        y = 'depth (m)',
        col = 'year',
@@ -157,7 +157,7 @@ profile_sst_binned_ave %>%
   geom_point(aes(x = mean_offset, y = depth), size = 1, pch = 19) +
   geom_line(aes(x = mean_offset, y = depth))+
   scale_y_reverse()+
-  geom_vline(xintercept = 0, col = 'red', size = 1)+
+  geom_vline(xintercept = 0, col = 'red', linewidth = 1)+
   labs(x = 'mean offset (ºC)',
        y = 'depth (m)',
        col = 'year',
