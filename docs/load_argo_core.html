@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f8f36ea0b61c4db89192f1e6b494245dc23527ftargetblank3f8f36ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2ca768d713af67f9487a4b027352be65530a17cftargetblank2ca768da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f8f36ea0b61c4db89192f1e6b494245dc23527f" target="_blank">3f8f36e</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2ca768d713af67f9487a4b027352be65530a17cf" target="_blank">2ca768d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f8f36ea0b61c4db89192f1e6b494245dc23527ftargetblank3f8f36ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2ca768d713af67f9487a4b027352be65530a17cftargetblank2ca768da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f8f36ea0b61c4db89192f1e6b494245dc23527f" target="_blank">3f8f36e</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2ca768d713af67f9487a4b027352be65530a17cf" target="_blank">2ca768d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -713,6 +713,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2ca768d713af67f9487a4b027352be65530a17cf/analysis/load_argo_core.Rmd" target="_blank">2ca768d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+<td>
+Added load qc metrics
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/35d09332f11df18e43451a5573bdf4756041ddbf/docs/load_argo_core.html" target="_blank">35d0933</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1626,52 +1660,114 @@ QC flags (A-F)</p>
                                     ))
   core_profile_summary &lt;- ungroup(core_profile_summary)
 
-
-  # draw separate plots for the separate parameters
+  year_min &lt;- min(core_profile_summary$year)
+  year_max &lt;- max(core_profile_summary$year)
+  
+  # draw plots for the separate parameters
   core_profile_summary %&gt;%
-    group_split(measure_order) %&gt;% 
-    map(~ ggplot((.x), aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
+    ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
             geom_point() +
             geom_line() +
             facet_grid(. ~ measure) +
             labs(x = &#39;year&#39;, 
                  y = &#39;number of profiles&#39;, 
                  col = &#39;profile QC flag&#39;,
-                 title = &#39;Count of profile qc flags by year&#39;)
-    )</code></pre>
-<pre><code>[[1]]</code></pre>
+                 title = &#39;Count of profile qc flags by year&#39;)</code></pre>
 <p><img src="figure/load_argo_core.Rmd/QC_summary-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary-1">
+Past versions of QC_summary-1.png
+</button>
+</p>
+<div id="fig-QC_summary-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/35d09332f11df18e43451a5573bdf4756041ddbf/docs/figure/load_argo_core.Rmd/QC_summary-1.png" target="_blank">35d0933</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>  # Read temp and meta_data
   core_measure_summary &lt;-
   read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
   core_measure_summary &lt;- ungroup(core_measure_summary)
 
-  # draw separate plots for the separate parameters
+  year_min &lt;- min(core_measure_summary$year)
+  year_max &lt;- max(core_measure_summary$year)
+  
+  # draw plots for the separate parameters
   core_measure_summary %&gt;%
-    group_split(measure_order) %&gt;% 
-    map(~ ggplot((.x), aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+    ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
             geom_point() +
             geom_line() +
-            facet_grid(. ~ measure) +
+            facet_wrap(~measure) +
+            scale_x_continuous(breaks = seq(year_min, year_max, 1)) +
             labs(x = &#39;year&#39;, 
                  y = &#39;number of measurements&#39;, 
                  col = &#39;measurements QC flag&#39;,
-                 title = &#39;Count of measurement qc flags by year&#39;)
-    )</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-5.png" width="672" style="display: block; margin: auto;" /></p>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-6.png" width="672" style="display: block; margin: auto;" /></p>
+                 title = &#39;Count of measurement qc flags by year&#39;)</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary-2">
+Past versions of QC_summary-2.png
+</button>
+</p>
+<div id="fig-QC_summary-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/35d09332f11df18e43451a5573bdf4756041ddbf/docs/figure/load_argo_core.Rmd/QC_summary-2.png" target="_blank">35d0933</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
