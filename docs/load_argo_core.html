@@ -467,7 +467,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load Core-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">11 October, 2023</h4>
+<h4 class="date">13 October, 2023</h4>
 
 </div>
 
@@ -496,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-11
+<strong>Last updated:</strong> 2023-10-13
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreed1405fb9ba75b74154f3b77a90821955e1396de7targetblankd1405fba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f8f36ea0b61c4db89192f1e6b494245dc23527ftargetblank3f8f36ea">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/d1405fb9ba75b74154f3b77a90821955e1396de7" target="_blank">d1405fb</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f8f36ea0b61c4db89192f1e6b494245dc23527f" target="_blank">3f8f36e</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreed1405fb9ba75b74154f3b77a90821955e1396de7targetblankd1405fba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3f8f36ea0b61c4db89192f1e6b494245dc23527ftargetblank3f8f36ea"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/d1405fb9ba75b74154f3b77a90821955e1396de7" target="_blank">d1405fb</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3f8f36ea0b61c4db89192f1e6b494245dc23527f" target="_blank">3f8f36e</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -665,6 +665,8 @@ Ignored files:
     Ignored:    output/
 
 Unstaged changes:
+    Modified:   analysis/load_argo.Rmd
+    Modified:   code/start_background_job.R
     Modified:   code/start_background_job_core_load.R
 
 </code></pre>
@@ -711,6 +713,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3f8f36ea0b61c4db89192f1e6b494245dc23527f/analysis/load_argo_core.Rmd" target="_blank">3f8f36e</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+<td>
+Added load qc metrics
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6d38b59f4446f0d7525c1d4ca90196f3c184be8d/analysis/load_argo_core.Rmd" target="_blank">6d38b59</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-12
+</td>
+<td>
+minor changes after JDM code review
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/2e78f0a566f2f009d44c1b41827064cb0e5f086b/docs/load_argo_core.html" target="_blank">2e78f0a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1037,9 +1090,9 @@ opt_max_year = 2023
 #   0 = do not build consolidated file from previously written yearly files. (any value &lt;&gt; 1 will omit consolidation)
 #   1 = build consolidated file from previously written yearly files for given parameter.
 #   year to be included in the consolidation are set by opt_min_year and opt_max_year
-opt_consolidate_temp = 1
-opt_consolidate_psal = 1
-opt_consolidate_metadata = 1
+opt_consolidate_temp = 0
+opt_consolidate_psal = 0
+opt_consolidate_metadata = 0
 
 # opt_A_AB_files
 # consolidated temp files must have already been created!
@@ -1050,12 +1103,12 @@ opt_A_AB_files = 0
 # opt_review_mode
 # if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
 # of output and processing time
-opt_review_mode = 0
+opt_review_mode = 1
 opt_review_dir = &quot;/review_mode&quot;
 
-if (opt_review_mode == 1) {
-  path_argo_core_preprocessed &lt;- paste0(path_argo_core, &quot;/preprocessed_core_data&quot;, opt_review_dir)
-}
+#if (opt_review_mode == 1) {
+#  path_argo_core_preprocessed &lt;- paste0(path_argo_core, &quot;/preprocessed_core_data&quot;, opt_review_dir)
+#}
   
 # opt_n_prof_sel
 # The selection criteria that is used against n_prof, here set to 1
@@ -1068,16 +1121,17 @@ opt_n_prof_sel = 1</code></pre>
 <h2>Set cache directory</h2>
 <p>Directory where the core-Argo profile files are stored. Either use
 the cached files or force a refresh from dac (long process)</p>
-<pre class="r"><code># set cache directory
+<pre class="r"><code>if (opt_review_mode == 0) {
+# set cache directory
 argo_set_cache_dir(cache_dir = path_argo_core)
 
 # check cache directory
-argo_cache_dir()</code></pre>
-<pre><code>[1] &quot;/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata&quot;</code></pre>
-<pre class="r"><code># check argo mirror
-argo_mirror()</code></pre>
-<pre><code>[1] &quot;https://data-argo.ifremer.fr&quot;</code></pre>
-<pre class="r"><code># age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+argo_cache_dir()
+
+# check argo mirror
+argo_mirror()
+
+# age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
 # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
 if (opt_refresh_cache == 0){
   argo_update_global(max_global_cache_age = Inf)  
@@ -1085,20 +1139,21 @@ if (opt_refresh_cache == 0){
 } else {
   argo_update_global(max_global_cache_age = -Inf)  
   argo_update_data(max_data_cache_age = -Inf)
+}
 }</code></pre>
 </div>
 <div id="load-by-year" class="section level2">
 <h2>Load by year</h2>
 <p>Builds yearly files for temperature, salinity and metadata that can
 be consolidated in the next code chunk (consolidate_into_allyears)</p>
-<pre class="r"><code>#------------------------------------------------------------------------------
+<pre class="r"><code>if (opt_review_mode == 0) {
+
+#------------------------------------------------------------------------------
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
-
 for (target_year in opt_min_year:opt_max_year) {
   # for manual testing of the loop
   # target_year &lt;- 2014
-
 
   # if updating any year files it will be based on the initial index file core_index
   if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1 | opt_refresh_years_metadata == 1)
@@ -1137,6 +1192,55 @@ for (target_year in opt_min_year:opt_max_year) {
     # see option section above for rational of why we want n_prof = 1 profiles
     core_data_yr &lt;- core_data_yr %&gt;%
     filter(n_prof == opt_n_prof_sel)
+    
+    # if necessary make summary data frame.
+    if (!exists(&quot;core_measure_summary&quot;))
+    {
+      columns = c(&quot;year&quot;,&quot;measure&quot;,&quot;measure_order&quot;,&quot;measure_qc&quot;,&quot;count_measures&quot;) 
+      core_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
+      colnames(core_measure_summary) = columns
+    }
+    
+    # Default qc counts for measurements - Pressure
+    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                      measure=c(&quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;),
+                      measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
+                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+
+    # Build summary of qc flags for pressure and update core_measure_summary
+    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Pressure&quot;, measure_order = 1, measure_qc = pres_adjusted_qc) %&gt;% 
+    summarise(count_measures=n())
+    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+
+    # Default qc counts for measurements - temperature
+    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                      measure=c(&quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;),
+                      measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
+                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+
+    # Build summary of qc flags for pressure and update core_measure_summary
+    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Temperature&quot;, measure_order = 2, measure_qc = temp_adjusted_qc) %&gt;% 
+    summarise(count_measures=n())
+    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+    
+    # Default qc counts for measurements - salinity
+    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                      measure=c(&quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;),
+                      measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
+                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+
+    # Build summary of qc flags for pressure and update core_measure_summary
+    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Salinity&quot;, measure_order = 3, measure_qc = psal_adjusted_qc) %&gt;% 
+    summarise(count_measures=n())
+    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+    
+    rm(agg_tbl)
 
   } 
 
@@ -1152,38 +1256,42 @@ for (target_year in opt_min_year:opt_max_year) {
 
   }
   
+  # if temp or psal are being updated get the profile data
+  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
+  {
   
-  # remove columns that are not needed in merged temperature and salinity files
-  core_index &lt;- core_index %&gt;%
-    select(file,
-           date,
-           latitude,
-           longitude)
+    # remove columns that are not needed in merged temperature and salinity files
+    core_index &lt;- core_index %&gt;%
+      select(file,
+             date,
+             latitude,
+             longitude)
+    
+    # resolve lat and lon
+    core_index &lt;- core_index %&gt;%
+      rename(lon = longitude,
+             lat = latitude) %&gt;%
+      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+      mutate(
+        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+        lon = as.numeric(as.character(lon))
+      )
+    
+    # join to index to incorporate date, lat and lon
+    core_data_yr &lt;- left_join(core_data_yr, core_index)
+    
+    # derive depth using TEOS=10
+    core_data_yr &lt;- core_data_yr %&gt;%
+      mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
+             .before = pres_adjusted)
+    
+    core_data_yr &lt;-
+      core_data_yr %&gt;%
+      select(-c(n_levels, n_prof, pres_adjusted))
+  }
   
-  # resolve lat and lon
-  core_index &lt;- core_index %&gt;%
-    rename(lon = longitude,
-           lat = latitude) %&gt;%
-    mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-    mutate(
-      lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-      lat = as.numeric(as.character(lat)),
-      lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-      lon = as.numeric(as.character(lon))
-    )
-  
-  # join to index to incorporate date, lat and lon
-  core_data_yr &lt;- left_join(core_data_yr, core_index)
-  
-  # derive depth using TEOS=10
-  core_data_yr &lt;- core_data_yr %&gt;%
-    mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
-           .before = pres_adjusted)
-  
-  core_data_yr &lt;-
-    core_data_yr %&gt;%
-    select(-c(n_levels, n_prof, pres_adjusted))
-
   # ------------------------------------------------------------------------------
   # Process temperature file
   # ------------------------------------------------------------------------------
@@ -1201,7 +1309,7 @@ for (target_year in opt_min_year:opt_max_year) {
       )
     
     # write this years file
-    core_data_temp_yr %&gt;% 
+    core_data_temp_yr %&gt;%
       write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
 
   }
@@ -1222,7 +1330,7 @@ for (target_year in opt_min_year:opt_max_year) {
       )
 
     # write this years file
-    core_data_psal_yr %&gt;% 
+    core_data_psal_yr %&gt;%
       write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
 
   }
@@ -1261,11 +1369,17 @@ for (target_year in opt_min_year:opt_max_year) {
       )
 
     # write this years file
-    core_metadata_yr %&gt;% 
+    core_metadata_yr %&gt;%
       write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
 
   }
-  
+
+}
+
+# write this years file
+core_measure_summary %&gt;% 
+  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
+rm(core_measure_summary)
 }</code></pre>
 </div>
 <div id="consolidate-years" class="section level2">
@@ -1334,11 +1448,9 @@ if (opt_consolidate_temp == 1){
   rm(core_data_temp_yr)
   gc()
   
-}</code></pre>
-<pre><code>            used   (Mb)  gc trigger    (Mb)    max used    (Mb)
-Ncells   4802682  256.5    16104872   860.1    26032962  1390.4
-Vcells 279576663 2133.1 12224719361 93267.3 12734016001 97152.9</code></pre>
-<pre class="r"><code># ------------------------------------------------------------------------------
+}
+
+# ------------------------------------------------------------------------------
 # Process salinity file
 # ------------------------------------------------------------------------------
 if (opt_consolidate_psal == 1){
@@ -1368,11 +1480,9 @@ if (opt_consolidate_psal == 1){
   rm(core_data_psal_yr)
   gc()
   
-}</code></pre>
-<pre><code>            used   (Mb) gc trigger    (Mb)    max used    (Mb)
-Ncells   4802725  256.5   16104872   860.1    26032962  1390.4
-Vcells 206426589 1575.0 9925080494 75722.4 12734016001 97152.9</code></pre>
-<pre class="r"><code># ------------------------------------------------------------------------------
+}
+
+# ------------------------------------------------------------------------------
 # Process metadata file
 # ------------------------------------------------------------------------------
 if (opt_consolidate_metadata == 1){
@@ -1403,9 +1513,6 @@ if (opt_consolidate_metadata == 1){
   gc()
   
 }</code></pre>
-<pre><code>            used   (Mb) gc trigger    (Mb)    max used    (Mb)
-Ncells   4801155  256.5   16104872   860.1    26032962  1390.4
-Vcells 206134990 1572.7 7940064396 60577.9 12734016001 97152.9</code></pre>
 </div>
 <div id="a-and-ab-flag-files" class="section level2">
 <h2>A and AB flag files</h2>
@@ -1473,6 +1580,98 @@ float cycle_number - the profile number for the given float</p>
   gc()
   
 }</code></pre>
+</div>
+<div id="qc-summary" class="section level2">
+<h2>QC summary</h2>
+<p>Produce a summary of current measurement QC flags (1-9) and profile
+QC flags (A-F)</p>
+<pre class="r"><code>  # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
+  core_metadata &lt;-
+  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+  core_metadata[&quot;profile_pres_qc&quot;][is.na(core_metadata[&quot;profile_pres_qc&quot;])] &lt;- &quot;&quot; 
+  core_metadata[&quot;profile_temp_qc&quot;][is.na(core_metadata[&quot;profile_temp_qc&quot;])] &lt;- &quot;&quot; 
+  core_metadata[&quot;profile_psal_qc&quot;][is.na(core_metadata[&quot;profile_psal_qc&quot;])] &lt;- &quot;&quot; 
+
+  core_profile_summary &lt;- core_metadata %&gt;% 
+    group_by(
+      year = format(date, &quot;%Y&quot;), 
+      measure = &quot;Pressure&quot;, 
+      measure_order = 1, 
+      profile_qc = profile_pres_qc
+      ) %&gt;% 
+    summarise(
+      count_profiles = n()
+      )
+  core_profile_summary &lt;- rbind(core_profile_summary, 
+                                core_metadata %&gt;% 
+                                  group_by(
+                                    year = format(date, &quot;%Y&quot;), 
+                                    measure = &quot;Temperature&quot;, 
+                                    measure_order = 2, 
+                                    profile_qc = profile_temp_qc
+                                    ) %&gt;% 
+                                  summarise(
+                                    count_profiles = n()
+                                    ))
+  core_profile_summary &lt;- rbind(core_profile_summary, 
+                                core_metadata %&gt;% 
+                                  group_by(
+                                    year = format(date, &quot;%Y&quot;), 
+                                    measure = &quot;Salinity&quot;, 
+                                    measure_order = 3, 
+                                    profile_qc = profile_psal_qc
+                                    ) %&gt;% 
+                                  summarise(
+                                    count_profiles = n()
+                                    ))
+  core_profile_summary &lt;- ungroup(core_profile_summary)
+
+
+  # draw separate plots for the separate parameters
+  core_profile_summary %&gt;%
+    group_split(measure_order) %&gt;% 
+    map(~ ggplot((.x), aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
+            geom_point() +
+            geom_line() +
+            facet_grid(. ~ measure) +
+            labs(x = &#39;year&#39;, 
+                 y = &#39;number of profiles&#39;, 
+                 col = &#39;profile QC flag&#39;,
+                 title = &#39;Count of profile qc flags by year&#39;)
+    )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>  # Read temp and meta_data
+  core_measure_summary &lt;-
+  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
+  core_measure_summary &lt;- ungroup(core_measure_summary)
+
+  # draw separate plots for the separate parameters
+  core_measure_summary %&gt;%
+    group_split(measure_order) %&gt;% 
+    map(~ ggplot((.x), aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+            geom_point() +
+            geom_line() +
+            facet_grid(. ~ measure) +
+            labs(x = &#39;year&#39;, 
+                 y = &#39;number of measurements&#39;, 
+                 col = &#39;measurements QC flag&#39;,
+                 title = &#39;Count of measurement qc flags by year&#39;)
+    )</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/load_argo_core.Rmd/QC_summary-6.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1505,35 +1704,35 @@ other attached packages:
  [1] oce_1.7-10       gsw_1.1-1        sf_1.0-9         lubridate_1.9.0 
  [5] timechange_0.1.1 argodata_0.1.0   forcats_0.5.2    stringr_1.4.1   
  [9] dplyr_1.0.10     purrr_0.3.5      readr_2.1.3      tidyr_1.2.1     
-[13] tibble_3.1.8     ggplot2_3.4.0    tidyverse_1.3.2 
+[13] tibble_3.1.8     ggplot2_3.4.0    tidyverse_1.3.2  workflowr_1.7.0 
 
 loaded via a namespace (and not attached):
- [1] httr_1.4.4          sass_0.4.4          bit64_4.0.5        
- [4] vroom_1.6.0         jsonlite_1.8.3      modelr_0.1.10      
- [7] bslib_0.4.1         assertthat_0.2.1    googlesheets4_1.0.1
-[10] cellranger_1.1.0    progress_1.2.2      yaml_2.3.6         
-[13] pillar_1.8.1        backports_1.4.1     glue_1.6.2         
-[16] digest_0.6.30       promises_1.2.0.1    rvest_1.0.3        
-[19] colorspace_2.0-3    htmltools_0.5.3     httpuv_1.6.6       
-[22] pkgconfig_2.0.3     broom_1.0.1         haven_2.5.1        
-[25] scales_1.2.1        whisker_0.4         later_1.3.0        
-[28] tzdb_0.3.0          git2r_0.30.1        proxy_0.4-27       
-[31] googledrive_2.0.0   generics_0.1.3      ellipsis_0.3.2     
-[34] cachem_1.0.6        withr_2.5.0         cli_3.4.1          
-[37] magrittr_2.0.3      crayon_1.5.2        readxl_1.4.1       
-[40] evaluate_0.18       fs_1.5.2            fansi_1.0.3        
-[43] xml2_1.3.3          class_7.3-20        prettyunits_1.1.1  
-[46] tools_4.2.2         hms_1.1.2           gargle_1.2.1       
-[49] lifecycle_1.0.3     munsell_0.5.0       reprex_2.0.2       
-[52] compiler_4.2.2      jquerylib_0.1.4     e1071_1.7-12       
-[55] RNetCDF_2.6-1       rlang_1.1.1         classInt_0.4-8     
-[58] units_0.8-0         grid_4.2.2          rstudioapi_0.14    
-[61] rmarkdown_2.18      gtable_0.3.1        DBI_1.1.3          
-[64] R6_2.5.1            knitr_1.41          bit_4.0.5          
-[67] fastmap_1.1.0       utf8_1.2.2          workflowr_1.7.0    
-[70] rprojroot_2.0.3     KernSmooth_2.23-20  stringi_1.7.8      
-[73] parallel_4.2.2      Rcpp_1.0.10         vctrs_0.5.1        
-[76] dbplyr_2.2.1        tidyselect_1.2.0    xfun_0.35          </code></pre>
+ [1] fs_1.5.2            httr_1.4.4          rprojroot_2.0.3    
+ [4] tools_4.2.2         backports_1.4.1     bslib_0.4.1        
+ [7] utf8_1.2.2          R6_2.5.1            KernSmooth_2.23-20 
+[10] DBI_1.1.3           colorspace_2.0-3    withr_2.5.0        
+[13] tidyselect_1.2.0    processx_3.8.0      compiler_4.2.2     
+[16] git2r_0.30.1        cli_3.4.1           rvest_1.0.3        
+[19] RNetCDF_2.6-1       xml2_1.3.3          labeling_0.4.2     
+[22] sass_0.4.4          scales_1.2.1        classInt_0.4-8     
+[25] callr_3.7.3         proxy_0.4-27        digest_0.6.30      
+[28] rmarkdown_2.18      pkgconfig_2.0.3     htmltools_0.5.3    
+[31] dbplyr_2.2.1        fastmap_1.1.0       highr_0.9          
+[34] rlang_1.1.1         readxl_1.4.1        rstudioapi_0.14    
+[37] jquerylib_0.1.4     generics_0.1.3      farver_2.1.1       
+[40] jsonlite_1.8.3      googlesheets4_1.0.1 magrittr_2.0.3     
+[43] Rcpp_1.0.10         munsell_0.5.0       fansi_1.0.3        
+[46] lifecycle_1.0.3     stringi_1.7.8       whisker_0.4        
+[49] yaml_2.3.6          grid_4.2.2          promises_1.2.0.1   
+[52] crayon_1.5.2        haven_2.5.1         hms_1.1.2          
+[55] knitr_1.41          ps_1.7.2            pillar_1.8.1       
+[58] reprex_2.0.2        glue_1.6.2          evaluate_0.18      
+[61] getPass_0.2-2       modelr_0.1.10       vctrs_0.5.1        
+[64] tzdb_0.3.0          httpuv_1.6.6        cellranger_1.1.0   
+[67] gtable_0.3.1        assertthat_0.2.1    cachem_1.0.6       
+[70] xfun_0.35           broom_1.0.1         e1071_1.7-12       
+[73] later_1.3.0         class_7.3-20        googledrive_2.0.0  
+[76] gargle_1.2.1        units_0.8-0         ellipsis_0.3.2     </code></pre>
 </div>
 </div>
 </div>
