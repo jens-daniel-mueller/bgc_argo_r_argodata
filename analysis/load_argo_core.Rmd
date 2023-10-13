@@ -637,11 +637,12 @@ Produce a summary of current measurement QC flags (1-9) and profile QC flags (A-
                                     ))
   core_profile_summary <- ungroup(core_profile_summary)
 
-
-  # draw separate plots for the separate parameters
+  year_min <- min(core_profile_summary$year)
+  year_max <- max(core_profile_summary$year)
+  
+  # draw plots for the separate parameters
   core_profile_summary %>%
-    group_split(measure_order) %>% 
-    map(~ ggplot((.x), aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
+    ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
             geom_point() +
             geom_line() +
             facet_grid(. ~ measure) +
@@ -649,24 +650,25 @@ Produce a summary of current measurement QC flags (1-9) and profile QC flags (A-
                  y = 'number of profiles', 
                  col = 'profile QC flag',
                  title = 'Count of profile qc flags by year')
-    )
 
   # Read temp and meta_data
   core_measure_summary <-
   read_rds(file = paste0(path_argo_core_preprocessed, "/core_measure_summary.rds"))
   core_measure_summary <- ungroup(core_measure_summary)
 
-  # draw separate plots for the separate parameters
+  year_min <- min(core_measure_summary$year)
+  year_max <- max(core_measure_summary$year)
+  
+  # draw plots for the separate parameters
   core_measure_summary %>%
-    group_split(measure_order) %>% 
-    map(~ ggplot((.x), aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+    ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
             geom_point() +
             geom_line() +
-            facet_grid(. ~ measure) +
+            facet_wrap(~measure) +
+            scale_x_continuous(breaks = seq(year_min, year_max, 1)) +
             labs(x = 'year', 
                  y = 'number of measurements', 
                  col = 'measurements QC flag',
                  title = 'Count of measurement qc flags by year')
-    )
-
+    
 ```
