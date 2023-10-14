@@ -618,7 +618,7 @@ theme_set(theme_bw())
 ```
 
 
-```{r QC_summary}
+```{r QC_summary_profile, fig.asp=0.6}
 
 # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
 core_metadata <-
@@ -687,7 +687,7 @@ core_profile_summary %>%
 
 Produce a summary of current measurement QC flags (1-9)
 
-```{r QC_summary_profile, fig.asp=0.6}
+```{r QC_summary_measure, fig.asp=0.6}
 
 # Read temp and meta_data
 core_measure_summary <-
@@ -705,9 +705,9 @@ core_measure_summary %>%
           facet_wrap(~measure_order, labeller = facet_label) +
           scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
           labs(x = 'year', 
-               y = 'number of measurements', 
-               col = 'measurements QC flag',
-               title = 'Count of measurement qc flags by year')
+               y = 'number of measures', 
+               col = 'measure QC flag',
+               title = 'Count of measure qc flags by year')
 
 ```
 
