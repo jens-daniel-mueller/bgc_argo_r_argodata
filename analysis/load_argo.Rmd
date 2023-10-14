@@ -1,6 +1,6 @@
 ---
 title: "Load BGC-Argo Data"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "David Stappard, Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -37,23 +37,78 @@ library(ggOceanMaps)
 
 ```{r set_updata_root_directory, include=FALSE}
 
-path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
-path_updata <- '/nfs/kryo/work/updata'
-path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
-path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
-path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
-
 path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
-# /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo/preprocessed_bgc_data
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 ```
 
-# BGC-Argo 
-Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata
+## Set load options
 
-## Set cache directory
+Determine if files are refreshed from dac or cache directory is used. 
+Are metadata, temperature and salinity year files renewed?
+Are the consolidated all year files created from the individual year files?
 
-The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using `argo_update_global()` (data files are also updated occasionally; update these using `argo_update_data()`)
+```{r set_load_options}
+
+# opt_refresh_cache
+#   0 = do not refresh cache.
+#   1 = refresh cache. (any none zero value will force a refresh)
+opt_refresh_cache = 0
+
+# opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_metadata
+#   0 = do not refresh the yearly files. (any value <> 1 will omit annual refresh)
+#   1 = refresh yearly files for given parameter.
+#   year to be refreshed are set by opt_min_year and opt_max_year
+opt_refresh_years_temp = 1
+opt_refresh_years_psal = 1
+opt_refresh_years_doxy = 1
+opt_refresh_years_nitrate = 1
+opt_refresh_years_pH = 1
+opt_refresh_years_metadata = 1
+opt_min_year = 2013
+opt_max_year = 2023
+
+# opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_metadata
+# Yearly files must have already been created!
+#   0 = do not build consolidated file from previously written yearly files. (any value <> 1 will omit consolidation)
+#   1 = build consolidated file from previously written yearly files for given parameter.
+#   year to be included in the consolidation are set by opt_min_year and opt_max_year
+opt_consolidate_temp = 1
+opt_consolidate_psal = 1
+opt_consolidate_psal = 1
+opt_consolidate_doxy = 1
+opt_consolidate_nitrate = 1
+opt_consolidate_pH = 1
+opt_consolidate_metadata = 1
+
+# opt_summary_files
+# consolidated files must have already been created!
+#   0 = do not build summary files from previously written consolidated files. (any value <> 1 will omit A and AB files)
+#   1 = build summary files from previously written consolidated files.
+opt_summary_files = 1
+
+# opt_review_mode
+# if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
+# of output and processing time
+opt_review_mode = 0
+opt_review_dir = "/review_mode"
+
+#if (opt_review_mode == 1) {
+#  path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data", opt_review_dir)
+#}
+  
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
+```
+
+
+## Set cache directory 
+
+Directory where the core-Argo profile files are stored. Either use the cached files or force a refresh from dac (long process)
 
 ```{r set_cache_directory}
 
@@ -66,9 +121,15 @@ argo_cache_dir()
 # check argo mirror
 argo_mirror()
 
-argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+# age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
 # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
-argo_update_data(max_data_cache_age = Inf)
+if (opt_refresh_cache == 0){
+  argo_update_global(max_global_cache_age = Inf)  
+  argo_update_data(max_data_cache_age = Inf)
+} else {
+  argo_update_global(max_global_cache_age = -Inf)  
+  argo_update_data(max_data_cache_age = -Inf)
+}
 
 ```
 
@@ -526,7 +587,7 @@ Profile QC flags ('`profile_parameter_qc`' columns) are QC codes attributed to t
 'B' means 75-\<100% of profile levels contain good data,\
 'C' means 50-75% of profile levels contain good data,\
 'D' means 25-50% of profile levels contain good data,\
-'E' means \>0-50% of profile levels contain good data,\
+'E' means \>0-25% of profile levels contain good data,\
 'F' means 0% of profile levels contain good data.
 
 ### Quality Control Tests
