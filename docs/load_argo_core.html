@@ -467,7 +467,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load Core-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">13 October, 2023</h4>
+<h4 class="date">14 October, 2023</h4>
 
 </div>
 
@@ -496,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-13
+<strong>Last updated:</strong> 2023-10-14
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2ca768d713af67f9487a4b027352be65530a17cftargetblank2ca768da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreecc09ea428d6f865111c1a9e4cb85eead399d43ectargetblankcc09ea4a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2ca768d713af67f9487a4b027352be65530a17cf" target="_blank">2ca768d</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/cc09ea428d6f865111c1a9e4cb85eead399d43ec" target="_blank">cc09ea4</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2ca768d713af67f9487a4b027352be65530a17cftargetblank2ca768da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreecc09ea428d6f865111c1a9e4cb85eead399d43ectargetblankcc09ea4a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2ca768d713af67f9487a4b027352be65530a17cf" target="_blank">2ca768d</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/cc09ea428d6f865111c1a9e4cb85eead399d43ec" target="_blank">cc09ea4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -713,6 +713,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cc09ea428d6f865111c1a9e4cb85eead399d43ec/analysis/load_argo_core.Rmd" target="_blank">cc09ea4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-14
+</td>
+<td>
+Added load qc metrics
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/eec64f7d664848ebec9311954e747685e22bf21b/docs/load_argo_core.html" target="_blank">eec64f7</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1124,21 +1158,22 @@ opt_max_year = 2023
 #   0 = do not build consolidated file from previously written yearly files. (any value &lt;&gt; 1 will omit consolidation)
 #   1 = build consolidated file from previously written yearly files for given parameter.
 #   year to be included in the consolidation are set by opt_min_year and opt_max_year
-opt_consolidate_temp = 0
-opt_consolidate_psal = 0
-opt_consolidate_metadata = 0
+opt_consolidate_temp = 1
+opt_consolidate_psal = 1
+opt_consolidate_metadata = 1
 
 # opt_A_AB_files
 # consolidated temp files must have already been created!
 #   0 = do not build temp_A and temp_AB file from previously written consolidated files. (any value &lt;&gt; 1 will omit A and AB files)
 #   1 = build temp_A and temp_AB file from previously written consolidated files.
-opt_A_AB_files = 0
+opt_A_AB_files = 1
 
 # opt_review_mode
 # if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
 # of output and processing time
-opt_review_mode = 1
+opt_review_mode = 0
 opt_review_dir = &quot;/review_mode&quot;
+opt_qc_only = TRUE
 
 #if (opt_review_mode == 1) {
 #  path_argo_core_preprocessed &lt;- paste0(path_argo_core, &quot;/preprocessed_core_data&quot;, opt_review_dir)
@@ -1155,265 +1190,270 @@ opt_n_prof_sel = 1</code></pre>
 <h2>Set cache directory</h2>
 <p>Directory where the core-Argo profile files are stored. Either use
 the cached files or force a refresh from dac (long process)</p>
-<pre class="r"><code>if (opt_review_mode == 0) {
-# set cache directory
-argo_set_cache_dir(cache_dir = path_argo_core)
-
-# check cache directory
-argo_cache_dir()
-
-# check argo mirror
-argo_mirror()
-
-# age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
-# ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
-if (opt_refresh_cache == 0){
-  argo_update_global(max_global_cache_age = Inf)  
-  argo_update_data(max_data_cache_age = Inf)
-} else {
-  argo_update_global(max_global_cache_age = -Inf)  
-  argo_update_data(max_data_cache_age = -Inf)
-}
+<pre class="r"><code>if (!opt_qc_only) {
+  # set cache directory
+  argo_set_cache_dir(cache_dir = path_argo_core)
+  
+  # check cache directory
+  argo_cache_dir()
+  
+  # check argo mirror
+  argo_mirror()
+  
+  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
+  if (opt_refresh_cache == 0){
+    argo_update_global(max_global_cache_age = Inf)  
+    argo_update_data(max_data_cache_age = Inf)
+  } else {
+    argo_update_global(max_global_cache_age = -Inf)  
+    argo_update_data(max_data_cache_age = -Inf)
+  }
 }</code></pre>
 </div>
 <div id="load-by-year" class="section level2">
 <h2>Load by year</h2>
 <p>Builds yearly files for temperature, salinity and metadata that can
 be consolidated in the next code chunk (consolidate_into_allyears)</p>
-<pre class="r"><code>if (opt_review_mode == 0) {
-
-#------------------------------------------------------------------------------
+<pre class="r"><code>#------------------------------------------------------------------------------
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
-for (target_year in opt_min_year:opt_max_year) {
-  # for manual testing of the loop
-  # target_year &lt;- 2014
+if (!opt_qc_only) {
 
-  # if updating any year files it will be based on the initial index file core_index
-  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1 | opt_refresh_years_metadata == 1)
-  {
-    # if working in reiew mode only consider first 10 days of the year
-    if (opt_review_mode == 1) {
-      core_index &lt;- argo_global_prof() %&gt;% 
-        argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
-        argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
-                         date_max = paste0(target_year, &quot;-01-10&quot;))
-    } else {
-      core_index &lt;- argo_global_prof() %&gt;% 
-        argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
-        argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
-                         date_max = paste0(target_year, &quot;-12-31&quot;))
-    }
-  }
-
-  # if temp or psal are being updated get the profile data
-  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
-  {
-    # read in the profiles (takes a while)
-    core_data_yr &lt;- argo_prof_levels(
-      path = core_index,
-      vars =
-        c(
-          &#39;PRES_ADJUSTED&#39;,
-          &#39;PRES_ADJUSTED_QC&#39;,
-          &#39;PSAL_ADJUSTED&#39;,
-          &#39;PSAL_ADJUSTED_QC&#39;,
-          &#39;TEMP_ADJUSTED&#39;,
-          &#39;TEMP_ADJUSTED_QC&#39;),
-      quiet = TRUE
-    )
-    
-    # see option section above for rational of why we want n_prof = 1 profiles
-    core_data_yr &lt;- core_data_yr %&gt;%
-    filter(n_prof == opt_n_prof_sel)
-    
-    # if necessary make summary data frame.
-    if (!exists(&quot;core_measure_summary&quot;))
+  for (target_year in opt_min_year:opt_max_year) {
+    # for manual testing of the loop
+    # target_year &lt;- 2014
+  
+    # if updating any year files it will be based on the initial index file core_index
+    if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1 | opt_refresh_years_metadata == 1)
     {
-      columns = c(&quot;year&quot;,&quot;measure&quot;,&quot;measure_order&quot;,&quot;measure_qc&quot;,&quot;count_measures&quot;) 
-      core_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
-      colnames(core_measure_summary) = columns
+      # if working in reiew mode only consider first 10 days of the year
+      if (opt_review_mode == 1) {
+        core_index &lt;- argo_global_prof() %&gt;% 
+          argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+          argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
+                           date_max = paste0(target_year, &quot;-01-10&quot;))
+      } else {
+        core_index &lt;- argo_global_prof() %&gt;% 
+          argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+          argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
+                           date_max = paste0(target_year, &quot;-12-31&quot;))
+      }
+    }
+  
+    # if temp or psal are being updated get the profile data
+    if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
+    {
+      # read in the profiles (takes a while)
+      core_data_yr &lt;- argo_prof_levels(
+        path = core_index,
+        vars =
+          c(
+            &#39;PRES_ADJUSTED&#39;,
+            &#39;PRES_ADJUSTED_QC&#39;,
+            &#39;PSAL_ADJUSTED&#39;,
+            &#39;PSAL_ADJUSTED_QC&#39;,
+            &#39;TEMP_ADJUSTED&#39;,
+            &#39;TEMP_ADJUSTED_QC&#39;),
+        quiet = TRUE
+      )
+      
+      # see option section above for rational of why we want n_prof = 1 profiles
+      core_data_yr &lt;- core_data_yr %&gt;%
+      filter(n_prof == opt_n_prof_sel)
+      
+      # if necessary make summary data frame.
+      if (!exists(&quot;core_measure_summary&quot;))
+      {
+        columns = c(&quot;year&quot;,&quot;measure&quot;,&quot;measure_order&quot;,&quot;measure_qc&quot;,&quot;count_measures&quot;) 
+        core_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
+        colnames(core_measure_summary) = columns
+      }
+      
+      # Ensure no N/A qc flags
+      core_data_yr[&quot;pres_adjusted_qc&quot;][is.na(core_data_yr[&quot;pres_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      core_data_yr[&quot;temp_adjusted_qc&quot;][is.na(core_data_yr[&quot;temp_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      core_data_yr[&quot;psal_adjusted_qc&quot;][is.na(core_data_yr[&quot;psal_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      
+      # Default qc counts for measurements - Pressure
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;),
+                        measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for pressure and update core_measure_summary
+      agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Pressure&quot;, measure_order = 1, measure_qc = pres_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+  
+      # Default qc counts for measurements - temperature
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;),
+                        measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for pressure and update core_measure_summary
+      agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Temperature&quot;, measure_order = 2, measure_qc = temp_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+      
+      # Default qc counts for measurements - salinity
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;),
+                        measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for pressure and update core_measure_summary
+      agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Salinity&quot;, measure_order = 3, measure_qc = psal_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+      
+      rm(agg_tbl)
+  
+    } 
+  
+    # if updating metadata get the file based on core_index
+    if (opt_refresh_years_metadata == 1)
+    {
+      # read associated metadata
+      core_metadata_yr &lt;- argo_prof_prof(path = core_index)
+      
+      # see option section above for rational of why we want n_prof = 1 profiles
+      core_metadata_yr &lt;- core_metadata_yr %&gt;%
+      filter(n_prof == opt_n_prof_sel)
+  
     }
     
-    # Default qc counts for measurements - Pressure
-    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                      measure=c(&quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;),
-                      measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
-                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
-                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-
-    # Build summary of qc flags for pressure and update core_measure_summary
-    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Pressure&quot;, measure_order = 1, measure_qc = pres_adjusted_qc) %&gt;% 
-    summarise(count_measures=n())
-    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
-
-    # Default qc counts for measurements - temperature
-    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                      measure=c(&quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;),
-                      measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
-                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
-                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-
-    # Build summary of qc flags for pressure and update core_measure_summary
-    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Temperature&quot;, measure_order = 2, measure_qc = temp_adjusted_qc) %&gt;% 
-    summarise(count_measures=n())
-    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+    # if temp or psal are being updated get the profile data
+    if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
+    {
     
-    # Default qc counts for measurements - salinity
-    qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                      measure=c(&quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;),
-                      measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
-                      measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
-                      count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-    core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-
-    # Build summary of qc flags for pressure and update core_measure_summary
-    agg_tbl &lt;- core_data_yr %&gt;% group_by(year = target_year, measure = &quot;Salinity&quot;, measure_order = 3, measure_qc = psal_adjusted_qc) %&gt;% 
-    summarise(count_measures=n())
-    core_measure_summary &lt;- rows_update(core_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+      # remove columns that are not needed in merged temperature and salinity files
+      core_index &lt;- core_index %&gt;%
+        select(file,
+               date,
+               latitude,
+               longitude)
+      
+      # resolve lat and lon
+      core_index &lt;- core_index %&gt;%
+        rename(lon = longitude,
+               lat = latitude) %&gt;%
+        mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+        mutate(
+          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+          lat = as.numeric(as.character(lat)),
+          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+          lon = as.numeric(as.character(lon))
+        )
+      
+      # join to index to incorporate date, lat and lon
+      core_data_yr &lt;- left_join(core_data_yr, core_index)
+      
+      # derive depth using TEOS=10
+      core_data_yr &lt;- core_data_yr %&gt;%
+        mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
+               .before = pres_adjusted)
+      
+      core_data_yr &lt;-
+        core_data_yr %&gt;%
+        select(-c(n_levels, n_prof, pres_adjusted))
+    }
     
-    rm(agg_tbl)
-
-  } 
-
-  # if updating metadata get the file based on core_index
-  if (opt_refresh_years_metadata == 1)
-  {
-    # read associated metadata
-    core_metadata_yr &lt;- argo_prof_prof(path = core_index)
+    # ------------------------------------------------------------------------------
+    # Process temperature file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_temp == 1)
+    {    
+      # Base temperature data where qc flag = good
+      # Could this cause incomplete profiles to be maintained?
+      core_data_temp_yr &lt;- core_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          temp_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;psal&quot;))
+        )
+      
+      # write this years file
+      core_data_temp_yr %&gt;%
+        write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
+  
+    }
     
-    # see option section above for rational of why we want n_prof = 1 profiles
-    core_metadata_yr &lt;- core_metadata_yr %&gt;%
-    filter(n_prof == opt_n_prof_sel)
-
+    # ------------------------------------------------------------------------------
+    # Process salinity file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_psal == 1)
+    {    
+      # Base salinity data where qc flag = good
+      core_data_psal_yr &lt;- core_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          psal_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;temp&quot;))
+        )
+  
+      # write this years file
+      core_data_psal_yr %&gt;%
+        write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
+  
+    }
+  
+  
+    # ------------------------------------------------------------------------------
+    # Process metadata file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_metadata == 1)
+    {
+      # resolve lat and lon so that it is hamonised with data files
+      core_metadata_yr &lt;- core_metadata_yr %&gt;%
+        rename(lon = longitude,
+               lat = latitude) %&gt;%
+        mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+        mutate( 
+          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+          lat = as.numeric(as.character(lat)),
+          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+          lon = as.numeric(as.character(lon))
+        )
+    
+      # Select just the columns we are interested in
+      core_metadata_yr &lt;- core_metadata_yr %&gt;%
+        select (
+          file,
+          date,
+          lat,
+          lon,
+          platform_number, 
+          cycle_number,
+          position_qc,
+          profile_pres_qc,
+          profile_temp_qc,
+          profile_psal_qc
+        )
+  
+      # write this years file
+      core_metadata_yr %&gt;%
+        write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
+  
+    }
+  
   }
   
-  # if temp or psal are being updated get the profile data
-  if (opt_refresh_years_temp == 1 | opt_refresh_years_psal == 1)
-  {
-  
-    # remove columns that are not needed in merged temperature and salinity files
-    core_index &lt;- core_index %&gt;%
-      select(file,
-             date,
-             latitude,
-             longitude)
-    
-    # resolve lat and lon
-    core_index &lt;- core_index %&gt;%
-      rename(lon = longitude,
-             lat = latitude) %&gt;%
-      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-      mutate(
-        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-        lat = as.numeric(as.character(lat)),
-        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-        lon = as.numeric(as.character(lon))
-      )
-    
-    # join to index to incorporate date, lat and lon
-    core_data_yr &lt;- left_join(core_data_yr, core_index)
-    
-    # derive depth using TEOS=10
-    core_data_yr &lt;- core_data_yr %&gt;%
-      mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
-             .before = pres_adjusted)
-    
-    core_data_yr &lt;-
-      core_data_yr %&gt;%
-      select(-c(n_levels, n_prof, pres_adjusted))
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process temperature file
-  # ------------------------------------------------------------------------------
-  if (opt_refresh_years_temp == 1)
-  {    
-    # Base temperature data where qc flag = good
-    # Could this cause incomplete profiles to be maintained?
-    core_data_temp_yr &lt;- core_data_yr %&gt;%
-      filter(
-        pres_adjusted_qc %in% c(1, 8) &amp;
-        temp_adjusted_qc %in% c(1, 8)
-      ) %&gt;%
-      select(
-        -contains(c(&quot;_qc&quot;, &quot;psal&quot;))
-      )
-    
-    # write this years file
-    core_data_temp_yr %&gt;%
-      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
-
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process salinity file
-  # ------------------------------------------------------------------------------
-  if (opt_refresh_years_psal == 1)
-  {    
-    # Base salinity data where qc flag = good
-    core_data_psal_yr &lt;- core_data_yr %&gt;%
-      filter(
-        pres_adjusted_qc %in% c(1, 8) &amp;
-        psal_adjusted_qc %in% c(1, 8)
-      ) %&gt;%
-      select(
-        -contains(c(&quot;_qc&quot;, &quot;temp&quot;))
-      )
-
-    # write this years file
-    core_data_psal_yr %&gt;%
-      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
-
-  }
-
-
-  # ------------------------------------------------------------------------------
-  # Process metadata file
-  # ------------------------------------------------------------------------------
-  if (opt_refresh_years_metadata == 1)
-  {
-    # resolve lat and lon so that it is hamonised with data files
-    core_metadata_yr &lt;- core_metadata_yr %&gt;%
-      rename(lon = longitude,
-             lat = latitude) %&gt;%
-      mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-      mutate( 
-        lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-        lat = as.numeric(as.character(lat)),
-        lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-        lon = as.numeric(as.character(lon))
-      )
-  
-    # Select just the columns we are interested in
-    core_metadata_yr &lt;- core_metadata_yr %&gt;%
-      select (
-        file,
-        date,
-        lat,
-        lon,
-        platform_number, 
-        cycle_number,
-        position_qc,
-        profile_pres_qc,
-        profile_temp_qc,
-        profile_psal_qc
-      )
-
-    # write this years file
-    core_metadata_yr %&gt;%
-      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
-
-  }
-
-}
-
-# write this years file
-core_measure_summary %&gt;% 
-  write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
-rm(core_measure_summary)
+  # write this years file
+  core_measure_summary %&gt;% 
+    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
+  rm(core_measure_summary)
 }</code></pre>
 </div>
 <div id="consolidate-years" class="section level2">
@@ -1452,100 +1492,103 @@ profile_pres_qc - qc flag associated with the pressure readings of the
 profile (A-F) profile_temp_qc - qc flag associated with the temperature
 readings of the profile (A-F) profile_psal_qc - qc flag associated with
 the salinity readings of the profile (A-F)</p>
-<pre class="r"><code># ------------------------------------------------------------------------------
-# Process temperature file
-# ------------------------------------------------------------------------------
-if (opt_consolidate_temp == 1){
-  consolidated_created = 0
+<pre class="r"><code>if (!opt_qc_only) {
+
+  # ------------------------------------------------------------------------------
+  # Process temperature file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_temp == 1){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
   
-  for (target_year in opt_min_year:opt_max_year) {
-
-    # read the yearly file based on target_year
-    core_data_temp_yr &lt;-
-    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
-
-    # Combine into a consolidated all years file
-    if (consolidated_created == 0) {
-      core_data_temp &lt;- core_data_temp_yr
-      consolidated_created = 1
-    } else {
-      core_data_temp &lt;- rbind(core_data_temp, core_data_temp_yr)
+      # read the yearly file based on target_year
+      core_data_temp_yr &lt;-
+      read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_temp.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        core_data_temp &lt;- core_data_temp_yr
+        consolidated_created = 1
+      } else {
+        core_data_temp &lt;- rbind(core_data_temp, core_data_temp_yr)
+      }
     }
+    
+    # write consolidated files  
+    core_data_temp %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
+  
+    # remove files to free space
+    rm(core_data_temp)
+    rm(core_data_temp_yr)
+    gc()
+    
   }
   
-  # write consolidated files  
-  core_data_temp %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
-
-  # remove files to free space
-  rm(core_data_temp)
-  rm(core_data_temp_yr)
-  gc()
+  # ------------------------------------------------------------------------------
+  # Process salinity file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_psal == 1){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
   
-}
-
-# ------------------------------------------------------------------------------
-# Process salinity file
-# ------------------------------------------------------------------------------
-if (opt_consolidate_psal == 1){
-  consolidated_created = 0
+      # read the yearly file based on target_year
+      core_data_psal_yr &lt;-
+      read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
   
-  for (target_year in opt_min_year:opt_max_year) {
-
-    # read the yearly file based on target_year
-    core_data_psal_yr &lt;-
-    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_data_psal.rds&quot;))
-
-    # Combine into a consolidated all years file
-    if (consolidated_created == 0) {
-      core_data_psal &lt;- core_data_psal_yr
-      consolidated_created = 1
-    } else {
-      core_data_psal &lt;- rbind(core_data_psal, core_data_psal_yr)
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        core_data_psal &lt;- core_data_psal_yr
+        consolidated_created = 1
+      } else {
+        core_data_psal &lt;- rbind(core_data_psal, core_data_psal_yr)
+      }
     }
+    
+    # write consolidated files  
+    core_data_psal %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_psal.rds&quot;))
+  
+    # remove files to free space
+    rm(core_data_psal)
+    rm(core_data_psal_yr)
+    gc()
+    
   }
   
-  # write consolidated files  
-  core_data_psal %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_psal.rds&quot;))
-
-  # remove files to free space
-  rm(core_data_psal)
-  rm(core_data_psal_yr)
-  gc()
+  # ------------------------------------------------------------------------------
+  # Process metadata file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_metadata == 1){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
   
-}
-
-# ------------------------------------------------------------------------------
-# Process metadata file
-# ------------------------------------------------------------------------------
-if (opt_consolidate_metadata == 1){
-  consolidated_created = 0
+      # read the yearly file based on target_year
+      core_metadata_yr &lt;-
+      read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
   
-  for (target_year in opt_min_year:opt_max_year) {
-
-    # read the yearly file based on target_year
-    core_metadata_yr &lt;-
-    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/&quot;, target_year, &quot;_core_metadata.rds&quot;))
-
-    # Combine into a consolidated all years file
-    if (consolidated_created == 0) {
-      core_metadata &lt;- core_metadata_yr
-      consolidated_created = 1
-    } else {
-      core_metadata &lt;- rbind(core_metadata, core_metadata_yr)
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        core_metadata &lt;- core_metadata_yr
+        consolidated_created = 1
+      } else {
+        core_metadata &lt;- rbind(core_metadata, core_metadata_yr)
+      }
     }
+    
+    # write consolidated files  
+    core_metadata %&gt;% 
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+  
+    # remove files to free space
+    rm(core_metadata)
+    rm(core_metadata_yr)
+    gc()
+    
   }
-  
-  # write consolidated files  
-  core_metadata %&gt;% 
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
-
-  # remove files to free space
-  rm(core_metadata)
-  rm(core_metadata_yr)
-  gc()
-  
 }</code></pre>
 </div>
 <div id="a-and-ab-flag-files" class="section level2">
@@ -1571,108 +1614,138 @@ closest 0.5° lat lon - aligned to closest 0.5° lon date - date of
 profile depth - depth of observation temp_adjusted - recorded and
 adjusted (after qc proccess) temperature platform_number - identifier of
 float cycle_number - the profile number for the given float</p>
-<pre class="r"><code>if (opt_A_AB_files == 1){
+<pre class="r"><code>if (!opt_qc_only) {
 
-  # Read temp and meta_data
-  core_data_temp &lt;-
-  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
-  core_metadata &lt;-
-  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
-
-  # Join temp and meta_data to form merge
-  core_merge &lt;- left_join(x = core_data_temp, 
-                          y = core_metadata %&gt;% 
-                            select(file,
-                                   platform_number,
-                                   cycle_number,
-                                   contains(&quot;_qc&quot;)))
-  rm(core_data_temp)
-  rm(core_metadata)
-  gc()
-
-  # Select just A profiles into core_temp_flag_A
-  core_temp_flag_A &lt;- core_merge %&gt;%
-    filter(profile_temp_qc == &#39;A&#39; &amp; profile_pres_qc == &#39;A&#39;) %&gt;%
-    select(-c(file, contains(&quot;_qc&quot;)))
-
-
-  # write core_temp_flag_A
-  core_temp_flag_A %&gt;%
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_A.rds&quot;))
-  rm(core_temp_flag_A)
-  gc()
-
-  # Select just AB profiles into core_temp_flag_A
-  core_temp_flag_AB &lt;- core_merge %&gt;%
-    filter((profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) &amp; (profile_pres_qc == &#39;A&#39; | profile_pres_qc == &#39;B&#39;)) %&gt;%
-    select(-c(file, contains(&quot;_qc&quot;)))
-
-  # write core_temp_flag_AB
-  core_temp_flag_AB %&gt;%
-    write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_AB.rds&quot;))
-  rm(list = ls(pattern = &#39;core_&#39;))
-  gc()
+  if (opt_A_AB_files == 1){
   
-}</code></pre>
+    # Read temp and meta_data
+    core_data_temp &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_data_temp.rds&quot;))
+    core_metadata &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+  
+    # Join temp and meta_data to form merge
+    core_merge &lt;- left_join(x = core_data_temp, 
+                            y = core_metadata %&gt;% 
+                              select(file,
+                                     platform_number,
+                                     cycle_number,
+                                     contains(&quot;_qc&quot;)))
+    rm(core_data_temp)
+    rm(core_metadata)
+    gc()
+  
+    # Select just A profiles into core_temp_flag_A
+    core_temp_flag_A &lt;- core_merge %&gt;%
+      filter(profile_temp_qc == &#39;A&#39; &amp; profile_pres_qc == &#39;A&#39;) %&gt;%
+      select(-c(file, contains(&quot;_qc&quot;)))
+  
+  
+    # write core_temp_flag_A
+    core_temp_flag_A %&gt;%
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_A.rds&quot;))
+    rm(core_temp_flag_A)
+    gc()
+  
+    # Select just AB profiles into core_temp_flag_A
+    core_temp_flag_AB &lt;- core_merge %&gt;%
+      filter((profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) &amp; (profile_pres_qc == &#39;A&#39; | profile_pres_qc == &#39;B&#39;)) %&gt;%
+      select(-c(file, contains(&quot;_qc&quot;)))
+  
+    # write core_temp_flag_AB
+    core_temp_flag_AB %&gt;%
+      write_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_temp_flag_AB.rds&quot;))
+    rm(list = ls(pattern = &#39;core_&#39;))
+    gc()
+    
+  }
+}  </code></pre>
 </div>
 <div id="qc-summary" class="section level2">
 <h2>QC summary</h2>
 <p>Produce a summary of current measurement QC flags (1-9) and profile
 QC flags (A-F)</p>
-<pre class="r"><code>  # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
-  core_metadata &lt;-
-  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
-  core_metadata[&quot;profile_pres_qc&quot;][is.na(core_metadata[&quot;profile_pres_qc&quot;])] &lt;- &quot;&quot; 
-  core_metadata[&quot;profile_temp_qc&quot;][is.na(core_metadata[&quot;profile_temp_qc&quot;])] &lt;- &quot;&quot; 
-  core_metadata[&quot;profile_psal_qc&quot;][is.na(core_metadata[&quot;profile_psal_qc&quot;])] &lt;- &quot;&quot; 
-
-  core_profile_summary &lt;- core_metadata %&gt;% 
-    group_by(
-      year = format(date, &quot;%Y&quot;), 
-      measure = &quot;Pressure&quot;, 
-      measure_order = 1, 
-      profile_qc = profile_pres_qc
-      ) %&gt;% 
-    summarise(
-      count_profiles = n()
-      )
-  core_profile_summary &lt;- rbind(core_profile_summary, 
-                                core_metadata %&gt;% 
-                                  group_by(
-                                    year = format(date, &quot;%Y&quot;), 
-                                    measure = &quot;Temperature&quot;, 
-                                    measure_order = 2, 
-                                    profile_qc = profile_temp_qc
-                                    ) %&gt;% 
-                                  summarise(
-                                    count_profiles = n()
-                                    ))
-  core_profile_summary &lt;- rbind(core_profile_summary, 
-                                core_metadata %&gt;% 
-                                  group_by(
-                                    year = format(date, &quot;%Y&quot;), 
-                                    measure = &quot;Salinity&quot;, 
-                                    measure_order = 3, 
-                                    profile_qc = profile_psal_qc
-                                    ) %&gt;% 
-                                  summarise(
-                                    count_profiles = n()
-                                    ))
-  core_profile_summary &lt;- ungroup(core_profile_summary)
-
-  year_min &lt;- min(core_profile_summary$year)
-  year_max &lt;- max(core_profile_summary$year)
+<pre class="r"><code>if (opt_qc_only) {
+    # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
+    core_metadata &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))
+    core_metadata[&quot;profile_pres_qc&quot;][is.na(core_metadata[&quot;profile_pres_qc&quot;])] &lt;- &quot;&quot; 
+    core_metadata[&quot;profile_temp_qc&quot;][is.na(core_metadata[&quot;profile_temp_qc&quot;])] &lt;- &quot;&quot; 
+    core_metadata[&quot;profile_psal_qc&quot;][is.na(core_metadata[&quot;profile_psal_qc&quot;])] &lt;- &quot;&quot; 
   
-  # draw plots for the separate parameters
-  core_profile_summary %&gt;%
-    ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
-            geom_point() +
-            geom_line() +
-            facet_grid(. ~ measure) +
-            labs(x = &#39;year&#39;, 
-                 y = &#39;number of profiles&#39;, 
-                 col = &#39;profile QC flag&#39;,
-                 title = &#39;Count of profile qc flags by year&#39;)</code></pre>
+    core_profile_summary &lt;- core_metadata %&gt;% 
+      group_by(
+        year = format(date, &quot;%Y&quot;), 
+        measure = &quot;Pressure&quot;, 
+        measure_order = 1, 
+        profile_qc = profile_pres_qc
+        ) %&gt;% 
+      summarise(
+        count_profiles = n()
+        )
+    core_profile_summary &lt;- rbind(core_profile_summary, 
+                                  core_metadata %&gt;% 
+                                    group_by(
+                                      year = format(date, &quot;%Y&quot;), 
+                                      measure = &quot;Temperature&quot;, 
+                                      measure_order = 2, 
+                                      profile_qc = profile_temp_qc
+                                      ) %&gt;% 
+                                    summarise(
+                                      count_profiles = n()
+                                      ))
+    core_profile_summary &lt;- rbind(core_profile_summary, 
+                                  core_metadata %&gt;% 
+                                    group_by(
+                                      year = format(date, &quot;%Y&quot;), 
+                                      measure = &quot;Salinity&quot;, 
+                                      measure_order = 3, 
+                                      profile_qc = profile_psal_qc
+                                      ) %&gt;% 
+                                    summarise(
+                                      count_profiles = n()
+                                      ))
+    # modify data frame to prepare for plotting
+    core_profile_summary &lt;- ungroup(core_profile_summary)
+    core_profile_summary &lt;- core_profile_summary %&gt;% group_by(measure_order)
+    core_profile_summary &lt;- transform(core_profile_summary, year = as.numeric(year))
+    
+    year_min &lt;- min(core_profile_summary$year)
+    year_max &lt;- max(core_profile_summary$year)
+    facet_label &lt;- as_labeller(c(&quot;1&quot;=&quot;Pressure&quot;, &quot;2&quot;=&quot;Temperature&quot;, &quot;3&quot;=&quot;Salinity&quot;))
+      
+    # draw plots for the separate parameters
+    core_profile_summary %&gt;%
+      ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
+              geom_point() +
+              geom_line() +
+              facet_wrap(~measure_order, labeller = facet_label) +
+              scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+              labs(x = &#39;year&#39;, 
+                   y = &#39;number of profiles&#39;, 
+                   col = &#39;profile QC flag&#39;,
+                   title = &#39;Count of profile qc flags by year&#39;)
+  
+    # Read temp and meta_data
+    core_measure_summary &lt;-
+    read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
+    core_measure_summary &lt;- ungroup(core_measure_summary)
+  
+    year_min &lt;- min(core_measure_summary$year)
+    year_max &lt;- max(core_measure_summary$year)
+    
+    # draw plots for the separate parameters
+    core_measure_summary %&gt;%
+      ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+              geom_point() +
+              geom_line() +
+              facet_wrap(~measure_order, labeller = facet_label) +
+              scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+              labs(x = &#39;year&#39;, 
+                   y = &#39;number of measurements&#39;, 
+                   col = &#39;measurements QC flag&#39;,
+                   title = &#39;Count of measurement qc flags by year&#39;)
+}</code></pre>
 <p><img src="figure/load_argo_core.Rmd/QC_summary-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary-1">
@@ -1698,7 +1771,7 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/35d09332f11df18e43451a5573bdf4756041ddbf/docs/figure/load_argo_core.Rmd/QC_summary-1.png" target="_blank">35d0933</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/eec64f7d664848ebec9311954e747685e22bf21b/docs/figure/load_argo_core.Rmd/QC_summary-1.png" target="_blank">eec64f7</a>
 </td>
 <td>
 ds2n19
@@ -1707,55 +1780,9 @@ ds2n19
 2023-10-13
 </td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>  # Read temp and meta_data
-  core_measure_summary &lt;-
-  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_measure_summary.rds&quot;))
-  core_measure_summary &lt;- ungroup(core_measure_summary)
-
-  year_min &lt;- min(core_measure_summary$year)
-  year_max &lt;- max(core_measure_summary$year)
-  
-  # draw plots for the separate parameters
-  core_measure_summary %&gt;%
-    ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
-            geom_point() +
-            geom_line() +
-            facet_wrap(~measure) +
-            scale_x_continuous(breaks = seq(year_min, year_max, 1)) +
-            labs(x = &#39;year&#39;, 
-                 y = &#39;number of measurements&#39;, 
-                 col = &#39;measurements QC flag&#39;,
-                 title = &#39;Count of measurement qc flags by year&#39;)</code></pre>
-<p><img src="figure/load_argo_core.Rmd/QC_summary-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary-2">
-Past versions of QC_summary-2.png
-</button>
-</p>
-<div id="fig-QC_summary-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
 <tr>
 <td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/35d09332f11df18e43451a5573bdf4756041ddbf/docs/figure/load_argo_core.Rmd/QC_summary-2.png" target="_blank">35d0933</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/35d09332f11df18e43451a5573bdf4756041ddbf/docs/figure/load_argo_core.Rmd/QC_summary-1.png" target="_blank">35d0933</a>
 </td>
 <td>
 ds2n19
