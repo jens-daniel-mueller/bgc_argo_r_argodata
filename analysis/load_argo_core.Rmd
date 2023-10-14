@@ -385,8 +385,8 @@ if (!opt_qc_only) {
 
 This process create three files in the path_argo_core_preprocessed directory that will be used for further analysis
 
-core_data_temp.rds
-------------------
+### core_data_temp.rds
+
 Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
     file - the source file
     date - date of profile
@@ -396,8 +396,8 @@ Contains approximately 500 measuring points per profile and only contains those 
     pres_adjusted - recorded and adjusted (after qc proccess) pressure
     temp_adjusted - recorded and adjusted (after qc proccess) temperature
 
-core_data_psal.rds
-------------------
+### core_data_psal.rds
+
 Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
     file - the source file
     date - date of profile
@@ -407,8 +407,8 @@ Contains approximately 500 measuring points per profile and only contains those 
     pres_adjusted - recorded and adjusted (after qc proccess) pressure
     psal_adjusted - recorded and adjusted (after qc proccess) salinity
 
-core_metadata.rds
------------------
+### core_metadata.rds
+
 Contains 1 row per profile. Fields listed below
     file - the source file
     date - date of profile
@@ -528,8 +528,8 @@ if (!opt_qc_only) {
 
 This process create two additional files in the path_argo_core_preprocessed directory that will be used for further analysis
 
-core_temp_flag_A.rds
---------------------
+### core_temp_flag_A.rds
+
 only ontains profile where profile_pres_qc and profile_temp_qc both equal A (100%). Fields listed below
     lat - aligned to closest 0.5° lat
     lon - aligned to closest 0.5° lon
@@ -539,8 +539,8 @@ only ontains profile where profile_pres_qc and profile_temp_qc both equal A (100
     platform_number - identifier of float
     cycle_number - the profile number for the given float
 
-core_temp_flag_AB.rds
---------------------
+### core_temp_flag_A.rds
+
 only ontains profile where profile_pres_qc and profile_temp_qc both either A (100%) or B (> 75%). Fields listed below
     lat - aligned to closest 0.5° lat
     lon - aligned to closest 0.5° lon
@@ -602,10 +602,14 @@ if (!opt_qc_only) {
 
 ## QC summary
 
-Produce a summary of current measurement QC flags (1-9) and profile QC flags (A-F)
+### profile QC flags (A-F)
+
+Produce a summary of profile QC flags (A-F)
+
 ```{r QC_summary}
 
 if (opt_qc_only) {
+  
     # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
     core_metadata <-
     read_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
@@ -666,6 +670,18 @@ if (opt_qc_only) {
                    col = 'profile QC flag',
                    title = 'Count of profile qc flags by year')
   
+}
+
+```
+
+### measurement QC flags (1-9)
+
+Produce a summary of current measurement QC flags (1-9)
+
+```{r QC_summary_profile}
+
+if (opt_qc_only) {
+  
     # Read temp and meta_data
     core_measure_summary <-
     read_rds(file = paste0(path_argo_core_preprocessed, "/core_measure_summary.rds"))
@@ -685,6 +701,8 @@ if (opt_qc_only) {
                    y = 'number of measurements', 
                    col = 'measurements QC flag',
                    title = 'Count of measurement qc flags by year')
-}
+
+    }
 
 ```
+
