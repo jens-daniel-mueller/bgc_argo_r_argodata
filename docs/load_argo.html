@@ -9,12 +9,12 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="David Stappard, Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
 
 
 <title>Load BGC-Argo Data</title>
 
-<script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
@@ -77,6 +77,7 @@ if (window.hljs) {
 
 
 
+
 <style type = "text/css">
 .main-container {
   max-width: 940px;
@@ -97,6 +98,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
 }
 pre code {
   padding: 0;
@@ -154,11 +158,15 @@ $(document).ready(function () {
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
 
-  // mark it active
-  menuAnchor.tab('show');
-
-  // if it's got a parent navbar menu mark it active as well
-  menuAnchor.closest('li.dropdown').addClass('active');
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
 
   // Navbar adjustments
   var navHeight = $(".navbar").first().height() + 15;
@@ -187,8 +195,8 @@ $(document).ready(function () {
   border-radius: 4px;
 }
 
-.tabset-dropdown > .nav-tabs > li.active:before {
-  content: "";
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
   font-family: 'Glyphicons Halflings';
   display: inline-block;
   padding: 10px;
@@ -196,16 +204,9 @@ $(document).ready(function () {
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-  content: "&#xe258;";
-  border: none;
-}
-
-.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-  content: "";
+  content: "\e258";
   font-family: 'Glyphicons Halflings';
-  display: inline-block;
-  padding: 10px;
-  border-right: 1px solid #ddd;
+  border: none;
 }
 
 .tabset-dropdown > .nav-tabs > li.active {
@@ -331,7 +332,7 @@ div.tocify {
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -341,7 +342,7 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Load data
      
     <span class="caret"></span>
@@ -371,7 +372,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data coverage
      
     <span class="caret"></span>
@@ -386,7 +387,7 @@ div.tocify {
   </ul>
 </li>
 <li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Data
      
     <span class="caret"></span>
@@ -454,7 +455,7 @@ div.tocify {
 <div id="header">
 
 <div class="btn-group pull-right float-right">
-<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
 <ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
 <li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
 <li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
@@ -464,15 +465,18 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">29 August, 2022</h4>
+<h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
+Daniel Müller</h4>
+<h4 class="date">16 October, 2023</h4>
 
 </div>
 
 
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
-<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
 </button>
 </p>
 <div id="workflowr-report" class="collapse">
@@ -481,7 +485,9 @@ div.tocify {
 <a data-toggle="tab" href="#summary">Summary</a>
 </li>
 <li>
-<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
 </li>
 <li>
 <a data-toggle="tab" href="#versions">Past versions</a>
@@ -490,17 +496,27 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-08-29
+<strong>Last updated:</strong> 2023-10-16
 </p>
 <p>
-<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
 </p>
 <p>
-This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
-  href="https://github.com/workflowr/workflowr">workflowr</a> (version 1.7.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
 </p>
 <hr>
 </div>
@@ -509,113 +525,157 @@ This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a> analysi
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
 </p>
 </div>
-<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
 </p>
 </div>
 <div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20211008)</code> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20211008)</code> </a>
 </p>
 </div>
-<div id="strongSeedstrongcodesetseed20211008code" class="panel-collapse collapse">
+<div id="strongSeedstrongcodesetseed20211008code"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>The command <code>set.seed(20211008)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+<p>The command <code>set.seed(20211008)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
 </p>
 </div>
-<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
 </p>
 </div>
 <div id="strongCachestrongnone" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
 </p>
 </div>
 <div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
 <div class="panel-body">
-<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
 </div>
 </div>
 </div>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82d027d42dcf74fb4aca12113bb612baad1a2722targetblank82d027da">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82d027d42dcf74fb4aca12113bb612baad1a2722" target="_blank">82d027d</a>
+</a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8e815707d1fdc0b9ee057445b0eff0fac2b9376ftargetblank8e81570a" class="panel-collapse collapse">
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82d027d42dcf74fb4aca12113bb612baad1a2722targetblank82d027da"
+class="panel-collapse collapse">
 <div class="panel-body">
 <p>
-Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8e815707d1fdc0b9ee057445b0eff0fac2b9376f" target="_blank">8e81570</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82d027d42dcf74fb4aca12113bb612baad1a2722" target="_blank">82d027d</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
 </p>
 <p>
-Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
 </p>
 <pre><code>
 Ignored files:
-    Ignored:    .RData
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  code/OceanSODA_argo_extremes.R
-    Untracked:  code/creating_dataframe.R
-    Untracked:  code/creating_map.R
-    Untracked:  code/merging_oceanSODA_Argo.R
-    Untracked:  code/pH_data_timeseries.R
-
 Unstaged changes:
-    Modified:   analysis/_site.yml
-    Modified:   code/Workflowr_project_managment.R
+    Modified:   analysis/argo_oxygen.Rmd
+    Modified:   analysis/argo_ph.Rmd
+    Modified:   analysis/extreme_temp_core.Rmd
+    Modified:   analysis/load_argo_core.Rmd
+    Modified:   code/start_background_job.R
 
 </code></pre>
 <p>
-Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
 </p>
 </div>
 </div>
@@ -626,7 +686,12 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/load_argo.Rmd</code>) and HTML (<code>docs/load_argo.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were
+made to the R Markdown (<code>analysis/load_argo.Rmd</code>) and HTML
+(<code>docs/load_argo.html</code>) files. If you’ve configured a remote
+Git repository (see <code>?wflow_git_remote</code>), click on the
+hyperlinks in the table below to view the files as they were in that
+past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -650,6 +715,74 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/82d027d42dcf74fb4aca12113bb612baad1a2722/analysis/load_argo.Rmd" target="_blank">82d027d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-16
+</td>
+<td>
+Revised version of BGC load to match core load process
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3f6800f3dc7640ac1eff95d77482c18a5d98296c/analysis/load_argo.Rmd" target="_blank">3f6800f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-14
+</td>
+<td>
+Changes to core load to create a simple qc flag summary
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fad0b84b8089fdc1bfa5049d929692bcc70391fa/analysis/load_argo.Rmd" target="_blank">fad0b84</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-04
+</td>
+<td>
+Changed BGC Argo location folders
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/load_argo.html" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -744,48 +877,807 @@ manual commit
 </div>
 <div id="task" class="section level1">
 <h1>Task</h1>
-<p>Load data for analysis</p>
+<p>Load BGC data for analysis</p>
+<div id="set-load-options" class="section level2">
+<h2>Set load options</h2>
+<p>Determine if files are refreshed from dac or cache directory is used.
+Are metadata, temperature and salinity year files renewed? Are the
+consolidated all year files created from the individual year files?</p>
+<pre class="r"><code># opt_refresh_cache
+#   FALSE = do not refresh cache.
+#   TRUE  = refresh cache. (any none zero value will force a refresh)
+opt_refresh_cache = FALSE
+
+# opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_doxy, opt_refresh_years_nitrate, opt_refresh_years_pH, opt_refresh_years_metadata
+#   FALSE = do not refresh the yearly files. (any value &lt;&gt; 1 will omit annual refresh)
+#   TRUE  = refresh yearly files for given parameter.
+#   year to be refreshed are set by opt_min_year and opt_max_year
+opt_refresh_years_temp = TRUE
+opt_refresh_years_psal = TRUE
+opt_refresh_years_doxy = TRUE
+opt_refresh_years_nitrate = TRUE
+opt_refresh_years_pH = TRUE
+opt_refresh_years_metadata = TRUE
+opt_min_year = 2013
+opt_max_year = 2023
+
+# opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_doxy, opt_consolidate_nitrate, opt_consolidate_pH, opt_consolidate_metadata
+# Yearly files must have already been created!
+#   FALSE = do not build consolidated file from previously written yearly files. (any value &lt;&gt; 1 will omit consolidation)
+#   TRUE  = build consolidated file from previously written yearly files for given parameter.
+#   year to be included in the consolidation are set by opt_min_year and opt_max_year
+opt_consolidate_temp = TRUE
+opt_consolidate_psal = TRUE
+opt_consolidate_psal = TRUE
+opt_consolidate_doxy = TRUE
+opt_consolidate_nitrate = TRUE
+opt_consolidate_pH = TRUE
+opt_consolidate_metadata = TRUE
+
+# opt_summary_files
+# consolidated files must have already been created!
+#   FALSE = do not build summary files from previously written consolidated files. (any value &lt;&gt; 1 will omit A and AB files)
+#   TRUE  = build summary files from previously written consolidated files.
+opt_summary_files = TRUE
+
+# opt_review_mode
+# if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
+# of output and processing time
+opt_review_mode = FALSE
+opt_review_dir = &quot;/review_mode&quot;
+
+#if (opt_review_mode) {
+#  path_argo_preprocessed &lt;- paste0(path_argo_core, &quot;/preprocessed_data&quot;, opt_review_dir)
+#}
+  
+# opt_qc_only
+# Avoids reprocessing files and ensures qc summary plots are created from a previous run!
+#   FALSE = carry out reprocessing based on options set above and create QC summaries.
+#   TRUE  = do NOT reprocessing files and just create QC summaries from previous loads.
+opt_qc_only = FALSE
+
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1</code></pre>
 </div>
-<div id="bgc-argo" class="section level1">
-<h1>BGC-Argo</h1>
-<p>Using the argodata package to load in bgc argo data from the server and store it in a dataframe with the corresponding metadata</p>
 <div id="set-cache-directory" class="section level2">
 <h2>Set cache directory</h2>
-<p>The cache directory stores previously downloaded files to access them more quickly. Cached files are used indefinitely by default because of the considerable time it takes to refresh them. If you use a persistent cache, you should update the index files regularly by using <code>argo_update_global()</code> (data files are also updated occasionally; update these using <code>argo_update_data()</code>)</p>
-<pre class="r"><code># set cache directory
-argo_set_cache_dir(cache_dir = path_argo)
+<p>Directory where the core-Argo profile files are stored. Either use
+the cached files or force a refresh from dac (long process)</p>
+<pre class="r"><code>if (!opt_qc_only) {
 
-# check cache directory
-argo_cache_dir()</code></pre>
-<pre><code>[1] &quot;/nfs/kryo/work/updata/bgc_argo_r_argodata&quot;</code></pre>
-<pre class="r"><code># check argo mirror
-argo_mirror()</code></pre>
-<pre><code>[1] &quot;https://data-argo.ifremer.fr&quot;</code></pre>
-<pre class="r"><code>argo_update_global(max_global_cache_age = Inf)  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
-# ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
-argo_update_data(max_data_cache_age = Inf)</code></pre>
+  # set cache directory
+  argo_set_cache_dir(cache_dir = path_argo)
+  
+  # check cache directory
+  argo_cache_dir()
+  
+  # check argo mirror
+  argo_mirror()
+  
+  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates 
+  # files that have been in the cache for more than 30 minutes, etc.
+  if (opt_refresh_cache){
+    argo_update_global(max_global_cache_age = -Inf)  
+    argo_update_data(max_data_cache_age = -Inf)
+  } else {
+    argo_update_global(max_global_cache_age = Inf)  
+    argo_update_data(max_data_cache_age = Inf)
+  }
+}</code></pre>
 </div>
 <div id="load-index-files" class="section level2">
 <h2>Load index files</h2>
-<p>Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.</p>
+<p>Load in the synthetic (merged core and bgc) index files (uses the
+data stored on the ifremer server by default), keeping only delayed-mode
+data.</p>
 <div id="file-types" class="section level3">
 <h3>File Types</h3>
-<p>A core-Argo profile contains the CTD sensor parameters (pressure, temperature, salinity) that are measured with the same vertical sampling scheme and at the same location and time. Additional parameters from other sensors are stored in the b-Argo profile files.</p>
-<p>A b-Argo profile contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a b-Argo file. The vertical level <code>PRES</code> is the simple and unambiguous link between the parameters in the core-Argo and b-Argo files. The same <code>PRES</code> is recorded in the core-Argo and b-Argo files. PRES is the only parameter duplicated in core-Argo and b-Argo profile files.</p>
-<p>To facilitate the use of BGC-Argo data, the regional data centers merge each b-Argo file with its corresponding core-Argo file into one synthetic (s-Argo) file. The goal of a simplified s-Argo file is to co-locate as many BGC observations as possible while preserving the character of the sampling pattern, i.e., sample interval, number of samples, and approximate pressure locations. Data come from the single c- and b-Argo files. The synthetic pressure axis is constructed from the BGC sampling levels from each cycle. This means that there is no fixed vertical grid for all floats and all cycles.</p>
-<p>The co-location takes different vertical attachments of BGC sensors into account by displacing the pressure location, which is not the case in the c- and b-files. The single-cycle s–file profiles contain all the c-file parameter observations in their original location and resolution.</p>
-<p>The adjusted pressure parameter (<code>pres_adjusted</code>) is only available in the core- and s-Argo profile files. The variables <code>profile_pres_qc</code>, <code>pres_adjusted</code>, and <code>pres_adjusted_error</code>, are not duplicated in the b-Argo files.</p>
+<p>A core-Argo profile contains the CTD sensor parameters (pressure,
+temperature, salinity) that are measured with the same vertical sampling
+scheme and at the same location and time. Additional parameters from
+other sensors are stored in the b-Argo profile files.</p>
+<p>A b-Argo profile contains all the parameters from a float, except the
+core-Argo parameters temperature, pressure, and salinity. A float that
+performs only CTD measurements does not have a b-Argo file. The vertical
+level <code>PRES</code> is the simple and unambiguous link between the
+parameters in the core-Argo and b-Argo files. The same <code>PRES</code>
+is recorded in the core-Argo and b-Argo files. PRES is the only
+parameter duplicated in core-Argo and b-Argo profile files.</p>
+<p>To facilitate the use of BGC-Argo data, the regional data centers
+merge each b-Argo file with its corresponding core-Argo file into one
+synthetic (s-Argo) file. The goal of a simplified s-Argo file is to
+co-locate as many BGC observations as possible while preserving the
+character of the sampling pattern, i.e., sample interval, number of
+samples, and approximate pressure locations. Data come from the single
+c- and b-Argo files. The synthetic pressure axis is constructed from the
+BGC sampling levels from each cycle. This means that there is no fixed
+vertical grid for all floats and all cycles.</p>
+<p>The co-location takes different vertical attachments of BGC sensors
+into account by displacing the pressure location, which is not the case
+in the c- and b-files. The single-cycle s–file profiles contain all the
+c-file parameter observations in their original location and
+resolution.</p>
+<p>The adjusted pressure parameter (<code>pres_adjusted</code>) is only
+available in the core- and s-Argo profile files. The variables
+<code>profile_pres_qc</code>, <code>pres_adjusted</code>, and
+<code>pres_adjusted_error</code>, are not duplicated in the b-Argo
+files.</p>
 </div>
 <div id="data-modes" class="section level3">
 <h3>Data Modes</h3>
-<p>Delayed-mode data are denoted by <code>data_mode = 'D'</code>, and are quality-checked by PIs, who apply any necessary adjustments. For the core CTD data, delayed-mode data is generally available 12 months after the transmission of raw data, because the raw data is usually of good quality. Their delayed-mode assessment involves evaluation of the long-term sensor stability, which typically requires a float record of 12 months. Incorrect QC flag attribution and erroneous raw data not flagged during real-time procedures are corrected in delayed-mode.</p>
-<p>Delayed-mode BGC data may be available as early as 5-6 cycles after initial data transmission as the raw data are typically unfit for scientific usage. Adjustments significantly increase the accuracy of these data. In b- and s-Argo profile files, the variable <code>parameter_data_mode</code> indicates the mode of each parameter. Biogeochemical parameters in the same file may receive their delayed-mode adjustments at different times.</p>
-<p><em>Synthetic files info: <a href="https://archimer.ifremer.fr/doc/00445/55637/80863.pdf" class="uri">https://archimer.ifremer.fr/doc/00445/55637/80863.pdf</a></em></p>
-<p><em>Argo User Manual: <a href="https://archimer.ifremer.fr/doc/00187/29825/86414.pdf" class="uri">https://archimer.ifremer.fr/doc/00187/29825/86414.pdf</a></em></p>
-<pre class="r"><code>bgc_index &lt;- argo_global_synthetic_prof() %&gt;%
-  argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%  # load in delayed-mode data
-  argo_filter_date(date_min = &#39;2013-01-01&#39;,
-                   date_max = Sys.time())  
+<p>Delayed-mode data are denoted by <code>data_mode = 'D'</code>, and
+are quality-checked by PIs, who apply any necessary adjustments. For the
+core CTD data, delayed-mode data is generally available 12 months after
+the transmission of raw data, because the raw data is usually of good
+quality. Their delayed-mode assessment involves evaluation of the
+long-term sensor stability, which typically requires a float record of
+12 months. Incorrect QC flag attribution and erroneous raw data not
+flagged during real-time procedures are corrected in delayed-mode.</p>
+<p>Delayed-mode BGC data may be available as early as 5-6 cycles after
+initial data transmission as the raw data are typically unfit for
+scientific usage. Adjustments significantly increase the accuracy of
+these data. In b- and s-Argo profile files, the variable
+<code>parameter_data_mode</code> indicates the mode of each parameter.
+Biogeochemical parameters in the same file may receive their
+delayed-mode adjustments at different times.</p>
+<p><em>Synthetic files info: <a
+href="https://archimer.ifremer.fr/doc/00445/55637/80863.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00445/55637/80863.pdf</a></em></p>
+<p><em>Argo User Manual: <a
+href="https://archimer.ifremer.fr/doc/00187/29825/86414.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00187/29825/86414.pdf</a></em></p>
+</div>
+</div>
+<div id="load-by-year" class="section level2">
+<h2>Load by year</h2>
+<p>Builds yearly files for temperature, salinity and metadata that can
+be consolidated in the next code chunk (consolidate_into_allyears)</p>
+<pre class="r"><code>#------------------------------------------------------------------------------
+# Important - file are loaded for the given year processed and the files written to disk.
+#------------------------------------------------------------------------------
+if (!opt_qc_only) {
+
+  for (target_year in opt_min_year:opt_max_year) {
+    # for manual testing of the loop
+    # target_year &lt;- 2017
+  
+    # if updating any year files it will be based on the initial index file core_index
+    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH | opt_refresh_years_metadata)
+    {
+      # if working in reiew mode only consider first 10 days of the year
+      if (opt_review_mode) {
+        bgc_index &lt;- argo_global_synthetic_prof() %&gt;% 
+          argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+          argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
+                           date_max = paste0(target_year, &quot;-01-10&quot;))
+      } else {
+        bgc_index &lt;- argo_global_synthetic_prof() %&gt;% 
+          argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
+          argo_filter_date(date_min = paste0(target_year, &quot;-01-01&quot;),
+                           date_max = paste0(target_year, &quot;-12-31&quot;))
+      }
+    }
+  
+    # if temp or psal are being updated get the profile data
+    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH)
+    {
+      # read in the profiles (takes a while)
+      bgc_data_yr &lt;- argo_prof_levels(
+        path = bgc_index,
+        vars =
+          c(
+            &#39;PRES_ADJUSTED&#39;,
+            &#39;PRES_ADJUSTED_QC&#39;,
+            &#39;PRES_ADJUSTED_ERROR&#39;,
+            &#39;PSAL_ADJUSTED&#39;,
+            &#39;PSAL_ADJUSTED_QC&#39;,
+            &#39;PSAL_ADJUSTED_ERROR&#39;,
+            &#39;TEMP_ADJUSTED&#39;,
+            &#39;TEMP_ADJUSTED_QC&#39;,
+            &#39;TEMP_ADJUSTED_ERROR&#39;,
+            &#39;DOXY_ADJUSTED&#39;,
+            &#39;DOXY_ADJUSTED_QC&#39;,
+            &#39;DOXY_ADJUSTED_ERROR&#39;,
+            &#39;NITRATE_ADJUSTED&#39;,
+            &#39;NITRATE_ADJUSTED_QC&#39;,
+            &#39;NITRATE_ADJUSTED_ERROR&#39;,
+            &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
+            &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
+            &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
+          ),
+        quiet = TRUE
+      )
+      
+      # see option section above for rational of why we want n_prof = 1 profiles
+      bgc_data_yr &lt;- bgc_data_yr%&gt;%
+      filter(n_prof == opt_n_prof_sel)
+      
+      # if necessary make summary data frame.
+      if (!exists(&quot;bgc_measure_summary&quot;))
+      {
+        columns = c(&quot;year&quot;,&quot;measure&quot;,&quot;measure_order&quot;,&quot;measure_qc&quot;,&quot;count_measures&quot;) 
+        bgc_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
+        colnames(bgc_measure_summary) = columns
+      }
+      
+      # Ensure no N/A qc flags
+      bgc_data_yr[&quot;pres_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;pres_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      bgc_data_yr[&quot;temp_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;temp_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      bgc_data_yr[&quot;psal_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;psal_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      bgc_data_yr[&quot;doxy_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;doxy_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      bgc_data_yr[&quot;nitrate_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;nitrate_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      bgc_data_yr[&quot;ph_in_situ_total_adjusted_qc&quot;][is.na(bgc_data_yr[&quot;ph_in_situ_total_adjusted_qc&quot;])] &lt;- &quot; &quot;
+      
+      # Default qc counts for measurements - Pressure
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;, &quot;Pressure&quot;),
+                        measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for pressure and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;Pressure&quot;, measure_order = 1, measure_qc = pres_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+  
+      # Default qc counts for measurements - temperature
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;, &quot;Temperature&quot;),
+                        measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for temperature and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;Temperature&quot;, measure_order = 2, measure_qc = temp_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+      
+      # Default qc counts for measurements - salinity
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;, &quot;Salinity&quot;),
+                        measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for salinity and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;Salinity&quot;, measure_order = 3, measure_qc = psal_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+
+      # Default qc counts for measurements - pH
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;, &quot;pH&quot;),
+                        measure_order=c(4, 4, 4, 4, 4, 4, 4, 4),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for pH and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;pH&quot;, measure_order = 4, measure_qc = ph_in_situ_total_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+
+      # Default qc counts for measurements - oxygen
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;, &quot;Oxygen&quot;),
+                        measure_order=c(5, 5, 5, 5, 5, 5, 5, 5),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for oxygen and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;Oxygen&quot;, measure_order = 5, measure_qc = doxy_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+
+      # Default qc counts for measurements - nitrate
+      qc_deafaults &lt;- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
+                        measure=c(&quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;, &quot;Nitrate&quot;),
+                        measure_order=c(6, 6, 6, 6, 6, 6, 6, 6),
+                        measure_qc=c(&#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;8&#39;, &#39;9&#39;, &#39; &#39;),
+                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
+      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
+  
+      # Build summary of qc flags for nitrate and update bgc_measure_summary
+      agg_tbl &lt;- bgc_data_yr %&gt;% group_by(year = target_year, measure = &quot;Nitrate&quot;, measure_order = 6, measure_qc = nitrate_adjusted_qc) %&gt;% 
+      summarise(count_measures=n())
+      bgc_measure_summary &lt;- rows_update(bgc_measure_summary, agg_tbl, by = c(&#39;year&#39;, &#39;measure_order&#39;, &#39;measure_qc&#39;))
+
+      rm(agg_tbl)
+  
+    } 
+  
+    # if updating metadata get the file based on bgc_index
+    if (opt_refresh_years_metadata)
+    {
+      # read associated metadata
+      bgc_metadata_yr &lt;- argo_prof_prof(path = bgc_index)
+
+      # see option section above for rational of why we want n_prof = 1 profiles
+      bgc_metadata_yr &lt;- bgc_metadata_yr %&gt;%
+      filter(n_prof == opt_n_prof_sel)
+  
+      bgc_metadata_yr &lt;- bgc_metadata_yr %&gt;%
+        filter (!is.na(latitude) &amp; !is.na(longitude))
+    }
+    
+    # if temp or psal are being updated get the profile data
+    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH)
+    {
+    
+      # remove columns that are not needed in merged temperature and salinity files.
+      # must have valid lat and lon
+      bgc_index &lt;- bgc_index %&gt;%
+        select(file,
+               date,
+               latitude,
+               longitude) %&gt;%
+        filter (!is.na(latitude) &amp; !is.na(longitude))
+      
+      # resolve lat and lon
+      bgc_index &lt;- bgc_index %&gt;%
+        rename(lon = longitude,
+               lat = latitude) %&gt;%
+        mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+        mutate(
+          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+          lat = as.numeric(as.character(lat)),
+          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+          lon = as.numeric(as.character(lon))
+        )
+      
+      # join to index to incorporate date, lat and lon
+      bgc_data_yr &lt;- left_join(bgc_data_yr, bgc_index)
+      
+      # derive depth using TEOS=10
+      bgc_data_yr &lt;- bgc_data_yr %&gt;%
+        filter (!is.na(lat) &amp; !is.na(lon)) %&gt;%
+        mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
+               .before = pres_adjusted)
+
+      bgc_data_yr &lt;-
+        bgc_data_yr %&gt;%
+        select(-c(n_levels, n_prof, pres_adjusted, pres_adjusted_error))
+
+      # Remove any data records where depth is NA
+      bgc_data_yr &lt;- bgc_data_yr %&gt;% filter(!is.na(depth))
+
+    }
+    
+
+    # ------------------------------------------------------------------------------
+    # Process temperature file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_temp)
+    {    
+      # Base temperature data where qc flag = good
+      # Could this cause incomplete profiles to be maintained?
+      bgc_data_temp_yr &lt;- bgc_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          temp_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;psal&quot;, &quot;doxy&quot;, &quot;nitrate&quot;, &quot;ph&quot;))
+        )
+      
+      # write this years file
+      bgc_data_temp_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_temp.rds&quot;))
+  
+    }
+    
+    # ------------------------------------------------------------------------------
+    # Process salinity file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_psal)
+    {    
+      # Base salinity data where qc flag = good
+      bgc_data_psal_yr &lt;- bgc_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          psal_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;temp&quot;, &quot;doxy&quot;, &quot;nitrate&quot;, &quot;ph&quot;))
+        )
+  
+      # write this years file
+      bgc_data_psal_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_psal.rds&quot;))
+  
+    }
+  
+    # ------------------------------------------------------------------------------
+    # Process oxygen file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_doxy)
+    {    
+      # Base oxygen data where qc flag = good
+      bgc_data_doxy_yr &lt;- bgc_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          doxy_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;temp&quot;, &quot;psal&quot;, &quot;nitrate&quot;, &quot;ph&quot;))
+        )
+  
+      # write this years file
+      bgc_data_doxy_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_doxy.rds&quot;))
+  
+    }
+
+    # ------------------------------------------------------------------------------
+    # Process nitrate file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_nitrate)
+    {    
+      # Base nitrate data where qc flag = good
+      bgc_data_nitrate_yr &lt;- bgc_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          nitrate_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;temp&quot;, &quot;psal&quot;, &quot;doxy&quot;, &quot;ph&quot;))
+        )
+  
+      # write this years file
+      bgc_data_nitrate_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_nitrate.rds&quot;))
+  
+    }
+
+    # ------------------------------------------------------------------------------
+    # Process pH file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_pH)
+    {    
+      # Base nitrate data where qc flag = good
+      bgc_data_pH_yr &lt;- bgc_data_yr %&gt;%
+        filter(
+          pres_adjusted_qc %in% c(1, 8) &amp;
+          ph_in_situ_total_adjusted_qc %in% c(1, 8)
+        ) %&gt;%
+        select(
+          -contains(c(&quot;_qc&quot;, &quot;temp&quot;, &quot;psal&quot;, &quot;doxy&quot;, &quot;nitrate&quot;))
+        )
+  
+      # write this years file
+      bgc_data_pH_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_pH.rds&quot;))
+  
+    }
+    
+    # ------------------------------------------------------------------------------
+    # Process metadata file
+    # ------------------------------------------------------------------------------
+    if (opt_refresh_years_metadata)
+    {
+      # resolve lat and lon so that it is hamonised with data files
+      bgc_metadata_yr &lt;- bgc_metadata_yr %&gt;%
+        rename(lon = longitude,
+               lat = latitude) %&gt;%
+        mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+        mutate( 
+          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+          lat = as.numeric(as.character(lat)),
+          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+          lon = as.numeric(as.character(lon))
+        )
+    
+      # Select just the columns we are interested in
+      bgc_metadata_yr &lt;- bgc_metadata_yr %&gt;%
+        select (
+          file,
+          date,
+          lat,
+          lon,
+          platform_number, 
+          cycle_number,
+          position_qc,
+          profile_pres_qc,
+          profile_temp_qc,
+          profile_psal_qc,
+          profile_doxy_qc,
+          profile_nitrate_qc,
+          profile_ph_in_situ_total_qc
+        )
+  
+      # write this years file
+      bgc_metadata_yr %&gt;%
+        write_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_metadata.rds&quot;))
+  
+    }
+  
+  }
+  
+  # write this years file
+  bgc_measure_summary %&gt;% 
+    write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_measure_summary.rds&quot;))
+  rm(bgc_measure_summary)
+}</code></pre>
+</div>
+<div id="consolidate-years" class="section level2">
+<h2>Consolidate years</h2>
+<p>This process create six files in the path_argo_preprocessed directory
+that will be used for further analysis</p>
+<div id="core_data_temp.rds" class="section level3">
+<h3>core_data_temp.rds</h3>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+depth - calculated from pres_adjusted and latitude
+temp_adjusted - recorded and adjusted (after qc proccess) temperature
+temp_adjusted_error - recorded and adjusted (after qc proccess) temperature</code></pre>
+</div>
+<div id="core_data_psal.rds" class="section level3">
+<h3>core_data_psal.rds</h3>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+depth - calculated from pres_adjusted and latitude
+psal_adjusted - recorded and adjusted (after qc proccess) salinity
+psal_adjusted_error - recorded and adjusted (after qc proccess) salinity</code></pre>
+</div>
+<div id="core_data_doxy.rds" class="section level3">
+<h3>core_data_doxy.rds</h3>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+depth - calculated from pres_adjusted and latitude
+doxy_adjusted - recorded and adjusted (after qc proccess) oxygen
+doxy_adjusted_error - recorded and adjusted (after qc proccess) oxygen</code></pre>
+</div>
+<div id="core_data_nitrate.rds" class="section level3">
+<h3>core_data_nitrate.rds</h3>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+depth - calculated from pres_adjusted and latitude
+nitrate_adjusted - recorded and adjusted (after qc proccess) nitrate
+nitrate_adjusted_error - recorded and adjusted (after qc proccess) nitrate</code></pre>
+</div>
+<div id="core_data_ph.rds" class="section level3">
+<h3>core_data_pH.rds</h3>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+depth - calculated from pres_adjusted and latitude
+ph_in_situ_total_adjusted - recorded and adjusted (after qc proccess) pH
+ph_in_situ_total_adjusted_error - recorded and adjusted (after qc proccess) pH</code></pre>
+</div>
+<div id="core_metadata.rds" class="section level3">
+<h3>core_metadata.rds</h3>
+<p>Contains 1 row per profile. Fields listed below file - the source
+file date - date of profile lat - aligned to closest 0.5° lat lon -
+aligned to closest 0.5° lon platform_number - identifier of float
+cycle_number - the profile number for the given float position_qc - qc
+flag associated with the positioning of the float profile
+profile_pres_qc - qc flag associated with the pressure readings of the
+profile (A-F) profile_temp_qc - qc flag associated with the temperature
+readings of the profile (A-F) profile_psal_qc - qc flag associated with
+the salinity readings of the profile (A-F) profile_doxy_qc - qc flag
+associated with the oxygen readings of the profile (A-F)
+profile_nitrate_qc - qc flag associated with the nitrate readings of the
+profile (A-F) profile_ph_in_situ_total_qc - qc flag associated with the
+pH readings of the profile (A-F)</p>
+<pre class="r"><code>if (!opt_qc_only) {
+
+  # ------------------------------------------------------------------------------
+  # Process temperature file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_temp){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_data_temp_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_temp.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_data_temp &lt;- bgc_data_temp_yr
+        consolidated_created = 1
+      } else {
+        bgc_data_temp &lt;- rbind(bgc_data_temp, bgc_data_temp_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_data_temp %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_temp.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_data_temp)
+    rm(bgc_data_temp_yr)
+    gc()
+    
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process salinity file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_psal){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_data_psal_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_psal.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_data_psal &lt;- bgc_data_psal_yr
+        consolidated_created = 1
+      } else {
+        bgc_data_psal &lt;- rbind(bgc_data_psal, bgc_data_psal_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_data_psal %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_psal.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_data_psal)
+    rm(bgc_data_psal_yr)
+    gc()
+    
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process oxygen file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_doxy){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_data_doxy_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_doxy.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_data_doxy &lt;- bgc_data_doxy_yr
+        consolidated_created = 1
+      } else {
+        bgc_data_doxy &lt;- rbind(bgc_data_doxy, bgc_data_doxy_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_data_doxy %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_doxy.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_data_doxy)
+    rm(bgc_data_doxy_yr)
+    gc()
+    
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process nitrate file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_nitrate){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_data_nitrate_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_nitrate.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_data_nitrate &lt;- bgc_data_nitrate_yr
+        consolidated_created = 1
+      } else {
+        bgc_data_nitrate &lt;- rbind(bgc_data_nitrate, bgc_data_nitrate_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_data_nitrate %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_nitrate.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_data_nitrate)
+    rm(bgc_data_nitrate_yr)
+    gc()
+    
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process pH file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_pH){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_data_pH_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_data_pH.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_data_pH &lt;- bgc_data_pH_yr
+        consolidated_created = 1
+      } else {
+        bgc_data_pH &lt;- rbind(bgc_data_pH, bgc_data_pH_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_data_pH %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_pH.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_data_pH)
+    rm(bgc_data_pH_yr)
+    gc()
+    
+  }
+  
+  # ------------------------------------------------------------------------------
+  # Process metadata file
+  # ------------------------------------------------------------------------------
+  if (opt_consolidate_metadata){
+    consolidated_created = 0
+    
+    for (target_year in opt_min_year:opt_max_year) {
+  
+      # read the yearly file based on target_year
+      bgc_metadata_yr &lt;-
+      read_rds(file = paste0(path_argo_preprocessed, &quot;/&quot;, target_year, &quot;_bgc_metadata.rds&quot;))
+  
+      # Combine into a consolidated all years file
+      if (consolidated_created == 0) {
+        bgc_metadata &lt;- bgc_metadata_yr
+        consolidated_created = 1
+      } else {
+        bgc_metadata &lt;- rbind(bgc_metadata, bgc_metadata_yr)
+      }
+    }
+    
+    # write consolidated files  
+    bgc_metadata %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+  
+    # remove files to free space
+    rm(bgc_metadata)
+    rm(bgc_metadata_yr)
+    gc()
+    
+  }
+}</code></pre>
+<pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
+Ncells  4084053 218.2    9393312  501.7    9393312   501.7
+Vcells 93698590 714.9  880328596 6716.4 2722495404 20771.0</code></pre>
+<pre class="r"><code># bgc_index &lt;- argo_global_synthetic_prof() %&gt;%
+#   argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%  # load in delayed-mode data
+#   argo_filter_date(date_min = &#39;2013-01-01&#39;,
+#                    date_max = Sys.time())  
 
 # check the dates 
 # max(bgc_subset$date, na.rm = TRUE)
@@ -812,39 +1704,46 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 </div>
 <div id="read-data" class="section level2">
 <h2>Read data</h2>
-<p>Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)</p>
-<pre class="r"><code>bgc_data &lt;- argo_prof_levels(
-  path = bgc_index,
-  vars =
-    c(
-      &#39;PRES_ADJUSTED&#39;,
-      &#39;PRES_ADJUSTED_QC&#39;,
-      &#39;PRES_ADJUSTED_ERROR&#39;,
-      &#39;PSAL_ADJUSTED&#39;,
-      &#39;PSAL_ADJUSTED_QC&#39;,
-      &#39;PSAL_ADJUSTED_ERROR&#39;,
-      &#39;TEMP_ADJUSTED&#39;,
-      &#39;TEMP_ADJUSTED_QC&#39;,
-      &#39;TEMP_ADJUSTED_ERROR&#39;,
-      &#39;DOXY_ADJUSTED&#39;,
-      &#39;DOXY_ADJUSTED_QC&#39;,
-      &#39;DOXY_ADJUSTED_ERROR&#39;,
-      &#39;NITRATE_ADJUSTED&#39;,
-      &#39;NITRATE_ADJUSTED_QC&#39;,
-      &#39;NITRATE_ADJUSTED_ERROR&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
-      &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
-    ),
-  quiet = TRUE
-) 
-# read in the profiles (takes a while)</code></pre>
-<p>The data is read in from the cached files stored in the path specified in <code>set_argo_cache_dir()</code> (in this case, /nfs/kryo/work/updata/bgc_argo_r_argodata). To download data directly from the files stored on the ifremer server, set <code>max_global_cache_age</code> and <code>max_data_cache_age</code> to <code>-Inf</code>, which will force a new download.</p>
+<p>Read in the adjusted bgc and core variables corresponding to the
+index files downloaded above, with their quality control flags. (can
+take a while)</p>
+<pre class="r"><code># bgc_data &lt;- argo_prof_levels(
+#   path = bgc_index,
+#   vars =
+#     c(
+#       &#39;PRES_ADJUSTED&#39;,
+#       &#39;PRES_ADJUSTED_QC&#39;,
+#       &#39;PRES_ADJUSTED_ERROR&#39;,
+#       &#39;PSAL_ADJUSTED&#39;,
+#       &#39;PSAL_ADJUSTED_QC&#39;,
+#       &#39;PSAL_ADJUSTED_ERROR&#39;,
+#       &#39;TEMP_ADJUSTED&#39;,
+#       &#39;TEMP_ADJUSTED_QC&#39;,
+#       &#39;TEMP_ADJUSTED_ERROR&#39;,
+#       &#39;DOXY_ADJUSTED&#39;,
+#       &#39;DOXY_ADJUSTED_QC&#39;,
+#       &#39;DOXY_ADJUSTED_ERROR&#39;,
+#       &#39;NITRATE_ADJUSTED&#39;,
+#       &#39;NITRATE_ADJUSTED_QC&#39;,
+#       &#39;NITRATE_ADJUSTED_ERROR&#39;,
+#       &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
+#       &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
+#       &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
+#     ),
+#   quiet = TRUE
+# ) 
+# # read in the profiles (takes a while)</code></pre>
+<p>The data is read in from the cached files stored in the path
+specified in <code>set_argo_cache_dir()</code> (in this case,
+/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo). To download
+data directly from the files stored on the ifremer server, set
+<code>max_global_cache_age</code> and <code>max_data_cache_age</code> to
+<code>-Inf</code>, which will force a new download.</p>
 </div>
 <div id="read-meta-data" class="section level2">
 <h2>Read meta data</h2>
 <p>Read in the corresponding metadata:</p>
-<pre class="r"><code>bgc_metadata &lt;- argo_prof_prof(path = bgc_index)</code></pre>
+<pre class="r"><code># bgc_metadata &lt;- argo_prof_prof(path = bgc_index)</code></pre>
 <pre class="r"><code># bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
 # ?????
 # returns blank output (0 observations of 0 variables)
@@ -865,123 +1764,238 @@ argo_update_data(max_data_cache_age = Inf)</code></pre>
 <div id="join-data" class="section level2">
 <h2>Join data</h2>
 <p>Join the metadata and data together into one dataset</p>
-<pre class="r"><code>bgc_merge &lt;- full_join(bgc_data, bgc_metadata)
-
-bgc_merge &lt;- bgc_merge %&gt;%
-  select(
-    -c(profile_chla_qc:profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc)
-  ) %&gt;%
-  rename(lon = longitude,
-         lat = latitude) %&gt;%
-  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-    lon = as.numeric(as.character(lon))
-  ) %&gt;%
-  mutate(depth = swDepth(pres_adjusted, latitude =  lat),
-         .before = pres_adjusted)
+<pre class="r"><code># bgc_merge &lt;- full_join(bgc_data, bgc_metadata)
+# 
+# bgc_merge &lt;- bgc_merge %&gt;%
+#   select(
+#     -c(profile_chla_qc:profile_cdom_qc),
+#     -c(profile_cndc_qc:profile_up_radiance555_qc)
+#   ) %&gt;%
+#   rename(lon = longitude,
+#          lat = latitude) %&gt;%
+#   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+#     lon = as.numeric(as.character(lon))
+#   ) %&gt;%
+#   mutate(depth = swDepth(pres_adjusted, latitude =  lat),
+#          .before = pres_adjusted)
 
 
 # bgc_merge_test &lt;- full_join(bgc_data, bgc_calibration) (not sure why but it crashes R every time)</code></pre>
 </div>
-<div id="ph-data" class="section level2">
-<h2>pH data</h2>
-<p>All pH data from BGC floats with QC flag 1 (good data) ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1</p>
-<pre class="r"><code>bgc_merge_pH_qc_1 &lt;- bgc_merge %&gt;%
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;%
-  select(
-    date,
-    lat,
-    lon,
-    depth,
-    psal_adjusted,
-    temp_adjusted,
-    temp_adjusted_qc,
-    ph_in_situ_total_adjusted,
-    ph_in_situ_total_adjusted_qc,
-    platform_number,
-    cycle_number,
-    profile_ph_in_situ_total_qc,
-    profile_temp_qc
-  )
-
-# create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid
-ph_merge_1x1 &lt;- bgc_merge %&gt;%
-  select(
-    -c(doxy_adjusted:nitrate_adjusted_error),
-    -c(profile_doxy_qc, profile_nitrate_qc)
-  ) %&gt;%
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;%
-  mutate(year = year(date),
-         month = month(date),
-         .after = n_prof)
-
-
-# create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
-ph_surface_1x1 &lt;- ph_merge_1x1 %&gt;%
-  filter(between(depth, 0, 20))
-
-# create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid
-ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))
-  )   # regrid into 2x2º grid</code></pre>
+<div id="prepare-for-analysis" class="section level2">
+<h2>Prepare for analysis</h2>
+<div id="ph-data" class="section level3">
+<h3>pH data</h3>
+<p>All pH data from BGC floats with QC flag 1 (good data) ph_surface: pH
+data in the top 20 m of the watercolumn with QC flag 1</p>
 </div>
-<div id="temperature-data" class="section level2">
-<h2>Temperature data</h2>
+<div id="temperature-data" class="section level3">
+<h3>Temperature data</h3>
 <p>All temperature data from BGC floats with QC flag 1</p>
-<pre class="r"><code>bgc_merge_temp_qc_1 &lt;- bgc_merge %&gt;% 
-  filter(temp_adjusted_qc == &#39;1&#39;) %&gt;% 
-  select(date, lat, lon, 
-         depth, temp_adjusted,
-         platform_number, cycle_number,
-         temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
-         profile_temp_qc,
-         profile_ph_in_situ_total_qc)</code></pre>
 </div>
-<div id="qc-flag-a-and-b-temperature-data" class="section level2">
-<h2>QC flag A and B temperature data</h2>
-<p>BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists</p>
-<pre class="r"><code>bgc_merge_temp_AB &lt;- bgc_merge %&gt;% 
-  filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) %&gt;% 
-  filter(temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;) %&gt;% 
-  select(date, lat, lon,
-         depth, temp_adjusted, temp_adjusted_qc,
-         platform_number, cycle_number,
-         profile_temp_qc)</code></pre>
+<div id="qc-flag-a-and-b-temperature-data" class="section level3">
+<h3>QC flag A and B temperature data</h3>
+<p>BGC-temperature data with QC flags A and B, irrespective of whether a
+corresponding pH measurement exists</p>
 </div>
-<div id="qc-flag-a-and-b-ph-temperature-data" class="section level2">
-<h2>QC flag A and B pH &amp; temperature data</h2>
-<p>pH and temperature data from floats where both variables have full profiles with QC flag A</p>
-<pre class="r"><code># create a dataframe with temperature and pH profile flags A and B only 
-# keep only temperature observations where good pH data exists: 
+<div id="qc-flag-a-and-b-ph-temperature-data" class="section level3">
+<h3>QC flag A and B pH &amp; temperature data</h3>
+<p>pH and temperature data from floats where both variables have full
+profiles with QC flag A or B</p>
+</div>
+<div id="qc-flag-1-ph-temperature-data" class="section level3">
+<h3>QC flag 1 pH &amp; temperature data</h3>
+<p>pH and temperature data where both variables have QC flags 1</p>
+</div>
+<div id="write-argo-data-to-files" class="section level3">
+<h3>Write Argo data to files</h3>
+<p>write the files for later analysis</p>
+<pre class="r"><code>if (!opt_qc_only) {
 
-# using only complete profiles, and temperature data where pH measurements exist:
+  if (opt_summary_files){
+  
+    # Read temp and meta_data
+    bgc_data_temp &lt;-
+    read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_temp.rds&quot;))
+    bgc_data_psal &lt;-
+    read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_psal.rds&quot;))
 
-bgc_merge_flag_AB &lt;- bgc_merge %&gt;%
-  filter(profile_ph_in_situ_total_qc %in% c(&#39;A&#39;, &#39;B&#39;),
-         profile_temp_qc %in% c(&#39;A&#39;, &#39;B&#39;)) %&gt;%
-  select(depth,
-         temp_adjusted:temp_adjusted_error,
-         ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-         platform_number,
-         cycle_number,
-         date,
-         lat, lon,
-         profile_temp_qc,
-        profile_ph_in_situ_total_qc) %&gt;%
-  filter(!is.na(ph_in_situ_total_adjusted))
-# no NA temperature values
-# 518 340 total observations </code></pre>
-<pre class="r"><code># bgc_merge_flag_A_test &lt;- bgc_merge %&gt;%
-#   filter(profile_ph_in_situ_total_qc == &#39;A&#39;,
-#          profile_temp_qc == &#39;A&#39;) %&gt;%
+    bgc_data_doxy &lt;-
+    read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_doxy.rds&quot;))
+    
+    bgc_data_pH &lt;-
+    read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data_pH.rds&quot;))
+    bgc_metadata &lt;-
+    read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+    
+    # ------------------------------------------------------------------------------
+    # All pH data from BGC floats with QC flag 1 (good data)    
+    # ------------------------------------------------------------------------------
+    bgc_data_temp_join &lt;- bgc_data_temp %&gt;%
+      select (
+        file,
+        depth, 
+        temp_adjusted
+      )
+   
+    bgc_data_psal_join &lt;- bgc_data_psal %&gt;%
+      select (
+        file,
+        depth, 
+        psal_adjusted
+      )
+    
+    
+  
+    bgc_data_ph_temp_psal &lt;- left_join(bgc_data_pH, bgc_data_temp_join)
+    bgc_data_ph_temp_psal &lt;- left_join(bgc_data_ph_temp_psal, bgc_data_psal_join)
+     
+    # Join pH, temp psal and meta_data to form merge
+    bgc_merge_pH_qc_1 &lt;- left_join(x = bgc_data_ph_temp_psal, 
+                                       y = bgc_metadata %&gt;% 
+                                              select(file,
+                                                  platform_number,
+                                                  cycle_number,
+                                                  profile_ph_in_situ_total_qc,
+                                                  profile_temp_qc))
+
+# bgc_merge_pH_qc_1 &lt;- bgc_merge %&gt;%
+#   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;%
+#   select(
+#     date,
+#     lat,
+#     lon,
+#     depth,
+#     psal_adjusted,
+#     temp_adjusted,
+#     temp_adjusted_qc,
+#     ph_in_situ_total_adjusted,
+#     ph_in_situ_total_adjusted_qc,
+#     platform_number,
+#     cycle_number,
+#     profile_ph_in_situ_total_qc,
+#     profile_temp_qc
+#   )
+
+    # ------------------------------------------------------------------------------    
+    # ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1  
+    # ------------------------------------------------------------------------------    
+
+    # create a dataframe of full pH data (only good data) with corresponding CTD and metadata, 
+    # in a 1x1º longitude/latitude grid
+    ph_merge_1x1 &lt;- bgc_merge_pH_qc_1 %&gt;% 
+                      mutate(
+                        year = year(date),
+                        month = month(date),
+                        .before = depth
+                        )
+        
+        
+    # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn),
+    # in a 1x1º longitude/latitude grid
+    ph_surface_1x1 &lt;- ph_merge_1x1 %&gt;%
+      filter(between(depth, 0, 20))
+
+    # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn),
+    # in a 2x2º longitude/latitude grid
+    ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
+      mutate(
+        lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+        lat = as.numeric(as.character(lat)),
+        lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+        lon = as.numeric(as.character(lon))
+      )   # regrid into 2x2º grid
+
+# # create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid
+# ph_merge_1x1 &lt;- bgc_merge %&gt;%
+#   select(
+#     -c(doxy_adjusted:nitrate_adjusted_error),
+#     -c(profile_doxy_qc, profile_nitrate_qc)
+#   ) %&gt;%
+#   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;%
+#   mutate(year = year(date),
+#          month = month(date),
+#          .after = n_prof)
+# 
+# 
+# # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
+# ph_surface_1x1 &lt;- ph_merge_1x1 %&gt;%
+#   filter(between(depth, 0, 20))
+# 
+# # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid
+# ph_surface_2x2 &lt;- ph_surface_1x1 %&gt;%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#     lon = as.numeric(as.character(lon))
+#   )   # regrid into 2x2º grid
+
+    # ------------------------------------------------------------------------------            
+    # All temperature data from BGC floats with QC flag 1     
+    # ------------------------------------------------------------------------------        
+    bgc_merge_temp_qc_1 &lt;- left_join(x = bgc_data_temp, 
+                                     y = bgc_metadata %&gt;% 
+                                          select(file,
+                                              platform_number,
+                                              cycle_number,
+                                              profile_temp_qc))
+    
+# bgc_merge_temp_qc_1 &lt;- bgc_merge %&gt;% 
+#   filter(temp_adjusted_qc == &#39;1&#39;) %&gt;% 
+#   select(date, lat, lon, 
+#          depth, temp_adjusted,
+#          platform_number, cycle_number,
+#          temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
+#          profile_temp_qc,
+#          profile_ph_in_situ_total_qc)
+
+    # ------------------------------------------------------------------------------            
+    # BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
+    # ------------------------------------------------------------------------------            
+    bgc_merge_temp_AB &lt;- bgc_merge_temp_qc_1 %&gt;%
+                          filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;)
+
+    
+# bgc_merge_temp_AB &lt;- bgc_merge %&gt;% 
+#   filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) %&gt;% 
+#   filter(temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;) %&gt;% 
+#   select(date, lat, lon,
+#          depth, temp_adjusted, temp_adjusted_qc,
+#          platform_number, cycle_number,
+#          profile_temp_qc)
+
+    # ------------------------------------------------------------------------------                
+    # pH and temperature data from floats where both variables have full profiles with QC flag A or B
+    # ------------------------------------------------------------------------------                
+
+    bgc_data_ph_temp &lt;- left_join(bgc_data_pH, bgc_data_temp_join)
+
+    # Join pH, temp psal and meta_data to form merge
+    bgc_merge_qc_1 &lt;- left_join(x = bgc_data_ph_temp, 
+                                       y = bgc_metadata %&gt;% 
+                                              select(file,
+                                                  platform_number,
+                                                  cycle_number,
+                                                  profile_ph_in_situ_total_qc,
+                                                  profile_temp_qc))
+
+    bgc_merge_flag_AB &lt;- bgc_merge_qc_1 %&gt;%
+                          filter(profile_ph_in_situ_total_qc %in% c(&#39;A&#39;, &#39;B&#39;),
+                                 profile_temp_qc %in% c(&#39;A&#39;, &#39;B&#39;))      
+    
+# # create a dataframe with temperature and pH profile flags A and B only 
+# # keep only temperature observations where good pH data exists: 
+# 
+# # using only complete profiles, and temperature data where pH measurements exist:
+# 
+# bgc_merge_flag_AB &lt;- bgc_merge %&gt;%
+#   filter(profile_ph_in_situ_total_qc %in% c(&#39;A&#39;, &#39;B&#39;),
+#          profile_temp_qc %in% c(&#39;A&#39;, &#39;B&#39;)) %&gt;%
 #   select(depth,
 #          temp_adjusted:temp_adjusted_error,
 #          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
@@ -990,92 +2004,250 @@ bgc_merge_flag_AB &lt;- bgc_merge %&gt;%
 #          date,
 #          lat, lon,
 #          profile_temp_qc,
-#         profile_ph_in_situ_total_qc) 
+#         profile_ph_in_situ_total_qc) %&gt;%
+#   filter(!is.na(ph_in_situ_total_adjusted))
+# # no NA temperature values
+# # 518 340 total observations 
+    
+    # ------------------------------------------------------------------------------                
+    # pH and temperature data where both variables have QC flags 1 
+    # ------------------------------------------------------------------------------                
+    # bgc_merge_qc_1 created in step above.
 
-# 2 488 911 total observations, of which 1 970 571 are NA pH values and 114 991 are NA temperature values  
+    
+    # ------------------------------------------------------------------------------                
+    # doxy data where both variables have QC flags 1 
+    # ------------------------------------------------------------------------------                
+    # Join doxy and meta_data to form merge
+    bgc_merge_doxy_qc_1 &lt;- left_join(x = bgc_data_doxy, 
+                                       y = bgc_metadata %&gt;% 
+                                              select(file,
+                                                  platform_number,
+                                                  cycle_number,
+                                                  profile_ph_in_situ_total_qc,
+                                                  profile_temp_qc))
 
-# table(is.na(bgc_merge_flag_A_test$ph_in_situ_total_adjusted))
-# table(is.na(bgc_merge_flag_A_test$temp_adjusted))</code></pre>
+            
+# bgc_merge_qc_1 &lt;- bgc_merge %&gt;% 
+#   filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,
+#          temp_adjusted_qc == &#39;1&#39;) %&gt;% 
+#   select(depth,
+#          temp_adjusted:temp_adjusted_error,
+#          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+#          platform_number,
+#          cycle_number,
+#          date,
+#          lat, lon,
+#          profile_temp_qc,
+#          profile_ph_in_situ_total_qc)
+    
+
+    # bgc_index %&gt;%
+    #   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_index.rds&quot;))
+    # 
+    # # bgc_calibration %&gt;%
+    # #  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_calibration.rds&quot;))
+    # 
+    # bgc_data %&gt;%
+    #   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
+    # 
+    # bgc_merge %&gt;%
+    #   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
+    
+    
+    bgc_merge_pH_qc_1 %&gt;%
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_pH_qc_1.rds&quot;))
+    
+    bgc_merge_temp_qc_1 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))
+    
+    bgc_merge_temp_AB %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
+    
+    bgc_merge_flag_AB %&gt;%
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
+    
+    bgc_merge_qc_1 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_qc_1.rds&quot;))
+    
+    ph_merge_1x1 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_merge_1x1.rds&quot;))
+    
+    ph_surface_1x1 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
+    
+    ph_surface_2x2 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_2x2.rds&quot;))
+        
+    bgc_merge_doxy_qc_1 %&gt;% 
+      write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_doxy_qc_1.rds&quot;))
+
+
+  }
+}</code></pre>
 </div>
-<div id="qc-flag-1-ph-temperature-data" class="section level2">
-<h2>QC flag 1 pH &amp; temperature data</h2>
-<p>pH and temperature data where both variables have QC flags 1</p>
-<pre class="r"><code>bgc_merge_qc_1 &lt;- bgc_merge %&gt;% 
-  filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;,
-         temp_adjusted_qc == &#39;1&#39;) %&gt;% 
-  select(depth,
-         temp_adjusted:temp_adjusted_error,
-         ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-         platform_number,
-         cycle_number,
-         date,
-         lat, lon,
-         profile_temp_qc,
-         profile_ph_in_situ_total_qc)</code></pre>
+</div>
+<div id="qc-summary" class="section level2">
+<h2>QC summary</h2>
+<div id="profile-qc-flags-a-f" class="section level3">
+<h3>profile QC flags (A-F)</h3>
+<p>Produce a summary of profile QC flags (A-F)</p>
+<pre class="r"><code># Read metadata file and create profile summary table with a count for each year, measurement type and qc option
+bgc_metadata &lt;-
+read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+bgc_metadata[&quot;profile_pres_qc&quot;][is.na(bgc_metadata[&quot;profile_pres_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_temp_qc&quot;][is.na(bgc_metadata[&quot;profile_temp_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_psal_qc&quot;][is.na(bgc_metadata[&quot;profile_psal_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_doxy_qc&quot;][is.na(bgc_metadata[&quot;profile_doxy_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_nitrate_qc&quot;][is.na(bgc_metadata[&quot;profile_nitrate_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_ph_in_situ_total_qc&quot;][is.na(bgc_metadata[&quot;profile_ph_in_situ_total_qc&quot;])] &lt;- &quot;&quot; 
+
+bgc_profile_summary &lt;- bgc_metadata %&gt;% 
+  filter (profile_temp_qc != &quot;&quot;) %&gt;%
+  group_by(
+    year = format(date, &quot;%Y&quot;), 
+    measure = &quot;Temperature&quot;, 
+    measure_order = 2, 
+    profile_qc = profile_temp_qc
+    ) %&gt;% 
+  summarise(
+    count_profiles = n()
+    )
+bgc_profile_summary &lt;- rbind(bgc_profile_summary, 
+                              bgc_metadata %&gt;% 
+                                filter (profile_ph_in_situ_total_qc != &quot;&quot;) %&gt;%
+                                group_by(
+                                  year = format(date, &quot;%Y&quot;), 
+                                  measure = &quot;pH&quot;, 
+                                  measure_order = 4, 
+                                  profile_qc = profile_ph_in_situ_total_qc
+                                  ) %&gt;% 
+                                summarise(
+                                  count_profiles = n()
+                                  ))
+bgc_profile_summary &lt;- rbind(bgc_profile_summary, 
+                              bgc_metadata %&gt;% 
+                                filter (profile_doxy_qc != &quot;&quot;) %&gt;%
+                                group_by(
+                                  year = format(date, &quot;%Y&quot;), 
+                                  measure = &quot;oxygen&quot;, 
+                                  measure_order = 5, 
+                                  profile_qc = profile_doxy_qc
+                                  ) %&gt;% 
+                                summarise(
+                                  count_profiles = n()
+                                  ))
+# modify data frame to prepare for plotting
+bgc_profile_summary &lt;- ungroup(bgc_profile_summary)
+bgc_profile_summary &lt;- bgc_profile_summary %&gt;% group_by(measure_order)
+bgc_profile_summary &lt;- transform(bgc_profile_summary, year = as.numeric(year))
+
+year_min &lt;- min(bgc_profile_summary$year)
+year_max &lt;- max(bgc_profile_summary$year)
+facet_label &lt;- as_labeller(c(&quot;2&quot;=&quot;Temperature&quot;, &quot;4&quot;=&quot;pH&quot;, &quot;5&quot;=&quot;Oxygen&quot;))
+  
+# draw plots for the separate parameters
+bgc_profile_summary %&gt;%
+  ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
+          geom_point() +
+          geom_line() +
+          facet_wrap(~measure_order, labeller = facet_label) +
+          scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+          labs(x = &#39;year&#39;, 
+               y = &#39;number of profiles&#39;, 
+               col = &#39;profile QC flag&#39;,
+               title = &#39;Count of profile qc flags by year&#39;)</code></pre>
+<p><img src="figure/load_argo.Rmd/QC_summary_profile-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="measurement-qc-flags-1-9" class="section level3">
+<h3>measurement QC flags (1-9)</h3>
+<p>Produce a summary of current measurement QC flags (1-9)</p>
+<pre class="r"><code># Read temp and meta_data
+bgc_measure_summary &lt;-
+read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_measure_summary.rds&quot;))
+bgc_measure_summary &lt;- ungroup(bgc_measure_summary)
+
+year_min &lt;- min(bgc_measure_summary$year)
+year_max &lt;- max(bgc_measure_summary$year)
+
+# draw plots for the separate parameters
+bgc_measure_summary %&gt;%
+  filter(measure_qc != &quot; &quot; &amp; measure_order %in% c(2, 4, 5)) %&gt;%
+  ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+          geom_point() +
+          geom_line() +
+          facet_wrap(~measure_order, labeller = facet_label) +
+          scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+          labs(x = &#39;year&#39;, 
+               y = &#39;number of measures&#39;, 
+               col = &#39;measure QC flag&#39;,
+               title = &#39;Count of measure qc flags by year&#39;)</code></pre>
+<p><img src="figure/load_argo.Rmd/QC_summary_measure-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 <div id="harmonise-metadata" class="section level2">
 <h2>Harmonise metadata</h2>
-<pre class="r"><code>bgc_metadata &lt;- bgc_metadata %&gt;%
-  rename(lon = longitude,
-         lat = latitude) %&gt;%
-  mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-    lon = as.numeric(as.character(lon))
-  ) %&gt;% 
-  select(
-    -c(profile_chla_qc:profile_cdom_qc),
-    -c(profile_cndc_qc:profile_up_radiance555_qc)
-  )</code></pre>
+<pre class="r"><code># bgc_metadata &lt;- bgc_metadata %&gt;%
+#   rename(lon = longitude,
+#          lat = latitude) %&gt;%
+#   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+#     lon = as.numeric(as.character(lon))
+#   ) %&gt;% 
+#   select(
+#     -c(profile_chla_qc:profile_cdom_qc),
+#     -c(profile_cndc_qc:profile_up_radiance555_qc)
+#   )</code></pre>
 </div>
-<div id="write-argo-data-to-files" class="section level2">
+<div id="write-argo-data-to-files-1" class="section level2">
 <h2>Write Argo data to files</h2>
-<pre class="r"><code>bgc_index %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_index.rds&quot;))
-
-# bgc_calibration %&gt;%
-#  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_calibration.rds&quot;))
-
-bgc_data %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
-
-bgc_merge %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
-
-
-bgc_merge_pH_qc_1 %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_pH_qc_1.rds&quot;))
-
-
-bgc_merge_temp_qc_1 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))
-
-bgc_merge_temp_AB %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
-
-
-bgc_merge_flag_AB %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
-
-# bgc_merge_flag_A_test %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A_test.rds&quot;))
-
-bgc_merge_qc_1 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_qc_1.rds&quot;))
-
-ph_merge_1x1 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_merge_1x1.rds&quot;))
-
-bgc_metadata %&gt;%
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
-
-ph_surface_1x1 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
-
-ph_surface_2x2 %&gt;% 
-  write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_2x2.rds&quot;))</code></pre>
+<pre class="r"><code># bgc_index %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_index.rds&quot;))
+# 
+# # bgc_calibration %&gt;%
+# #  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_calibration.rds&quot;))
+# 
+# bgc_data %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
+# 
+# bgc_merge %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
+# 
+# 
+# bgc_merge_pH_qc_1 %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_pH_qc_1.rds&quot;))
+# 
+# 
+# bgc_merge_temp_qc_1 %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))
+# 
+# bgc_merge_temp_AB %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
+# 
+# 
+# bgc_merge_flag_AB %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
+# 
+# # bgc_merge_flag_A_test %&gt;%
+# #   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A_test.rds&quot;))
+# 
+# bgc_merge_qc_1 %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_qc_1.rds&quot;))
+# 
+# ph_merge_1x1 %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_merge_1x1.rds&quot;))
+# 
+# bgc_metadata %&gt;%
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+# 
+# ph_surface_1x1 %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
+# 
+# ph_surface_2x2 %&gt;% 
+#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_2x2.rds&quot;))</code></pre>
 </div>
 </div>
 <div id="data-set-description" class="section level1">
@@ -1086,33 +2258,70 @@ ph_surface_2x2 %&gt;%
 <ul>
 <li><p>the file name (<code>file</code> column)</p></li>
 <li><p>the sampling level (<code>n_level</code> column)</p></li>
-<li><p>the number of profiles per file (<code>n_prof</code> column; Each single-cycle synthetic profile has the dimension <code>n_prof = 1</code>).</p></li>
-<li><p>adjusted values for pressure (<code>pres</code>, in dbar), salinity (<code>psal</code>, in psu), temperature (<code>temp</code>, in degrees C), dissolved oxygen (<code>doxy</code>, in µmol kg<sup>-1</sup>), pH (<code>ph_in_situ_total</code>), and nitrate (<code>nitrate</code>, in µmol kg<sup>-1</sup>) (<code>parameter_adjusted</code> columns). This column is mandatory, so if no adjustment was performed (i.e. <code>parameter_adjusted</code> does not exist), FillValue is inserted (e.g., <code>temp_adjusted:FillValue = 99999.f</code>). If the raw value did not require adjustment in delayed-mode, then <code>parameter_adjusted</code> = <code>parameter</code>.</p></li>
-<li><p>a quality control flag associated with these adjusted values (<code>parameter_adjusted_qc</code> columns). If an adjusted value does not exist (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue is inserted (e.g., <code>temp_adjusted_qc = " "</code>).</p></li>
-<li><p>an error estimate on the adjustment of the measurement (<code>parameter_adjusted_error</code> columns). If no adjusted value exists (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue is inserted (e.g., <code>temp_adjusted_error = 99999.f</code>)</p></li>
-<li><p>WMO float identifier (<code>platform_number</code> column)</p></li>
-<li><p>name of the project in charge of the float (<code>project_name</code> column)</p></li>
-<li><p>name of principal investigator in charge of the float (<code>pi_name</code> column)</p></li>
-<li><p>float cycle number (<code>cycle_number</code> column; <em>cycle 0 is the launch cycle during which technical data or configuration information is transmitted; cycle 1 is the first complete cycle</em>)</p></li>
-<li><p>descending (D) or ascending (A) profile (<code>direction</code> column). <em>Profile measurements are taken on ascent, occasionally during descent (rarely both).</em></p></li>
-<li><p>code for the data centre in charge of the float data management (<code>data_centre</code> column)</p></li>
+<li><p>the number of profiles per file (<code>n_prof</code> column; Each
+single-cycle synthetic profile has the dimension
+<code>n_prof = 1</code>).</p></li>
+<li><p>adjusted values for pressure (<code>pres</code>, in dbar),
+salinity (<code>psal</code>, in psu), temperature (<code>temp</code>, in
+degrees C), dissolved oxygen (<code>doxy</code>, in µmol
+kg<sup>-1</sup>), pH (<code>ph_in_situ_total</code>), and nitrate
+(<code>nitrate</code>, in µmol kg<sup>-1</sup>)
+(<code>parameter_adjusted</code> columns). This column is mandatory, so
+if no adjustment was performed (i.e. <code>parameter_adjusted</code>
+does not exist), FillValue is inserted (e.g.,
+<code>temp_adjusted:FillValue = 99999.f</code>). If the raw value did
+not require adjustment in delayed-mode, then
+<code>parameter_adjusted</code> = <code>parameter</code>.</p></li>
+<li><p>a quality control flag associated with these adjusted values
+(<code>parameter_adjusted_qc</code> columns). If an adjusted value does
+not exist (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue
+is inserted (e.g., <code>temp_adjusted_qc = " "</code>).</p></li>
+<li><p>an error estimate on the adjustment of the measurement
+(<code>parameter_adjusted_error</code> columns). If no adjusted value
+exists (e.g., <code>temp_adjusted = 99999.f</code>), then FillValue is
+inserted (e.g., <code>temp_adjusted_error = 99999.f</code>)</p></li>
+<li><p>WMO float identifier (<code>platform_number</code>
+column)</p></li>
+<li><p>name of the project in charge of the float
+(<code>project_name</code> column)</p></li>
+<li><p>name of principal investigator in charge of the float
+(<code>pi_name</code> column)</p></li>
+<li><p>float cycle number (<code>cycle_number</code> column; <em>cycle 0
+is the launch cycle during which technical data or configuration
+information is transmitted; cycle 1 is the first complete
+cycle</em>)</p></li>
+<li><p>descending (D) or ascending (A) profile (<code>direction</code>
+column). <em>Profile measurements are taken on ascent, occasionally
+during descent (rarely both).</em></p></li>
+<li><p>code for the data centre in charge of the float data management
+(<code>data_centre</code> column)</p></li>
 <li><p>the type of float (<code>platform_type</code> column)</p></li>
-<li><p>firmware version of the float (<code>firmware_version</code> column)</p></li>
-<li><p>instrument type from the WMO code table 1770 (<code>wmo_inst_type</code> column)</p></li>
-<li><p>the date and time at which the measurement was taken, in UTC (<code>date</code> column)</p></li>
-<li><p>a quality control flag for the date and time value (<code>date_qc</code> column)</p></li>
-<li><p>the date and time of the profile location (<code>date_location</code> column)</p></li>
+<li><p>firmware version of the float (<code>firmware_version</code>
+column)</p></li>
+<li><p>instrument type from the WMO code table 1770
+(<code>wmo_inst_type</code> column)</p></li>
+<li><p>the date and time at which the measurement was taken, in UTC
+(<code>date</code> column)</p></li>
+<li><p>a quality control flag for the date and time value
+(<code>date_qc</code> column)</p></li>
+<li><p>the date and time of the profile location
+(<code>date_location</code> column)</p></li>
 <li><p>latitude in degrees N (<code>latitude</code> column)</p></li>
 <li><p>longitude in degrees E (<code>longitude</code> column)</p></li>
-<li><p>quality control flag on the position (<code>position_qc</code> column)</p></li>
-<li><p>name of the system in charge of positioning the float locations (<code>positioning_system</code> column)</p></li>
-<li><p>unique number of the mission to which this float belongs (<code>config_mission_number</code> column,</p></li>
-<li><p>a global quality control flag on the profile of the parameter (<code>profile_parameter_qc</code> column; FillValue = ” “)</p></li>
+<li><p>quality control flag on the position (<code>position_qc</code>
+column)</p></li>
+<li><p>name of the system in charge of positioning the float locations
+(<code>positioning_system</code> column)</p></li>
+<li><p>unique number of the mission to which this float belongs
+(<code>config_mission_number</code> column,</p></li>
+<li><p>a global quality control flag on the profile of the parameter
+(<code>profile_parameter_qc</code> column; FillValue = ” “)</p></li>
 </ul>
 </div>
 <div id="qc-flags" class="section level2">
 <h2>QC flags</h2>
-<p>QC flags for values (‘<code>parameter_adjusted_qc</code>’ columns) are between 1 and 8, where:<br />
+<p>QC flags for values (‘<code>parameter_adjusted_qc</code>’ columns)
+are between 1 and 8, where:<br />
 1 is ‘good’ data,<br />
 2 is ‘probably good’ data,<br />
 3 is ‘probably bad’ data,<br />
@@ -1121,18 +2330,23 @@ ph_surface_2x2 %&gt;%
 8 is ‘estimated value’,<br />
 9 is ‘missing value’ (data parameter will record FillValue)<br />
 (6 and 7 are not used).</p>
-<p>Profile QC flags (‘<code>profile_parameter_qc</code>’ columns) are QC codes attributed to the entire profile, and indicate the number of depth levels (in %) where the value is considered to be good data (QC flags of 1, 2, 5, and 8; QC flags of 9 or ” ” are not used in the computation):<br />
+<p>Profile QC flags (‘<code>profile_parameter_qc</code>’ columns) are QC
+codes attributed to the entire profile, and indicate the number of depth
+levels (in %) where the value is considered to be good data (QC flags of
+1, 2, 5, and 8; QC flags of 9 or ” ” are not used in the
+computation):<br />
 ‘A’ means 100% of profile levels contain good data,<br />
 ‘B’ means 75-&lt;100% of profile levels contain good data,<br />
 ‘C’ means 50-75% of profile levels contain good data,<br />
 ‘D’ means 25-50% of profile levels contain good data,<br />
-‘E’ means &gt;0-50% of profile levels contain good data,<br />
+‘E’ means &gt;0-25% of profile levels contain good data,<br />
 ‘F’ means 0% of profile levels contain good data.</p>
 <div id="quality-control-tests" class="section level3">
 <h3>Quality Control Tests</h3>
 <p>There are two levels of Argo data quality control:</p>
 <ul>
-<li>The first level is the real-time system that performs a set of agreed automatic checks</li>
+<li>The first level is the real-time system that performs a set of
+agreed automatic checks</li>
 <li>The second level is the delayed-mode quality control system.</li>
 </ul>
 <div id="real-time-qc-tests" class="section level4">
@@ -1140,135 +2354,270 @@ ph_surface_2x2 %&gt;%
 <ol style="list-style-type: decimal">
 <li><strong>Platform identification test</strong></li>
 </ol>
-<p>If a float WMO ID cannot be matched to the correct float platform then none of the data will be distributed.</p>
+<p>If a float WMO ID cannot be matched to the correct float platform
+then none of the data will be distributed.</p>
 <ol start="2" style="list-style-type: decimal">
 <li><strong>Impossible date test</strong></li>
 </ol>
-<p>This test requires that the Julian Day of the float be later than 1st January 1997 and earlier than the current date of the check (in UTC time). If the date of a profile fails this test, the date of the profile should be flagged as bad data (‘4’) and none of the profile data is distributed.</p>
+<p>This test requires that the Julian Day of the float be later than 1st
+January 1997 and earlier than the current date of the check (in UTC
+time). If the date of a profile fails this test, the date of the profile
+should be flagged as bad data (‘4’) and none of the profile data is
+distributed.</p>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>Impossible location test</strong></li>
 </ol>
-<p>This test requires that the observation latitude and longitude of a float be sensible, with latitude in the range -90 to 90º, and longitude in the range -180 to 180º.</p>
-<p>If either latitude or longitude fails this test, the position is flagged as bad data (‘4’) and none of the profile data is distributed.</p>
+<p>This test requires that the observation latitude and longitude of a
+float be sensible, with latitude in the range -90 to 90º, and longitude
+in the range -180 to 180º.</p>
+<p>If either latitude or longitude fails this test, the position is
+flagged as bad data (‘4’) and none of the profile data is
+distributed.</p>
 <ol start="4" style="list-style-type: decimal">
 <li><strong>Position on land test</strong></li>
 </ol>
-<p>This test requires that the observation latitude and longitude be located in an ocean. If a position cannot be located in an ocean, the position is flagged as bad data (‘4’) and none of the profile data is distributed.</p>
+<p>This test requires that the observation latitude and longitude be
+located in an ocean. If a position cannot be located in an ocean, the
+position is flagged as bad data (‘4’) and none of the profile data is
+distributed.</p>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Impossible speed test</strong></li>
 </ol>
-<p>Drift speeds for floats can be generated given the positions and times of the floats when they are at the sea surface and between profiles. In all cases, we would not expect the drift speed to exceed 3 ms<sup>-1</sup>. If it does, it means either the positions or times are bad data, or a float is mislabeled. Using the multiple positions and times that are normally available for a float while at the sea surface, it is often possible to isolate the one position or time that is an error.</p>
-<p>If an acceptable position and time can be used from the available suite, then the data can be distributed. Otherwise, the position, the time, or both, are flagged as bad data (‘4’) and the profile data is not distributed.</p>
+<p>Drift speeds for floats can be generated given the positions and
+times of the floats when they are at the sea surface and between
+profiles. In all cases, we would not expect the drift speed to exceed 3
+ms<sup>-1</sup>. If it does, it means either the positions or times are
+bad data, or a float is mislabeled. Using the multiple positions and
+times that are normally available for a float while at the sea surface,
+it is often possible to isolate the one position or time that is an
+error.</p>
+<p>If an acceptable position and time can be used from the available
+suite, then the data can be distributed. Otherwise, the position, the
+time, or both, are flagged as bad data (‘4’) and the profile data is not
+distributed.</p>
 <ol start="6" style="list-style-type: decimal">
 <li><strong>Global range test</strong></li>
 </ol>
-<p>This test applies a gross filter on the values of <code>TEMP</code>, <code>PRES</code>, and <code>PSAL</code>. The ranges need to accommodate all of the expected extremes in the ocean.</p>
+<p>This test applies a gross filter on the values of <code>TEMP</code>,
+<code>PRES</code>, and <code>PSAL</code>. The ranges need to accommodate
+all of the expected extremes in the ocean.</p>
 <ul>
-<li>Pressure cannot be less than -5 dbar. If <code>PRES</code> &lt; -5, then <code>PRES_QC</code> = ‘4’, <code>TEMP_QC</code> = ‘4’, and <code>PSAL_QC</code> = ‘4’.</li>
-<li>Pressure in the range -5 to -2.4 dbar should be considered ‘probably bad’ data. If -5 ≤ <code>PRES</code> ≤ -2.4, then <code>PRES_QC</code> = ‘3’, <code>TEMP_QC</code> = ‘3’, <code>PSAL_QC</code> = ‘3’.</li>
-<li>Temperature should be in the range -2.5 to 40.0 ºC. Outside of this range <code>TEMP_QC</code> = ‘4’.</li>
-<li>Salinity should be in the range 2 to 41.0 PSU. Outside of this range, <code>PSAL_QC</code> = ‘4’.</li>
-<li><code>DOXY</code> should be in the range -5 to 600 µmol kg<sup>-1</sup>. Outside of this range, <code>DOXY_QC = '4'</code>.</li>
-<li><code>PH_IN_SITU_TOTAL</code> should be in the range 7.3 to 8.5. Outside of this range, <code>PH_IN_SITU_TOTAL_QC = '4'</code>.</li>
+<li>Pressure cannot be less than -5 dbar. If <code>PRES</code> &lt; -5,
+then <code>PRES_QC</code> = ‘4’, <code>TEMP_QC</code> = ‘4’, and
+<code>PSAL_QC</code> = ‘4’.</li>
+<li>Pressure in the range -5 to -2.4 dbar should be considered ‘probably
+bad’ data. If -5 ≤ <code>PRES</code> ≤ -2.4, then <code>PRES_QC</code> =
+‘3’, <code>TEMP_QC</code> = ‘3’, <code>PSAL_QC</code> = ‘3’.</li>
+<li>Temperature should be in the range -2.5 to 40.0 ºC. Outside of this
+range <code>TEMP_QC</code> = ‘4’.</li>
+<li>Salinity should be in the range 2 to 41.0 PSU. Outside of this
+range, <code>PSAL_QC</code> = ‘4’.</li>
+<li><code>DOXY</code> should be in the range -5 to 600 µmol
+kg<sup>-1</sup>. Outside of this range, <code>DOXY_QC = '4'</code>.</li>
+<li><code>PH_IN_SITU_TOTAL</code> should be in the range 7.3 to 8.5.
+Outside of this range, <code>PH_IN_SITU_TOTAL_QC = '4'</code>.</li>
 </ul>
 <ol start="7" style="list-style-type: decimal">
 <li><strong>Regional range test</strong> (CTD data)</li>
 </ol>
-<p>This test applies to certain regions of the world where conditions can be further qualified. In this case, specific ranges for observations from the Mediterranean Sea and the Red Sea further restrict what can be accepted as reasonable values.</p>
-<p>If a value fails this test, it is flagged as bad data (‘4’) and removed from the initial distribution. If temperature and salinity at the same pressure level both fail this test, both values are flagged as bad data (‘4’) and values for pressure, temperature, and salinity are removed from the distribution.</p>
+<p>This test applies to certain regions of the world where conditions
+can be further qualified. In this case, specific ranges for observations
+from the Mediterranean Sea and the Red Sea further restrict what can be
+accepted as reasonable values.</p>
+<p>If a value fails this test, it is flagged as bad data (‘4’) and
+removed from the initial distribution. If temperature and salinity at
+the same pressure level both fail this test, both values are flagged as
+bad data (‘4’) and values for pressure, temperature, and salinity are
+removed from the distribution.</p>
 <ol start="8" style="list-style-type: decimal">
 <li><strong>Pressure increasing test</strong> (CTD data)</li>
 </ol>
-<p>This test requires that the vertical profile has pressures that are monotonically increasing (assuming the pressure levels are ordered from smallest to largest).</p>
-<p>If there is a region of constant pressure, all but the first of the consecutive constant pressure levels is flagged as bad data (‘4’). If there is a region where pressure reverses, all of the pressures in the reversed part of the profile are flagged as bad data (‘4’). All pressures flagged as bad data and associated temperatures and salinities are removed.</p>
+<p>This test requires that the vertical profile has pressures that are
+monotonically increasing (assuming the pressure levels are ordered from
+smallest to largest).</p>
+<p>If there is a region of constant pressure, all but the first of the
+consecutive constant pressure levels is flagged as bad data (‘4’). If
+there is a region where pressure reverses, all of the pressures in the
+reversed part of the profile are flagged as bad data (‘4’). All
+pressures flagged as bad data and associated temperatures and salinities
+are removed.</p>
 <ol start="9" style="list-style-type: decimal">
 <li><strong>Spike test</strong></li>
 </ol>
-<p>The difference between sequential measurements, where one measurement is significantly different from adjacent ones, is a spike in both size and gradient. This test does not consider differences in pressure, but assumes a sampling that adequately reproduces changes in temperature and salinity with pressure.</p>
+<p>The difference between sequential measurements, where one measurement
+is significantly different from adjacent ones, is a spike in both size
+and gradient. This test does not consider differences in pressure, but
+assumes a sampling that adequately reproduces changes in temperature and
+salinity with pressure.</p>
 <p>Test value = | V2 - (V3 + V1)/2 | - | (V3 - V1)/2 |</p>
-<p>where V2 is the measurement being tested, and V1 and V3 are the values above and below.</p>
+<p>where V2 is the measurement being tested, and V1 and V3 are the
+values above and below.</p>
 <p>Temperature: the V2 value is flagged when:</p>
 <ul>
-<li>the test value exceeds 6.0 ºC for pressures less than 500 dbar, or</li>
-<li>the test value exceeds 2.0 ºC for pressures equal to or greater than 500 dbar.</li>
+<li>the test value exceeds 6.0 ºC for pressures less than 500 dbar,
+or</li>
+<li>the test value exceeds 2.0 ºC for pressures equal to or greater than
+500 dbar.</li>
 </ul>
 <p>Salinity: the V2 value is flagged when:</p>
 <ul>
-<li>the test value exceeds 0.9 PSU for pressures less than 500 dbar, or</li>
-<li>the test value exceeds 0.3 PSU for pressures equal to or greater than 500 dbar.</li>
+<li>the test value exceeds 0.9 PSU for pressures less than 500 dbar,
+or</li>
+<li>the test value exceeds 0.3 PSU for pressures equal to or greater
+than 500 dbar.</li>
 </ul>
 <p>DOXY: the V2 value is flagged when:</p>
 <ul>
-<li>the test value exceeds 50 µmol kg<sup>-1</sup> for pressures less than 500 dbar, or</li>
-<li>the test value exceeds 25 µmol kg<sup>-1</sup> for pressures equal to or greater than 500 dbar.</li>
+<li>the test value exceeds 50 µmol kg<sup>-1</sup> for pressures less
+than 500 dbar, or</li>
+<li>the test value exceeds 25 µmol kg<sup>-1</sup> for pressures equal
+to or greater than 500 dbar.</li>
 </ul>
 <p>For pH:</p>
 <p>Test value 2 = | V2 - median(V0, V1, V2, V3, V4) |</p>
-<p>where the test value represents the anomaly of the observed pH from the median of the surrounding data. A pH data point is considered a spike and flagged as bad (‘4’) if Test Value 2 &gt; 0.04pH</p>
-<p>If the value V2 fails this test, it is flagged as bad data (‘4’) and is removed. If temperature and salinity both fail this test, both values are flagged as bad data (‘4’) and values for temperature, salinity and pressure are removed.</p>
+<p>where the test value represents the anomaly of the observed pH from
+the median of the surrounding data. A pH data point is considered a
+spike and flagged as bad (‘4’) if Test Value 2 &gt; 0.04pH</p>
+<p>If the value V2 fails this test, it is flagged as bad data (‘4’) and
+is removed. If temperature and salinity both fail this test, both values
+are flagged as bad data (‘4’) and values for temperature, salinity and
+pressure are removed.</p>
 <ol start="10" style="list-style-type: decimal">
 <li>Obsolete</li>
 <li><strong>Gradient test</strong> (DOXY only)</li>
 </ol>
-<p>This test is failed when the difference between vertically adjacent measurements is too steep. The test does not consider changes in depth, but assumes a sampling that adequately reproduces changes in DOXY with depth</p>
+<p>This test is failed when the difference between vertically adjacent
+measurements is too steep. The test does not consider changes in depth,
+but assumes a sampling that adequately reproduces changes in DOXY with
+depth</p>
 <p>Test value = | V2 - (V3 + V1)/2 |</p>
-<p>where V2 is the value being tested as a spike, and V1 and V3 are the values above and below.</p>
+<p>where V2 is the value being tested as a spike, and V1 and V3 are the
+values above and below.</p>
 <p>For DOXY, V2 is flagged when:</p>
 <ul>
-<li><p>the test value exceeds 50 µmol kg<sup>-1</sup> for pressures less than 500 dbar, or</p></li>
-<li><p>the test value exceeds 25 µmol kg<sup>-1</sup> for pressures equal to or greater than 500 dbar</p></li>
+<li><p>the test value exceeds 50 µmol kg<sup>-1</sup> for pressures less
+than 500 dbar, or</p></li>
+<li><p>the test value exceeds 25 µmol kg<sup>-1</sup> for pressures
+equal to or greater than 500 dbar</p></li>
 </ul>
 <ol start="12" style="list-style-type: decimal">
 <li><strong>Digit rollover test</strong> (CTD data)</li>
 </ol>
-<p>Only so many bits are allowed to store temperature and salinity values in a profiling float. This range is not always large enough to accommodate conditions which are encountered in the ocean. When the range is exceeded, stored values rollover to the lower end of the range. This rollover should be detected and compensated for when profiles are constructed from the data stream of the float. This test is used to make sure the rollover is properly detected.</p>
+<p>Only so many bits are allowed to store temperature and salinity
+values in a profiling float. This range is not always large enough to
+accommodate conditions which are encountered in the ocean. When the
+range is exceeded, stored values rollover to the lower end of the range.
+This rollover should be detected and compensated for when profiles are
+constructed from the data stream of the float. This test is used to make
+sure the rollover is properly detected.</p>
 <ul>
 <li>Temperature difference between adjacent pressures &gt; 10 ºC</li>
 <li>Salinity difference between adjacent pressures &gt; 5 PSU</li>
 </ul>
-<p>If a value fails this test, it is flagged as bad data (‘4’) and removed from the initial distribution. If temperature and salinity at the same pressure level both fail this test, both values are flagged as bad data (‘4’) and values for pressure, temperature, and salinity are removed from the distribution.</p>
+<p>If a value fails this test, it is flagged as bad data (‘4’) and
+removed from the initial distribution. If temperature and salinity at
+the same pressure level both fail this test, both values are flagged as
+bad data (‘4’) and values for pressure, temperature, and salinity are
+removed from the distribution.</p>
 <ol start="13" style="list-style-type: decimal">
 <li><strong>Stuck value test</strong></li>
 </ol>
-<p>This test looks for CTD and BGC measurements in the same profile being identical.</p>
-<p>If this occurs, all of the values affected parameter are flagged as bad data (‘4’) and removed from the distribution. If both temperature and salinity are affected, then all observed values from the profile are flagged as bad data (‘4’).</p>
+<p>This test looks for CTD and BGC measurements in the same profile
+being identical.</p>
+<p>If this occurs, all of the values affected parameter are flagged as
+bad data (‘4’) and removed from the distribution. If both temperature
+and salinity are affected, then all observed values from the profile are
+flagged as bad data (‘4’).</p>
 <ol start="14" style="list-style-type: decimal">
 <li><strong>Density inversion test</strong> (CTD data)</li>
 </ol>
-<p>This test compares potential density between valid measurements in a profile in both directions (i.e., from top to bottom, and from bottom to top). Values of temperature and salinity at the same pressure level P<sub>i</sub> are used to compute potential density ρ<sub>i</sub> ( or σ<sub>i</sub> = ρ<sub>i</sub> - 1000) kg m<sup>-3</sup>, referenced to the mid-point between Pi and the next valid pressure level. A threshold of 0.03 kg m<sup>-3</sup> is allowed for small density inversions.</p>
-<p>From top to bottom, if the potential density calculated at the greater pressure P<sub>i+1</sub> is less than that calculated at the lesser pressure P<sub>i</sub> by more than 0.03 kg m<sub>-3</sub>, both the temperature and salinity values at pressure P<sub>i</sub> are flagged as bad data (‘4’). From bottom to top, if the potential density calculated at the lesser pressure P<sub>i-1</sub> is greater than that calculated at the greater pressure P<sub>i</sub> by more than 0.03 kg m<sub>-3</sub>, both the temperature and salinity values at pressure P<sub>i</sub> are flagged as bad data (‘4’). Bad temperature and salinity are removed from the distribution.</p>
+<p>This test compares potential density between valid measurements in a
+profile in both directions (i.e., from top to bottom, and from bottom to
+top). Values of temperature and salinity at the same pressure level
+P<sub>i</sub> are used to compute potential density ρ<sub>i</sub> ( or
+σ<sub>i</sub> = ρ<sub>i</sub> - 1000) kg m<sup>-3</sup>, referenced to
+the mid-point between Pi and the next valid pressure level. A threshold
+of 0.03 kg m<sup>-3</sup> is allowed for small density inversions.</p>
+<p>From top to bottom, if the potential density calculated at the
+greater pressure P<sub>i+1</sub> is less than that calculated at the
+lesser pressure P<sub>i</sub> by more than 0.03 kg m<sub>-3</sub>, both
+the temperature and salinity values at pressure P<sub>i</sub> are
+flagged as bad data (‘4’). From bottom to top, if the potential density
+calculated at the lesser pressure P<sub>i-1</sub> is greater than that
+calculated at the greater pressure P<sub>i</sub> by more than 0.03 kg
+m<sub>-3</sub>, both the temperature and salinity values at pressure
+P<sub>i</sub> are flagged as bad data (‘4’). Bad temperature and
+salinity are removed from the distribution.</p>
 <ol start="15" style="list-style-type: decimal">
 <li><strong>Grey list test</strong></li>
 </ol>
-<p>This test is implemented as a mechanism for data assembly centers (DACs) to flag, in real-time, sensors that are potentially not working correctly. Each DAC manages a grey list and sends it to the GDACs. The merged grey list from all DACs is available from the GDACs.</p>
-<p>Naming convention: <code>xxx_greylist.csv</code> (where <code>xxx</code> is the DAC name, e.g., <code>aoml_greylist.csv</code>, <code>coriolis_greylist.csv</code>, etc).</p>
-<p>Columns: <code>PLATFORM</code>, <code>PARAMETER</code>, <code>START_DATE</code>, <code>END_DATE</code>, <code>QC</code>, <code>COMMENT</code>, <code>DAC</code></p>
-<p>The decision to insert a float parameter in the grey list comes from the PI or the delayed-mode operator. A float parameter should be put in the grey list when the sensor drift is too big to be adjusted in real-time, or when the sensor is judged to be potentially not working correctly.</p>
-<p>The grey list concerns only real-time files. When an anomalous float is dead and the offending parameter has been adjusted in delayed-mode, it is removed from the grey list. When an anomalous float is active and the offending parameter has been partially adjusted in delayed-mode, it will remain on the grey list if real-time adjustment is not adequate.</p>
-<p>Grey-listed parameters are flagged as probably good (‘2’), probably bad (‘3’) or bad (‘4’) data, as determined by the PI or the delayed-mode operator.</p>
+<p>This test is implemented as a mechanism for data assembly centers
+(DACs) to flag, in real-time, sensors that are potentially not working
+correctly. Each DAC manages a grey list and sends it to the GDACs. The
+merged grey list from all DACs is available from the GDACs.</p>
+<p>Naming convention: <code>xxx_greylist.csv</code> (where
+<code>xxx</code> is the DAC name, e.g., <code>aoml_greylist.csv</code>,
+<code>coriolis_greylist.csv</code>, etc).</p>
+<p>Columns: <code>PLATFORM</code>, <code>PARAMETER</code>,
+<code>START_DATE</code>, <code>END_DATE</code>, <code>QC</code>,
+<code>COMMENT</code>, <code>DAC</code></p>
+<p>The decision to insert a float parameter in the grey list comes from
+the PI or the delayed-mode operator. A float parameter should be put in
+the grey list when the sensor drift is too big to be adjusted in
+real-time, or when the sensor is judged to be potentially not working
+correctly.</p>
+<p>The grey list concerns only real-time files. When an anomalous float
+is dead and the offending parameter has been adjusted in delayed-mode,
+it is removed from the grey list. When an anomalous float is active and
+the offending parameter has been partially adjusted in delayed-mode, it
+will remain on the grey list if real-time adjustment is not
+adequate.</p>
+<p>Grey-listed parameters are flagged as probably good (‘2’), probably
+bad (‘3’) or bad (‘4’) data, as determined by the PI or the delayed-mode
+operator.</p>
 <ol start="16" style="list-style-type: decimal">
-<li><strong>Gross salinity or temperature sensor drift test</strong> (CTD)</li>
+<li><strong>Gross salinity or temperature sensor drift test</strong>
+(CTD)</li>
 </ol>
-<p>This test is implemented to detect a sudden and significant sensor drift. It calculates the average temperature and salinity from the deepest 100 dbar of a profile and the previous good profile. Only measurements with good QC are used.</p>
-<p>For salinity, if the difference between the two average values is more than 0.5 PSU, then all the salinity values of the profile are flagged as probably bad data (‘3’). For temperature, if the difference between the two average values is more than 1 ºC, then all the temperature values from the profile are flagged as probably bad data (‘3’).</p>
+<p>This test is implemented to detect a sudden and significant sensor
+drift. It calculates the average temperature and salinity from the
+deepest 100 dbar of a profile and the previous good profile. Only
+measurements with good QC are used.</p>
+<p>For salinity, if the difference between the two average values is
+more than 0.5 PSU, then all the salinity values of the profile are
+flagged as probably bad data (‘3’). For temperature, if the difference
+between the two average values is more than 1 ºC, then all the
+temperature values from the profile are flagged as probably bad data
+(‘3’).</p>
 <ol start="17" style="list-style-type: decimal">
 <li><strong>Visual QC test</strong></li>
 </ol>
-<p>This is subjective visual inspection of float measurements by an operator. This test is not mandatory before real-time data distribution.</p>
+<p>This is subjective visual inspection of float measurements by an
+operator. This test is not mandatory before real-time data
+distribution.</p>
 <ol start="18" style="list-style-type: decimal">
 <li><strong>Frozen profile test</strong> (CTD data)</li>
 </ol>
-<p>This test is used to detect a float that produces the same profile (with very small deviations) over and over again. Typically the differences between two profiles are of the order of 0.001 PSU for salinity and of the order 0.01 ºC for temperature.</p>
+<p>This test is used to detect a float that produces the same profile
+(with very small deviations) over and over again. Typically the
+differences between two profiles are of the order of 0.001 PSU for
+salinity and of the order 0.01 ºC for temperature.</p>
 <ol style="list-style-type: upper-alpha">
-<li><p>Derive temperature and salinity profiles by averaging the original profiles to get mean values for each profile in 50 dbar slabs (T_prof, T_previous_prof, S_prof, S_previous_prof). This is necessary because the floats do not sample at the same level in each profile.</p></li>
-<li><p>Obtain absolute values of the difference between the averaged temperature and salinity profiles as follows:</p></li>
+<li><p>Derive temperature and salinity profiles by averaging the
+original profiles to get mean values for each profile in 50 dbar slabs
+(T_prof, T_previous_prof, S_prof, S_previous_prof). This is necessary
+because the floats do not sample at the same level in each
+profile.</p></li>
+<li><p>Obtain absolute values of the difference between the averaged
+temperature and salinity profiles as follows:</p></li>
 </ol>
 <ul>
 <li>deltaT = abs(T_prof - T_previous_prof)</li>
 <li>deltaS = abs(S_prof - S_previous_prof)</li>
 </ul>
 <ol start="3" style="list-style-type: upper-alpha">
-<li>Find the maximum, minimum, and mean of the absolute values of the averaged differences between profiles for temperature and salinity:</li>
+<li>Find the maximum, minimum, and mean of the absolute values of the
+averaged differences between profiles for temperature and salinity:</li>
 </ol>
 <ul>
 <li>mean(deltaT), max(deltaT), min(deltaT)</li>
@@ -1285,45 +2634,84 @@ ph_surface_2x2 %&gt;%
 <li>min(deltaS) &lt; 0.001 PSU</li>
 <li>mean(deltaS) &lt; 0.004 PSU</li>
 </ul>
-<p>If a profile fails this test, all measurements from this profile are flagged as bad data (‘4’). If a float fails this test over 5 consecutive cycles, it is inserted in the grey list.</p>
+<p>If a profile fails this test, all measurements from this profile are
+flagged as bad data (‘4’). If a float fails this test over 5 consecutive
+cycles, it is inserted in the grey list.</p>
 <ol start="19" style="list-style-type: decimal">
 <li><strong>Deepest pressure test</strong></li>
 </ol>
-<p>This test requires that a profile has pressures that are not greater than <code>CONFIG_ProfilePressure_dbar</code> plus 10%. The value of <code>CONFIG_ProfilePressure_dbar</code> is in the meta.nc file of the float.</p>
-<p>If there is a region of incorrect pressures, those pressures and their corresponding temperature and salinity measurements are flagged as bad data (‘4’). Pressures flagged as bad data and their associated measurements should be removed from distribution.</p>
+<p>This test requires that a profile has pressures that are not greater
+than <code>CONFIG_ProfilePressure_dbar</code> plus 10%. The value of
+<code>CONFIG_ProfilePressure_dbar</code> is in the meta.nc file of the
+float.</p>
+<p>If there is a region of incorrect pressures, those pressures and
+their corresponding temperature and salinity measurements are flagged as
+bad data (‘4’). Pressures flagged as bad data and their associated
+measurements should be removed from distribution.</p>
 <ol start="25" style="list-style-type: decimal">
 <li><strong>MEDian with a distance (MEDD) test</strong> (CTD)</li>
 </ol>
 <p>This test is a set of algorithms based on three main steps:</p>
 <ul>
-<li>First, the computation of a sliding median with some customizations</li>
-<li>Then, limits are computed that are at relative 2-dimension distance d from the median</li>
-<li>Finally, these limits are also computed for the density profile. There is a spike if both the density profile measurement profile are out of limits. If there is no conductivity sensor, then the spikes in temperature are evaluated using a bigger d value.</li>
+<li>First, the computation of a sliding median with some
+customizations</li>
+<li>Then, limits are computed that are at relative 2-dimension distance
+d from the median</li>
+<li>Finally, these limits are also computed for the density profile.
+There is a spike if both the density profile measurement profile are out
+of limits. If there is no conductivity sensor, then the spikes in
+temperature are evaluated using a bigger d value.</li>
 </ul>
-<p>Temperature and salinity values that fail this test are flagged as bad data (‘4’).</p>
+<p>Temperature and salinity values that fail this test are flagged as
+bad data (‘4’).</p>
 <ol start="56" style="list-style-type: decimal">
-<li><strong>pH-specific real-time QC test</strong> (PH_IN_SITU_TOTAL only)</li>
+<li><strong>pH-specific real-time QC test</strong> (PH_IN_SITU_TOTAL
+only)</li>
 </ol>
-<p>Currently, there is no pH-specific QC test. If one is established, it will be reported with the number ‘56’.</p>
-<p>Real-time pH values which pass the real-time QC tests are assigned QC flags of ‘3’. The Argo goals for research-quality data require that pH values be adjusted to receive a quality flag of ‘1’.</p>
+<p>Currently, there is no pH-specific QC test. If one is established, it
+will be reported with the number ‘56’.</p>
+<p>Real-time pH values which pass the real-time QC tests are assigned QC
+flags of ‘3’. The Argo goals for research-quality data require that pH
+values be adjusted to receive a quality flag of ‘1’.</p>
 <ol start="57" style="list-style-type: decimal">
 <li><strong>DOXY-specific real-time QC test</strong> (DOXY only)</li>
 </ol>
-<p>Real-time unadjusted <code>DOXY</code>values receive QC flags of ‘3’. This is because the majority of oxygen sensors deployed on BGC Argo profiling floats are Aanderaa optodes that suffer from pre-deployment storage drift that can reduce accuracy by up to 20% or more. Because this is a known bias that affects the majority of oxygen sensors within the array, and because it can be corrected, <code>DOXY_QC</code> is set to ‘3’.</p>
+<p>Real-time unadjusted <code>DOXY</code>values receive QC flags of ‘3’.
+This is because the majority of oxygen sensors deployed on BGC Argo
+profiling floats are Aanderaa optodes that suffer from pre-deployment
+storage drift that can reduce accuracy by up to 20% or more. Because
+this is a known bias that affects the majority of oxygen sensors within
+the array, and because it can be corrected, <code>DOXY_QC</code> is set
+to ‘3’.</p>
 <ol start="59" style="list-style-type: decimal">
-<li><strong>Nitrate-specific real-time QC test</strong> (NITRATE only)</li>
+<li><strong>Nitrate-specific real-time QC test</strong> (NITRATE
+only)</li>
 </ol>
 <p><em>Not yet available</em></p>
 </div>
-<div id="test-application-order-on-vertical-profiles" class="section level4">
+<div id="test-application-order-on-vertical-profiles"
+class="section level4">
 <h4>Test application order on vertical profiles</h4>
-<p>The Argo real-time QC tests on CTD data (temperature, salinity, pressure) are performed in the order described in the following table.</p>
-<p>A CTD measurement with a QC flag ‘4’ is ignored by other QC tests. A measurement with QC flag ‘2’ or ‘3’ is tested by other QC tests.</p>
-<p>A <code>DOXY</code> measurement with a QC flag ‘4’ or ‘3’ is ignored by other QC tests.</p>
-<p>Note that the Test Number is different from the Application Order. The Test Number (n) is a number assigned permanently to each QC test. It is used to fill <code>HISTORY_QCTEST</code> in the Argo profile files. Therefore, each Test Number is uniquely associated to a QC test, and is never replaced, changed, or duplicated.</p>
-<p>Each real-time QC test has a unique Binary ID (2<sup>n</sup>) of the unique Test Number (n) is used to record QC tests performed and failed in the variable <code>HISTORY_QCTEST</code>.</p>
-<p>The QC flag assigned by a test cannot override a higher value assigned by a previous QC test.</p>
-<p>e.g.: a QC flag ‘4’ (bad data) set by the Grey List Test cannot be decreased to QC flag ‘3’ (bad data that are potentially correctable) set by the Gross Salinity or Temperature Sensor Drift Test.</p>
+<p>The Argo real-time QC tests on CTD data (temperature, salinity,
+pressure) are performed in the order described in the following
+table.</p>
+<p>A CTD measurement with a QC flag ‘4’ is ignored by other QC tests. A
+measurement with QC flag ‘2’ or ‘3’ is tested by other QC tests.</p>
+<p>A <code>DOXY</code> measurement with a QC flag ‘4’ or ‘3’ is ignored
+by other QC tests.</p>
+<p>Note that the Test Number is different from the Application Order.
+The Test Number (n) is a number assigned permanently to each QC test. It
+is used to fill <code>HISTORY_QCTEST</code> in the Argo profile files.
+Therefore, each Test Number is uniquely associated to a QC test, and is
+never replaced, changed, or duplicated.</p>
+<p>Each real-time QC test has a unique Binary ID (2<sup>n</sup>) of the
+unique Test Number (n) is used to record QC tests performed and failed
+in the variable <code>HISTORY_QCTEST</code>.</p>
+<p>The QC flag assigned by a test cannot override a higher value
+assigned by a previous QC test.</p>
+<p>e.g.: a QC flag ‘4’ (bad data) set by the Grey List Test cannot be
+decreased to QC flag ‘3’ (bad data that are potentially correctable) set
+by the Gross Salinity or Temperature Sensor Drift Test.</p>
 <table>
 <colgroup>
 <col width="31%" />
@@ -1450,7 +2838,8 @@ ph_surface_2x2 %&gt;%
 </tr>
 </tbody>
 </table>
-<p>The real-time tests for BGC parameters are performed in the order described in the following table:</p>
+<p>The real-time tests for BGC parameters are performed in the order
+described in the following table:</p>
 <table>
 <colgroup>
 <col width="28%" />
@@ -1549,7 +2938,8 @@ ph_surface_2x2 %&gt;%
 <td><em>14</em></td>
 <td><em>16</em></td>
 <td><em>65536</em></td>
-<td><em>Gross Temperature Sensor Drift Test (only for TEMP_DOXY)</em></td>
+<td><em>Gross Temperature Sensor Drift Test (only for
+TEMP_DOXY)</em></td>
 </tr>
 <tr class="odd">
 <td>15</td>
@@ -1574,52 +2964,145 @@ ph_surface_2x2 %&gt;%
 </div>
 <div id="delayed-mode-quality-control" class="section level4">
 <h4>Delayed-Mode Quality Control</h4>
-<p>The QC flags determined in delayed-mode replace those assigned in real-time because some bad data cannot be detected by the real-time tests, and some good data can be identified wrongly as bad by the real-time tests.</p>
-<p>For vertical profile data, delayed-mode operators examine them for pointwise errors (such as spikes and jumps) and flag them appropriately. If an error is identified, both <code>PARAM_QC</code> and <code>PARAM_ADJUSTED_QC</code> record ‘4’. Conversely, if good data have wrongly been identified as bad by the real-time tests, then <code>PARAM_QC</code> and <code>PARAM_ADJUSTED_QC</code> record ‘1’.</p>
-<p>In SD-files, the variables <code>PROFILE_PARAMETER_QC</code>, <code>PARAMETER_ADJUSTED</code>, <code>PARAMETER_ADJUSTED_QC</code>, and <code>PARAMETER_ADJUSTED_ERROR</code> are compulsory. If no adjustment in delayed-mode is necessary and if the flag is deemed assigned correctly, then <code>PARAM_ADJUSTED = PARAMETER</code>, <code>PARAM_ADJUSTED_QC = PARAM_QC</code>, and <code>PARAM_ADJUSTED_ERROR</code> is provided by the PI.</p>
-<p>If no delayed-mode adjustment was performed, then <code>PARAM_ADJUSTED = 99999.f</code>, <code>PARAM_ADJUSTED_QC = " "</code>, <code>PARAM_ADJUSTED_ERROR = 99999.f</code> and <code>PROFILE_PARAMETER_QC = " "</code>.</p>
-<p>If values are deemed unadjustable in delayed-mode, then <code>PARAM_ADJUSTED_QC = '4'</code>, and <code>PARAM_ADJUSTED = 99999.f</code> and <code>PARAM_ADJUSTED_ERROR = 99999.f</code>.</p>
-<p>The variable <code>PROFILE_PARAMETER_QC</code> is recomputed when <code>PARAMETER_ADJUSTED_QC</code> becomes available.</p>
+<p>The QC flags determined in delayed-mode replace those assigned in
+real-time because some bad data cannot be detected by the real-time
+tests, and some good data can be identified wrongly as bad by the
+real-time tests.</p>
+<p>For vertical profile data, delayed-mode operators examine them for
+pointwise errors (such as spikes and jumps) and flag them appropriately.
+If an error is identified, both <code>PARAM_QC</code> and
+<code>PARAM_ADJUSTED_QC</code> record ‘4’. Conversely, if good data have
+wrongly been identified as bad by the real-time tests, then
+<code>PARAM_QC</code> and <code>PARAM_ADJUSTED_QC</code> record ‘1’.</p>
+<p>In SD-files, the variables <code>PROFILE_PARAMETER_QC</code>,
+<code>PARAMETER_ADJUSTED</code>, <code>PARAMETER_ADJUSTED_QC</code>, and
+<code>PARAMETER_ADJUSTED_ERROR</code> are compulsory. If no adjustment
+in delayed-mode is necessary and if the flag is deemed assigned
+correctly, then <code>PARAM_ADJUSTED = PARAMETER</code>,
+<code>PARAM_ADJUSTED_QC = PARAM_QC</code>, and
+<code>PARAM_ADJUSTED_ERROR</code> is provided by the PI.</p>
+<p>If no delayed-mode adjustment was performed, then
+<code>PARAM_ADJUSTED = 99999.f</code>,
+<code>PARAM_ADJUSTED_QC = " "</code>,
+<code>PARAM_ADJUSTED_ERROR = 99999.f</code> and
+<code>PROFILE_PARAMETER_QC = " "</code>.</p>
+<p>If values are deemed unadjustable in delayed-mode, then
+<code>PARAM_ADJUSTED_QC = '4'</code>, and
+<code>PARAM_ADJUSTED = 99999.f</code> and
+<code>PARAM_ADJUSTED_ERROR = 99999.f</code>.</p>
+<p>The variable <code>PROFILE_PARAMETER_QC</code> is recomputed when
+<code>PARAMETER_ADJUSTED_QC</code> becomes available.</p>
 <p><strong>Dates</strong></p>
-<p>Delayed-mode operators check that the dates in the profile are in chronological order. Erroneous or missing dates are replaced with another telemetered value if available, or replaced with interpolated values and marked <code>DATE_QC = '8'</code>.</p>
+<p>Delayed-mode operators check that the dates in the profile are in
+chronological order. Erroneous or missing dates are replaced with
+another telemetered value if available, or replaced with interpolated
+values and marked <code>DATE_QC = '8'</code>.</p>
 <p><strong>Location</strong></p>
-<p>Profile positions <code>LONGITUDE</code>, <code>LATITUDE</code> are checked for outliers. Erroneous or missing dates are replaced with another telemetered value if available, or replaced with interpolated values and marked <code>POSITION_QC = '8'</code>.</p>
+<p>Profile positions <code>LONGITUDE</code>, <code>LATITUDE</code> are
+checked for outliers. Erroneous or missing dates are replaced with
+another telemetered value if available, or replaced with interpolated
+values and marked <code>POSITION_QC = '8'</code>.</p>
 <p><strong>Pressure, Temperature, Salinity</strong></p>
-<p>Delayed-mode quality control of <code>PRES</code> and <code>TEMP</code> is done by subjective assessment of vertical profile plots of <code>TEMP</code> vs <code>PRES</code> and <code>PSAL</code> vs <code>PRES</code> and <code>PRES</code> vs <code>TEMP</code> and <code>PSAL</code> vs <code>TEMP</code>. This assessment is done in relation to measurements from the same float, as well as in relation to nearby floats and historical data. This assessment aims to identify: (a) erroneous data points that cannot be detected by real-time QC tests, and (b) vertical profiles that have the wrong shape.</p>
-<p>Bad <code>PRES</code> data points identified by visual inspection from delayed-mode analysts are recorded with <code>PRES_ADJUSTED_QC = '4'</code> and <code>PRES_QC = '4'</code>. For these bad data points, <code>TEMP_ADJUSTED_QC</code>, <code>TEMP_QC</code>, <code>PSAL_ADJUSTED_QC</code>, and <code>PSAL_QC</code> are also set to ‘4’.</p>
-<p>Bad <code>TEMP</code> data points are recorded with <code>TEMP_ADJUSTED_QC = '4'</code> and <code>TEMP_QC = '4'</code>. <code>TEMP_ADJUSTED</code>, <code>TEMP_ADJUSTED_QC</code>, <code>TEMP_ADJUSTED_ERROR</code> are filled even when the data is good and no adjustment is needed. In these cases, <code>TEMP_ADJUSTED_ERROR</code> can be the manufacturer’s quoted accuracy at deployment, which is 0.002 ºC.</p>
-<p>Delayed-mode quality control of PSAL is done by checking for sensor offsets and drifts, as well as other instrument errors. Float salinity values that are considered adjustable in delayed-mode are compiled into time-series. Sufficiently long time-series are compared with statistical recommendations and uncertainties to check for sensor drift and offset.</p>
-<p>After assessing all available information, the PI records <code>PSAL_ADJUSTED</code>, <code>PSAL_ADJUSTED_QC</code>, and <code>PSAL_ADJUSTED_ERROR</code>. Salinity data considered bad and unadjustable in delayed-mode are given <code>PSAL_ADJUSTED_QC = '4'</code>, and <code>PSAL_ADJUSTED</code> and <code>PSAL_ADJUSTED_ERROR</code> are set to FillValue.</p>
+<p>Delayed-mode quality control of <code>PRES</code> and
+<code>TEMP</code> is done by subjective assessment of vertical profile
+plots of <code>TEMP</code> vs <code>PRES</code> and <code>PSAL</code> vs
+<code>PRES</code> and <code>PRES</code> vs <code>TEMP</code> and
+<code>PSAL</code> vs <code>TEMP</code>. This assessment is done in
+relation to measurements from the same float, as well as in relation to
+nearby floats and historical data. This assessment aims to identify: (a)
+erroneous data points that cannot be detected by real-time QC tests, and
+(b) vertical profiles that have the wrong shape.</p>
+<p>Bad <code>PRES</code> data points identified by visual inspection
+from delayed-mode analysts are recorded with
+<code>PRES_ADJUSTED_QC = '4'</code> and <code>PRES_QC = '4'</code>. For
+these bad data points, <code>TEMP_ADJUSTED_QC</code>,
+<code>TEMP_QC</code>, <code>PSAL_ADJUSTED_QC</code>, and
+<code>PSAL_QC</code> are also set to ‘4’.</p>
+<p>Bad <code>TEMP</code> data points are recorded with
+<code>TEMP_ADJUSTED_QC = '4'</code> and <code>TEMP_QC = '4'</code>.
+<code>TEMP_ADJUSTED</code>, <code>TEMP_ADJUSTED_QC</code>,
+<code>TEMP_ADJUSTED_ERROR</code> are filled even when the data is good
+and no adjustment is needed. In these cases,
+<code>TEMP_ADJUSTED_ERROR</code> can be the manufacturer’s quoted
+accuracy at deployment, which is 0.002 ºC.</p>
+<p>Delayed-mode quality control of PSAL is done by checking for sensor
+offsets and drifts, as well as other instrument errors. Float salinity
+values that are considered adjustable in delayed-mode are compiled into
+time-series. Sufficiently long time-series are compared with statistical
+recommendations and uncertainties to check for sensor drift and
+offset.</p>
+<p>After assessing all available information, the PI records
+<code>PSAL_ADJUSTED</code>, <code>PSAL_ADJUSTED_QC</code>, and
+<code>PSAL_ADJUSTED_ERROR</code>. Salinity data considered bad and
+unadjustable in delayed-mode are given
+<code>PSAL_ADJUSTED_QC = '4'</code>, and <code>PSAL_ADJUSTED</code> and
+<code>PSAL_ADJUSTED_ERROR</code> are set to FillValue.</p>
 <p><strong>Oxygen</strong></p>
-<p>Raw <code>DOXY</code> values are adjusted in delayed-mode to account for sensor drift and bias. The errors associated with this calibration are recorded in <code>DOXY_ADJUSTED_ERROR</code> in µmol kg<sup>-1</sup>.</p>
-<p>When <code>DOXY</code> for the whole profile is bad and cannot be adjusted, then <code>DOXY_ADJUSTED = 99999.f</code>, <code>DOXY_ADJUSTED_ERROR = 99999.f</code>, and <code>DOXY_ADJUSTED_QC = '4'</code>. The calibration information is recorded as <code>SCIENTIFIC_CALIB_EQUATION = 'none'</code>, <code>SCIENTIFIC_CALIB_EQUATION = 'none'</code>, and <code>SCIENTIFIC_CALIB_COMMENT = 'Bad data; not adjustable'</code>.</p>
+<p>Raw <code>DOXY</code> values are adjusted in delayed-mode to account
+for sensor drift and bias. The errors associated with this calibration
+are recorded in <code>DOXY_ADJUSTED_ERROR</code> in µmol
+kg<sup>-1</sup>.</p>
+<p>When <code>DOXY</code> for the whole profile is bad and cannot be
+adjusted, then <code>DOXY_ADJUSTED = 99999.f</code>,
+<code>DOXY_ADJUSTED_ERROR = 99999.f</code>, and
+<code>DOXY_ADJUSTED_QC = '4'</code>. The calibration information is
+recorded as <code>SCIENTIFIC_CALIB_EQUATION = 'none'</code>,
+<code>SCIENTIFIC_CALIB_EQUATION = 'none'</code>, and
+<code>SCIENTIFIC_CALIB_COMMENT = 'Bad data; not adjustable'</code>.</p>
 <p><strong>pH</strong></p>
-<p>The pH adjustment process depends on having an accurate model for pH below 1000 m, where temporal and spatial variability is minimal. pH values are adjusted using Multiple Linear Regression (MLR) methods, Linearly Interpolated Regression equations, and a neural network prediction system known as CANYON. The expected error in float pH measurements is derived from the uncertainty in the reference data as well as sensor uncertainties.</p>
-<p>The empirical algorithms used in the adjustment process for pH are:</p>
+<p>The pH adjustment process depends on having an accurate model for pH
+below 1000 m, where temporal and spatial variability is minimal. pH
+values are adjusted using Multiple Linear Regression (MLR) methods,
+Linearly Interpolated Regression equations, and a neural network
+prediction system known as CANYON. The expected error in float pH
+measurements is derived from the uncertainty in the reference data as
+well as sensor uncertainties.</p>
+<p>The empirical algorithms used in the adjustment process for pH
+are:</p>
 <p>the MLR method of Williams et al. (2016)</p>
 <p>the LIR method of Carter et al. (2018)</p>
 <p>the CANYON method of Sauzede et al. (2017)</p>
-<p>The method used for adjustment is recorded in <code>SCIENTIFIC_CALIB_EQUATION</code>, <code>SCIENTIFIC_CALIB_COEFFICIENT</code>, and <code>SCIENTIFIC_CALIB_COMMENT</code></p>
+<p>The method used for adjustment is recorded in
+<code>SCIENTIFIC_CALIB_EQUATION</code>,
+<code>SCIENTIFIC_CALIB_COEFFICIENT</code>, and
+<code>SCIENTIFIC_CALIB_COMMENT</code></p>
 <p><strong>Quality control manuals</strong></p>
-<p><em>CTD data quality control: <a href="https://archimer.ifremer.fr/doc/00228/33951/32470.pdf" class="uri">https://archimer.ifremer.fr/doc/00228/33951/32470.pdf</a> (<a href="http://dx.doi.org/10.13155/33951" class="uri">http://dx.doi.org/10.13155/33951</a></em><strong>)</strong></p>
-<p><em>Oxygen data quality control: <a href="https://archimer.ifremer.fr/doc/00354/46542/82301.pdf" class="uri">https://archimer.ifremer.fr/doc/00354/46542/82301.pdf</a> (<a href="http://dx.doi.org/10.13155/46542" class="uri">http://dx.doi.org/10.13155/46542</a></em>)</p>
-<p><em>pH data quality control: <a href="https://archimer.ifremer.fr/doc/00460/57195/61336.pdf" class="uri">https://archimer.ifremer.fr/doc/00460/57195/61336.pdf</a> (<a href="https://doi.org/10.13155/57195" class="uri">https://doi.org/10.13155/57195</a>)</em></p>
-<p><em>BGC data quality control: <a href="https://archimer.ifremer.fr/doc/00298/40879/42267.pdf" class="uri">https://archimer.ifremer.fr/doc/00298/40879/42267.pdf</a> (<a href="http://dx.doi.org/10.13155/40879" class="uri">http://dx.doi.org/10.13155/40879</a>)</em></p>
+<p><em>CTD data quality control: <a
+href="https://archimer.ifremer.fr/doc/00228/33951/32470.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00228/33951/32470.pdf</a>
+(<a href="http://dx.doi.org/10.13155/33951"
+class="uri">http://dx.doi.org/10.13155/33951</a></em><strong>)</strong></p>
+<p><em>Oxygen data quality control: <a
+href="https://archimer.ifremer.fr/doc/00354/46542/82301.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00354/46542/82301.pdf</a>
+(<a href="http://dx.doi.org/10.13155/46542"
+class="uri">http://dx.doi.org/10.13155/46542</a></em>)</p>
+<p><em>pH data quality control: <a
+href="https://archimer.ifremer.fr/doc/00460/57195/61336.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00460/57195/61336.pdf</a>
+(<a href="https://doi.org/10.13155/57195"
+class="uri">https://doi.org/10.13155/57195</a>)</em></p>
+<p><em>BGC data quality control: <a
+href="https://archimer.ifremer.fr/doc/00298/40879/42267.pdf"
+class="uri">https://archimer.ifremer.fr/doc/00298/40879/42267.pdf</a>
+(<a href="http://dx.doi.org/10.13155/40879"
+class="uri">http://dx.doi.org/10.13155/40879</a>)</em></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
-<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
 </button>
 </p>
 <div id="workflowr-sessioninfo" class="collapse">
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>R version 4.1.2 (2021-11-01)
+<pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.3
+Running under: openSUSE Leap 15.4
 
 Matrix products: default
-BLAS:   /usr/local/R-4.1.2/lib64/R/lib/libRblas.so
-LAPACK: /usr/local/R-4.1.2/lib64/R/lib/libRlapack.so
+BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.2.2/lib64/R/lib/libRlapack.so
 
 locale:
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
@@ -1633,34 +3116,42 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] ggOceanMaps_1.2.6 ggspatial_1.1.5   oce_1.5-0         gsw_1.0-6        
- [5] sf_1.0-5          lubridate_1.8.0   argodata_0.1.0    forcats_0.5.1    
- [9] stringr_1.4.0     dplyr_1.0.7       purrr_0.3.4       readr_2.1.1      
-[13] tidyr_1.1.4       tibble_3.1.6      ggplot2_3.3.5     tidyverse_1.3.1  
-[17] workflowr_1.7.0  
+ [1] ggOceanMaps_1.3.4 ggspatial_1.1.7   oce_1.7-10        gsw_1.1-1        
+ [5] sf_1.0-9          lubridate_1.9.0   timechange_0.1.1  argodata_0.1.0   
+ [9] forcats_0.5.2     stringr_1.4.1     dplyr_1.0.10      purrr_0.3.5      
+[13] readr_2.1.3       tidyr_1.2.1       tibble_3.1.8      ggplot2_3.4.0    
+[17] tidyverse_1.3.2  
 
 loaded via a namespace (and not attached):
- [1] fs_1.5.2           bit64_4.0.5        progress_1.2.2     httr_1.4.2        
- [5] rprojroot_2.0.2    tools_4.1.2        backports_1.4.1    bslib_0.3.1       
- [9] rgdal_1.5-28       utf8_1.2.2         R6_2.5.1           KernSmooth_2.23-20
-[13] rgeos_0.5-9        DBI_1.1.2          colorspace_2.0-2   raster_3.5-11     
-[17] withr_2.4.3        sp_1.4-6           prettyunits_1.1.1  tidyselect_1.1.1  
-[21] processx_3.5.2     bit_4.0.4          compiler_4.1.2     git2r_0.29.0      
-[25] cli_3.1.1          rvest_1.0.2        RNetCDF_2.5-2      xml2_1.3.3        
-[29] sass_0.4.0         scales_1.1.1       classInt_0.4-3     callr_3.7.0       
-[33] proxy_0.4-26       digest_0.6.29      rmarkdown_2.11     pkgconfig_2.0.3   
-[37] htmltools_0.5.2    dbplyr_2.1.1       fastmap_1.1.0      rlang_1.0.2       
-[41] readxl_1.3.1       rstudioapi_0.13    jquerylib_0.1.4    generics_0.1.1    
-[45] jsonlite_1.7.3     vroom_1.5.7        magrittr_2.0.1     Rcpp_1.0.8        
-[49] munsell_0.5.0      fansi_1.0.2        lifecycle_1.0.1    terra_1.5-12      
-[53] stringi_1.7.6      whisker_0.4        yaml_2.2.1         grid_4.1.2        
-[57] parallel_4.1.2     promises_1.2.0.1   crayon_1.4.2       lattice_0.20-45   
-[61] haven_2.4.3        hms_1.1.1          knitr_1.37         ps_1.6.0          
-[65] pillar_1.6.4       codetools_0.2-18   reprex_2.0.1       glue_1.6.0        
-[69] evaluate_0.14      getPass_0.2-2      modelr_0.1.8       vctrs_0.3.8       
-[73] tzdb_0.2.0         httpuv_1.6.5       cellranger_1.1.0   gtable_0.3.0      
-[77] assertthat_0.2.1   xfun_0.29          broom_0.7.11       e1071_1.7-9       
-[81] later_1.3.0        class_7.3-20       units_0.7-2        ellipsis_0.3.2    </code></pre>
+ [1] fs_1.5.2            bit64_4.0.5         progress_1.2.2     
+ [4] httr_1.4.4          rprojroot_2.0.3     tools_4.2.2        
+ [7] backports_1.4.1     bslib_0.4.1         utf8_1.2.2         
+[10] R6_2.5.1            KernSmooth_2.23-20  rgeos_0.5-9        
+[13] DBI_1.1.3           colorspace_2.0-3    raster_3.6-11      
+[16] withr_2.5.0         sp_1.5-1            prettyunits_1.1.1  
+[19] tidyselect_1.2.0    bit_4.0.5           compiler_4.2.2     
+[22] git2r_0.30.1        cli_3.4.1           rvest_1.0.3        
+[25] RNetCDF_2.6-1       xml2_1.3.3          labeling_0.4.2     
+[28] sass_0.4.4          scales_1.2.1        classInt_0.4-8     
+[31] proxy_0.4-27        digest_0.6.30       rmarkdown_2.18     
+[34] pkgconfig_2.0.3     htmltools_0.5.3     highr_0.9          
+[37] dbplyr_2.2.1        fastmap_1.1.0       rlang_1.1.1        
+[40] readxl_1.4.1        rstudioapi_0.14     farver_2.1.1       
+[43] jquerylib_0.1.4     generics_0.1.3      jsonlite_1.8.3     
+[46] vroom_1.6.0         googlesheets4_1.0.1 magrittr_2.0.3     
+[49] Rcpp_1.0.10         munsell_0.5.0       fansi_1.0.3        
+[52] lifecycle_1.0.3     terra_1.7-39        stringi_1.7.8      
+[55] whisker_0.4         yaml_2.3.6          grid_4.2.2         
+[58] parallel_4.2.2      promises_1.2.0.1    crayon_1.5.2       
+[61] lattice_0.20-45     haven_2.5.1         hms_1.1.2          
+[64] knitr_1.41          pillar_1.8.1        codetools_0.2-18   
+[67] reprex_2.0.2        glue_1.6.2          evaluate_0.18      
+[70] modelr_0.1.10       vctrs_0.5.1         tzdb_0.3.0         
+[73] httpuv_1.6.6        cellranger_1.1.0    gtable_0.3.1       
+[76] assertthat_0.2.1    cachem_1.0.6        xfun_0.35          
+[79] broom_1.0.1         e1071_1.7-12        later_1.3.0        
+[82] class_7.3-20        googledrive_2.0.0   gargle_1.2.1       
+[85] workflowr_1.7.0     units_0.8-0         ellipsis_0.3.2     </code></pre>
 </div>
 </div>
 </div>
