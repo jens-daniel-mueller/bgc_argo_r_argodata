@@ -91,7 +91,7 @@ OceanSODA <- OceanSODA %>%
 
 # argo pH data (flag A only)
 full_argo <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
+  read_rds(file = paste0(path_argo_preprocessed, "/X_bgc_merge_flag_AB.rds")) %>%
   select(-c(temp_adjusted:temp_adjusted_error,
             profile_temp_qc))
 
@@ -927,6 +927,12 @@ profile_extreme <- profile_extreme %>%
       between(month, 9, 11) ~ 'spring',
       month == 12 | 1 | 2 ~ 'summer'
     ),
+    season_order = case_when(
+      between(month, 3, 5) ~ 2,
+      between(month, 6, 8) ~ 3,
+      between(month, 9, 11) ~ 4,
+      month == 12 | 1 | 2 ~ 1
+    ),
     .after = date
   ) 
 
@@ -1067,11 +1073,22 @@ rm(profile_extreme_mean_jan)
 ```{r mean_profiles_season_biome, fig.asp=1}
 
 profile_extreme_biome <- profile_extreme %>% 
-  group_by(season, biome_name, ph_extreme, depth) %>% 
+  group_by(season_order, season, biome_name, ph_extreme, depth) %>% 
   summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
-  
+
+facet_label <- as_labeller(c("1"="summer", 
+                             "2"="autumn", 
+                             "3"="winter", 
+                             "4"="spring", 
+                             "ICE" = "ICE", 
+                             "SPSS" = "SPSS",
+                             "STSS" = "STSS",
+                             "Atlantic" = "Atlantic",
+                             "Indian" = "Indian",
+                             "Pacific" = "Pacific"
+                             ))
 
 profile_extreme_biome %>%
   ggplot(aes(
@@ -1096,7 +1113,7 @@ profile_extreme_biome %>%
        title = 'Biome-mean Argo profiles') +
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-  facet_grid(season ~ biome_name)
+  facet_grid(season_order ~ biome_name, labeller = facet_label)
 
 rm(profile_extreme_biome)
 ```
@@ -1106,14 +1123,14 @@ Number of profiles season x biome
 ```{r count_profiles_season_biome, fig.asp=1}
 
 profile_count_biome <- profile_extreme %>% 
-  distinct(season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
-  group_by(season, biome_name, ph_extreme) %>% 
+  distinct(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
+  group_by(season_order, season, biome_name, ph_extreme) %>% 
   count(ph_extreme)
 
 profile_count_biome %>% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season ~ biome_name)+
+  facet_grid(season_order ~ biome_name, labeller = facet_label)+
   scale_y_continuous(trans = 'log10')+
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x biome')
@@ -1127,7 +1144,7 @@ Surface Argo vs surface OceanSODA pH (20 m) season x biome
 
 surface_ph_biome <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
+  group_by(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
   summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
@@ -1144,7 +1161,7 @@ surface_ph_biome %>%
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
               ylim = c(7.94, 8.21))+
-  facet_grid(season~biome_name) +
+  facet_grid(season_order~biome_name, labeller = facet_label) +
     labs(title = paste( 'pH extreme:', unique(.x$ph_extreme)),
          x = 'OceanSODA pH',
          y = 'Argo pH')
@@ -1158,7 +1175,7 @@ rm(surface_ph_biome)
 ```{r mean_basin_profiles, fig.asp=1}
 
 profile_extreme_basin <- profile_extreme %>% 
-  group_by(season, basin_AIP, ph_extreme, depth) %>% 
+  group_by(season_order, season, basin_AIP, ph_extreme, depth) %>% 
   summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
@@ -1184,7 +1201,7 @@ profile_extreme_basin %>%
        title = 'Basin-mean Argo profiles')+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-  facet_grid(season~basin_AIP)
+  facet_grid(season_order~basin_AIP, labeller = facet_label)
 
 rm(profile_extreme_basin)
 ```
@@ -1194,14 +1211,14 @@ Number of profiles season x basin
 ```{r count_basin_profiles, fig.asp=1}
 
 profile_count_basin <- profile_extreme %>% 
-  distinct(season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
-  group_by(season, basin_AIP, ph_extreme) %>% 
+  distinct(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
+  group_by(season_order, season, basin_AIP, ph_extreme) %>% 
   count(ph_extreme)
 
 profile_count_basin %>% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_y_continuous(trans = 'log10')+
   labs(y = 'log(number of profiles)',
        title = 'Number of profiles season x basin')
@@ -1216,7 +1233,7 @@ Surface Argo vs surface OceanSODA pH (20 m) season x basin
 # calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_ph_basin <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
+  group_by(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
   summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
@@ -1233,7 +1250,7 @@ surface_ph_basin %>%
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
               ylim = c(7.94, 8.21))+
-  facet_grid(season~basin_AIP) +
+  facet_grid(season_order~basin_AIP, labeller = facet_label) +
     labs(title = paste('pH extreme:', unique(.x$ph_extreme)),
          x = 'OceanSODA pH',
          y = 'Argo pH')
@@ -1282,14 +1299,14 @@ rm(profile_extreme_biome_basin_jan)
 ```{r mean_profiles_season_biome_basin, fig.asp=1}
 
 profile_extreme_season <- profile_extreme %>%
-  group_by(season, biome_name, basin_AIP, ph_extreme, depth) %>%
+  group_by(season_order, season, biome_name, basin_AIP, ph_extreme, depth) %>%
   summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_season %>%
   arrange(depth) %>%
-  group_split(season) %>%
+  group_split(season_order) %>%
   # head(1) %>%
   map(
     ~ ggplot(
@@ -1329,15 +1346,15 @@ Number of profiles per season x biome x basin x pH extreme
 ```{r count_number_season_biome_basin_profiles, fig.asp=1}
 
 profile_count_season <- profile_extreme %>% 
-  distinct(season, biome_name, basin_AIP,
+  distinct(season_order, season, biome_name, basin_AIP,
            ph_extreme, platform_number, cycle_number) %>% 
-  group_by(season, biome_name, basin_AIP, ph_extreme) %>% 
+  group_by(season_order, season, biome_name, basin_AIP, ph_extreme) %>% 
   count(ph_extreme)
 
 
 profile_count_season %>% 
-  group_by(season) %>% 
-  group_split(season) %>% 
+  group_by(season_order) %>% 
+  group_split(season_order) %>% 
   map(
     ~ggplot()+
       geom_col(data =.x, 
@@ -1361,7 +1378,8 @@ Surface OceanSODA pH vs surface Argo pH (20 m)
 # calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
 surface_ph_season <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(season, 
+  group_by(season_order,
+           season, 
            basin_AIP, 
            biome_name, 
            ph_extreme, 
@@ -1371,8 +1389,8 @@ surface_ph_season <- profile_extreme %>%
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_season %>% 
-  group_by(season, ph_extreme) %>% 
-  group_split(season, ph_extreme) %>% 
+  group_by(season_order, ph_extreme) %>% 
+  group_split(season_order, ph_extreme) %>% 
   map(
   ~ggplot(data = .x, aes(x = surf_OceanSODA_ph, 
              y = surf_argo_ph))+
@@ -1466,7 +1484,7 @@ profile_extreme_season %>%
 profile_extreme_binned <- profile_extreme %>%
   group_by(lon, lat, year, month, platform_cycle,
            biome_name, basin_AIP, ph_extreme,
-           depth, season) %>%
+           depth, season, season_order) %>%
   summarise(ph_adjusted_binned = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
@@ -1631,14 +1649,36 @@ remove_clim_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_mean,
-                  aes(x = -0.075,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 7,
-                  segment.color = 'transparent')+
+  # geom_text_repel(data = profile_count_mean,
+  #                 aes(x = -0.075,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 7,
+  #                 segment.color = 'transparent')+
+  geom_text(data = profile_count_mean[2,],
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  geom_text(data = profile_count_mean[1,],
+          aes(x = -0.07,
+              y = 1400,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  geom_text(data = profile_count_mean[3,],
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = 'Overall Mean Anomaly Profiles')
+
+
 
 rm(remove_clim_overall_mean, profile_count_mean)
 
@@ -1650,7 +1690,7 @@ rm(remove_clim_overall_mean, profile_count_mean)
 ```{r biome_mean_broullon_anomaly, fig.asp=1}
 
 remove_clim_biome <- remove_clim %>% 
-  group_by(depth, ph_extreme, biome_name, season) %>% 
+  group_by(depth, ph_extreme, biome_name, season_order, season) %>% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
@@ -1670,16 +1710,36 @@ remove_clim_biome %>%
   geom_vline(xintercept = 0)+
   scale_y_continuous(trans = trans_reverser('sqrt'),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  facet_grid(season~biome_name)+
+  facet_grid(season_order~biome_name, labeller = facet_label)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_biome,
-                  aes(x = -0.085,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 4,
-                  segment.color = 'transparent')+
+  # geom_text_repel(data = profile_count_biome,
+  #                 aes(x = -0.085,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 4,
+  #                 segment.color = 'transparent')+
+  geom_text(data = profile_count_biome %>% filter (ph_extreme == 'N'),
+          aes(x = -0.07,
+              y = 800,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_biome %>% filter (ph_extreme == 'H'),
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_biome %>% filter (ph_extreme == 'L'),
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = 'Biome-mean anomaly profiles')
 
 rm(remove_clim_biome, profile_count_biome)
@@ -1690,7 +1750,7 @@ rm(remove_clim_biome, profile_count_biome)
 ```{r basin_mean_anomaly_profiles_broullon, fig.asp=1}
 
 remove_clim_basin <-  remove_clim %>% 
-  group_by(depth, ph_extreme, basin_AIP, season) %>% 
+  group_by(depth, ph_extreme, basin_AIP, season_order, season) %>% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
@@ -1710,16 +1770,36 @@ remove_clim_basin %>%
   scale_y_continuous(trans = trans_reverser('sqrt'),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   geom_vline(xintercept = 0)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_basin,
-                  aes(x = -0.1,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 4,
-                  segment.color = 'transparent')+
+  # geom_text_repel(data = profile_count_basin,
+  #                 aes(x = -0.1,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 4,
+  #                 segment.color = 'transparent')+
+  geom_text(data = profile_count_basin %>% filter (ph_extreme == 'N'),
+          aes(x = -0.07,
+              y = 800,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_basin %>% filter (ph_extreme == 'H'),
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_basin %>% filter (ph_extreme == 'L'),
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = 'Basin-mean anomaly profiles')
 
 rm(remove_clim_basin, profile_count_basin)
@@ -1730,13 +1810,13 @@ rm(remove_clim_basin, profile_count_basin)
 ```{r basin_biome_mean_broullon, fig.asp=1}
 
 remove_clim_basin_biome <- remove_clim %>% 
-  group_by(depth, ph_extreme, season, basin_AIP, biome_name) %>% 
+  group_by(depth, ph_extreme, season_order, season, basin_AIP, biome_name) %>% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm=TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_basin_biome %>% 
-  group_by(season) %>% 
-  group_split(season) %>% 
+  group_by(season_order) %>% 
+  group_split(season_order) %>% 
   map(
     ~ggplot()+
       geom_path(data = .x,
@@ -1758,6 +1838,26 @@ remove_clim_basin_biome %>%
       facet_grid(biome_name~basin_AIP)+
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
+      geom_text(data = profile_count_season %>% filter (ph_extreme == 'N' & season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 800,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      geom_text(data = profile_count_season %>% filter (ph_extreme == 'H' & season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 1200,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      geom_text(data = profile_count_season %>% filter (ph_extreme == 'L' & season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 1600,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      coord_cartesian(xlim = c(-0.08, 0.08))+
+      scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
       labs(title = paste0('basin-biome-mean profiles ', unique(.x$season)))
   )
 
