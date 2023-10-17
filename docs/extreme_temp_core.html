@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="Pasqualina Vonlanthen, David Stappard &amp; Jens Daniel Müller" />
 
 
 <title>Extreme Core-Temperature Profiles</title>
@@ -465,8 +465,9 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Extreme Core-Temperature Profiles</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">12 October, 2023</h4>
+<h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
+Daniel Müller</h4>
+<h4 class="date">17 October, 2023</h4>
 
 </div>
 
@@ -495,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-12
+<strong>Last updated:</strong> 2023-10-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -626,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec2185467cb7f46a7e632f1cee828d5ec586c85a9targetblankc218546a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c2185467cb7f46a7e632f1cee828d5ec586c85a9" target="_blank">c218546</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreec2185467cb7f46a7e632f1cee828d5ec586c85a9targetblankc218546a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -644,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/c2185467cb7f46a7e632f1cee828d5ec586c85a9" target="_blank">c218546</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -664,9 +665,11 @@ Ignored files:
     Ignored:    output/
 
 Unstaged changes:
-    Modified:   analysis/load_argo.Rmd
+    Modified:   analysis/argo_oxygen.Rmd
+    Modified:   analysis/argo_ph.Rmd
     Modified:   analysis/load_argo_core.Rmd
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_bgc_load.R
 
 </code></pre>
 <p>
@@ -712,6 +715,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c2185467cb7f46a7e632f1cee828d5ec586c85a9/analysis/extreme_temp_core.Rmd" target="_blank">c218546</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-17
+</td>
+<td>
+revised order of seasons
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/extreme_temp_core.html" target="_blank">4b55c43</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1619,13 +1656,13 @@ recorded in OceanSODA</p>
                     y = depth,
                     group = platform_cycle,
                     col = temp_extreme),
-                size = 0.3) +
+                linewidth = 0.3) +
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;H&#39; | temp_extreme == &#39;L&#39;),
                 aes(x = temp_adjusted,
                     y = depth,
                     group = platform_cycle,
                     col = temp_extreme),
-                size = 0.5)+
+                linewidth = 0.5)+
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -2028,13 +2065,13 @@ profile_temp_Atl_2017 %&gt;%
                 y = depth,
                 group = platform_cycle,
                 col = temp_extreme),
-            size = 0.3)+
+            linewidth = 0.3)+
   geom_path(data = profile_temp_Atl_2017 %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
             aes(x = temp_adjusted,
                 y = depth,
                 group = platform_cycle,
                 col = temp_extreme),
-            size = 0.5)+
+            linewidth = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
   labs(title = &#39;Atlantic, STSS biome, October 2017&#39;,
@@ -2117,6 +2154,12 @@ profile_temp_extreme &lt;- profile_temp_extreme %&gt;%
       between(month, 6, 8) ~ &#39;winter&#39;,
       between(month, 9, 11) ~ &#39;spring&#39;,
       month == 12 | 1 | 2 ~ &#39;summer&#39;
+    ),
+    season_order = case_when(
+      between(month, 3, 5) ~ 2,
+      between(month, 6, 8) ~ 3,
+      between(month, 9, 11) ~ 4,
+      month == 12 | 1 | 2 ~ 1
     ),
     .after = date
   )</code></pre>
@@ -2441,11 +2484,12 @@ pasqualina-vonlanthendinenna
 <div id="season-x-mayot-biome" class="section level3">
 <h3>Season x Mayot biome</h3>
 <pre class="r"><code>profile_temp_extreme_biome &lt;- profile_temp_extreme %&gt;% 
-  group_by(season, biome_name, temp_extreme, depth) %&gt;% 
+  group_by(season_order, biome_name, temp_extreme, depth) %&gt;% 
   summarise(temp_biome = mean(temp_adjusted, na.rm = TRUE),
             temp_std_biome = sd(temp_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
   
+facet_label &lt;- as_labeller(c(&quot;1&quot;=&quot;summer&quot;, &quot;2&quot;=&quot;autumn&quot;, &quot;3&quot;=&quot;winter&quot;, &quot;4&quot;=&quot;spring&quot;))
 
 profile_temp_extreme_biome %&gt;%
   ggplot(aes(
@@ -2470,7 +2514,7 @@ profile_temp_extreme_biome %&gt;%
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
   lims(x = c(-3, 18))+
-  facet_grid(season ~ biome_name)</code></pre>
+  facet_grid(season_order ~ biome_name, labeller = facet_label)</code></pre>
 <p><img src="figure/extreme_temp_core.Rmd/mean_temp_profiles_season_new_biomes-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mean_temp_profiles_season_new_biomes-1">
@@ -2523,14 +2567,14 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_temp_extreme_biome)</code></pre>
 <p>Number of profiles per season per Mayot biome</p>
 <pre class="r"><code>profile_temp_count_biome &lt;- profile_temp_extreme %&gt;% 
-  distinct(season, biome_name, temp_extreme, platform_number, cycle_number) %&gt;%
-  group_by(season, biome_name, temp_extreme) %&gt;% 
+  distinct(season_order, biome_name, temp_extreme, platform_number, cycle_number) %&gt;%
+  group_by(season_order, biome_name, temp_extreme) %&gt;% 
   count(temp_extreme)
 
 profile_temp_count_biome %&gt;% 
   ggplot(aes(x = temp_extreme, y = n, fill = temp_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season ~ biome_name)+
+  facet_grid(season_order ~ biome_name, labeller = facet_label)+
   scale_y_continuous(trans = &#39;log10&#39;)+
   labs(y = &#39;log(number of profiles)&#39;,
        title = &#39;Number of profiles season x Mayot biome&#39;)</code></pre>
@@ -2588,7 +2632,7 @@ pasqualina-vonlanthendinenna
 (20 m)</p>
 <pre class="r"><code>surface_temp_biome &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, biome_name, temp_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, biome_name, temp_extreme, platform_number, cycle_number) %&gt;% 
   summarise(argo_surf_temp = mean(temp_adjusted, na.rm=TRUE),
             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
 
@@ -2605,7 +2649,7 @@ surface_temp_biome %&gt;%
   coord_fixed(ratio = 1, 
               xlim = c(-3, 25),
               ylim = c(-3, 25))+
-  facet_grid(season~biome_name) +
+  facet_grid(season_order~biome_name, labeller = facet_label) +
     labs(title = paste( &#39;Temp extreme:&#39;, unique(.x$temp_extreme)),
          x = &#39;OceanSODA temp&#39;,
          y = &#39;Argo temp&#39;)
@@ -2767,7 +2811,7 @@ pasqualina-vonlanthendinenna
 <div id="season-x-basin" class="section level3">
 <h3>Season x basin</h3>
 <pre class="r"><code>profile_temp_extreme_basin &lt;- profile_temp_extreme %&gt;% 
-  group_by(season, basin_AIP, temp_extreme, depth) %&gt;% 
+  group_by(season_order, basin_AIP, temp_extreme, depth) %&gt;% 
   summarise(temp_basin = mean(temp_adjusted, na.rm = TRUE),
             temp_basin_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
@@ -2792,7 +2836,7 @@ profile_temp_extreme_basin %&gt;%
        x = &#39;basin-mean Argo temperature (ªC)&#39;)+
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-  facet_grid(season~basin_AIP)</code></pre>
+  facet_grid(season_order~basin_AIP, labeller = facet_label)</code></pre>
 <p><img src="figure/extreme_temp_core.Rmd/mean_basin_temp_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mean_basin_temp_profiles-1">
@@ -2845,14 +2889,14 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_temp_extreme_basin)</code></pre>
 <p>Number of profiles season x basin</p>
 <pre class="r"><code>profile_temp_count_basin &lt;- profile_temp_extreme %&gt;% 
-  distinct(season, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
-  group_by(season, basin_AIP, temp_extreme) %&gt;% 
+  distinct(season_order, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, basin_AIP, temp_extreme) %&gt;% 
   count(temp_extreme)
 
 profile_temp_count_basin %&gt;% 
   ggplot(aes(x = temp_extreme, y = n, fill = temp_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_y_continuous(trans = &#39;log10&#39;)+
   labs(y = &#39;log(number of profiles)&#39;,
        title = &#39;Number of profiles season x basin&#39;)</code></pre>
@@ -2911,7 +2955,7 @@ season x basin</p>
 <pre class="r"><code># calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_temp_basin &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
   summarise(surf_argo_temp = mean(temp_adjusted, na.rm=TRUE),
             surf_OceanSODA_temp = mean(OceanSODA_temp, na.rm = TRUE)) 
 
@@ -2928,7 +2972,7 @@ surface_temp_basin %&gt;%
   coord_fixed(ratio = 1, 
               xlim = c(-3, 25),
               ylim = c(-3, 25))+
-  facet_grid(season~basin_AIP) +
+  facet_grid(season_order~basin_AIP, labeller = facet_label) +
     labs(title = paste(&#39;Temp extreme:&#39;, unique(.x$temp_extreme)),
          x = &#39;OceanSODA temp&#39;,
          y = &#39;Argo temp&#39;)
@@ -3090,14 +3134,14 @@ pasqualina-vonlanthendinenna
 <div id="season-x-mayot-biome-x-basin" class="section level3">
 <h3>Season x Mayot biome x Basin</h3>
 <pre class="r"><code>profile_temp_extreme_season &lt;- profile_temp_extreme %&gt;%
-  group_by(season, biome_name, basin_AIP, temp_extreme, depth) %&gt;%
+  group_by(season_order, season, biome_name, basin_AIP, temp_extreme, depth) %&gt;%
   summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
             temp_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_temp_extreme_season %&gt;%
   arrange(depth) %&gt;%
-  group_split(season) %&gt;%
+  group_split(season_order) %&gt;%
   # head(1) %&gt;%
   map(
     ~ ggplot(
@@ -3298,15 +3342,15 @@ ds2n19
 </div>
 <p>Number of profiles season x Mayot biome x basin</p>
 <pre class="r"><code>profile_temp_count_season &lt;- profile_temp_extreme %&gt;% 
-  distinct(season, biome_name, basin_AIP,
+  distinct(season_order, season, biome_name, basin_AIP,
            temp_extreme, platform_number, cycle_number) %&gt;% 
-  group_by(season, biome_name, basin_AIP, temp_extreme) %&gt;% 
+  group_by(season_order, season, biome_name, basin_AIP, temp_extreme) %&gt;% 
   count(temp_extreme)
 
 
 profile_temp_count_season %&gt;% 
-  group_by(season) %&gt;% 
-  group_split(season) %&gt;% 
+  group_by(season_order) %&gt;% 
+  group_split(season_order) %&gt;% 
   map(
     ~ggplot()+
       geom_col(data =.x, 
@@ -3499,7 +3543,8 @@ in each season, Mayot biome, basin</p>
 <pre class="r"><code># calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
 surface_temp_season &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, 
+  group_by(season_order,
+           season, 
            basin_AIP, 
            biome_name, 
            temp_extreme,  
@@ -3509,8 +3554,8 @@ surface_temp_season &lt;- profile_temp_extreme %&gt;%
             surf_OceanSODA_temp = mean(OceanSODA_temp, na.rm = TRUE)) 
 
 surface_temp_season %&gt;% 
-  group_by(season, temp_extreme) %&gt;% 
-  group_split(season, temp_extreme) %&gt;% 
+  group_by(season_order, temp_extreme) %&gt;% 
+  group_split(season_order, temp_extreme) %&gt;% 
   map(
   ~ggplot(data = .x, aes(x = surf_OceanSODA_temp, 
              y = surf_argo_temp))+
@@ -4627,7 +4672,11 @@ remove_clim &lt;- remove_clim %&gt;%
          season = case_when(between(month, 3, 5) ~ &#39;autumn&#39;,
                             between(month, 6, 8) ~ &#39;winter&#39;,
                             between(month, 9, 11) ~ &#39;spring&#39;,
-                            month == 12 | 1 | 2 ~ &#39;summer&#39;))</code></pre>
+                            month == 12 | 1 | 2 ~ &#39;summer&#39;),
+         season_order = case_when(between(month, 3, 5) ~ 2,
+                            between(month, 6, 8) ~ 3,
+                            between(month, 9, 11) ~ 4,
+                            month == 12 | 1 | 2 ~ 1))</code></pre>
 </div>
 <div id="anomaly" class="section level3">
 <h3>Anomaly</h3>
@@ -5246,7 +5295,7 @@ pasqualina-vonlanthendinenna
 <div id="biome-x-season-mean-anomaly" class="section level3">
 <h3>Biome x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_biome_mean &lt;- remove_clim %&gt;% 
-  group_by(temp_extreme, depth, season, biome_name) %&gt;% 
+  group_by(temp_extreme, depth, season_order, season, biome_name) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
@@ -5275,7 +5324,7 @@ remove_clim_biome_mean %&gt;%
                       col = temp_extreme),
                   size = 4,
                   segment.color = &#39;transparent&#39;)+
-  facet_grid(season~biome_name)</code></pre>
+  facet_grid(season_order~biome_name, labeller = facet_label)</code></pre>
 <p><img src="figure/extreme_temp_core.Rmd/plot_biome_mean_clim_removed_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_biome_mean_clim_removed_profiles-1">
@@ -5330,7 +5379,7 @@ pasqualina-vonlanthendinenna
 <div id="basin-x-season-mean-anomaly" class="section level3">
 <h3>Basin x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_basin_mean &lt;- remove_clim %&gt;% 
-  group_by(basin_AIP, temp_extreme, depth, season) %&gt;% 
+  group_by(basin_AIP, temp_extreme, depth, season_order, season) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
@@ -5347,7 +5396,7 @@ remove_clim_basin_mean %&gt;%
               col = NA,
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season~basin_AIP, labeller = facet_label)+
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
@@ -5414,13 +5463,13 @@ pasqualina-vonlanthendinenna
 <div id="basin-x-biome-x-season-mean-anomaly" class="section level3">
 <h3>Basin x biome x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_basin_biome_mean &lt;- remove_clim %&gt;% 
-  group_by(basin_AIP, biome_name, temp_extreme, season, depth) %&gt;% 
+  group_by(basin_AIP, biome_name, temp_extreme, season_order, season, depth) %&gt;% 
   summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
             temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
 
 remove_clim_basin_biome_mean %&gt;% 
-  group_by(season) %&gt;% 
-  group_split(season) %&gt;% 
+  group_by(season_order) %&gt;% 
+  group_split(season_order) %&gt;% 
   map(
     ~ggplot(data = .x, 
             aes(x = temp_anomaly_mean,
