@@ -467,7 +467,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">16 October, 2023</h4>
+<h4 class="date">17 October, 2023</h4>
 
 </div>
 
@@ -496,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-16
+<strong>Last updated:</strong> 2023-10-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82d027d42dcf74fb4aca12113bb612baad1a2722targetblank82d027da">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeed8e997471a36ccc07a26310a667b6273a1d3acftargetblanked8e997a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82d027d42dcf74fb4aca12113bb612baad1a2722" target="_blank">82d027d</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ed8e997471a36ccc07a26310a667b6273a1d3acf" target="_blank">ed8e997</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree82d027d42dcf74fb4aca12113bb612baad1a2722targetblank82d027da"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeed8e997471a36ccc07a26310a667b6273a1d3acftargetblanked8e997a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/82d027d42dcf74fb4aca12113bb612baad1a2722" target="_blank">82d027d</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/ed8e997471a36ccc07a26310a667b6273a1d3acf" target="_blank">ed8e997</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -715,6 +715,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/ed8e997471a36ccc07a26310a667b6273a1d3acf/analysis/load_argo.Rmd" target="_blank">ed8e997</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-17
+</td>
+<td>
+Revised version of BGC load to match core load process
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/0ee3427d316a537386be98d1fa27a78edab896e4/docs/load_argo.html" target="_blank">0ee3427</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -881,8 +915,9 @@ manual commit
 <div id="set-load-options" class="section level2">
 <h2>Set load options</h2>
 <p>Determine if files are refreshed from dac or cache directory is used.
-Are metadata, temperature and salinity year files renewed? Are the
-consolidated all year files created from the individual year files?</p>
+Are metadata, temperature, salinity and BGC property year files renewed?
+Are the consolidated all year files created from the individual year
+files?</p>
 <pre class="r"><code># opt_refresh_cache
 #   FALSE = do not refresh cache.
 #   TRUE  = refresh cache. (any none zero value will force a refresh)
@@ -970,11 +1005,13 @@ the cached files or force a refresh from dac (long process)</p>
   }
 }</code></pre>
 </div>
-<div id="load-index-files" class="section level2">
-<h2>Load index files</h2>
-<p>Load in the synthetic (merged core and bgc) index files (uses the
-data stored on the ifremer server by default), keeping only delayed-mode
-data.</p>
+<div id="load-by-year" class="section level2">
+<h2>Load by year</h2>
+<p>Builds yearly files for temperature, salinity, BGC properties and
+metadata that can be consolidated in the next code chunk
+(consolidate_into_allyears). Load in the synthetic (merged core and bgc)
+index files (uses the data stored on the ifremer server by default),
+keeping only delayed-mode data.</p>
 <div id="file-types" class="section level3">
 <h3>File Types</h3>
 <p>A core-Argo profile contains the CTD sensor parameters (pressure,
@@ -1031,12 +1068,6 @@ class="uri">https://archimer.ifremer.fr/doc/00445/55637/80863.pdf</a></em></p>
 <p><em>Argo User Manual: <a
 href="https://archimer.ifremer.fr/doc/00187/29825/86414.pdf"
 class="uri">https://archimer.ifremer.fr/doc/00187/29825/86414.pdf</a></em></p>
-</div>
-</div>
-<div id="load-by-year" class="section level2">
-<h2>Load by year</h2>
-<p>Builds yearly files for temperature, salinity and metadata that can
-be consolidated in the next code chunk (consolidate_into_allyears)</p>
 <pre class="r"><code>#------------------------------------------------------------------------------
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
@@ -1408,6 +1439,7 @@ if (!opt_qc_only) {
   rm(bgc_measure_summary)
 }</code></pre>
 </div>
+</div>
 <div id="consolidate-years" class="section level2">
 <h2>Consolidate years</h2>
 <p>This process create six files in the path_argo_preprocessed directory
@@ -1464,19 +1496,19 @@ ph_in_situ_total_adjusted_error - recorded and adjusted (after qc proccess) pH</
 </div>
 <div id="core_metadata.rds" class="section level3">
 <h3>core_metadata.rds</h3>
-<p>Contains 1 row per profile. Fields listed below file - the source
-file date - date of profile lat - aligned to closest 0.5° lat lon -
-aligned to closest 0.5° lon platform_number - identifier of float
-cycle_number - the profile number for the given float position_qc - qc
-flag associated with the positioning of the float profile
-profile_pres_qc - qc flag associated with the pressure readings of the
-profile (A-F) profile_temp_qc - qc flag associated with the temperature
-readings of the profile (A-F) profile_psal_qc - qc flag associated with
-the salinity readings of the profile (A-F) profile_doxy_qc - qc flag
-associated with the oxygen readings of the profile (A-F)
-profile_nitrate_qc - qc flag associated with the nitrate readings of the
-profile (A-F) profile_ph_in_situ_total_qc - qc flag associated with the
-pH readings of the profile (A-F)</p>
+<pre><code>file - the source file
+date - date of profile
+lat - aligned to closest 0.5° lat
+lon - aligned to closest 0.5° lon
+platform_number - identifier of float
+cycle_number - the profile number for the given float
+position_qc - qc flag associated with the positioning of the float profile
+profile_pres_qc - qc flag associated with the pressure readings of the profile (A-F)
+profile_temp_qc - qc flag associated with the temperature readings of the profile (A-F)
+profile_psal_qc - qc flag associated with the salinity readings of the profile (A-F)
+profile_doxy_qc - qc flag associated with the oxygen readings of the profile (A-F)
+profile_nitrate_qc - qc flag associated with the nitrate readings of the profile (A-F)
+profile_ph_in_situ_total_qc - qc flag associated with the pH readings of the profile (A-F)</code></pre>
 <pre class="r"><code>if (!opt_qc_only) {
 
   # ------------------------------------------------------------------------------
@@ -1672,34 +1704,8 @@ pH readings of the profile (A-F)</p>
   }
 }</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  4084053 218.2    9393312  501.7    9393312   501.7
-Vcells 93698590 714.9  880328596 6716.4 2722495404 20771.0</code></pre>
-<pre class="r"><code># bgc_index &lt;- argo_global_synthetic_prof() %&gt;%
-#   argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;%  # load in delayed-mode data
-#   argo_filter_date(date_min = &#39;2013-01-01&#39;,
-#                    date_max = Sys.time())  
-
-# check the dates 
-# max(bgc_subset$date, na.rm = TRUE)
-# min(bgc_subset$date, na.rm = TRUE)
-
-# checking alternative functions
-# argo_global_meta(download = NULL, quiet = FALSE)
-
-# argo_global_prof(download = NULL, quiet = FALSE)
-# laods in core-argo files (CTD data)
-
-# argo_global_tech(download = NULL, quiet = FALSE)
-# An argo technical file contains technical information from an Argo float. This information is registered for each cycle performed by the float. 
-
-# argo_global_traj(download = NULL, quiet = FALSE)
-# argo_global_bio_traj(download = NULL, quiet = FALSE)
-# load the trajectory files, which contain all received Argos and GPS locations of Argo floats. A trajectory file often contains core and BGC measurements performed at various intermediate times during the cycle and outside the vertical profiles. The full profiles collected upon ascent are not included and are stored in the profile files. 
-
-# argo_global_bio_prof(download = NULL, quiet = FALSE)
-# A B-Argo profile file contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a B-Argo file
-
-# argo_global_synthetic_prof(download = NULL, quiet = FALSE)</code></pre>
+Ncells  4084066 218.2    9394308  501.8    9394308   501.8
+Vcells 93698757 714.9  754198278 5754.1 2371171133 18090.7</code></pre>
 </div>
 </div>
 <div id="read-data" class="section level2">
@@ -1707,84 +1713,14 @@ Vcells 93698590 714.9  880328596 6716.4 2722495404 20771.0</code></pre>
 <p>Read in the adjusted bgc and core variables corresponding to the
 index files downloaded above, with their quality control flags. (can
 take a while)</p>
-<pre class="r"><code># bgc_data &lt;- argo_prof_levels(
-#   path = bgc_index,
-#   vars =
-#     c(
-#       &#39;PRES_ADJUSTED&#39;,
-#       &#39;PRES_ADJUSTED_QC&#39;,
-#       &#39;PRES_ADJUSTED_ERROR&#39;,
-#       &#39;PSAL_ADJUSTED&#39;,
-#       &#39;PSAL_ADJUSTED_QC&#39;,
-#       &#39;PSAL_ADJUSTED_ERROR&#39;,
-#       &#39;TEMP_ADJUSTED&#39;,
-#       &#39;TEMP_ADJUSTED_QC&#39;,
-#       &#39;TEMP_ADJUSTED_ERROR&#39;,
-#       &#39;DOXY_ADJUSTED&#39;,
-#       &#39;DOXY_ADJUSTED_QC&#39;,
-#       &#39;DOXY_ADJUSTED_ERROR&#39;,
-#       &#39;NITRATE_ADJUSTED&#39;,
-#       &#39;NITRATE_ADJUSTED_QC&#39;,
-#       &#39;NITRATE_ADJUSTED_ERROR&#39;,
-#       &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
-#       &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
-#       &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
-#     ),
-#   quiet = TRUE
-# ) 
-# # read in the profiles (takes a while)</code></pre>
-<p>The data is read in from the cached files stored in the path
-specified in <code>set_argo_cache_dir()</code> (in this case,
-/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo). To download
-data directly from the files stored on the ifremer server, set
-<code>max_global_cache_age</code> and <code>max_data_cache_age</code> to
-<code>-Inf</code>, which will force a new download.</p>
 </div>
 <div id="read-meta-data" class="section level2">
 <h2>Read meta data</h2>
 <p>Read in the corresponding metadata:</p>
-<pre class="r"><code># bgc_metadata &lt;- argo_prof_prof(path = bgc_index)</code></pre>
-<pre class="r"><code># bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
-# ?????
-# returns blank output (0 observations of 0 variables)
-# the same occurs if HISTORY_PARAMETER, HISTORY_ACTION, and HISTORY_QCTEST are added into the vars argument when loading the data 
-# HISTORY_ACTION : Name of the action (either &#39;QCP$&#39; for QC test performed, or &#39;QCF$&#39; for QC test failed)
-# HISTORY_PARAMETER : name of the parameter on which the action is performed 
-# HISTORY_QCTEST : this field records the code of the QC test performed when ACTION is &#39;QCP$&#39; or the QC test failed when ACTION is &#39;QCF$&#39;
-
-# bgc_calibration &lt;- argo_prof_calib(path = bgc_subset, quiet = TRUE)
-# contains the variables: 
-# PARAMETER: name of the calibrated parameter(s) 
-# SCIENTIFIC_CALIB_EQUATION : calibration equation applied to the parameter (if no adjustment is necessary or the data is not adjustable, this field records &#39;none&#39;)
-# SCIENTIFIC_CALIB_COEFFICIENT : calibration coefficients for this equation (if no adjustment is necessary or the data is not adjustable, this field records &#39;none&#39;)
-# SCIENTIFIC_CALIB_COMMENT : comment about this calibration
-# if the delayed-mode adjusted value is the same as the raw value (CTD data) the comment records &#39;no adjustment necessary&#39;; if the delayed-mode adjusted value has a QC flag of &#39;4&#39;, the comment records &#39;bad data; not adjustable&#39;. 
-# SCIENTIFIC_CALIB_DATE : date when the calibration was performed</code></pre>
 </div>
 <div id="join-data" class="section level2">
 <h2>Join data</h2>
 <p>Join the metadata and data together into one dataset</p>
-<pre class="r"><code># bgc_merge &lt;- full_join(bgc_data, bgc_metadata)
-# 
-# bgc_merge &lt;- bgc_merge %&gt;%
-#   select(
-#     -c(profile_chla_qc:profile_cdom_qc),
-#     -c(profile_cndc_qc:profile_up_radiance555_qc)
-#   ) %&gt;%
-#   rename(lon = longitude,
-#          lat = latitude) %&gt;%
-#   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-#   mutate(
-#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-#     lat = as.numeric(as.character(lat)),
-#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-#     lon = as.numeric(as.character(lon))
-#   ) %&gt;%
-#   mutate(depth = swDepth(pres_adjusted, latitude =  lat),
-#          .before = pres_adjusted)
-
-
-# bgc_merge_test &lt;- full_join(bgc_data, bgc_calibration) (not sure why but it crashes R every time)</code></pre>
 </div>
 <div id="prepare-for-analysis" class="section level2">
 <h2>Prepare for analysis</h2>
@@ -1797,22 +1733,22 @@ data in the top 20 m of the watercolumn with QC flag 1</p>
 <h3>Temperature data</h3>
 <p>All temperature data from BGC floats with QC flag 1</p>
 </div>
-<div id="qc-flag-a-and-b-temperature-data" class="section level3">
-<h3>QC flag A and B temperature data</h3>
+<div id="temperature-ab" class="section level3">
+<h3>Temperature AB</h3>
 <p>BGC-temperature data with QC flags A and B, irrespective of whether a
 corresponding pH measurement exists</p>
 </div>
-<div id="qc-flag-a-and-b-ph-temperature-data" class="section level3">
-<h3>QC flag A and B pH &amp; temperature data</h3>
+<div id="ph-temperature-ab" class="section level3">
+<h3>pH &amp; temperature AB</h3>
 <p>pH and temperature data from floats where both variables have full
 profiles with QC flag A or B</p>
 </div>
-<div id="qc-flag-1-ph-temperature-data" class="section level3">
-<h3>QC flag 1 pH &amp; temperature data</h3>
+<div id="ph-temperature-data" class="section level3">
+<h3>pH &amp; temperature data</h3>
 <p>pH and temperature data where both variables have QC flags 1</p>
 </div>
-<div id="write-argo-data-to-files" class="section level3">
-<h3>Write Argo data to files</h3>
+<div id="write-files" class="section level3">
+<h3>Write files</h3>
 <p>write the files for later analysis</p>
 <pre class="r"><code>if (!opt_qc_only) {
 
@@ -2158,6 +2094,43 @@ bgc_profile_summary %&gt;%
                col = &#39;profile QC flag&#39;,
                title = &#39;Count of profile qc flags by year&#39;)</code></pre>
 <p><img src="figure/load_argo.Rmd/QC_summary_profile-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary_profile-1">
+Past versions of QC_summary_profile-1.png
+</button>
+</p>
+<div id="fig-QC_summary_profile-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/0ee3427d316a537386be98d1fa27a78edab896e4/docs/figure/load_argo.Rmd/QC_summary_profile-1.png" target="_blank">0ee3427</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="measurement-qc-flags-1-9" class="section level3">
 <h3>measurement QC flags (1-9)</h3>
@@ -2183,71 +2156,50 @@ bgc_measure_summary %&gt;%
                col = &#39;measure QC flag&#39;,
                title = &#39;Count of measure qc flags by year&#39;)</code></pre>
 <p><img src="figure/load_argo.Rmd/QC_summary_measure-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-QC_summary_measure-1">
+Past versions of QC_summary_measure-1.png
+</button>
+</p>
+<div id="fig-QC_summary_measure-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/0ee3427d316a537386be98d1fa27a78edab896e4/docs/figure/load_argo.Rmd/QC_summary_measure-1.png" target="_blank">0ee3427</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="harmonise-metadata" class="section level2">
 <h2>Harmonise metadata</h2>
-<pre class="r"><code># bgc_metadata &lt;- bgc_metadata %&gt;%
-#   rename(lon = longitude,
-#          lat = latitude) %&gt;%
-#   mutate(lon = if_else(lon &lt; 20, lon + 360, lon)) %&gt;%
-#   mutate(
-#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-#     lat = as.numeric(as.character(lat)),
-#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-#     lon = as.numeric(as.character(lon))
-#   ) %&gt;% 
-#   select(
-#     -c(profile_chla_qc:profile_cdom_qc),
-#     -c(profile_cndc_qc:profile_up_radiance555_qc)
-#   )</code></pre>
 </div>
-<div id="write-argo-data-to-files-1" class="section level2">
+<div id="write-argo-data-to-files" class="section level2">
 <h2>Write Argo data to files</h2>
-<pre class="r"><code># bgc_index %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_index.rds&quot;))
-# 
-# # bgc_calibration %&gt;%
-# #  write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_calibration.rds&quot;))
-# 
-# bgc_data %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_data.rds&quot;))
-# 
-# bgc_merge %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
-# 
-# 
-# bgc_merge_pH_qc_1 %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_pH_qc_1.rds&quot;))
-# 
-# 
-# bgc_merge_temp_qc_1 %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_qc_1.rds&quot;))
-# 
-# bgc_merge_temp_AB %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
-# 
-# 
-# bgc_merge_flag_AB %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
-# 
-# # bgc_merge_flag_A_test %&gt;%
-# #   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_A_test.rds&quot;))
-# 
-# bgc_merge_qc_1 %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_qc_1.rds&quot;))
-# 
-# ph_merge_1x1 %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_merge_1x1.rds&quot;))
-# 
-# bgc_metadata %&gt;%
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
-# 
-# ph_surface_1x1 %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
-# 
-# ph_surface_2x2 %&gt;% 
-#   write_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_2x2.rds&quot;))</code></pre>
 </div>
 </div>
 <div id="data-set-description" class="section level1">
