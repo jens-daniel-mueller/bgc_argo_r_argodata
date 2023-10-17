@@ -44,7 +44,7 @@ path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 ## Set load options
 
 Determine if files are refreshed from dac or cache directory is used. 
-Are metadata, temperature and salinity year files renewed?
+Are metadata, temperature, salinity and BGC property year files renewed?
 Are the consolidated all year files created from the individual year files?
 
 ```{r set_load_options}
@@ -143,9 +143,9 @@ if (!opt_qc_only) {
 
 ```
 
-## Load index files
+## Load by year
 
-Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.
+Builds yearly files for temperature, salinity, BGC properties and metadata that can be consolidated in the next code chunk (consolidate_into_allyears). Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.
 
 ### File Types
 
@@ -169,9 +169,6 @@ Delayed-mode BGC data may be available as early as 5-6 cycles after initial data
 
 *Argo User Manual: <https://archimer.ifremer.fr/doc/00187/29825/86414.pdf>*
 
-## Load by year
-
-Builds yearly files for temperature, salinity and metadata that can be consolidated in the next code chunk (consolidate_into_allyears)
 
 ```{r load_core_by_year}
 #------------------------------------------------------------------------------
@@ -602,7 +599,6 @@ This process create six files in the path_argo_preprocessed directory that will 
 
 ### core_metadata.rds
 
-Contains 1 row per profile. Fields listed below
     file - the source file
     date - date of profile
     lat - aligned to closest 0.5° lat
@@ -616,9 +612,6 @@ Contains 1 row per profile. Fields listed below
     profile_doxy_qc - qc flag associated with the oxygen readings of the profile (A-F)
     profile_nitrate_qc - qc flag associated with the nitrate readings of the profile (A-F)
     profile_ph_in_situ_total_qc - qc flag associated with the pH readings of the profile (A-F)
-
-
-
 
 ```{r consolidate_into_allyears}
 if (!opt_qc_only) {
@@ -833,7 +826,7 @@ if (!opt_qc_only) {
 
 
 
-```{r load_indeces}
+```{r load_indeces, include=FALSE}
 # bgc_index <- argo_global_synthetic_prof() %>%
 #   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
 #   argo_filter_date(date_min = '2013-01-01',
@@ -867,7 +860,7 @@ if (!opt_qc_only) {
 
 Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)
 
-```{r load_data_and_harmonize_variables}
+```{r load_data_and_harmonize_variables, include=FALSE}
 
 # bgc_data <- argo_prof_levels(
 #   path = bgc_index,
@@ -899,19 +892,17 @@ Read in the adjusted bgc and core variables corresponding to the index files dow
   
 ```
 
-The data is read in from the cached files stored in the path specified in `set_argo_cache_dir()` (in this case, `r path_argo`). To download data directly from the files stored on the ifremer server, set `max_global_cache_age` and `max_data_cache_age` to `-Inf`, which will force a new download.
-
 ## Read meta data
 
 Read in the corresponding metadata:
 
-```{r load_metadata}
+```{r load_metadata, include=FALSE}
 
 # bgc_metadata <- argo_prof_prof(path = bgc_index)
 
 ```
 
-```{r load_calibration_information}
+```{r load_calibration_information, include=FALSE}
 
 # bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
 # ?????
@@ -936,7 +927,7 @@ Read in the corresponding metadata:
 
 Join the metadata and data together into one dataset
 
-```{r create_dataset}
+```{r create_dataset, include=FALSE}
 
 # bgc_merge <- full_join(bgc_data, bgc_metadata)
 # 
@@ -974,19 +965,19 @@ ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1
 
 All temperature data from BGC floats with QC flag 1 
 
-### QC flag A and B temperature data
+### Temperature AB
 
 BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
 
-### QC flag A and B pH & temperature data 
+### pH & temperature AB
 
 pH and temperature data from floats where both variables have full profiles with QC flag A or B
 
-### QC flag 1 pH & temperature data
+### pH & temperature data
 
 pH and temperature data where both variables have QC flags 1 
 
-### Write Argo data to files 
+### Write files 
 
 write the files for later analysis
 
@@ -1395,7 +1386,7 @@ bgc_measure_summary %>%
 
 ## Harmonise metadata 
 
-```{r harmonise_metadata_variables}
+```{r harmonise_metadata_variables, include=FALSE}
 
 # bgc_metadata <- bgc_metadata %>%
 #   rename(lon = longitude,
@@ -1416,7 +1407,7 @@ bgc_measure_summary %>%
 
 ## Write Argo data to files 
 
-```{r write_argo_data_files}
+```{r write_argo_data_files, include=FALSE}
 
 # bgc_index %>%
 #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
