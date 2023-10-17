@@ -429,7 +429,17 @@ profile_temp_extreme_biome <- profile_temp_extreme %>%
             temp_std_biome = sd(temp_adjusted, na.rm = TRUE)) %>% 
   ungroup()
   
-facet_label <- as_labeller(c("1"="summer", "2"="autumn", "3"="winter", "4"="spring"))
+facet_label <- as_labeller(c("1"="summer", 
+                             "2"="autumn", 
+                             "3"="winter", 
+                             "4"="spring", 
+                             "ICE" = "ICE", 
+                             "SPSS" = "SPSS",
+                             "STSS" = "STSS",
+                             "Atlantic" = "Atlantic",
+                             "Indian" = "Indian",
+                             "Pacific" = "Pacific"
+                             ))
 
 profile_temp_extreme_biome %>%
   ggplot(aes(
@@ -1052,7 +1062,7 @@ remove_clim_basin_mean %>%
               col = NA,
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  facet_grid(season~basin_AIP, labeller = facet_label)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_y_continuous(trans = trans_reverser("sqrt"),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
