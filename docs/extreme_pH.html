@@ -466,7 +466,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">12 October, 2023</h4>
+<h4 class="date">17 October, 2023</h4>
 
 </div>
 
@@ -495,7 +495,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-12
+<strong>Last updated:</strong> 2023-10-17
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -626,15 +626,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree42933396fb14842a5163f40605bdce0d45a71254targetblank4293339a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/42933396fb14842a5163f40605bdce0d45a71254" target="_blank">4293339</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6d38b59f4446f0d7525c1d4ca90196f3c184be8dtargetblank6d38b59a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree42933396fb14842a5163f40605bdce0d45a71254targetblank4293339a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -644,7 +644,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6d38b59f4446f0d7525c1d4ca90196f3c184be8d" target="_blank">6d38b59</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/42933396fb14842a5163f40605bdce0d45a71254" target="_blank">4293339</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -664,8 +664,6 @@ Ignored files:
     Ignored:    output/
 
 Unstaged changes:
-    Modified:   analysis/load_argo.Rmd
-    Modified:   analysis/load_argo_core.Rmd
     Modified:   code/start_background_job.R
 
 </code></pre>
@@ -712,6 +710,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/42933396fb14842a5163f40605bdce0d45a71254/analysis/extreme_pH.Rmd" target="_blank">4293339</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-17
+</td>
+<td>
+standard range v climatology, season order resolved and count labels to
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/extreme_pH.html" target="_blank">4b55c43</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -3192,7 +3224,7 @@ OceanSODA &lt;- OceanSODA %&gt;%
 
 # argo pH data (flag A only)
 full_argo &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/X_bgc_merge_flag_AB.rds&quot;)) %&gt;%
   select(-c(temp_adjusted:temp_adjusted_error,
             profile_temp_qc))
 
@@ -11998,6 +12030,12 @@ profile_extreme &lt;- profile_extreme %&gt;%
       between(month, 9, 11) ~ &#39;spring&#39;,
       month == 12 | 1 | 2 ~ &#39;summer&#39;
     ),
+    season_order = case_when(
+      between(month, 3, 5) ~ 2,
+      between(month, 6, 8) ~ 3,
+      between(month, 9, 11) ~ 4,
+      month == 12 | 1 | 2 ~ 1
+    ),
     .after = date
   ) </code></pre>
 <div id="overall-mean" class="section level3">
@@ -13170,11 +13208,22 @@ pasqualina-vonlanthendinenna
 <div id="season-x-mayot-biome" class="section level3">
 <h3>Season x Mayot biome</h3>
 <pre class="r"><code>profile_extreme_biome &lt;- profile_extreme %&gt;% 
-  group_by(season, biome_name, ph_extreme, depth) %&gt;% 
+  group_by(season_order, season, biome_name, ph_extreme, depth) %&gt;% 
   summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
-  
+
+facet_label &lt;- as_labeller(c(&quot;1&quot;=&quot;summer&quot;, 
+                             &quot;2&quot;=&quot;autumn&quot;, 
+                             &quot;3&quot;=&quot;winter&quot;, 
+                             &quot;4&quot;=&quot;spring&quot;, 
+                             &quot;ICE&quot; = &quot;ICE&quot;, 
+                             &quot;SPSS&quot; = &quot;SPSS&quot;,
+                             &quot;STSS&quot; = &quot;STSS&quot;,
+                             &quot;Atlantic&quot; = &quot;Atlantic&quot;,
+                             &quot;Indian&quot; = &quot;Indian&quot;,
+                             &quot;Pacific&quot; = &quot;Pacific&quot;
+                             ))
 
 profile_extreme_biome %&gt;%
   ggplot(aes(
@@ -13199,7 +13248,7 @@ profile_extreme_biome %&gt;%
        title = &#39;Biome-mean Argo profiles&#39;) +
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-  facet_grid(season ~ biome_name)</code></pre>
+  facet_grid(season_order ~ biome_name, labeller = facet_label)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/mean_profiles_season_biome-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mean_profiles_season_biome-1">
@@ -13395,14 +13444,14 @@ jens-daniel-mueller
 <pre class="r"><code>rm(profile_extreme_biome)</code></pre>
 <p>Number of profiles season x biome</p>
 <pre class="r"><code>profile_count_biome &lt;- profile_extreme %&gt;% 
-  distinct(season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
-  group_by(season, biome_name, ph_extreme) %&gt;% 
+  distinct(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, season, biome_name, ph_extreme) %&gt;% 
   count(ph_extreme)
 
 profile_count_biome %&gt;% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season ~ biome_name)+
+  facet_grid(season_order ~ biome_name, labeller = facet_label)+
   scale_y_continuous(trans = &#39;log10&#39;)+
   labs(y = &#39;log(number of profiles)&#39;,
        title = &#39;Number of profiles season x biome&#39;)</code></pre>
@@ -13580,7 +13629,7 @@ pasqualina-vonlanthendinenna
 <p>Surface Argo vs surface OceanSODA pH (20 m) season x biome</p>
 <pre class="r"><code>surface_ph_biome &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
   summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
@@ -13597,7 +13646,7 @@ surface_ph_biome %&gt;%
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
               ylim = c(7.94, 8.21))+
-  facet_grid(season~biome_name) +
+  facet_grid(season_order~biome_name, labeller = facet_label) +
     labs(title = paste( &#39;pH extreme:&#39;, unique(.x$ph_extreme)),
          x = &#39;OceanSODA pH&#39;,
          y = &#39;Argo pH&#39;)
@@ -14221,7 +14270,7 @@ pasqualina-vonlanthendinenna
 <div id="season-x-basin" class="section level3">
 <h3>Season x basin</h3>
 <pre class="r"><code>profile_extreme_basin &lt;- profile_extreme %&gt;% 
-  group_by(season, basin_AIP, ph_extreme, depth) %&gt;% 
+  group_by(season_order, season, basin_AIP, ph_extreme, depth) %&gt;% 
   summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
   ungroup()
@@ -14247,7 +14296,7 @@ profile_extreme_basin %&gt;%
        title = &#39;Basin-mean Argo profiles&#39;)+
   scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-  facet_grid(season~basin_AIP)</code></pre>
+  facet_grid(season_order~basin_AIP, labeller = facet_label)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/mean_basin_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-mean_basin_profiles-1">
@@ -14465,14 +14514,14 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_extreme_basin)</code></pre>
 <p>Number of profiles season x basin</p>
 <pre class="r"><code>profile_count_basin &lt;- profile_extreme %&gt;% 
-  distinct(season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
-  group_by(season, basin_AIP, ph_extreme) %&gt;% 
+  distinct(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, season, basin_AIP, ph_extreme) %&gt;% 
   count(ph_extreme)
 
 profile_count_basin %&gt;% 
   ggplot(aes(x = ph_extreme, y = n, fill = ph_extreme))+
   geom_col(width = 0.5)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_y_continuous(trans = &#39;log10&#39;)+
   labs(y = &#39;log(number of profiles)&#39;,
        title = &#39;Number of profiles season x basin&#39;)</code></pre>
@@ -14651,7 +14700,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_ph_basin &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
+  group_by(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
   summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
@@ -14668,7 +14717,7 @@ surface_ph_basin %&gt;%
   coord_fixed(ratio = 1, 
               xlim = c(7.94, 8.21),
               ylim = c(7.94, 8.21))+
-  facet_grid(season~basin_AIP) +
+  facet_grid(season_order~basin_AIP, labeller = facet_label) +
     labs(title = paste(&#39;pH extreme:&#39;, unique(.x$ph_extreme)),
          x = &#39;OceanSODA pH&#39;,
          y = &#39;Argo pH&#39;)
@@ -15449,14 +15498,14 @@ pasqualina-vonlanthendinenna
 <div id="season-x-biome-x-basin" class="section level3">
 <h3>Season x biome x basin</h3>
 <pre class="r"><code>profile_extreme_season &lt;- profile_extreme %&gt;%
-  group_by(season, biome_name, basin_AIP, ph_extreme, depth) %&gt;%
+  group_by(season_order, season, biome_name, basin_AIP, ph_extreme, depth) %&gt;%
   summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
             ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_season %&gt;%
   arrange(depth) %&gt;%
-  group_split(season) %&gt;%
+  group_split(season_order) %&gt;%
   # head(1) %&gt;%
   map(
     ~ ggplot(
@@ -16265,15 +16314,15 @@ jens-daniel-mueller
 </div>
 <p>Number of profiles per season x biome x basin x pH extreme</p>
 <pre class="r"><code>profile_count_season &lt;- profile_extreme %&gt;% 
-  distinct(season, biome_name, basin_AIP,
+  distinct(season_order, season, biome_name, basin_AIP,
            ph_extreme, platform_number, cycle_number) %&gt;% 
-  group_by(season, biome_name, basin_AIP, ph_extreme) %&gt;% 
+  group_by(season_order, season, biome_name, basin_AIP, ph_extreme) %&gt;% 
   count(ph_extreme)
 
 
 profile_count_season %&gt;% 
-  group_by(season) %&gt;% 
-  group_split(season) %&gt;% 
+  group_by(season_order) %&gt;% 
+  group_split(season_order) %&gt;% 
   map(
     ~ggplot()+
       geom_col(data =.x, 
@@ -17070,7 +17119,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
 surface_ph_season &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season, 
+  group_by(season_order,
+           season, 
            basin_AIP, 
            biome_name, 
            ph_extreme, 
@@ -17080,8 +17130,8 @@ surface_ph_season &lt;- profile_extreme %&gt;%
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_season %&gt;% 
-  group_by(season, ph_extreme) %&gt;% 
-  group_split(season, ph_extreme) %&gt;% 
+  group_by(season_order, ph_extreme) %&gt;% 
+  group_split(season_order, ph_extreme) %&gt;% 
   map(
   ~ggplot(data = .x, aes(x = surf_OceanSODA_ph, 
              y = surf_argo_ph))+
@@ -19933,7 +19983,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>profile_extreme_binned &lt;- profile_extreme %&gt;%
   group_by(lon, lat, year, month, platform_cycle,
            biome_name, basin_AIP, ph_extreme,
-           depth, season) %&gt;%
+           depth, season, season_order) %&gt;%
   summarise(ph_adjusted_binned = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
   ungroup()</code></pre>
 <pre class="r"><code>broullon_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, 
@@ -21783,13 +21833,33 @@ remove_clim_overall_mean %&gt;%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_mean,
-                  aes(x = -0.075,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 7,
-                  segment.color = &#39;transparent&#39;)+
+  # geom_text_repel(data = profile_count_mean,
+  #                 aes(x = -0.075,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 7,
+  #                 segment.color = &#39;transparent&#39;)+
+  geom_text(data = profile_count_mean[2,],
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  geom_text(data = profile_count_mean[1,],
+          aes(x = -0.07,
+              y = 1400,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  geom_text(data = profile_count_mean[3,],
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 6)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = &#39;Overall Mean Anomaly Profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/overall_mean_anomaly_profiles_broullon-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -21911,7 +21981,7 @@ pasqualina-vonlanthendinenna
 <div id="biome-mean-anomaly-profiles" class="section level3">
 <h3>Biome-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_biome &lt;- remove_clim %&gt;% 
-  group_by(depth, ph_extreme, biome_name, season) %&gt;% 
+  group_by(depth, ph_extreme, biome_name, season_order, season) %&gt;% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
@@ -21931,16 +22001,36 @@ remove_clim_biome %&gt;%
   geom_vline(xintercept = 0)+
   scale_y_continuous(trans = trans_reverser(&#39;sqrt&#39;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  facet_grid(season~biome_name)+
+  facet_grid(season_order~biome_name, labeller = facet_label)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_biome,
-                  aes(x = -0.085,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 4,
-                  segment.color = &#39;transparent&#39;)+
+  # geom_text_repel(data = profile_count_biome,
+  #                 aes(x = -0.085,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 4,
+  #                 segment.color = &#39;transparent&#39;)+
+  geom_text(data = profile_count_biome %&gt;% filter (ph_extreme == &#39;N&#39;),
+          aes(x = -0.07,
+              y = 800,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_biome %&gt;% filter (ph_extreme == &#39;H&#39;),
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_biome %&gt;% filter (ph_extreme == &#39;L&#39;),
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = &#39;Biome-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/biome_mean_broullon_anomaly-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -22073,7 +22163,7 @@ pasqualina-vonlanthendinenna
 <div id="basin-mean-anomaly-profiles" class="section level3">
 <h3>Basin-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_basin &lt;-  remove_clim %&gt;% 
-  group_by(depth, ph_extreme, basin_AIP, season) %&gt;% 
+  group_by(depth, ph_extreme, basin_AIP, season_order, season) %&gt;% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
@@ -22093,16 +22183,36 @@ remove_clim_basin %&gt;%
   scale_y_continuous(trans = trans_reverser(&#39;sqrt&#39;),
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   geom_vline(xintercept = 0)+
-  facet_grid(season~basin_AIP)+
+  facet_grid(season_order~basin_AIP, labeller = facet_label)+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_count_basin,
-                  aes(x = -0.1,
-                      y = 1500,
-                      label = paste0(n),
-                      col = ph_extreme),
-                  size = 4,
-                  segment.color = &#39;transparent&#39;)+
+  # geom_text_repel(data = profile_count_basin,
+  #                 aes(x = -0.1,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = ph_extreme),
+  #                 size = 4,
+  #                 segment.color = &#39;transparent&#39;)+
+  geom_text(data = profile_count_basin %&gt;% filter (ph_extreme == &#39;N&#39;),
+          aes(x = -0.07,
+              y = 800,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_basin %&gt;% filter (ph_extreme == &#39;H&#39;),
+          aes(x = -0.07,
+              y = 1200,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  geom_text(data = profile_count_basin %&gt;% filter (ph_extreme == &#39;L&#39;),
+          aes(x = -0.07,
+              y = 1600,
+              label = paste0(n),
+              col = ph_extreme),
+          size = 4)+
+  coord_cartesian(xlim = c(-0.08, 0.08))+
+  scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
   labs(title = &#39;Basin-mean anomaly profiles&#39;)</code></pre>
 <p><img src="figure/extreme_pH.Rmd/basin_mean_anomaly_profiles_broullon-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -22235,13 +22345,13 @@ pasqualina-vonlanthendinenna
 <div id="basin-biome-mean-anomaly-profiles" class="section level3">
 <h3>Basin-biome-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_basin_biome &lt;- remove_clim %&gt;% 
-  group_by(depth, ph_extreme, season, basin_AIP, biome_name) %&gt;% 
+  group_by(depth, ph_extreme, season_order, season, basin_AIP, biome_name) %&gt;% 
   summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm=TRUE),
             ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_basin_biome %&gt;% 
-  group_by(season) %&gt;% 
-  group_split(season) %&gt;% 
+  group_by(season_order) %&gt;% 
+  group_split(season_order) %&gt;% 
   map(
     ~ggplot()+
       geom_path(data = .x,
@@ -22263,6 +22373,26 @@ remove_clim_basin_biome %&gt;%
       facet_grid(biome_name~basin_AIP)+
       scale_color_manual(values = HNL_colors)+
       scale_fill_manual(values = HNL_colors)+
+      geom_text(data = profile_count_season %&gt;% filter (ph_extreme == &#39;N&#39; &amp; season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 800,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      geom_text(data = profile_count_season %&gt;% filter (ph_extreme == &#39;H&#39; &amp; season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 1200,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      geom_text(data = profile_count_season %&gt;% filter (ph_extreme == &#39;L&#39; &amp; season == unique(.x$season)),
+              aes(x = -0.07,
+                  y = 1600,
+                  label = paste0(n),
+                  col = ph_extreme),
+              size = 4)+
+      coord_cartesian(xlim = c(-0.08, 0.08))+
+      scale_x_continuous(breaks = c(-0.08, -0.04, 0, 0.04, 0.08))+
       labs(title = paste0(&#39;basin-biome-mean profiles &#39;, unique(.x$season)))
   )</code></pre>
 <pre><code>[[1]]</code></pre>
