@@ -987,13 +987,33 @@ remove_clim_overall_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_temp_count_mean,
-            aes(x = 1, 
-                y = 1500, 
-                label = paste0(n), 
-                col = temp_extreme),
-            size = 7,
-            segment.color = 'transparent')+
+  # geom_text_repel(data = profile_temp_count_mean,
+  #           aes(x = 1, 
+  #               y = 1500, 
+  #               label = paste0(n), 
+  #               col = temp_extreme),
+  #           size = 7,
+  #           segment.color = 'transparent')+
+  geom_text(data = profile_temp_count_mean[2,],
+          aes(x = -4.0, 
+              y = 1200, 
+              label = paste0(n), 
+              col = temp_extreme),
+          size = 6)+
+  geom_text(data = profile_temp_count_mean[1,],
+          aes(x = -4.0, 
+              y = 1400, 
+              label = paste0(n), 
+              col = temp_extreme),
+          size = 6)+
+  geom_text(data = profile_temp_count_mean[3,],
+          aes(x = -4.0, 
+              y = 1600, 
+              label = paste0(n), 
+              col = temp_extreme),
+          size = 6)+
+  coord_cartesian(xlim = c(-4.5, 4.5))+
+  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
   labs(title = 'Overall mean anomaly profiles')
 
 rm(remove_clim_overall_mean, profile_temp_count_mean)
@@ -1027,13 +1047,33 @@ remove_clim_biome_mean %>%
   scale_fill_manual(values = HNL_colors)+
   scale_color_manual(values = HNL_colors)+
   labs(title = 'Biome-mean anomaly profiles')+
-  geom_text_repel(data = profile_temp_count_biome,
-                  aes(x = 3,
-                      y = 1500,
+  # geom_text_repel(data = profile_temp_count_biome,
+  #                 aes(x = 3,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = temp_extreme),
+  #                 size = 4,
+  #                 segment.color = 'transparent')+
+  geom_text(data = profile_temp_count_biome %>% filter (temp_extreme == 'N'),
+                  aes(x = -3.5,
+                      y = 800,
                       label = paste0(n),
                       col = temp_extreme),
-                  size = 4,
-                  segment.color = 'transparent')+
+                  size = 4)+
+  geom_text(data = profile_temp_count_biome %>% filter (temp_extreme == 'H'),
+                  aes(x = -3.5,
+                      y = 1200,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4)+
+  geom_text(data = profile_temp_count_biome %>% filter (temp_extreme == 'L'),
+                  aes(x = -3.5,
+                      y = 1600,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4)+
+  coord_cartesian(xlim = c(-4.5, 4.5))+
+  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
   facet_grid(season_order~biome_name, labeller = facet_label)
 
 rm(remove_clim_biome_mean, profile_temp_count_biome)
@@ -1067,13 +1107,33 @@ remove_clim_basin_mean %>%
                      breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
   scale_color_manual(values = HNL_colors)+
   scale_fill_manual(values = HNL_colors)+
-  geom_text_repel(data = profile_temp_count_basin,
-                  aes(x = 2,
-                      y = 1500,
+  # geom_text_repel(data = profile_temp_count_basin,
+  #                 aes(x = 2,
+  #                     y = 1500,
+  #                     label = paste0(n),
+  #                     col = temp_extreme),
+  #                 size = 4,
+  #                 segment.color = 'transparent')+
+  geom_text(data = profile_temp_count_basin %>% filter (temp_extreme == 'N'),
+                  aes(x = -3.5,
+                      y = 800,
                       label = paste0(n),
                       col = temp_extreme),
-                  size = 4,
-                  segment.color = 'transparent')+
+                  size = 4)+
+  geom_text(data = profile_temp_count_basin %>% filter (temp_extreme == 'H'),
+                  aes(x = -3.5,
+                      y = 1200,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4)+
+  geom_text(data = profile_temp_count_basin %>% filter (temp_extreme == 'L'),
+                  aes(x = -3.5,
+                      y = 1600,
+                      label = paste0(n),
+                      col = temp_extreme),
+                  size = 4)+
+  coord_cartesian(xlim = c(-4.5, 4.5))+
+  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
   labs(title = 'Basin-mean anomaly profiles')
 
 rm(remove_clim_basin_mean, profile_temp_count_basin)
@@ -1120,6 +1180,26 @@ remove_clim_basin_biome_mean %>%
       #                     group = temp_extreme),
       #                 size = 4,
       #                 segment.color = 'transparent')+
+      geom_text(data = profile_temp_count_season %>% filter (temp_extreme == 'N' & season == unique(.x$season)),
+                      aes(x = -3.5,
+                          y = 800,
+                          label = paste0(n),
+                          col = temp_extreme),
+                      size = 4)+
+      geom_text(data = profile_temp_count_season %>% filter (temp_extreme == 'H' & season == unique(.x$season)),
+                      aes(x = -3.5,
+                          y = 1200,
+                          label = paste0(n),
+                          col = temp_extreme),
+                      size = 4)+
+      geom_text(data = profile_temp_count_season %>% filter (temp_extreme == 'L' & season == unique(.x$season)),
+                      aes(x = -3.5,
+                          y = 1600,
+                          label = paste0(n),
+                          col = temp_extreme),
+                      size = 4)+
+      coord_cartesian(xlim = c(-4.5, 4.5))+
+      scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
       labs(title = paste0('biome-basin mean anomaly profiles ', unique(.x$season)))
     )
 
