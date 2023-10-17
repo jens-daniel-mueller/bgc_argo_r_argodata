@@ -128,7 +128,8 @@ if (!opt_qc_only) {
   argo_mirror()
   
   # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
-  # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates files that have been in the cache for more than 30 minutes, etc.
+  # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates
+  # files that have been in the cache for more than 30 minutes, etc.
   if (opt_refresh_cache){
     argo_update_global(max_global_cache_age = -Inf)  
     argo_update_data(max_data_cache_age = -Inf)
@@ -226,7 +227,7 @@ if (!opt_qc_only) {
                         count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
       core_measure_summary = rbind(core_measure_summary, qc_deafaults)
   
-      # Build summary of qc flags for pressure and update core_measure_summary
+      # Build summary of qc flags for temperature and update core_measure_summary
       agg_tbl <- core_data_yr %>% group_by(year = target_year, measure = "Temperature", measure_order = 2, measure_qc = temp_adjusted_qc) %>% 
       summarise(count_measures=n())
       core_measure_summary <- rows_update(core_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
@@ -239,7 +240,7 @@ if (!opt_qc_only) {
                         count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
       core_measure_summary = rbind(core_measure_summary, qc_deafaults)
   
-      # Build summary of qc flags for pressure and update core_measure_summary
+      # Build summary of qc flags for salinity and update core_measure_summary
       agg_tbl <- core_data_yr %>% group_by(year = target_year, measure = "Salinity", measure_order = 3, measure_qc = psal_adjusted_qc) %>% 
       summarise(count_measures=n())
       core_measure_summary <- rows_update(core_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
@@ -628,6 +629,7 @@ core_metadata["profile_temp_qc"][is.na(core_metadata["profile_temp_qc"])] <- ""
 core_metadata["profile_psal_qc"][is.na(core_metadata["profile_psal_qc"])] <- "" 
 
 core_profile_summary <- core_metadata %>% 
+  filter (profile_pres_qc != "") %>%
   group_by(
     year = format(date, "%Y"), 
     measure = "Pressure", 
@@ -639,6 +641,7 @@ core_profile_summary <- core_metadata %>%
     )
 core_profile_summary <- rbind(core_profile_summary, 
                               core_metadata %>% 
+                                filter (profile_temp_qc != "") %>%
                                 group_by(
                                   year = format(date, "%Y"), 
                                   measure = "Temperature", 
@@ -650,6 +653,7 @@ core_profile_summary <- rbind(core_profile_summary,
                                   ))
 core_profile_summary <- rbind(core_profile_summary, 
                               core_metadata %>% 
+                              filter (profile_psal_qc != "") %>%
                                 group_by(
                                   year = format(date, "%Y"), 
                                   measure = "Salinity", 
@@ -699,6 +703,7 @@ year_max <- max(core_measure_summary$year)
 
 # draw plots for the separate parameters
 core_measure_summary %>%
+  filter(measure_qc != " ") %>%
   ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
           geom_point() +
           geom_line() +

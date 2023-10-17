@@ -51,6 +51,8 @@ oxy_merge <-
     -c(nitrate_adjusted_error:ph_in_situ_total_adjusted_error),
     -c(profile_nitrate_qc, profile_ph_in_situ_total_qc)
   )
+oxy_merge <-
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_doxy_qc_1.rds"))
 
 ```
 
@@ -61,13 +63,11 @@ Focus on surface oxygen (top 10 m of the watercolumn) in the Southern Ocean, sou
 ```{r select_relevant_oxygen_data}
 # select only best pH data (with QC flag 1) below 30ºS, for the top 10 m of the watercolumn
 oxy_surface <- oxy_merge %>%
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
-  filter(doxy_adjusted_qc == '1',   # keep only 'good' data
-         lat <= -30,                   # keep only data at or south of 30ºS
+  filter(lat <= -30,                   # keep only data at or south of 30ºS
          depth <= 10) %>%              # keep only data above or at 10 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
-    month = month(date), .after = n_prof
+    month = month(date), .before = depth
   )
 
 # check the correct latitudes, QC flags, and depth levels have been filtered
@@ -166,14 +166,12 @@ Focus on surface oxygen (upper 10 m) in the north-east Pacific (10ºN - 70ºN, -
 
 # select only best oxygen data (with QC flag 1) between 10 and 70ºN, and 190 and 140ºW, for the top 10 m of the watercolumn
 oxy_nepacific <- oxy_merge %>%
-  mutate(depth = swDepth(pres_adjusted, latitude = lat), .before = pres_adjusted) %>%
-  filter(doxy_adjusted_qc == '1',   # keep only 'good' data
-        between(lat, 10, 70),
+  filter(between(lat, 10, 70),
         between(lon, 190, 240),                   # keep only data for the NE Pacific
         depth <= 10) %>%              # keep only data above or at 10 m depth
   mutate(
     year = year(date),     # separate the year and month from the date column
-    month = month(date), .after = n_prof
+    month = month(date), .before = depth
   )
 # longitudes larger than -180ºE are lon-380 
 

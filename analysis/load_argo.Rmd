@@ -14,6 +14,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 # Task
+
 Load BGC data for analysis 
 
 
@@ -110,7 +111,6 @@ opt_qc_only = FALSE
 opt_n_prof_sel = 1
 
 ```
-
 
 ## Set cache directory 
 
@@ -811,21 +811,6 @@ if (!opt_qc_only) {
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```{r load_indeces, include=FALSE}
 # bgc_index <- argo_global_synthetic_prof() %>%
 #   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
@@ -855,10 +840,6 @@ if (!opt_qc_only) {
 # argo_global_synthetic_prof(download = NULL, quiet = FALSE)
 
 ```
-
-## Read data
-
-Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)
 
 ```{r load_data_and_harmonize_variables, include=FALSE}
 
@@ -892,10 +873,6 @@ Read in the adjusted bgc and core variables corresponding to the index files dow
   
 ```
 
-## Read meta data
-
-Read in the corresponding metadata:
-
 ```{r load_metadata, include=FALSE}
 
 # bgc_metadata <- argo_prof_prof(path = bgc_index)
@@ -922,10 +899,6 @@ Read in the corresponding metadata:
 # SCIENTIFIC_CALIB_DATE : date when the calibration was performed
 
 ```
-
-## Join data
-
-Join the metadata and data together into one dataset
 
 ```{r create_dataset, include=FALSE}
 
@@ -1272,7 +1245,6 @@ Produce a summary of profile QC flags (A-F)
 theme_set(theme_bw())
 ```
 
-
 ```{r QC_summary_profile, fig.asp=0.6}
 
 # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
@@ -1373,19 +1345,6 @@ bgc_measure_summary %>%
 
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-## Harmonise metadata 
-
 ```{r harmonise_metadata_variables, include=FALSE}
 
 # bgc_metadata <- bgc_metadata %>%
@@ -1404,8 +1363,6 @@ bgc_measure_summary %>%
 #   )
 
 ```
-
-## Write Argo data to files 
 
 ```{r write_argo_data_files, include=FALSE}
 

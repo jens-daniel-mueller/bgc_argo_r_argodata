@@ -1,7 +1,7 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'load_argo.Rmd'
+    'extreme_temp_core.Rmd'
   )
 ),
-message = "Changed BGC Argo location folders")
+message = "revised order of seasons")
