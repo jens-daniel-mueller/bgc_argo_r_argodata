@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7af09d6b8ed99c958f72a59e9d06ca2e05027cdatargetblank7af09d6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreedba28d584889a81ae6bea62322d98fa2b5662afctargetblankdba28d5a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7af09d6b8ed99c958f72a59e9d06ca2e05027cda" target="_blank">7af09d6</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/dba28d584889a81ae6bea62322d98fa2b5662afc" target="_blank">dba28d5</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7af09d6b8ed99c958f72a59e9d06ca2e05027cdatargetblank7af09d6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreedba28d584889a81ae6bea62322d98fa2b5662afctargetblankdba28d5a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7af09d6b8ed99c958f72a59e9d06ca2e05027cda" target="_blank">7af09d6</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/dba28d584889a81ae6bea62322d98fa2b5662afc" target="_blank">dba28d5</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -711,6 +711,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/dba28d584889a81ae6bea62322d98fa2b5662afc/analysis/extreme_temp.Rmd" target="_blank">dba28d5</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-18
+</td>
+<td>
+Clean up BGC load and re-run coverage and extreme packages.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/93b4545275c9570673e22da1f9b3f2eec899c55a/docs/extreme_temp.html" target="_blank">93b4545</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2683,7 +2717,7 @@ OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
 # Argo flag A profiles
 
 full_argo &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/X_bgc_merge_flag_AB.rds&quot;))
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
 
 full_argo &lt;- full_argo %&gt;%
   select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
@@ -2696,7 +2730,7 @@ full_argo &lt;- full_argo %&gt;%
   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
 # load in bgc-temperature data with profile QC flags of A and B, irrespective of whether a corresponding pH measurement exists 
-argo_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/X_bgc_merge_temp_AB.rds&quot;))
+argo_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
 
 argo_temp &lt;- argo_temp %&gt;%
   mutate(year = year(date),
