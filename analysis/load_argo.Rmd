@@ -55,37 +55,10 @@ Are the consolidated all year files created from the individual year files?
 #   TRUE  = refresh cache. (any none zero value will force a refresh)
 opt_refresh_cache = FALSE
 
-# opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_doxy, opt_refresh_years_nitrate, opt_refresh_years_pH, opt_refresh_years_metadata
-#   FALSE = do not refresh the yearly files. (any value <> 1 will omit annual refresh)
-#   TRUE  = refresh yearly files for given parameter.
+# opt_min_year and opt_max_year
 #   year to be refreshed are set by opt_min_year and opt_max_year
-opt_refresh_years_temp = TRUE
-opt_refresh_years_psal = TRUE
-opt_refresh_years_doxy = TRUE
-opt_refresh_years_nitrate = TRUE
-opt_refresh_years_pH = TRUE
-opt_refresh_years_metadata = TRUE
 opt_min_year = 2013
 opt_max_year = 2023
-
-# opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_doxy, opt_consolidate_nitrate, opt_consolidate_pH, opt_consolidate_metadata
-# Yearly files must have already been created!
-#   FALSE = do not build consolidated file from previously written yearly files. (any value <> 1 will omit consolidation)
-#   TRUE  = build consolidated file from previously written yearly files for given parameter.
-#   year to be included in the consolidation are set by opt_min_year and opt_max_year
-opt_consolidate_temp = TRUE
-opt_consolidate_psal = TRUE
-opt_consolidate_psal = TRUE
-opt_consolidate_doxy = TRUE
-opt_consolidate_nitrate = TRUE
-opt_consolidate_pH = TRUE
-opt_consolidate_metadata = TRUE
-
-# opt_summary_files
-# consolidated files must have already been created!
-#   FALSE = do not build summary files from previously written consolidated files. (any value <> 1 will omit A and AB files)
-#   TRUE  = build summary files from previously written consolidated files.
-opt_summary_files = TRUE
 
 # opt_review_mode
 # if set (1) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
@@ -143,7 +116,7 @@ if (!opt_qc_only) {
 
 ```
 
-## Load by year
+## Data Load
 
 Builds yearly files for temperature, salinity, BGC properties and metadata that can be consolidated in the next code chunk (consolidate_into_allyears). Load in the synthetic (merged core and bgc) index files (uses the data stored on the ifremer server by default), keeping only delayed-mode data.
 
@@ -169,1069 +142,377 @@ Delayed-mode BGC data may be available as early as 5-6 cycles after initial data
 
 *Argo User Manual: <https://archimer.ifremer.fr/doc/00187/29825/86414.pdf>*
 
+## Load Index
 
-```{r load_core_by_year}
-#------------------------------------------------------------------------------
-# Important - file are loaded for the given year processed and the files written to disk.
-#------------------------------------------------------------------------------
+Load index file that forms the basis of subsequent sections that load data and metadata
+
+```{r load_indeces}
+
 if (!opt_qc_only) {
 
-  for (target_year in opt_min_year:opt_max_year) {
-    # for manual testing of the loop
-    # target_year <- 2017
-  
-    # if updating any year files it will be based on the initial index file core_index
-    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH | opt_refresh_years_metadata)
-    {
-      # if working in reiew mode only consider first 10 days of the year
+      # if working in reiew mode only consider first 10 days of opt_max_year
       if (opt_review_mode) {
         bgc_index <- argo_global_synthetic_prof() %>% 
           argo_filter_data_mode(data_mode = 'delayed') %>% 
-          argo_filter_date(date_min = paste0(target_year, "-01-01"),
-                           date_max = paste0(target_year, "-01-10"))
+          argo_filter_date(date_min = paste0(opt_max_year, "-01-01"),
+                           date_max = paste0(opt_max_year, "-01-10"))
       } else {
         bgc_index <- argo_global_synthetic_prof() %>% 
           argo_filter_data_mode(data_mode = 'delayed') %>% 
-          argo_filter_date(date_min = paste0(target_year, "-01-01"),
-                           date_max = paste0(target_year, "-12-31"))
+          argo_filter_date(date_min = paste0(opt_min_year, "-01-01"),
+                           date_max = paste0(opt_max_year, "-12-31"))
       }
-    }
-  
-    # if temp or psal are being updated get the profile data
-    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH)
-    {
-      # read in the profiles (takes a while)
-      bgc_data_yr <- argo_prof_levels(
-        path = bgc_index,
-        vars =
-          c(
-            'PRES_ADJUSTED',
-            'PRES_ADJUSTED_QC',
-            'PRES_ADJUSTED_ERROR',
-            'PSAL_ADJUSTED',
-            'PSAL_ADJUSTED_QC',
-            'PSAL_ADJUSTED_ERROR',
-            'TEMP_ADJUSTED',
-            'TEMP_ADJUSTED_QC',
-            'TEMP_ADJUSTED_ERROR',
-            'DOXY_ADJUSTED',
-            'DOXY_ADJUSTED_QC',
-            'DOXY_ADJUSTED_ERROR',
-            'NITRATE_ADJUSTED',
-            'NITRATE_ADJUSTED_QC',
-            'NITRATE_ADJUSTED_ERROR',
-            'PH_IN_SITU_TOTAL_ADJUSTED',
-            'PH_IN_SITU_TOTAL_ADJUSTED_QC',
-            'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
-          ),
-        quiet = TRUE
-      )
-      
-      # see option section above for rational of why we want n_prof = 1 profiles
-      bgc_data_yr <- bgc_data_yr%>%
-      filter(n_prof == opt_n_prof_sel)
-      
-      # if necessary make summary data frame.
-      if (!exists("bgc_measure_summary"))
-      {
-        columns = c("year","measure","measure_order","measure_qc","count_measures") 
-        bgc_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
-        colnames(bgc_measure_summary) = columns
-      }
-      
-      # Ensure no N/A qc flags
-      bgc_data_yr["pres_adjusted_qc"][is.na(bgc_data_yr["pres_adjusted_qc"])] <- " "
-      bgc_data_yr["temp_adjusted_qc"][is.na(bgc_data_yr["temp_adjusted_qc"])] <- " "
-      bgc_data_yr["psal_adjusted_qc"][is.na(bgc_data_yr["psal_adjusted_qc"])] <- " "
-      bgc_data_yr["doxy_adjusted_qc"][is.na(bgc_data_yr["doxy_adjusted_qc"])] <- " "
-      bgc_data_yr["nitrate_adjusted_qc"][is.na(bgc_data_yr["nitrate_adjusted_qc"])] <- " "
-      bgc_data_yr["ph_in_situ_total_adjusted_qc"][is.na(bgc_data_yr["ph_in_situ_total_adjusted_qc"])] <- " "
-      
-      # Default qc counts for measurements - Pressure
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure"),
-                        measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for pressure and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "Pressure", measure_order = 1, measure_qc = pres_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-  
-      # Default qc counts for measurements - temperature
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature"),
-                        measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for temperature and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "Temperature", measure_order = 2, measure_qc = temp_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-      
-      # Default qc counts for measurements - salinity
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity"),
-                        measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for salinity and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "Salinity", measure_order = 3, measure_qc = psal_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
 
-      # Default qc counts for measurements - pH
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("pH", "pH", "pH", "pH", "pH", "pH", "pH", "pH"),
-                        measure_order=c(4, 4, 4, 4, 4, 4, 4, 4),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for pH and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "pH", measure_order = 4, measure_qc = ph_in_situ_total_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-
-      # Default qc counts for measurements - oxygen
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen"),
-                        measure_order=c(5, 5, 5, 5, 5, 5, 5, 5),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for oxygen and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "Oxygen", measure_order = 5, measure_qc = doxy_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-
-      # Default qc counts for measurements - nitrate
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Nitrate", "Nitrate", "Nitrate", "Nitrate", "Nitrate", "Nitrate", "Nitrate", "Nitrate"),
-                        measure_order=c(6, 6, 6, 6, 6, 6, 6, 6),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      bgc_measure_summary = rbind(bgc_measure_summary, qc_deafaults)
-  
-      # Build summary of qc flags for nitrate and update bgc_measure_summary
-      agg_tbl <- bgc_data_yr %>% group_by(year = target_year, measure = "Nitrate", measure_order = 6, measure_qc = nitrate_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      bgc_measure_summary <- rows_update(bgc_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-
-      rm(agg_tbl)
-  
-    } 
-  
-    # if updating metadata get the file based on bgc_index
-    if (opt_refresh_years_metadata)
-    {
-      # read associated metadata
-      bgc_metadata_yr <- argo_prof_prof(path = bgc_index)
-
-      # see option section above for rational of why we want n_prof = 1 profiles
-      bgc_metadata_yr <- bgc_metadata_yr %>%
-      filter(n_prof == opt_n_prof_sel)
-  
-      bgc_metadata_yr <- bgc_metadata_yr %>%
-        filter (!is.na(latitude) & !is.na(longitude))
-    }
-    
-    # if temp or psal are being updated get the profile data
-    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_doxy | opt_refresh_years_nitrate | opt_refresh_years_pH)
-    {
-    
-      # remove columns that are not needed in merged temperature and salinity files.
-      # must have valid lat and lon
-      bgc_index <- bgc_index %>%
-        select(file,
-               date,
-               latitude,
-               longitude) %>%
-        filter (!is.na(latitude) & !is.na(longitude))
-      
-      # resolve lat and lon
-      bgc_index <- bgc_index %>%
-        rename(lon = longitude,
-               lat = latitude) %>%
-        mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-        mutate(
-          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-          lat = as.numeric(as.character(lat)),
-          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-          lon = as.numeric(as.character(lon))
-        )
-      
-      # join to index to incorporate date, lat and lon
-      bgc_data_yr <- left_join(bgc_data_yr, bgc_index)
-      
-      # derive depth using TEOS=10
-      bgc_data_yr <- bgc_data_yr %>%
-        filter (!is.na(lat) & !is.na(lon)) %>%
-        mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
-               .before = pres_adjusted)
-
-      bgc_data_yr <-
-        bgc_data_yr %>%
-        select(-c(n_levels, n_prof, pres_adjusted, pres_adjusted_error))
-
-      # Remove any data records where depth is NA
-      bgc_data_yr <- bgc_data_yr %>% filter(!is.na(depth))
-
-    }
-    
-
-    # ------------------------------------------------------------------------------
-    # Process temperature file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_temp)
-    {    
-      # Base temperature data where qc flag = good
-      # Could this cause incomplete profiles to be maintained?
-      bgc_data_temp_yr <- bgc_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          temp_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "psal", "doxy", "nitrate", "ph"))
-        )
-      
-      # write this years file
-      bgc_data_temp_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_temp.rds"))
-  
-    }
-    
-    # ------------------------------------------------------------------------------
-    # Process salinity file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_psal)
-    {    
-      # Base salinity data where qc flag = good
-      bgc_data_psal_yr <- bgc_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          psal_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "temp", "doxy", "nitrate", "ph"))
-        )
-  
-      # write this years file
-      bgc_data_psal_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_psal.rds"))
-  
-    }
-  
-    # ------------------------------------------------------------------------------
-    # Process oxygen file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_doxy)
-    {    
-      # Base oxygen data where qc flag = good
-      bgc_data_doxy_yr <- bgc_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          doxy_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "temp", "psal", "nitrate", "ph"))
-        )
-  
-      # write this years file
-      bgc_data_doxy_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_doxy.rds"))
-  
-    }
-
-    # ------------------------------------------------------------------------------
-    # Process nitrate file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_nitrate)
-    {    
-      # Base nitrate data where qc flag = good
-      bgc_data_nitrate_yr <- bgc_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          nitrate_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "temp", "psal", "doxy", "ph"))
-        )
-  
-      # write this years file
-      bgc_data_nitrate_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_nitrate.rds"))
-  
-    }
-
-    # ------------------------------------------------------------------------------
-    # Process pH file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_pH)
-    {    
-      # Base nitrate data where qc flag = good
-      bgc_data_pH_yr <- bgc_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          ph_in_situ_total_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "temp", "psal", "doxy", "nitrate"))
-        )
-  
-      # write this years file
-      bgc_data_pH_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_pH.rds"))
-  
-    }
-    
-    # ------------------------------------------------------------------------------
-    # Process metadata file
-    # ------------------------------------------------------------------------------
-    if (opt_refresh_years_metadata)
-    {
-      # resolve lat and lon so that it is hamonised with data files
-      bgc_metadata_yr <- bgc_metadata_yr %>%
-        rename(lon = longitude,
-               lat = latitude) %>%
-        mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-        mutate( 
-          lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-          lat = as.numeric(as.character(lat)),
-          lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-          lon = as.numeric(as.character(lon))
-        )
-    
-      # Select just the columns we are interested in
-      bgc_metadata_yr <- bgc_metadata_yr %>%
-        select (
-          file,
-          date,
-          lat,
-          lon,
-          platform_number, 
-          cycle_number,
-          position_qc,
-          profile_pres_qc,
-          profile_temp_qc,
-          profile_psal_qc,
-          profile_doxy_qc,
-          profile_nitrate_qc,
-          profile_ph_in_situ_total_qc
-        )
-  
-      # write this years file
-      bgc_metadata_yr %>%
-        write_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_metadata.rds"))
-  
-    }
-  
-  }
-  
-  # write this years file
-  bgc_measure_summary %>% 
-    write_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
-  rm(bgc_measure_summary)
 }
 ```
 
-## Consolidate years
+## Load data
 
-This process create six files in the path_argo_preprocessed directory that will be used for further analysis
+Read in the adjusted bgc and core variables corresponding to the index files downloaded above, with their quality control flags. (can take a while)
 
-### core_data_temp.rds
+```{r load_data_and_harmonize_variables}
 
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    depth - calculated from pres_adjusted and latitude
-    temp_adjusted - recorded and adjusted (after qc proccess) temperature
-    temp_adjusted_error - recorded and adjusted (after qc proccess) temperature
-
-### core_data_psal.rds
-
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    depth - calculated from pres_adjusted and latitude
-    psal_adjusted - recorded and adjusted (after qc proccess) salinity
-    psal_adjusted_error - recorded and adjusted (after qc proccess) salinity
-
-### core_data_doxy.rds
-
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    depth - calculated from pres_adjusted and latitude
-    doxy_adjusted - recorded and adjusted (after qc proccess) oxygen
-    doxy_adjusted_error - recorded and adjusted (after qc proccess) oxygen
-
-### core_data_nitrate.rds
-
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    depth - calculated from pres_adjusted and latitude
-    nitrate_adjusted - recorded and adjusted (after qc proccess) nitrate
-    nitrate_adjusted_error - recorded and adjusted (after qc proccess) nitrate
-
-### core_data_pH.rds
-
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    depth - calculated from pres_adjusted and latitude
-    ph_in_situ_total_adjusted - recorded and adjusted (after qc proccess) pH
-    ph_in_situ_total_adjusted_error - recorded and adjusted (after qc proccess) pH
-
-### core_metadata.rds
-
-    file - the source file
-    date - date of profile
-    lat - aligned to closest 0.5° lat
-    lon - aligned to closest 0.5° lon
-    platform_number - identifier of float
-    cycle_number - the profile number for the given float
-    position_qc - qc flag associated with the positioning of the float profile
-    profile_pres_qc - qc flag associated with the pressure readings of the profile (A-F)
-    profile_temp_qc - qc flag associated with the temperature readings of the profile (A-F)
-    profile_psal_qc - qc flag associated with the salinity readings of the profile (A-F)
-    profile_doxy_qc - qc flag associated with the oxygen readings of the profile (A-F)
-    profile_nitrate_qc - qc flag associated with the nitrate readings of the profile (A-F)
-    profile_ph_in_situ_total_qc - qc flag associated with the pH readings of the profile (A-F)
-
-```{r consolidate_into_allyears}
 if (!opt_qc_only) {
 
-  # ------------------------------------------------------------------------------
-  # Process temperature file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_temp){
-    consolidated_created = 0
+  bgc_data <- argo_prof_levels(
+    path = bgc_index,
+    vars =
+      c(
+        'PRES_ADJUSTED',
+        'PRES_ADJUSTED_QC',
+        'PRES_ADJUSTED_ERROR',
+        'PSAL_ADJUSTED',
+        'PSAL_ADJUSTED_QC',
+        'PSAL_ADJUSTED_ERROR',
+        'TEMP_ADJUSTED',
+        'TEMP_ADJUSTED_QC',
+        'TEMP_ADJUSTED_ERROR',
+        'DOXY_ADJUSTED',
+        'DOXY_ADJUSTED_QC',
+        'DOXY_ADJUSTED_ERROR',
+        'NITRATE_ADJUSTED',
+        'NITRATE_ADJUSTED_QC',
+        'NITRATE_ADJUSTED_ERROR',
+        'PH_IN_SITU_TOTAL_ADJUSTED',
+        'PH_IN_SITU_TOTAL_ADJUSTED_QC',
+        'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
+      ),
+    quiet = TRUE
+  ) 
+  # read in the profiles (takes a while)
+
+  # see option section above for rational of why we only want n_prof = 1 profiles.
+  # Note as working with symthetic profiles has no impact.
+  bgc_data <- bgc_data %>%
+  filter(n_prof == opt_n_prof_sel)
+
+}
+  
+```
+
+## Read meta data
+
+Read in the corresponding metadata:
+
+```{r load_metadata}
+
+if (!opt_qc_only) {
+
+  bgc_metadata <- argo_prof_prof(path = bgc_index)
+
+  # see option section above for rational of why we only want n_prof = 1 profiles
+  # Note as working with symthetic profiles has no impact.
+  bgc_metadata <- bgc_metadata %>%
+  filter(n_prof == opt_n_prof_sel)
+
+  # Select just the columns we are interested in
+  bgc_metadata <- bgc_metadata %>%
+    select (
+      file,
+      date,
+      latitude,
+      longitude,
+      platform_number, 
+      cycle_number,
+      position_qc,
+      profile_pres_qc,
+      profile_temp_qc,
+      profile_psal_qc,
+      profile_doxy_qc,
+      profile_nitrate_qc,
+      profile_ph_in_situ_total_qc
+    )
+
+}
+```
+
+## Join data
+
+Join the metadata and data together into one dataset
+
+```{r create_dataset}
+
+if (!opt_qc_only) {
+
+  bgc_merge <- full_join(bgc_data, bgc_metadata)
+  
+  bgc_merge <- bgc_merge %>%
+    rename(lon = longitude,
+           lat = latitude) %>%
+    mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+    mutate(
+      lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+      lat = as.numeric(as.character(lat)),
+      lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+      lon = as.numeric(as.character(lon))
+    ) %>%
+    mutate(depth = gsw_z_from_p(pres_adjusted, latitude =  lat) * -1.0,
+           .before = pres_adjusted)
+  
+  # Harmonise metadata
+  bgc_metadata <- bgc_metadata %>%
+    rename(lon = longitude,
+           lat = latitude) %>%
+    mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
+    mutate(
+      lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
+      lat = as.numeric(as.character(lat)),
+      lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
+      lon = as.numeric(as.character(lon))
+  )
+
+  # Summary measurement QC data
+  bgc_data_qc <- bgc_merge %>%
+    select (
+      'date',
+      'pres_adjusted_qc',
+      'psal_adjusted_qc',
+      'temp_adjusted_qc',
+      'doxy_adjusted_qc',
+      'nitrate_adjusted_qc',
+      'ph_in_situ_total_adjusted_qc'
+            ) %>%
+    mutate(year = year(date),
+           .after = date)
+  
+  # Create the summary file that is used later for qc analysis
+  bgc_measure_summary <- bgc_data_qc %>% 
+                                 group_by(year, measure_order = 1, measure = "Pressure", measure_qc = pres_adjusted_qc) %>% 
+                                 summarise(count_measure = n())
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 2, measure = "Temperature", measure_qc = temp_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 3, measure = "Salinity", measure_qc = psal_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 4, measure = "pH", measure_qc = ph_in_situ_total_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 5, measure = "Oxygen", measure_qc = doxy_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 6, measure = "Nitrate", measure_qc = nitrate_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+  rm(bgc_data_qc)
+  bgc_measure_summary %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
     
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_data_temp_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_temp.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_data_temp <- bgc_data_temp_yr
-        consolidated_created = 1
-      } else {
-        bgc_data_temp <- rbind(bgc_data_temp, bgc_data_temp_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_data_temp %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_data_temp.rds"))
-  
-    # remove files to free space
-    rm(bgc_data_temp)
-    rm(bgc_data_temp_yr)
-    gc()
-    
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process salinity file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_psal){
-    consolidated_created = 0
-    
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_data_psal_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_psal.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_data_psal <- bgc_data_psal_yr
-        consolidated_created = 1
-      } else {
-        bgc_data_psal <- rbind(bgc_data_psal, bgc_data_psal_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_data_psal %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_data_psal.rds"))
-  
-    # remove files to free space
-    rm(bgc_data_psal)
-    rm(bgc_data_psal_yr)
-    gc()
-    
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process oxygen file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_doxy){
-    consolidated_created = 0
-    
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_data_doxy_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_doxy.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_data_doxy <- bgc_data_doxy_yr
-        consolidated_created = 1
-      } else {
-        bgc_data_doxy <- rbind(bgc_data_doxy, bgc_data_doxy_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_data_doxy %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_data_doxy.rds"))
-  
-    # remove files to free space
-    rm(bgc_data_doxy)
-    rm(bgc_data_doxy_yr)
-    gc()
-    
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process nitrate file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_nitrate){
-    consolidated_created = 0
-    
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_data_nitrate_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_nitrate.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_data_nitrate <- bgc_data_nitrate_yr
-        consolidated_created = 1
-      } else {
-        bgc_data_nitrate <- rbind(bgc_data_nitrate, bgc_data_nitrate_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_data_nitrate %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_data_nitrate.rds"))
-  
-    # remove files to free space
-    rm(bgc_data_nitrate)
-    rm(bgc_data_nitrate_yr)
-    gc()
-    
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process pH file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_pH){
-    consolidated_created = 0
-    
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_data_pH_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_data_pH.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_data_pH <- bgc_data_pH_yr
-        consolidated_created = 1
-      } else {
-        bgc_data_pH <- rbind(bgc_data_pH, bgc_data_pH_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_data_pH %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_data_pH.rds"))
-  
-    # remove files to free space
-    rm(bgc_data_pH)
-    rm(bgc_data_pH_yr)
-    gc()
-    
-  }
-  
-  # ------------------------------------------------------------------------------
-  # Process metadata file
-  # ------------------------------------------------------------------------------
-  if (opt_consolidate_metadata){
-    consolidated_created = 0
-    
-    for (target_year in opt_min_year:opt_max_year) {
-  
-      # read the yearly file based on target_year
-      bgc_metadata_yr <-
-      read_rds(file = paste0(path_argo_preprocessed, "/", target_year, "_bgc_metadata.rds"))
-  
-      # Combine into a consolidated all years file
-      if (consolidated_created == 0) {
-        bgc_metadata <- bgc_metadata_yr
-        consolidated_created = 1
-      } else {
-        bgc_metadata <- rbind(bgc_metadata, bgc_metadata_yr)
-      }
-    }
-    
-    # write consolidated files  
-    bgc_metadata %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
-  
-    # remove files to free space
-    rm(bgc_metadata)
-    rm(bgc_metadata_yr)
-    gc()
-    
-  }
 }
 
 ```
 
-```{r load_indeces, include=FALSE}
-# bgc_index <- argo_global_synthetic_prof() %>%
-#   argo_filter_data_mode(data_mode = 'delayed') %>%  # load in delayed-mode data
-#   argo_filter_date(date_min = '2013-01-01',
-#                    date_max = Sys.time())  
-
-# check the dates 
-# max(bgc_subset$date, na.rm = TRUE)
-# min(bgc_subset$date, na.rm = TRUE)
-
-# checking alternative functions
-# argo_global_meta(download = NULL, quiet = FALSE)
-
-# argo_global_prof(download = NULL, quiet = FALSE)
-# laods in core-argo files (CTD data)
-
-# argo_global_tech(download = NULL, quiet = FALSE)
-# An argo technical file contains technical information from an Argo float. This information is registered for each cycle performed by the float. 
-
-# argo_global_traj(download = NULL, quiet = FALSE)
-# argo_global_bio_traj(download = NULL, quiet = FALSE)
-# load the trajectory files, which contain all received Argos and GPS locations of Argo floats. A trajectory file often contains core and BGC measurements performed at various intermediate times during the cycle and outside the vertical profiles. The full profiles collected upon ascent are not included and are stored in the profile files. 
-
-# argo_global_bio_prof(download = NULL, quiet = FALSE)
-# A B-Argo profile file contains all the parameters from a float, except the core-Argo parameters temperature, pressure, and salinity. A float that performs only CTD measurements does not have a B-Argo file
-
-# argo_global_synthetic_prof(download = NULL, quiet = FALSE)
-
-```
-
-```{r load_data_and_harmonize_variables, include=FALSE}
-
-# bgc_data <- argo_prof_levels(
-#   path = bgc_index,
-#   vars =
-#     c(
-#       'PRES_ADJUSTED',
-#       'PRES_ADJUSTED_QC',
-#       'PRES_ADJUSTED_ERROR',
-#       'PSAL_ADJUSTED',
-#       'PSAL_ADJUSTED_QC',
-#       'PSAL_ADJUSTED_ERROR',
-#       'TEMP_ADJUSTED',
-#       'TEMP_ADJUSTED_QC',
-#       'TEMP_ADJUSTED_ERROR',
-#       'DOXY_ADJUSTED',
-#       'DOXY_ADJUSTED_QC',
-#       'DOXY_ADJUSTED_ERROR',
-#       'NITRATE_ADJUSTED',
-#       'NITRATE_ADJUSTED_QC',
-#       'NITRATE_ADJUSTED_ERROR',
-#       'PH_IN_SITU_TOTAL_ADJUSTED',
-#       'PH_IN_SITU_TOTAL_ADJUSTED_QC',
-#       'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
-#     ),
-#   quiet = TRUE
-# ) 
-# # read in the profiles (takes a while)
-
-  
-```
-
-```{r load_metadata, include=FALSE}
-
-# bgc_metadata <- argo_prof_prof(path = bgc_index)
-
-```
-
-```{r load_calibration_information, include=FALSE}
-
-# bgc_history = argo_prof_history(path = bgc_subset, quiet = TRUE)
-# ?????
-# returns blank output (0 observations of 0 variables)
-# the same occurs if HISTORY_PARAMETER, HISTORY_ACTION, and HISTORY_QCTEST are added into the vars argument when loading the data 
-# HISTORY_ACTION : Name of the action (either 'QCP$' for QC test performed, or 'QCF$' for QC test failed)
-# HISTORY_PARAMETER : name of the parameter on which the action is performed 
-# HISTORY_QCTEST : this field records the code of the QC test performed when ACTION is 'QCP$' or the QC test failed when ACTION is 'QCF$'
-
-# bgc_calibration <- argo_prof_calib(path = bgc_subset, quiet = TRUE)
-# contains the variables: 
-# PARAMETER: name of the calibrated parameter(s) 
-# SCIENTIFIC_CALIB_EQUATION : calibration equation applied to the parameter (if no adjustment is necessary or the data is not adjustable, this field records 'none')
-# SCIENTIFIC_CALIB_COEFFICIENT : calibration coefficients for this equation (if no adjustment is necessary or the data is not adjustable, this field records 'none')
-# SCIENTIFIC_CALIB_COMMENT : comment about this calibration
-# if the delayed-mode adjusted value is the same as the raw value (CTD data) the comment records 'no adjustment necessary'; if the delayed-mode adjusted value has a QC flag of '4', the comment records 'bad data; not adjustable'. 
-# SCIENTIFIC_CALIB_DATE : date when the calibration was performed
-
-```
-
-```{r create_dataset, include=FALSE}
-
-# bgc_merge <- full_join(bgc_data, bgc_metadata)
-# 
-# bgc_merge <- bgc_merge %>%
-#   select(
-#     -c(profile_chla_qc:profile_cdom_qc),
-#     -c(profile_cndc_qc:profile_up_radiance555_qc)
-#   ) %>%
-#   rename(lon = longitude,
-#          lat = latitude) %>%
-#   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-#   mutate(
-#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-#     lat = as.numeric(as.character(lat)),
-#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-#     lon = as.numeric(as.character(lon))
-#   ) %>%
-#   mutate(depth = swDepth(pres_adjusted, latitude =  lat),
-#          .before = pres_adjusted)
-
-
-# bgc_merge_test <- full_join(bgc_data, bgc_calibration) (not sure why but it crashes R every time)
-
-```
-
-## Prepare for analysis
-
-
-### pH data 
+## pH data 
 
 All pH data from BGC floats with QC flag 1 (good data)
 ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1  
 
-### Temperature data 
+```{r create_pH_argo_dataframes}
+if (!opt_qc_only) {
+
+  bgc_merge_pH_qc_1 <- bgc_merge %>%
+    filter(ph_in_situ_total_adjusted_qc == '1') %>%
+    select(
+      date,
+      lat,
+      lon,
+      depth,
+      psal_adjusted,
+      temp_adjusted,
+      temp_adjusted_qc,
+      ph_in_situ_total_adjusted,
+      ph_in_situ_total_adjusted_qc,
+      platform_number,
+      cycle_number,
+      profile_ph_in_situ_total_qc,
+      profile_temp_qc
+    )
+  
+  # create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid
+  ph_merge_1x1 <- bgc_merge %>%
+    select(
+      -c(doxy_adjusted:nitrate_adjusted_error),
+      -c(profile_doxy_qc, profile_nitrate_qc)
+    ) %>%
+    filter(ph_in_situ_total_adjusted_qc == '1') %>%
+    mutate(year = year(date),
+           month = month(date),
+           .after = n_prof)
+  
+  
+  # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
+  ph_surface_1x1 <- ph_merge_1x1 %>%
+    filter(between(depth, 0, 20))
+  
+  # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid
+  ph_surface_2x2 <- ph_surface_1x1 %>%
+    mutate(
+      lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+      lat = as.numeric(as.character(lat)),
+      lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+      lon = as.numeric(as.character(lon))
+    )   # regrid into 2x2º grid
+
+}
+```
+
+## Temperature data 
 
 All temperature data from BGC floats with QC flag 1 
-
-### Temperature AB
-
-BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
-
-### pH & temperature AB
-
-pH and temperature data from floats where both variables have full profiles with QC flag A or B
-
-### pH & temperature data
-
-pH and temperature data where both variables have QC flags 1 
-
-### Write files 
-
-write the files for later analysis
-
-```{r create_pH_argo_dataframes}
-
+```{r create_temp_argo_dataframe}
 
 if (!opt_qc_only) {
 
-  if (opt_summary_files){
-  
-    # Read temp and meta_data
-    bgc_data_temp <-
-    read_rds(file = paste0(path_argo_preprocessed, "/bgc_data_temp.rds"))
-    bgc_data_psal <-
-    read_rds(file = paste0(path_argo_preprocessed, "/bgc_data_psal.rds"))
-
-    bgc_data_doxy <-
-    read_rds(file = paste0(path_argo_preprocessed, "/bgc_data_doxy.rds"))
-    
-    bgc_data_pH <-
-    read_rds(file = paste0(path_argo_preprocessed, "/bgc_data_pH.rds"))
-    bgc_metadata <-
-    read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
-    
-    # ------------------------------------------------------------------------------
-    # All pH data from BGC floats with QC flag 1 (good data)    
-    # ------------------------------------------------------------------------------
-    bgc_data_temp_join <- bgc_data_temp %>%
-      select (
-        file,
-        depth, 
-        temp_adjusted
-      )
-   
-    bgc_data_psal_join <- bgc_data_psal %>%
-      select (
-        file,
-        depth, 
-        psal_adjusted
-      )
-    
-    
-  
-    bgc_data_ph_temp_psal <- left_join(bgc_data_pH, bgc_data_temp_join)
-    bgc_data_ph_temp_psal <- left_join(bgc_data_ph_temp_psal, bgc_data_psal_join)
-     
-    # Join pH, temp psal and meta_data to form merge
-    bgc_merge_pH_qc_1 <- left_join(x = bgc_data_ph_temp_psal, 
-                                       y = bgc_metadata %>% 
-                                              select(file,
-                                                  platform_number,
-                                                  cycle_number,
-                                                  profile_ph_in_situ_total_qc,
-                                                  profile_temp_qc))
-
-# bgc_merge_pH_qc_1 <- bgc_merge %>%
-#   filter(ph_in_situ_total_adjusted_qc == '1') %>%
-#   select(
-#     date,
-#     lat,
-#     lon,
-#     depth,
-#     psal_adjusted,
-#     temp_adjusted,
-#     temp_adjusted_qc,
-#     ph_in_situ_total_adjusted,
-#     ph_in_situ_total_adjusted_qc,
-#     platform_number,
-#     cycle_number,
-#     profile_ph_in_situ_total_qc,
-#     profile_temp_qc
-#   )
-
-    # ------------------------------------------------------------------------------    
-    # ph_surface: pH data in the top 20 m of the watercolumn with QC flag 1  
-    # ------------------------------------------------------------------------------    
-
-    # create a dataframe of full pH data (only good data) with corresponding CTD and metadata, 
-    # in a 1x1º longitude/latitude grid
-    ph_merge_1x1 <- bgc_merge_pH_qc_1 %>% 
-                      mutate(
-                        year = year(date),
-                        month = month(date),
-                        .before = depth
-                        )
-        
-        
-    # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn),
-    # in a 1x1º longitude/latitude grid
-    ph_surface_1x1 <- ph_merge_1x1 %>%
-      filter(between(depth, 0, 20))
-
-    # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn),
-    # in a 2x2º longitude/latitude grid
-    ph_surface_2x2 <- ph_surface_1x1 %>%
-      mutate(
-        lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-        lat = as.numeric(as.character(lat)),
-        lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-        lon = as.numeric(as.character(lon))
-      )   # regrid into 2x2º grid
-
-# # create a dataframe of full pH data (only good data) with corresponding CTD and metadata, in a 1x1º longitude/latitude grid
-# ph_merge_1x1 <- bgc_merge %>%
-#   select(
-#     -c(doxy_adjusted:nitrate_adjusted_error),
-#     -c(profile_doxy_qc, profile_nitrate_qc)
-#   ) %>%
-#   filter(ph_in_situ_total_adjusted_qc == '1') %>%
-#   mutate(year = year(date),
-#          month = month(date),
-#          .after = n_prof)
-# 
-# 
-# # create a dataframe of pH data in the surface ocean (upper 20 m of the watercolumn), in a 1x1º longitude/latitude grid
-# ph_surface_1x1 <- ph_merge_1x1 %>%
-#   filter(between(depth, 0, 20))
-# 
-# # create a dataframe of pH for the surface ocean (upper 20 m of the watercolumn) in a 2x2º longitude/latitude grid
-# ph_surface_2x2 <- ph_surface_1x1 %>%
-#   mutate(
-#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-#     lat = as.numeric(as.character(lat)),
-#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-#     lon = as.numeric(as.character(lon))
-#   )   # regrid into 2x2º grid
-
-    # ------------------------------------------------------------------------------            
-    # All temperature data from BGC floats with QC flag 1     
-    # ------------------------------------------------------------------------------        
-    bgc_merge_temp_qc_1 <- left_join(x = bgc_data_temp, 
-                                     y = bgc_metadata %>% 
-                                          select(file,
-                                              platform_number,
-                                              cycle_number,
-                                              profile_temp_qc))
-    
-# bgc_merge_temp_qc_1 <- bgc_merge %>% 
-#   filter(temp_adjusted_qc == '1') %>% 
-#   select(date, lat, lon, 
-#          depth, temp_adjusted,
-#          platform_number, cycle_number,
-#          temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
-#          profile_temp_qc,
-#          profile_ph_in_situ_total_qc)
-
-    # ------------------------------------------------------------------------------            
-    # BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
-    # ------------------------------------------------------------------------------            
-    bgc_merge_temp_AB <- bgc_merge_temp_qc_1 %>%
-                          filter(profile_temp_qc == 'A' | profile_temp_qc == 'B')
-
-    
-# bgc_merge_temp_AB <- bgc_merge %>% 
-#   filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
-#   filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
-#   select(date, lat, lon,
-#          depth, temp_adjusted, temp_adjusted_qc,
-#          platform_number, cycle_number,
-#          profile_temp_qc)
-
-    # ------------------------------------------------------------------------------                
-    # pH and temperature data from floats where both variables have full profiles with QC flag A or B
-    # ------------------------------------------------------------------------------                
-
-    bgc_data_ph_temp <- left_join(bgc_data_pH, bgc_data_temp_join)
-
-    # Join pH, temp psal and meta_data to form merge
-    bgc_merge_qc_1 <- left_join(x = bgc_data_ph_temp, 
-                                       y = bgc_metadata %>% 
-                                              select(file,
-                                                  platform_number,
-                                                  cycle_number,
-                                                  profile_ph_in_situ_total_qc,
-                                                  profile_temp_qc))
-
-    bgc_merge_flag_AB <- bgc_merge_qc_1 %>%
-                          filter(profile_ph_in_situ_total_qc %in% c('A', 'B'),
-                                 profile_temp_qc %in% c('A', 'B'))      
-    
-# # create a dataframe with temperature and pH profile flags A and B only 
-# # keep only temperature observations where good pH data exists: 
-# 
-# # using only complete profiles, and temperature data where pH measurements exist:
-# 
-# bgc_merge_flag_AB <- bgc_merge %>%
-#   filter(profile_ph_in_situ_total_qc %in% c('A', 'B'),
-#          profile_temp_qc %in% c('A', 'B')) %>%
-#   select(depth,
-#          temp_adjusted:temp_adjusted_error,
-#          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-#          platform_number,
-#          cycle_number,
-#          date,
-#          lat, lon,
-#          profile_temp_qc,
-#         profile_ph_in_situ_total_qc) %>%
-#   filter(!is.na(ph_in_situ_total_adjusted))
-# # no NA temperature values
-# # 518 340 total observations 
-    
-    # ------------------------------------------------------------------------------                
-    # pH and temperature data where both variables have QC flags 1 
-    # ------------------------------------------------------------------------------                
-    # bgc_merge_qc_1 created in step above.
-
-    
-    # ------------------------------------------------------------------------------                
-    # doxy data where both variables have QC flags 1 
-    # ------------------------------------------------------------------------------                
-    # Join doxy and meta_data to form merge
-    bgc_merge_doxy_qc_1 <- left_join(x = bgc_data_doxy, 
-                                       y = bgc_metadata %>% 
-                                              select(file,
-                                                  platform_number,
-                                                  cycle_number,
-                                                  profile_ph_in_situ_total_qc,
-                                                  profile_temp_qc))
-
-            
-# bgc_merge_qc_1 <- bgc_merge %>% 
-#   filter(ph_in_situ_total_adjusted_qc == '1',
-#          temp_adjusted_qc == '1') %>% 
-#   select(depth,
-#          temp_adjusted:temp_adjusted_error,
-#          ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-#          platform_number,
-#          cycle_number,
-#          date,
-#          lat, lon,
-#          profile_temp_qc,
-#          profile_ph_in_situ_total_qc)
-    
-
-    # bgc_index %>%
-    #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
-    # 
-    # # bgc_calibration %>%
-    # #  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
-    # 
-    # bgc_data %>%
-    #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
-    # 
-    # bgc_merge %>%
-    #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
-    
-    
-    bgc_merge_pH_qc_1 %>%
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
-    
-    bgc_merge_temp_qc_1 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
-    
-    bgc_merge_temp_AB %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
-    
-    bgc_merge_flag_AB %>%
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
-    
-    bgc_merge_qc_1 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
-    
-    ph_merge_1x1 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
-    
-    ph_surface_1x1 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
-    
-    ph_surface_2x2 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
-        
-    bgc_merge_doxy_qc_1 %>% 
-      write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_doxy_qc_1.rds"))
-
-
-  }
+  # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
+  bgc_merge_temp_qc_1 <- bgc_merge %>% 
+    filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
+    select(date, lat, lon, 
+           depth, temp_adjusted,
+           platform_number, cycle_number,
+           temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
+           profile_temp_qc,
+           profile_ph_in_situ_total_qc)
 }
+```
+  
+## QC flag A and B temperature data
+  
+BGC-temperature data with QC flags A and B, irrespective of whether a corresponding pH measurement exists
+  
+```{r temp_flag_AB_without_ph}
+
+if (!opt_qc_only) {
+  
+  bgc_merge_temp_AB <- bgc_merge %>% 
+    filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
+    filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
+    select(date, lat, lon,
+           depth, temp_adjusted, temp_adjusted_qc,
+           platform_number, cycle_number,
+           profile_temp_qc)
+
+}
+```
 
 
+## QC flag A and B pH & temperature data 
+
+pH and temperature data from floats where both variables have full profiles with QC flag A 
+
+```{r create_flag_A_bgc_argo_dataframe}
+
+if (!opt_qc_only) {
+
+  # create a dataframe with temperature and pH profile flags A and B only 
+  # keep only temperature observations where good pH data exists: 
+  
+  # using only complete profiles, and temperature data where pH measurements exist:
+  
+  bgc_merge_flag_AB <- bgc_merge %>%
+    filter(profile_ph_in_situ_total_qc %in% c('A', 'B'),
+           profile_temp_qc %in% c('A', 'B')) %>%
+    select(depth,
+           temp_adjusted:temp_adjusted_error,
+           ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+           platform_number,
+           cycle_number,
+           date,
+           lat, lon,
+           profile_temp_qc,
+          profile_ph_in_situ_total_qc) %>%
+    filter(!is.na(ph_in_situ_total_adjusted))
+  # no NA temperature values
+  # 518 340 total observations 
+}
+```
+
+## QC flag 1 pH & temperature data
+
+pH and temperature data where both variables have QC flags 1 
+
+```{r create_qc_flag_1_dataframe}
+
+if (!opt_qc_only) {
+
+  # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
+  bgc_merge_qc_1 <- bgc_merge %>% 
+    filter(ph_in_situ_total_adjusted_qc == '1' & (temp_adjusted_qc == '1' | temp_adjusted_qc == '8')) %>% 
+    select(depth,
+           temp_adjusted:temp_adjusted_error,
+           ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+           platform_number,
+           cycle_number,
+           date,
+           lat, lon,
+           profile_temp_qc,
+           profile_ph_in_situ_total_qc)
+}
+```
 
 
+## Write Argo data to files 
+
+```{r write_argo_data_files}
+
+if (!opt_qc_only) {
+
+  bgc_index %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
+  
+  bgc_data %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
+  
+  bgc_merge %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
+  
+  bgc_merge_pH_qc_1 %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
+  
+  bgc_merge_temp_qc_1 %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
+  
+  bgc_merge_temp_AB %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
+  
+  bgc_merge_flag_AB %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
+  
+  bgc_merge_qc_1 %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
+  
+  ph_merge_1x1 %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
+  
+  bgc_metadata %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+  
+  ph_surface_1x1 %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
+  
+  ph_surface_2x2 %>% 
+    write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
+
+}
 ```
 
 ## QC summary
@@ -1333,7 +614,7 @@ year_max <- max(bgc_measure_summary$year)
 # draw plots for the separate parameters
 bgc_measure_summary %>%
   filter(measure_qc != " " & measure_order %in% c(2, 4, 5)) %>%
-  ggplot(aes(x = year, y = count_measures, col = measure_qc, group=measure_qc)) +
+  ggplot(aes(x = year, y = count_measure, col = measure_qc, group=measure_qc)) +
           geom_point() +
           geom_line() +
           facet_wrap(~measure_order, labeller = facet_label) +
@@ -1345,73 +626,6 @@ bgc_measure_summary %>%
 
 ```
 
-```{r harmonise_metadata_variables, include=FALSE}
-
-# bgc_metadata <- bgc_metadata %>%
-#   rename(lon = longitude,
-#          lat = latitude) %>%
-#   mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-#   mutate(
-#     lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
-#     lat = as.numeric(as.character(lat)),
-#     lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
-#     lon = as.numeric(as.character(lon))
-#   ) %>% 
-#   select(
-#     -c(profile_chla_qc:profile_cdom_qc),
-#     -c(profile_cndc_qc:profile_up_radiance555_qc)
-#   )
-
-```
-
-```{r write_argo_data_files, include=FALSE}
-
-# bgc_index %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
-# 
-# # bgc_calibration %>%
-# #  write_rds(file = paste0(path_argo_preprocessed, "/bgc_calibration.rds"))
-# 
-# bgc_data %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_data.rds"))
-# 
-# bgc_merge %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
-# 
-# 
-# bgc_merge_pH_qc_1 %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
-# 
-# 
-# bgc_merge_temp_qc_1 %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
-# 
-# bgc_merge_temp_AB %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
-# 
-# 
-# bgc_merge_flag_AB %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
-# 
-# # bgc_merge_flag_A_test %>%
-# #   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_A_test.rds"))
-# 
-# bgc_merge_qc_1 %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
-# 
-# ph_merge_1x1 %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
-# 
-# bgc_metadata %>%
-#   write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
-# 
-# ph_surface_1x1 %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
-# 
-# ph_surface_2x2 %>% 
-#   write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
-
-```
 
 # Data set description
 
