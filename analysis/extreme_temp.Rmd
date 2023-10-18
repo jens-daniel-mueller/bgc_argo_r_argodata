@@ -94,7 +94,7 @@ OceanSODA_temp <- OceanSODA_temp %>%
 # Argo flag A profiles
 
 full_argo <-
-  read_rds(file = paste0(path_argo_preprocessed, "/X_bgc_merge_flag_AB.rds"))
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
 
 full_argo <- full_argo %>%
   select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
@@ -107,7 +107,7 @@ full_argo <- full_argo %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 # load in bgc-temperature data with profile QC flags of A and B, irrespective of whether a corresponding pH measurement exists 
-argo_temp <- read_rds(file = paste0(path_argo_preprocessed, "/X_bgc_merge_temp_AB.rds"))
+argo_temp <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
 
 argo_temp <- argo_temp %>%
   mutate(year = year(date),
