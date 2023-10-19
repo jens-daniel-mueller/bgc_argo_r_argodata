@@ -157,44 +157,54 @@ basemap(limits = -30)+
 
 ```{r grid_reduction_to_true_2x2_region_mask}
 
-nm_biomes_2x2 <- nm_biomes %>% 
-  mutate(lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-         lon = as.numeric(as.character(lon)),
-         lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-         lat = as.numeric(as.character(lat)))
+# Commented
+# nm_biomes_2x2 <- nm_biomes %>% 
+#   mutate(lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#          lon = as.numeric(as.character(lon)),
+#          lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#          lat = as.numeric(as.character(lat)))
+# 
+# nm_biomes_2x2 <- nm_biomes_2x2 %>% 
+#   count(lon, lat, biome_name) %>% 
+#   group_by(lon, lat) %>% 
+#   slice_max(n, with_ties = FALSE) %>% 
+#   ungroup()
 
-nm_biomes_2x2 <- nm_biomes_2x2 %>% 
+# New
+nm_biomes <- nm_biomes %>% 
   count(lon, lat, biome_name) %>% 
   group_by(lon, lat) %>% 
   slice_max(n, with_ties = FALSE) %>% 
   ungroup()
 
-rm(nm_biomes)
+# Commented
+#rm(nm_biomes)
+
 ```
 
 
 ```{r new_mayot_biomes_map, fig.asp=0.4}
 
-map+
-  geom_tile(data = nm_biomes_2x2,
-            aes(x = lon,
-                y = lat,
-                fill = biome_name))+
-  scale_fill_brewer(palette = 'Dark2')+
-  labs('Mayot biomes post-grid reduction')
+# map+
+#   geom_tile(data = nm_biomes_2x2,
+#             aes(x = lon,
+#                 y = lat,
+#                 fill = biome_name))+
+#   scale_fill_brewer(palette = 'Dark2')+
+#   labs('Mayot biomes post-grid reduction')
 
 ```
 
 ```{r polar_projection_mayot_biomes, eval=FALSE}
 
-basemap(limits = -30)+
-  geom_spatial_tile(data = nm_biomes_2x2,
-                    aes(x = lon, 
-                        y = lat,
-                        fill = biome_name),
-                    col = NA)+
-  scale_fill_brewer(palette = 'Dark2')+
-  labs(title = 'Mayot biomes (post-grid reduction)')
+# basemap(limits = -30)+
+#   geom_spatial_tile(data = nm_biomes_2x2,
+#                     aes(x = lon, 
+#                         y = lat,
+#                         fill = biome_name),
+#                     col = NA)+
+#   scale_fill_brewer(palette = 'Dark2')+
+#   labs(title = 'Mayot biomes (post-grid reduction)')
 
 ```
 
@@ -204,61 +214,74 @@ basemap(limits = -30)+
 
 basinmask <- basinmask %>%
   filter(lat < -30)
+
 ```
 
 
 ```{r basin_map_pre_grid_reduction, fig.asp=0.4}
+
 map +
   geom_tile(data = basinmask, 
             aes(x = lon, 
                 y = lat, 
                 fill = basin_AIP))+
   scale_fill_brewer(palette = 'Dark2')
+
 ```
 
 ```{r grid_reduction_to_true_2x2_basinmask}
 
-basinmask_2x2 <- basinmask %>%
-  mutate(
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))
-   )
+# Commented
+# basinmask_2x2 <- basinmask %>%
+#   mutate(
+#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#     lon = as.numeric(as.character(lon))
+#    )
+# 
+# # assign basins from each pixel to to each 2 Lon x Lat pixel, based on the majority of basins in each 2x2 grid
+# 
+# basinmask_2x2 <- basinmask_2x2 %>%
+#   count(lon, lat, basin_AIP) %>%
+#   group_by(lon, lat) %>%
+#   slice_max(n, with_ties = FALSE) %>%
+#   ungroup() %>%
+#   select(-n)
 
-# assign basins from each pixel to to each 2 Lon x Lat pixel, based on the majority of basins in each 2x2 grid
-
-basinmask_2x2 <- basinmask_2x2 %>%
+# Added
+basinmask <- basinmask %>%
   count(lon, lat, basin_AIP) %>%
   group_by(lon, lat) %>%
   slice_max(n, with_ties = FALSE) %>%
   ungroup() %>%
   select(-n)
 
-rm(basinmask)
+# commented
+#rm(basinmask)
 
 ```
 
 ```{r basin_map_post_grid_reduction, fig.asp=0.4}
 
-map+
-  geom_tile(data = basinmask_2x2 %>% filter(lat < -30),
-            aes(x = lon,
-                y = lat,
-                fill = basin_AIP))+
-  scale_fill_brewer(palette = 'Dark2')
+# map+
+#   geom_tile(data = basinmask_2x2 %>% filter(lat < -30),
+#             aes(x = lon,
+#                 y = lat,
+#                 fill = basin_AIP))+
+#   scale_fill_brewer(palette = 'Dark2')
 
 ```
 
 ```{r polar_projection_basin_map, eval=FALSE}
 
-basemap(limits = -32)+
-  geom_spatial_tile(data = basinmask_2x2 %>% filter(lat < -32),
-                    aes(x = lon,
-                        y = lat,
-                        fill = basin_AIP),
-                    col = NA)+
-  scale_fill_brewer(palette = 'Dark2')
+# basemap(limits = -32)+
+#   geom_spatial_tile(data = basinmask_2x2 %>% filter(lat < -32),
+#                     aes(x = lon,
+#                         y = lat,
+#                         fill = basin_AIP),
+#                     col = NA)+
+#   scale_fill_brewer(palette = 'Dark2')
 
 ```
 
@@ -284,16 +307,24 @@ OceanSODA_temp <- OceanSODA_temp %>%
 # Note: While reducing lon x lat grid,
 # we keep the original number of observations
 
-OceanSODA_temp_2x2 <- OceanSODA_temp %>%
+# Commented
+# OceanSODA_temp_2x2 <- OceanSODA_temp %>%
+#   mutate(
+#     lat_raw = lat,
+#     lon_raw = lon,
+#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#     lon = as.numeric(as.character(lon))) # regrid into 2x2º grid
+
+# Added
+OceanSODA_temp <- OceanSODA_temp %>%
   mutate(
     lat_raw = lat,
-    lon_raw = lon,
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon))) # regrid into 2x2º grid
+    lon_raw = lon)
 
-rm(OceanSODA_temp)
+# commented
+#rm(OceanSODA_temp)
 
 ```
 
@@ -302,20 +333,30 @@ rm(OceanSODA_temp)
 ```{r apply_region_masks_OceanSODA_temp, fig.asp=0.4}
 
 # keep only Southern Ocean data
-OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2, nm_biomes_2x2 %>% 
-                                      select(-n)) 
+# OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2, nm_biomes_2x2 %>% 
+                                       # select(-n)) 
+# 
+# rm(OceanSODA_temp_2x2)
 
-rm(OceanSODA_temp_2x2)
+# # add in basin separations
+# OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2_SO, basinmask_2x2)
+# # expected number of rows from -30 to -70º latitude, 360º longitude, for 12 months, 8 years:
+# # 40 lat x 360 lon x 12 months x 8 years = 1 382 400 rows 
+# # actual number of rows: 925 260 (in line with expectations)
+# 
+# OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>% 
+#    filter(!is.na(temperature))
+# # no NA clim_diff values 
+
+
+OceanSODA_temp_SO <- inner_join(OceanSODA_temp, nm_biomes %>% 
+                                       select(-n)) 
 
 # add in basin separations
-OceanSODA_temp_2x2_SO <- inner_join(OceanSODA_temp_2x2_SO, basinmask_2x2)
-# expected number of rows from -30 to -70º latitude, 360º longitude, for 12 months, 8 years:
-# 40 lat x 360 lon x 12 months x 8 years = 1 382 400 rows 
-# actual number of rows: 925 260 (in line with expectations)
+OceanSODA_temp_SO <- inner_join(OceanSODA_temp_SO, basinmask)
 
-OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>% 
-  filter(!is.na(temperature))
-# no NA clim_diff values 
+OceanSODA_temp_SO <- OceanSODA_temp_SO %>% 
+   filter(!is.na(temperature))
 
 ```
 
@@ -323,7 +364,7 @@ OceanSODA_temp_2x2_SO <- OceanSODA_temp_2x2_SO %>%
 
 ```{r map_OceanSODA_temp_clim_diff, fig.asp=1.5}
 
-OceanSODA_temp_2x2_SO %>% 
+OceanSODA_temp_SO %>% 
   filter(year == 2020) %>% 
   ggplot(aes(lon_raw, lat_raw, fill = clim_temp)) +
   geom_tile() +
@@ -336,7 +377,7 @@ OceanSODA_temp_2x2_SO %>%
 
 ```{r monthly_clim_OceanSODA_temp_map, fig.asp=0.4}
 
-OceanSODA_temp_2x2_SO %>% 
+OceanSODA_temp_SO %>% 
   group_split(month) %>% 
   #head(1) %>% 
   map(
@@ -354,7 +395,7 @@ OceanSODA_temp_2x2_SO %>%
 
 ```{r OceanSODA_temp_anomaly_map, fig.asp=1}
   
-OceanSODA_temp_2x2_SO %>% 
+OceanSODA_temp_SO %>% 
   group_split(month) %>% 
   #head(1) %>% 
   map(
@@ -382,11 +423,11 @@ Through setting only one of the following two code chunks to "eval=FALSE" you ca
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
 
-OceanSODA_temp_regression <- OceanSODA_temp_2x2_SO %>% 
+OceanSODA_temp_regression <- OceanSODA_temp_SO %>% 
   # filter(basin_AIP == "Indian",
   #        biome_name == "SPSS",
   #        lon < 40) %>%
-  nest(data = -c(lon, lat, month)) %>%
+  nest(data = -c(lon, lat)) %>%
   mutate(fit = map(.x = data,
                    .f = ~ lm(clim_diff ~ year, data = .x)),
          tidied = map(.x = fit, .f = tidy),
@@ -468,8 +509,9 @@ map+
             aes(x = lon,
                 y = lat, 
                 fill = slope))+
-  scale_fill_scico(palette = 'vik', midpoint = 0)+
-  facet_wrap(~month, ncol = 2)
+  scale_fill_scico(palette = 'vik', midpoint = 0)
+# +
+#   facet_wrap(~month, ncol = 2)
 
 ```
 
@@ -483,8 +525,8 @@ map+
                 y = lat, 
                 fill = sigma))+
   scale_fill_viridis_c()+
-  facet_wrap(~month, ncol = 2)+
   labs(fill = '1 residual \nst. dev.')
+  # facet_wrap(~month, ncol = 2)+
 
 ```
 
@@ -504,7 +546,7 @@ OceanSODA_temp_SO_extreme_grid <-
   full_join(
     OceanSODA_temp_regression_augmented,
     OceanSODA_temp_regression_glanced %>%
-      select(lon:month, sigma)
+      select(lon:lat, sigma)
   )
 # results in 925 056 rows 
 
@@ -528,6 +570,10 @@ OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
 OceanSODA_temp_SO_extreme_grid <-
   full_join(OceanSODA_temp_SO_extreme_grid,
             OceanSODA_temp_regression_tidied) 
+
+OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
+  mutate(month = month(date), .after = year)
+
 # 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)
 ```
 
@@ -543,7 +589,7 @@ OceanSODA_temp_SO_extreme_grid %>%
 ```{r temp_anomaly_test_plot_grid, fig.asp=0.4}
 
 OceanSODA_temp_SO_extreme_grid %>%
-  group_split(lon, lat, month) %>%
+  group_split(lon, lat) %>%
   head(6) %>%
   map(~ ggplot(data = .x) +
         geom_point(aes(x = year,
@@ -559,8 +605,7 @@ OceanSODA_temp_SO_extreme_grid %>%
                     linetype = 2) +
         labs(title = paste(fititle = paste(
           "lon:", unique(.x$lon),
-          "| lat:", unique(.x$lat),
-          "| month:", unique(.x$month)
+          "| lat:", unique(.x$lat)
           ))) +
         scale_color_manual(values = HNL_colors))
 ```
@@ -650,14 +695,19 @@ OceanSODA_temp_SO_extreme_grid %>%
 # Note: While reducing lon x lat grid,
 # we keep the original number of observations
 
-full_argo_2x2 <- full_argo %>%
+# full_argo_2x2 <- full_argo %>%
+#   mutate(
+#     lat_raw = lat,
+#     lon_raw = lon,
+#     lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
+#     lat = as.numeric(as.character(lat)),
+#     lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
+#     lon = as.numeric(as.character(lon)))  # re-grid to 2x2
+
+full_argo <- full_argo %>%
   mutate(
     lat_raw = lat,
-    lon_raw = lon,
-    lat = cut(lat, seq(-90, 90, 2), seq(-89, 89, 2)),
-    lat = as.numeric(as.character(lat)),
-    lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
-    lon = as.numeric(as.character(lon)))  # re-grid to 2x2
+    lon_raw = lon)
 
 
 ```
