@@ -423,13 +423,17 @@ Through setting only one of the following two code chunks to "eval=FALSE" you ca
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
 
+# create a decimal_year column to use are the parameter to the regression function
+OceanSODA_temp_SO <- OceanSODA_temp_SO %>%
+  mutate(decimal_year = decimal_date(date), .after = year)
+
 OceanSODA_temp_regression <- OceanSODA_temp_SO %>% 
   # filter(basin_AIP == "Indian",
   #        biome_name == "SPSS",
   #        lon < 40) %>%
   nest(data = -c(lon, lat)) %>%
   mutate(fit = map(.x = data,
-                   .f = ~ lm(clim_diff ~ year, data = .x)),
+                   .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
          tidied = map(.x = fit, .f = tidy),
          glanced = map(.x = fit, .f = glance),
          augmented = map(.x = fit, .f = augment)) 
@@ -444,12 +448,12 @@ OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression_tidied %>%
   pivot_wider(names_from = term,
               values_from = estimate) %>% 
   rename(intercept = `(Intercept)`,
-         slope = year)
+         slope = decimal_year)
 
 OceanSODA_temp_regression_augmented <- OceanSODA_temp_regression %>%
   select(-c(fit, tidied, glanced, data)) %>%
   unnest(augmented) %>% 
-  select(lon:year, .resid) 
+  select(lon:decimal_year, .resid) 
 
 OceanSODA_temp_regression_data <- OceanSODA_temp_regression %>% 
   select(-c(fit, tidied, glanced, augmented)) %>% 
@@ -572,7 +576,9 @@ OceanSODA_temp_SO_extreme_grid <-
             OceanSODA_temp_regression_tidied) 
 
 OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
-  mutate(month = month(date), .after = year)
+  mutate(year = year(date),
+         month = month(date),
+         .after = decimal_year)
 
 # 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)
 ```
