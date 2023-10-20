@@ -97,8 +97,7 @@ bgc_merge <- bgc_merge %>%
 ```{r derive_depth}
 
 # The depth that we want to align data items to
-target_depth <- list(2.5, seq(from = 5, to = 400, by = 5), seq(from = 425, to = 1000, by = 25), seq(from = 1050, to = 2000, by = 50))
-target_depth_num <- as.numeric(unlist(target_depth))
+target_depth_num <- c(2.5, seq(from = 5, to = 400, by = 5), seq(from = 425, to = 1000, by = 25), seq(from = 1050, to = 2000, by = 50))
 target_depth_df <- tibble(target_depth_num)
 
 vertical_align <- function(x, y){
@@ -119,6 +118,127 @@ vertical_align_3 <- function(x, y){
 
 
 ```
+
+```{r spline_interpolate_individual_profiles}
+
+# create vector of variables to be interpolated
+vars <- c("temp_adjusted", "psal_adjusted", "ph_in_situ_total_adjusted")
+
+# duplicate the depth column for later extension with target depth vector
+# this step is for demonstration purpose only, it should also work with a single depth column
+bgc_merge <- 
+  bgc_merge %>% 
+  mutate(target_depth_num = depth)
+
+# loop over variables for interpolation
+for (i_var in vars) {
+  
+  # i_var <- vars[1]
+  
+  # filter flagged observations of variable
+  # select variable of interest and call it attribute
+  bgc_merge_clean <-
+    bgc_merge %>%
+    filter(!!sym(paste0(i_var, "_qc")) %in% c(1, 8)) %>% 
+    select(file, depth, target_depth_num, attribute = all_of(i_var))
+    
+  
+  # create all possible combinations of profiles (files) and depth levels for interpolation
+  target_depth_grid <-
+    expand_grid(target_depth_df,
+                bgc_merge_clean %>% distinct(file))
+  
+  # extend observed depth vector with target depths
+  bgc_merge_extended <-
+    full_join(bgc_merge_clean, target_depth_grid) %>% 
+    arrange(file, target_depth_num)
+  
+  # filter target depths outside range of observed depths
+  bgc_merge_extended <-
+    bgc_merge_extended %>%
+    group_by(file) %>%
+    filter(
+      target_depth_num <= max(depth, na.rm = TRUE),
+      target_depth_num >= min(depth, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  # predict spline interpolation on extended depth grid for each profile
+  bgc_merge_interpolated <-
+    bgc_merge_extended %>%
+    group_by(file) %>%
+    mutate(attribute_spline = spline(target_depth_num, attribute,
+                                         method = "natural",
+                                         xout = target_depth_num)$y) %>%
+    ungroup()
+  
+  # subset interpolated values on traget depth grid
+  bgc_merge_interpolated_clean <- 
+    inner_join(target_depth_df, bgc_merge_interpolated)
+  
+  # produce control plot for each attribute
+  ggplot() +
+    geom_point(data = bgc_merge_clean,
+               aes(attribute, target_depth_num, col = "measured, flag filtered")) +
+    geom_point(data = bgc_merge_interpolated_clean,
+               aes(attribute_spline, target_depth_num, col = "interpolated, clean")) +
+    scale_y_reverse() +
+    labs(x = i_var) +
+    facet_grid(file ~.) +
+    theme_bw()
+  
+  
+  # select columns and rename to initial names
+  bgc_merge_interpolated_clean <- 
+    bgc_merge_interpolated_clean %>% 
+    select(file,
+           depth = target_depth_num,
+           !!sym(i_var) := attribute_spline)
+  
+  
+  # merge output for individual variables
+  if (exists("bgc_merge_interpolated_all")) {
+    bgc_merge_interpolated_all <-
+      full_join(bgc_merge_interpolated_all,
+                bgc_merge_interpolated_clean)
+  }
+  
+  if (!exists("bgc_merge_interpolated_all")) {
+    bgc_merge_interpolated_all <-
+      bgc_merge_interpolated_clean
+  }
+  
+}
+
+# pivot data sets to long format for plotting
+
+bgc_merge_interpolated_all_long <-
+  bgc_merge_interpolated_all %>%
+  pivot_longer(contains("_adjusted"))
+
+bgc_merge_long <-
+  bgc_merge %>%
+  select(file, depth, all_of(vars)) %>% 
+  pivot_longer(contains("_adjusted"))
+
+
+# plot initial and interpolated data for all variables
+ggplot() +
+  geom_point(data = bgc_merge_long,
+             aes(value, depth, col = "input, no filter")) +
+  geom_point(data = bgc_merge_interpolated_all_long,
+             aes(value, depth, col = "interpolated, clean")) +
+  scale_y_reverse() +
+  facet_grid(file ~ name,
+             scales = "free_x") +
+  theme_bw()
+  
+
+```
+
+
+
+
 
 ## Build working data frame with the source profile details
 ```{r assemble_source_profiles}
@@ -203,7 +323,8 @@ bgc_profile_limits <- bgc_merge_vert_data %>%
   summarise(
     profile_min = min(depth), 
     profile_max = max(depth)
-    )
+    ) %>% 
+  ungroup()
 
 # For each profile min depth determine the target level that matches
 target_rows = nrow(target_depth_df)
