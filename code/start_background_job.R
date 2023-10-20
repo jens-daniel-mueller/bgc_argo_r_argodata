@@ -1,10 +1,11 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'load_argo.Rmd'
+    'extreme_pH.Rmd',
+    'extreme_temp.Rmd'
   )
 ),
-message = "Revised version of BGC load to match core load process")
+message = "Changes regression to be based across all months of a year. Retained 1x1 degree datasets, avoiding the need for 2x2 grouping.")
 
 #
 # # Push latest version to GitHub
