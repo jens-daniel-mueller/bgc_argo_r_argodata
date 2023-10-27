@@ -467,7 +467,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">18 October, 2023</h4>
+<h4 class="date">27 October, 2023</h4>
 
 </div>
 
@@ -496,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-18
+<strong>Last updated:</strong> 2023-10-27
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7af09d6b8ed99c958f72a59e9d06ca2e05027cdatargetblank7af09d6a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8fac6bbbe1f139c134af08cf1309a8bd4dff4602targetblank8fac6bba">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7af09d6b8ed99c958f72a59e9d06ca2e05027cda" target="_blank">7af09d6</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8fac6bbbe1f139c134af08cf1309a8bd4dff4602" target="_blank">8fac6bb</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree7af09d6b8ed99c958f72a59e9d06ca2e05027cdatargetblank7af09d6a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8fac6bbbe1f139c134af08cf1309a8bd4dff4602targetblank8fac6bba"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/7af09d6b8ed99c958f72a59e9d06ca2e05027cda" target="_blank">7af09d6</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8fac6bbbe1f139c134af08cf1309a8bd4dff4602" target="_blank">8fac6bb</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -664,8 +664,15 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/pH_align_climatology.Rmd
+    Untracked:  code/temp_align_climatology.Rmd
+
 Unstaged changes:
+    Modified:   analysis/load_argo_clim_pH_ucsd.Rmd
+    Modified:   code/Workflowr_project_managment.R
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_bgc_load.R
 
 </code></pre>
 <p>
@@ -711,6 +718,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8fac6bbbe1f139c134af08cf1309a8bd4dff4602/analysis/load_argo.Rmd" target="_blank">8fac6bb</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-27
+</td>
+<td>
+maintaining file_id in all datasets
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/93b4545275c9570673e22da1f9b3f2eec899c55a/docs/load_argo.html" target="_blank">93b4545</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1216,6 +1257,23 @@ take a while)</p>
       lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
       lon = as.numeric(as.character(lon))
   )
+  
+  # Create fileid dataframe and link back to merge and metadata
+  bgc_fileid &lt;- unique(bgc_merge$file)
+  bgc_fileid &lt;- tibble(bgc_fileid)
+  bgc_fileid &lt;- bgc_fileid %&gt;% select (file = bgc_fileid)
+  bgc_fileid &lt;- tibble::rowid_to_column(bgc_fileid, &quot;file_id&quot;)
+
+  # Change metadate, data and merge to have file_id
+  bgc_metadata &lt;- full_join(bgc_metadata, bgc_fileid)
+  bgc_metadata &lt;- bgc_metadata %&gt;%
+                    select(-c(file))
+  bgc_merge &lt;- full_join(bgc_merge, bgc_fileid)
+  bgc_merge &lt;- bgc_merge %&gt;%
+                    select(-c(file))
+  bgc_data &lt;- full_join(bgc_data, bgc_fileid)
+  bgc_data &lt;- bgc_data %&gt;%
+                    select(-c(file))
 
   # Summary measurement QC data
   bgc_data_qc &lt;- bgc_merge %&gt;%
@@ -1265,6 +1323,7 @@ data in the top 20 m of the watercolumn with QC flag 1</p>
   bgc_merge_pH_qc_1 &lt;- bgc_merge %&gt;%
     filter(ph_in_situ_total_adjusted_qc == &#39;1&#39;) %&gt;%
     select(
+      file_id,
       date,
       lat,
       lon,
@@ -1315,7 +1374,7 @@ data in the top 20 m of the watercolumn with QC flag 1</p>
   # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
   bgc_merge_temp_qc_1 &lt;- bgc_merge %&gt;% 
     filter(temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;) %&gt;% 
-    select(date, lat, lon, 
+    select(file_id, date, lat, lon, 
            depth, temp_adjusted,
            platform_number, cycle_number,
            temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
@@ -1332,7 +1391,7 @@ corresponding pH measurement exists</p>
   bgc_merge_temp_AB &lt;- bgc_merge %&gt;% 
     filter(profile_temp_qc == &#39;A&#39; | profile_temp_qc == &#39;B&#39;) %&gt;% 
     filter(temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;) %&gt;% 
-    select(date, lat, lon,
+    select(file_id, date, lat, lon,
            depth, temp_adjusted, temp_adjusted_qc,
            platform_number, cycle_number,
            profile_temp_qc)
@@ -1353,7 +1412,7 @@ profiles with QC flag A</p>
   bgc_merge_flag_AB &lt;- bgc_merge %&gt;%
     filter(profile_ph_in_situ_total_qc %in% c(&#39;A&#39;, &#39;B&#39;),
            profile_temp_qc %in% c(&#39;A&#39;, &#39;B&#39;)) %&gt;%
-    select(depth,
+    select(file_id, depth,
            temp_adjusted:temp_adjusted_error,
            ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
            platform_number,
@@ -1375,7 +1434,7 @@ profiles with QC flag A</p>
   # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
   bgc_merge_qc_1 &lt;- bgc_merge %&gt;% 
     filter(ph_in_situ_total_adjusted_qc == &#39;1&#39; &amp; (temp_adjusted_qc == &#39;1&#39; | temp_adjusted_qc == &#39;8&#39;)) %&gt;% 
-    select(depth,
+    select(file_id, depth,
            temp_adjusted:temp_adjusted_error,
            ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
            platform_number,
@@ -1399,7 +1458,10 @@ profiles with QC flag A</p>
   bgc_merge %&gt;%
     write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge.rds&quot;))
   
-  bgc_merge_pH_qc_1 %&gt;%
+  bgc_fileid %&gt;%
+    write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_fileid.rds&quot;))
+
+    bgc_merge_pH_qc_1 %&gt;%
     write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_pH_qc_1.rds&quot;))
   
   bgc_merge_temp_qc_1 %&gt;% 
@@ -1523,6 +1585,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/93b4545275c9570673e22da1f9b3f2eec899c55a/docs/figure/load_argo.Rmd/QC_summary_profile-1.png" target="_blank">93b4545</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-18
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/0ee3427d316a537386be98d1fa27a78edab896e4/docs/figure/load_argo.Rmd/QC_summary_profile-1.png" target="_blank">0ee3427</a>
 </td>
 <td>
@@ -1583,6 +1656,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/93b4545275c9570673e22da1f9b3f2eec899c55a/docs/figure/load_argo.Rmd/QC_summary_measure-1.png" target="_blank">93b4545</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-18
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/0ee3427d316a537386be98d1fa27a78edab896e4/docs/figure/load_argo.Rmd/QC_summary_measure-1.png" target="_blank">0ee3427</a>
