@@ -280,6 +280,23 @@ if (!opt_qc_only) {
       lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
       lon = as.numeric(as.character(lon))
   )
+  
+  # Create fileid dataframe and link back to merge and metadata
+  bgc_fileid <- unique(bgc_merge$file)
+  bgc_fileid <- tibble(bgc_fileid)
+  bgc_fileid <- bgc_fileid %>% select (file = bgc_fileid)
+  bgc_fileid <- tibble::rowid_to_column(bgc_fileid, "file_id")
+
+  # Change metadate, data and merge to have file_id
+  bgc_metadata <- full_join(bgc_metadata, bgc_fileid)
+  bgc_metadata <- bgc_metadata %>%
+                    select(-c(file))
+  bgc_merge <- full_join(bgc_merge, bgc_fileid)
+  bgc_merge <- bgc_merge %>%
+                    select(-c(file))
+  bgc_data <- full_join(bgc_data, bgc_fileid)
+  bgc_data <- bgc_data %>%
+                    select(-c(file))
 
   # Summary measurement QC data
   bgc_data_qc <- bgc_merge %>%
@@ -333,6 +350,7 @@ if (!opt_qc_only) {
   bgc_merge_pH_qc_1 <- bgc_merge %>%
     filter(ph_in_situ_total_adjusted_qc == '1') %>%
     select(
+      file_id,
       date,
       lat,
       lon,
@@ -386,7 +404,7 @@ if (!opt_qc_only) {
   # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
   bgc_merge_temp_qc_1 <- bgc_merge %>% 
     filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
-    select(date, lat, lon, 
+    select(file_id, date, lat, lon, 
            depth, temp_adjusted,
            platform_number, cycle_number,
            temp_adjusted_qc, ph_in_situ_total_adjusted_qc,
@@ -406,7 +424,7 @@ if (!opt_qc_only) {
   bgc_merge_temp_AB <- bgc_merge %>% 
     filter(profile_temp_qc == 'A' | profile_temp_qc == 'B') %>% 
     filter(temp_adjusted_qc == '1' | temp_adjusted_qc == '8') %>% 
-    select(date, lat, lon,
+    select(file_id, date, lat, lon,
            depth, temp_adjusted, temp_adjusted_qc,
            platform_number, cycle_number,
            profile_temp_qc)
@@ -431,7 +449,7 @@ if (!opt_qc_only) {
   bgc_merge_flag_AB <- bgc_merge %>%
     filter(profile_ph_in_situ_total_qc %in% c('A', 'B'),
            profile_temp_qc %in% c('A', 'B')) %>%
-    select(depth,
+    select(file_id, depth,
            temp_adjusted:temp_adjusted_error,
            ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
            platform_number,
@@ -457,7 +475,7 @@ if (!opt_qc_only) {
   # Include bgc_merge_temp_qc == 8 as this is as good as 1 and matches the BGC data points
   bgc_merge_qc_1 <- bgc_merge %>% 
     filter(ph_in_situ_total_adjusted_qc == '1' & (temp_adjusted_qc == '1' | temp_adjusted_qc == '8')) %>% 
-    select(depth,
+    select(file_id, depth,
            temp_adjusted:temp_adjusted_error,
            ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
            platform_number,
@@ -485,7 +503,10 @@ if (!opt_qc_only) {
   bgc_merge %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge.rds"))
   
-  bgc_merge_pH_qc_1 %>%
+  bgc_fileid %>%
+    write_rds(file = paste0(path_argo_preprocessed, "/bgc_fileid.rds"))
+
+    bgc_merge_pH_qc_1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
   
   bgc_merge_temp_qc_1 %>% 
