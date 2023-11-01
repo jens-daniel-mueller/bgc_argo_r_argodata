@@ -395,7 +395,7 @@ This process create three files in the path_argo_core_preprocessed directory tha
 ### core_data_temp.rds
 
 Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
-    file - the source file
+    fileid - the source file
     date - date of profile
     lat - aligned to closest 0.5° lat
     lon - aligned to closest 0.5° lon
@@ -406,7 +406,7 @@ Contains approximately 500 measuring points per profile and only contains those 
 ### core_data_psal.rds
 
 Contains approximately 500 measuring points per profile and only contains those points that are marked as good. Fields listed below
-    file - the source file
+    fileid - the source file
     date - date of profile
     lat - aligned to closest 0.5° lat
     lon - aligned to closest 0.5° lon
@@ -417,7 +417,7 @@ Contains approximately 500 measuring points per profile and only contains those 
 ### core_metadata.rds
 
 Contains 1 row per profile. Fields listed below
-    file - the source file
+    fileid - the source file
     date - date of profile
     lat - aligned to closest 0.5° lat
     lon - aligned to closest 0.5° lon
@@ -431,7 +431,7 @@ Contains 1 row per profile. Fields listed below
 
 ```{r consolidate_into_allyears}
 if (!opt_qc_only) {
-
+  
   # ------------------------------------------------------------------------------
   # Process temperature file
   # ------------------------------------------------------------------------------
@@ -452,16 +452,7 @@ if (!opt_qc_only) {
         core_data_temp <- rbind(core_data_temp, core_data_temp_yr)
       }
     }
-    
-    # write consolidated files  
-    core_data_temp %>% 
-      write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_temp.rds"))
-  
-    # remove files to free space
-    rm(core_data_temp)
-    rm(core_data_temp_yr)
-    gc()
-    
+
   }
   
   # ------------------------------------------------------------------------------
@@ -484,16 +475,7 @@ if (!opt_qc_only) {
         core_data_psal <- rbind(core_data_psal, core_data_psal_yr)
       }
     }
-    
-    # write consolidated files  
-    core_data_psal %>% 
-      write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_psal.rds"))
-  
-    # remove files to free space
-    rm(core_data_psal)
-    rm(core_data_psal_yr)
-    gc()
-    
+
   }
   
   # ------------------------------------------------------------------------------
@@ -516,17 +498,43 @@ if (!opt_qc_only) {
         core_metadata <- rbind(core_metadata, core_metadata_yr)
       }
     }
-    
-    # write consolidated files  
-    core_metadata %>% 
-      write_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
-  
-    # remove files to free space
-    rm(core_metadata)
-    rm(core_metadata_yr)
-    gc()
-    
+
   }
+  
+  # ------------------------------------------------------------------------------
+  # Establish file_id and save files
+  # ------------------------------------------------------------------------------
+  # create fileid file ready to update data files
+  core_fileid <- unique(core_metadata$file)
+  core_fileid <- tibble(core_fileid)
+  core_fileid <- core_fileid %>% select (file = core_fileid)
+  core_fileid <- tibble::rowid_to_column(core_fileid, "file_id")
+
+  # Change metadate and datato have file_id
+  core_metadata <- full_join(core_metadata, core_fileid)
+  core_metadata <- core_metadata %>%
+                    select(-c(file))
+  core_data_temp <- full_join(core_data_temp, core_fileid)
+  core_data_temp <- core_data_temp %>%
+                    select(-c(file))
+  core_data_psal <- full_join(core_data_psal, core_fileid)
+  core_data_psal <- core_data_psal %>%
+                    select(-c(file))
+    
+  # write consolidated files
+  core_fileid %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_fileid.rds"))
+  core_metadata %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
+  core_data_temp %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_temp.rds"))
+  core_data_psal %>%
+    write_rds(file = paste0(path_argo_core_preprocessed, "/core_data_psal.rds"))
+
+  rm(core_metadata_yr, core_data_temp_yr, core_data_psal_yr)
+  rm(core_metadata, core_data_temp, core_data_psal, core_fileid)
+  gc()
+
 }
 
 ```
@@ -572,18 +580,18 @@ if (!opt_qc_only) {
     # Join temp and meta_data to form merge
     core_merge <- left_join(x = core_data_temp, 
                             y = core_metadata %>% 
-                              select(file,
+                              select(file_id,
                                      platform_number,
                                      cycle_number,
                                      contains("_qc")))
-    rm(core_data_temp)
-    rm(core_metadata)
+
+    rm(core_data_temp, core_metadata)
     gc()
   
     # Select just A profiles into core_temp_flag_A
     core_temp_flag_A <- core_merge %>%
       filter(profile_temp_qc == 'A' & profile_pres_qc == 'A') %>%
-      select(-c(file, contains("_qc")))
+      select(-c(file_id, contains("_qc")))
   
   
     # write core_temp_flag_A
@@ -595,7 +603,7 @@ if (!opt_qc_only) {
     # Select just AB profiles into core_temp_flag_A
     core_temp_flag_AB <- core_merge %>%
       filter((profile_temp_qc == 'A' | profile_temp_qc == 'B') & (profile_pres_qc == 'A' | profile_pres_qc == 'B')) %>%
-      select(-c(file, contains("_qc")))
+      select(-c(file_id, contains("_qc")))
   
     # write core_temp_flag_AB
     core_temp_flag_AB %>%

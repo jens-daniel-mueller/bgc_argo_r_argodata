@@ -1,11 +1,10 @@
 workflowr::wflow_publish(here::here(
-  "analysis",
+  "code",
   c(
-    'extreme_pH.Rmd',
-    'extreme_temp.Rmd'
+    'temp_core_align_climatology.Rmd'
   )
 ),
-message = "Changes regression to be based across all months of a year. Retained 1x1 degree datasets, avoiding the need for 2x2 grouping.")
+message = "Creation of core temperature profile that ae aligned vertically.")
 
 #
 # # Push latest version to GitHub
