@@ -65,6 +65,10 @@ opt_measure_label <- "temperature anomaly (°C)"
 opt_xlim <- c(-4, 4)
 opt_xbreaks <- c(-4, -2, 0, 2, 4)
 
+# options relating to cluster analysis
+opt_n_start <- 15
+opt_max_iterations <- 500
+
 
 ```
 
@@ -139,15 +143,15 @@ x <- temp_anomaly_va_wide %>%
 
 if (opt_analysis_type == 1) {
   
-  kmeansAIC = function(fit){
-  
-    m = ncol(fit$centers)
-    n = length(fit$cluster)
-    k = nrow(fit$centers)
-    D = fit$tot.withinss
-    return(data.frame(AIC = D*10 + 2*m*k,
-                    BIC = D*10 + log(n)*m*k))
-  }
+  # kmeansAIC = function(fit){
+  # 
+  #   m = ncol(fit$centers)
+  #   n = length(fit$cluster)
+  #   k = nrow(fit$centers)
+  #   D = fit$tot.withinss
+  #   return(data.frame(AIC = D + 2*m*k,
+  #                     BIC = D + log(n)*m*k))
+  # }
   
   # cluster analysis - What k
   n_clusters <- 14
@@ -159,12 +163,14 @@ if (opt_analysis_type == 1) {
   for (i in 1:n_clusters) {
     
     # Fit the model: km.out
-    km_out <- kmeans(x, i)
+    print(paste0('Preparing to carry out test cluster analysis with ', i , ' clusters'))
+    set.seed(1)
+    (km_out <- kmeans(x, i, iter.max=opt_max_iterations, nstart=opt_n_start))
     # Save the within cluster sum of squares
     wss[i] <- km_out$tot.withinss
-    bic_inf <- kmeansAIC(km_out)
-    bic[i] <- bic_inf$BIC
-    aic[i] <- bic_inf$AIC
+    # bic_inf <- kmeansAIC(km_out)
+    # bic[i] <- bic_inf$BIC
+    # aic[i] <- bic_inf$AIC
   }
   
   # Produce a scree plot
@@ -181,7 +187,7 @@ if (opt_analysis_type == 1) {
       geom_hline(
           yintercept = wss, 
           linetype = 'dashed', 
-          col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
+          col = c(rep('#000000',5),rep('#FF0000', 4), rep('#000000', 5))
       )
   
   
@@ -229,11 +235,10 @@ if (opt_analysis_type == 1) {
 
 ```{r cluster_analysis_cluster_details}
 
-opt_num_clusters <- 7
-
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
+  set.seed(1)
+  (cl_out <- kmeans(x, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
   
   cluster_profile <- t(cl_out$centers)
   cluster_ids <- cl_out$cluster
@@ -281,13 +286,11 @@ count of each cluster by year
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
   
   # Add cluster to temp_anomaly_va
   temp_anomaly_by_cluster <- unique(full_join(temp_anomaly_va, profile_id) %>%
@@ -328,13 +331,11 @@ count of each cluster by month of year
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
   
   # Add cluster to temp_anomaly_va
   temp_anomaly_by_cluster <- unique(full_join(temp_anomaly_va, profile_id) %>%
@@ -372,13 +373,11 @@ location of each cluster on map, spatial analysis
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
   
   # Add cluster to temp_anomaly_va
   temp_anomaly_spatial <- unique(full_join(temp_anomaly_va, profile_id) %>%
@@ -421,13 +420,11 @@ location of each cluster on map, spatial analysis by year
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
   
   # Add cluster to temp_anomaly_va
   temp_anomaly_spatial <- unique(full_join(temp_anomaly_va, profile_id) %>%

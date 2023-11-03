@@ -55,7 +55,7 @@ opt_analysis_type <- 2
 
 # opt_num_clusters
 # How many clusters are used in teh cluster analysis
-opt_num_clusters <- 8
+opt_num_clusters <- 7
 
 # opt_measure
 # opt_measure = 1 analysis is done using pH
@@ -71,6 +71,10 @@ if (opt_measure == 1){
   opt_xlim <- c(-2e-9, 2e-9)
   opt_xbreaks <- c(-2e-9, -1e-9, 0, 1e-9, 2e-9)
 }
+
+# options relating to cluster analysis
+opt_n_start <- 25
+opt_max_iterations <- 500
 
 ```
 
@@ -137,17 +141,17 @@ x <- pH_anomaly_va_wide %>%
 ```{r cluster_analysis_determine_k}
 
 if (opt_analysis_type == 1) {
-  
-  kmeansAIC = function(fit){
-  
-    m = ncol(fit$centers)
-    n = length(fit$cluster)
-    k = nrow(fit$centers)
-    D = fit$tot.withinss
-    return(data.frame(AIC = D*10 + 2*m*k,
-                    BIC = D*10 + log(n)*m*k))
-  }
-  
+
+  # kmeansAIC = function(fit){
+  # 
+  #   m = ncol(fit$centers)
+  #   n = length(fit$cluster)
+  #   k = nrow(fit$centers)
+  #   D = fit$tot.withinss
+  #   return(data.frame(AIC = D + 2*m*k,
+  #                     BIC = D + log(n)*m*k))
+  # }
+
   # cluster analysis - What k
   n_clusters <- 14
   
@@ -158,12 +162,15 @@ if (opt_analysis_type == 1) {
   for (i in 1:n_clusters) {
     
     # Fit the model: km.out
-    km_out <- kmeans(x, i)
+    set.seed(1)
+    (km_out <- kmeans(x, i, iter.max=opt_max_iterations, nstart=opt_n_start))
+
     # Save the within cluster sum of squares
     wss[i] <- km_out$tot.withinss
-    bic_inf <- kmeansAIC(km_out)
-    bic[i] <- bic_inf$BIC
-    aic[i] <- bic_inf$AIC
+    
+    # km <- kmeansAIC(km_out)
+    # bic[i] <- km$BIC
+    # aic[i] <- km$AIC
   }
   
   # Produce a scree plot
@@ -180,14 +187,13 @@ if (opt_analysis_type == 1) {
       geom_hline(
           yintercept = wss, 
           linetype = 'dashed', 
-          col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
+          col = c(rep('#000000',5),rep('#FF0000', 3), rep('#000000', 6))
       )
   
   
-  # # Produce a scree plot using BIC
-  # 
+  # Produce a scree plot using BIC
   # bic_df <- tibble(clusters = 1:n_clusters, bic = bic)
-  #  
+  # 
   # bic_scree_plot <- ggplot(bic_df, aes(x = clusters, y = bic, group = 1)) +
   #     geom_point(size = 4)+
   #     geom_line() +
@@ -197,11 +203,11 @@ if (opt_analysis_type == 1) {
   # 
   # bic_scree_plot +
   #     geom_hline(
-  #         yintercept = bic, 
-  #         linetype = 'dashed', 
+  #         yintercept = bic,
+  #         linetype = 'dashed',
   #         col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
   #     )
-  # 
+
   # # Produce a scree plot using AIC
   # 
   # aic_df <- tibble(clusters = 1:n_clusters, aic = aic)
@@ -230,7 +236,9 @@ if (opt_analysis_type == 1) {
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
+
+  set.seed(1)
+  (cl_out <- kmeans(x, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
   
   cluster_profile <- t(cl_out$centers)
   cluster_ids <- cl_out$cluster
@@ -250,6 +258,14 @@ if (opt_analysis_type == 2) {
                 anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
                 anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %>%
       ungroup()
+
+    anomaly_year_mean <- pH_anomaly_cluster %>% 
+      filter(cluster >= 1) %>%
+      group_by(cluster, year) %>% 
+      summarise(count_cluster = n(),
+                anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+                anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %>%
+      ungroup()
   } else {
     anomaly_cluster_mean <- pH_anomaly_cluster %>% 
       filter(cluster >= 1) %>%
@@ -258,8 +274,21 @@ if (opt_analysis_type == 2) {
                 anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
                 anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)) %>%
       ungroup()
-  }
     
+    anomaly_year_mean <- pH_anomaly_cluster %>% 
+      filter(cluster >= 1) %>%
+      group_by(cluster, year) %>% 
+      summarise(count_cluster = n(),
+                anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
+                anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)) %>%
+      ungroup()
+  }
+  
+  anomaly_year_mean <- anomaly_year_mean %>%
+    group_by(year) %>%
+    summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %>%
+    ungroup ()
+  
   # create figure
   anomaly_cluster_mean %>% 
     ggplot()+
@@ -280,6 +309,36 @@ if (opt_analysis_type == 2) {
 
 ```
 
+### Cluster climatology
+
+```{r cluster_climatology_shift}
+
+  bf_coefs <- summary(lm(anomaly_year_mean$anomaly_mean ~ anomaly_year_mean$year))$coefficients
+  line_eq <- paste0("Y = ", formatC(bf_coefs[2, 1], format = "e", digits = 2), "X ", formatC(bf_coefs[1, 1], format = "e", digits = 2, flag = "+"))
+  
+  # annual difference from climatology
+  anomaly_year_mean %>%
+    ggplot(aes(x = year,
+                  y = anomaly_mean))+
+    geom_point(col='red', size=2)+
+    geom_smooth(method=lm, se=FALSE, col='blue', linetype='dashed') +
+    labs(title = paste0('Overall variation from climatology (', line_eq, ')'), x = 'year', y = opt_measure_label)
+  
+  # # annual difference from climatology - excluding 2014
+  # anomaly_year_mean_ex14 <- anomaly_year_mean %>% filter(year >= 2015)
+  # bf_coefs <- summary(lm(anomaly_year_mean_ex14$anomaly_mean ~ anomaly_year_mean_ex14$year))$coefficients
+  # line_eq <- paste0("Y = ", formatC(bf_coefs[2, 1], format = "e", digits = 2), "X ", formatC(bf_coefs[1, 1], format = "e", digits = 2, flag = "+"))
+  # 
+  # anomaly_year_mean_ex14 %>%
+  #   ggplot(aes(x = year,
+  #                 y = anomaly_mean))+
+  #   geom_point(col='red', size=2)+
+  #   geom_smooth(method=lm, se=FALSE, col='blue', linetype='dashed') +
+  #   labs(title = paste0('Overall variation from climatology - excluding 2014 (', line_eq, ')'), x = 'year', y = opt_measure_label)
+
+```
+
+
 ### Cluster by year
 
 count of each cluster by year
@@ -288,8 +347,6 @@ count of each cluster by year
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
   cluster_profile <- t(cl_out$centers)
   cluster_ids <- cl_out$cluster
   
@@ -335,8 +392,6 @@ count of each cluster by month of year
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
   cluster_profile <- t(cl_out$centers)
   cluster_ids <- cl_out$cluster
   
@@ -379,8 +434,6 @@ location of each cluster on map, spatial analysis
 
 if (opt_analysis_type == 2) {
 
-  (cl_out <- kmeans(x, opt_num_clusters))
-  
   cluster_profile <- t(cl_out$centers)
   cluster_ids <- cl_out$cluster
   
