@@ -155,7 +155,7 @@ if (!opt_qc_only) {
         bgc_index <- argo_global_synthetic_prof() %>% 
           argo_filter_data_mode(data_mode = 'delayed') %>% 
           argo_filter_date(date_min = paste0(opt_max_year, "-01-01"),
-                           date_max = paste0(opt_max_year, "-01-10"))
+                           date_max = paste0(opt_max_year, "-01-31"))
       } else {
         bgc_index <- argo_global_synthetic_prof() %>% 
           argo_filter_data_mode(data_mode = 'delayed') %>% 
@@ -195,7 +195,10 @@ if (!opt_qc_only) {
         'NITRATE_ADJUSTED_ERROR',
         'PH_IN_SITU_TOTAL_ADJUSTED',
         'PH_IN_SITU_TOTAL_ADJUSTED_QC',
-        'PH_IN_SITU_TOTAL_ADJUSTED_ERROR'
+        'PH_IN_SITU_TOTAL_ADJUSTED_ERROR',
+        'CHLA_ADJUSTED',
+        'CHLA_ADJUSTED_QC',
+        'CHLA_ADJUSTED_ERROR'
       ),
     quiet = TRUE
   ) 
@@ -240,7 +243,8 @@ if (!opt_qc_only) {
       profile_psal_qc,
       profile_doxy_qc,
       profile_nitrate_qc,
-      profile_ph_in_situ_total_qc
+      profile_ph_in_situ_total_qc,
+      profile_chla_qc
     )
 
 }
@@ -307,7 +311,8 @@ if (!opt_qc_only) {
       'temp_adjusted_qc',
       'doxy_adjusted_qc',
       'nitrate_adjusted_qc',
-      'ph_in_situ_total_adjusted_qc'
+      'ph_in_situ_total_adjusted_qc',
+      'chla_adjusted_qc'
             ) %>%
     mutate(year = year(date),
            .after = date)
@@ -331,6 +336,10 @@ if (!opt_qc_only) {
   bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
                                  group_by(year, measure_order = 6, measure = "Nitrate", measure_qc = nitrate_adjusted_qc) %>% 
                                  summarise(count_measure = n()))
+  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
+                                 group_by(year, measure_order = 7, measure = "Chl-a", measure_qc = chla_adjusted_qc) %>% 
+                                 summarise(count_measure = n()))
+
   rm(bgc_data_qc)
   bgc_measure_summary %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
@@ -552,20 +561,22 @@ theme_set(theme_bw())
 # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
 bgc_metadata <-
 read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+
 bgc_metadata["profile_pres_qc"][is.na(bgc_metadata["profile_pres_qc"])] <- "" 
 bgc_metadata["profile_temp_qc"][is.na(bgc_metadata["profile_temp_qc"])] <- "" 
 bgc_metadata["profile_psal_qc"][is.na(bgc_metadata["profile_psal_qc"])] <- "" 
 bgc_metadata["profile_doxy_qc"][is.na(bgc_metadata["profile_doxy_qc"])] <- "" 
 bgc_metadata["profile_nitrate_qc"][is.na(bgc_metadata["profile_nitrate_qc"])] <- "" 
 bgc_metadata["profile_ph_in_situ_total_qc"][is.na(bgc_metadata["profile_ph_in_situ_total_qc"])] <- "" 
+bgc_metadata["profile_chla_qc"][is.na(bgc_metadata["profile_chla_qc"])] <- "" 
 
 bgc_profile_summary <- bgc_metadata %>% 
-  filter (profile_temp_qc != "") %>%
+  filter (profile_chla_qc != "") %>%
   group_by(
     year = format(date, "%Y"), 
-    measure = "Temperature", 
-    measure_order = 2, 
-    profile_qc = profile_temp_qc
+    measure = "Chl-a", 
+    measure_order = 7, 
+    profile_qc = profile_chla_qc
     ) %>% 
   summarise(
     count_profiles = n()
@@ -601,7 +612,7 @@ bgc_profile_summary <- transform(bgc_profile_summary, year = as.numeric(year))
 
 year_min <- min(bgc_profile_summary$year)
 year_max <- max(bgc_profile_summary$year)
-facet_label <- as_labeller(c("2"="Temperature", "4"="pH", "5"="Oxygen"))
+facet_label <- as_labeller(c("7"="Chl-a", "4"="pH", "5"="Oxygen"))
   
 # draw plots for the separate parameters
 bgc_profile_summary %>%
@@ -634,7 +645,7 @@ year_max <- max(bgc_measure_summary$year)
 
 # draw plots for the separate parameters
 bgc_measure_summary %>%
-  filter(measure_qc != " " & measure_order %in% c(2, 4, 5)) %>%
+  filter(measure_qc != " " & measure_order %in% c(7, 4, 5)) %>%
   ggplot(aes(x = year, y = count_measure, col = measure_qc, group=measure_qc)) +
           geom_point() +
           geom_line() +
