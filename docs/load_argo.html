@@ -467,7 +467,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">27 October, 2023</h4>
+<h4 class="date">04 November, 2023</h4>
 
 </div>
 
@@ -496,7 +496,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-10-27
+<strong>Last updated:</strong> 2023-11-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -627,15 +627,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8fac6bbbe1f139c134af08cf1309a8bd4dff4602targetblank8fac6bba">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6780853193ab2e04b13bbbce6a0f734ddbddb095targetblank6780853a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8fac6bbbe1f139c134af08cf1309a8bd4dff4602" target="_blank">8fac6bb</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6780853193ab2e04b13bbbce6a0f734ddbddb095" target="_blank">6780853</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8fac6bbbe1f139c134af08cf1309a8bd4dff4602targetblank8fac6bba"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6780853193ab2e04b13bbbce6a0f734ddbddb095targetblank6780853a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -645,7 +645,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8fac6bbbe1f139c134af08cf1309a8bd4dff4602" target="_blank">8fac6bb</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6780853193ab2e04b13bbbce6a0f734ddbddb095" target="_blank">6780853</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -664,14 +664,7 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  code/pH_align_climatology.Rmd
-    Untracked:  code/temp_align_climatology.Rmd
-
 Unstaged changes:
-    Modified:   analysis/load_argo_clim_pH_ucsd.Rmd
-    Modified:   code/Workflowr_project_managment.R
-    Modified:   code/start_background_job.R
     Modified:   code/start_background_job_bgc_load.R
 
 </code></pre>
@@ -718,6 +711,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6780853193ab2e04b13bbbce6a0f734ddbddb095/analysis/load_argo.Rmd" target="_blank">6780853</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-04
+</td>
+<td>
+Addition of Chl-a to dataset.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/093c4f3d0d8deda91f9fae056875abff8b639934/docs/load_argo.html" target="_blank">093c4f3</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1143,7 +1170,7 @@ data and metadata</p>
         bgc_index &lt;- argo_global_synthetic_prof() %&gt;% 
           argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
           argo_filter_date(date_min = paste0(opt_max_year, &quot;-01-01&quot;),
-                           date_max = paste0(opt_max_year, &quot;-01-10&quot;))
+                           date_max = paste0(opt_max_year, &quot;-01-31&quot;))
       } else {
         bgc_index &lt;- argo_global_synthetic_prof() %&gt;% 
           argo_filter_data_mode(data_mode = &#39;delayed&#39;) %&gt;% 
@@ -1181,7 +1208,10 @@ take a while)</p>
         &#39;NITRATE_ADJUSTED_ERROR&#39;,
         &#39;PH_IN_SITU_TOTAL_ADJUSTED&#39;,
         &#39;PH_IN_SITU_TOTAL_ADJUSTED_QC&#39;,
-        &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;
+        &#39;PH_IN_SITU_TOTAL_ADJUSTED_ERROR&#39;,
+        &#39;CHLA_ADJUSTED&#39;,
+        &#39;CHLA_ADJUSTED_QC&#39;,
+        &#39;CHLA_ADJUSTED_ERROR&#39;
       ),
     quiet = TRUE
   ) 
@@ -1221,7 +1251,8 @@ take a while)</p>
       profile_psal_qc,
       profile_doxy_qc,
       profile_nitrate_qc,
-      profile_ph_in_situ_total_qc
+      profile_ph_in_situ_total_qc,
+      profile_chla_qc
     )
 
 }</code></pre>
@@ -1284,7 +1315,8 @@ take a while)</p>
       &#39;temp_adjusted_qc&#39;,
       &#39;doxy_adjusted_qc&#39;,
       &#39;nitrate_adjusted_qc&#39;,
-      &#39;ph_in_situ_total_adjusted_qc&#39;
+      &#39;ph_in_situ_total_adjusted_qc&#39;,
+      &#39;chla_adjusted_qc&#39;
             ) %&gt;%
     mutate(year = year(date),
            .after = date)
@@ -1308,6 +1340,10 @@ take a while)</p>
   bgc_measure_summary &lt;- rbind(bgc_measure_summary, bgc_data_qc %&gt;% 
                                  group_by(year, measure_order = 6, measure = &quot;Nitrate&quot;, measure_qc = nitrate_adjusted_qc) %&gt;% 
                                  summarise(count_measure = n()))
+  bgc_measure_summary &lt;- rbind(bgc_measure_summary, bgc_data_qc %&gt;% 
+                                 group_by(year, measure_order = 7, measure = &quot;Chl-a&quot;, measure_qc = chla_adjusted_qc) %&gt;% 
+                                 summarise(count_measure = n()))
+
   rm(bgc_data_qc)
   bgc_measure_summary %&gt;%
     write_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_measure_summary.rds&quot;))
@@ -1498,20 +1534,22 @@ profiles with QC flag A</p>
 <pre class="r"><code># Read metadata file and create profile summary table with a count for each year, measurement type and qc option
 bgc_metadata &lt;-
 read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+
 bgc_metadata[&quot;profile_pres_qc&quot;][is.na(bgc_metadata[&quot;profile_pres_qc&quot;])] &lt;- &quot;&quot; 
 bgc_metadata[&quot;profile_temp_qc&quot;][is.na(bgc_metadata[&quot;profile_temp_qc&quot;])] &lt;- &quot;&quot; 
 bgc_metadata[&quot;profile_psal_qc&quot;][is.na(bgc_metadata[&quot;profile_psal_qc&quot;])] &lt;- &quot;&quot; 
 bgc_metadata[&quot;profile_doxy_qc&quot;][is.na(bgc_metadata[&quot;profile_doxy_qc&quot;])] &lt;- &quot;&quot; 
 bgc_metadata[&quot;profile_nitrate_qc&quot;][is.na(bgc_metadata[&quot;profile_nitrate_qc&quot;])] &lt;- &quot;&quot; 
 bgc_metadata[&quot;profile_ph_in_situ_total_qc&quot;][is.na(bgc_metadata[&quot;profile_ph_in_situ_total_qc&quot;])] &lt;- &quot;&quot; 
+bgc_metadata[&quot;profile_chla_qc&quot;][is.na(bgc_metadata[&quot;profile_chla_qc&quot;])] &lt;- &quot;&quot; 
 
 bgc_profile_summary &lt;- bgc_metadata %&gt;% 
-  filter (profile_temp_qc != &quot;&quot;) %&gt;%
+  filter (profile_chla_qc != &quot;&quot;) %&gt;%
   group_by(
     year = format(date, &quot;%Y&quot;), 
-    measure = &quot;Temperature&quot;, 
-    measure_order = 2, 
-    profile_qc = profile_temp_qc
+    measure = &quot;Chl-a&quot;, 
+    measure_order = 7, 
+    profile_qc = profile_chla_qc
     ) %&gt;% 
   summarise(
     count_profiles = n()
@@ -1547,7 +1585,7 @@ bgc_profile_summary &lt;- transform(bgc_profile_summary, year = as.numeric(year)
 
 year_min &lt;- min(bgc_profile_summary$year)
 year_max &lt;- max(bgc_profile_summary$year)
-facet_label &lt;- as_labeller(c(&quot;2&quot;=&quot;Temperature&quot;, &quot;4&quot;=&quot;pH&quot;, &quot;5&quot;=&quot;Oxygen&quot;))
+facet_label &lt;- as_labeller(c(&quot;7&quot;=&quot;Chl-a&quot;, &quot;4&quot;=&quot;pH&quot;, &quot;5&quot;=&quot;Oxygen&quot;))
   
 # draw plots for the separate parameters
 bgc_profile_summary %&gt;%
@@ -1623,7 +1661,7 @@ year_max &lt;- max(bgc_measure_summary$year)
 
 # draw plots for the separate parameters
 bgc_measure_summary %&gt;%
-  filter(measure_qc != &quot; &quot; &amp; measure_order %in% c(2, 4, 5)) %&gt;%
+  filter(measure_qc != &quot; &quot; &amp; measure_order %in% c(7, 4, 5)) %&gt;%
   ggplot(aes(x = year, y = count_measure, col = measure_qc, group=measure_qc)) +
           geom_point() +
           geom_line() +
