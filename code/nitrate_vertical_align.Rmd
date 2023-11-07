@@ -1,0 +1,544 @@
+---
+title: "Prepare nitrate data and vertically align to (pH) climatology"
+author: "David Stappard & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Task
+
+Load existing bgc_data.rds file and align profiles to a common vertical pattern.
+
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
+library(argodata)
+library(lubridate)
+library(gridExtra)
+library(gsw)
+
+```
+
+## Set directories
+
+location of pre-prepared data
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+```
+
+## Set options
+
+Define options that are used to determine profiles that we will us in the ongoing analysis
+
+```{r set_options}
+
+# Options
+
+# opt_profile_depth_range
+# The profile must have at least one nitrate reading at a depth <= opt_profile_depth_range[1, ]
+# The profile must have at least one nitrate reading at a depth >= opt_profile_depth_range[2, ].
+# In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 600) it will be removed.
+profile_range <- c(1, 2, 3)
+min_depth <- c(10, 10, 10)
+max_depth <- c(614, 1225, 1600)
+opt_profile_depth_range <- data.frame(profile_range, min_depth, max_depth)
+
+# opt_gap...
+# The profile should not have a gap greater that opt_gap_limit within the range defined by opt_gap_min_depth and opt_gap_max_depth
+opt_gap_limit <- c(28, 55, 110)
+opt_gap_min_depth <- c(0, 400, 1000)
+opt_gap_max_depth <- c(400, 1000, 1600)
+
+# opt_measure_label, opt_xlim and opt_xbreaks are associated formatting
+opt_measure_label <- expression("nitrate ( µmol kg"^"-1"~")")
+opt_xlim <- c(0, 45)
+opt_xbreaks <- c(0, 10, 20, 30, 40)
+
+```
+
+
+## read climatology
+
+read pH climatology, values are provided at set depths
+
+```{r read_climatology}
+
+# climatology values (clim_ph) available for lat, lon, month and pressure
+ucsd_clim <- read_rds(file = paste0(path_argo_preprocessed, '/ucsd_ph_clim.rds'))
+
+# Select fields of interest
+ucsd_clim <- ucsd_clim %>% 
+  select(
+    month,
+    lat,
+    lon,
+    depth,
+    clim_pH
+  ) %>%
+  mutate(
+    clim_h_plus = 10^-clim_pH
+  )
+
+#What is the max depth we are interested in
+opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
+
+# existing depth levels that we will align to
+target_depth_range <-   distinct(ucsd_clim %>%
+                              filter(depth <= opt_profile_max_depth) %>% 
+                              mutate(target_depth = depth) %>%
+                              select(target_depth))
+
+```
+
+## read nitrate data
+
+read nitrate profile and carry out basic checks, good data.
+
+```{r read_profile_nitrate_data}
+
+# base data and associated metadata
+bgc_data <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_data.rds'))
+bgc_metadata <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_metadata.rds'))
+
+# Select relevant field from metadata ready to join to bgc_data
+bgc_metadata_select <- bgc_metadata %>%
+                            filter (position_qc == 1) %>%
+                            select(
+                              file_id,
+                              date,
+                              lat,
+                              lon
+                              ) %>%
+                            mutate(year = year(date), month = month(date), .after = date)
+
+# we drive alignment from pressure and nitrate data
+# conditions 
+# n_prof == 1
+# pres_adjusted_qc %in% c(1, 8) - pressure data marked as good
+# nitrate_adjusted_qc %in% c(1, 8) - nitrate data marked as good
+# !is.na(pres_adjusted) - pressure value must be present
+# !is.na(nitrate_adjusted) - nitrate value must be present
+bgc_data_nitrate <- bgc_data %>%
+                  filter(pres_adjusted_qc %in% c(1, 8) & 
+                           nitrate_adjusted_qc %in% c(1, 8) & 
+                           n_prof == 1 & !is.na(pres_adjusted) &
+                           !is.na(nitrate_adjusted)) %>%
+                  select(
+                    file_id,
+                    pres_adjusted,
+                    nitrate_adjusted
+                  )
+
+# join with metadata information and calculate depth field
+bgc_data_nitrate <- full_join(bgc_metadata_select, bgc_data_nitrate) %>%
+                          select(
+                            file_id,
+                            lat, 
+                            lon, 
+                            date,
+                            year, 
+                            month,
+                            pres_adjusted,
+                            nitrate_adjusted
+                          ) %>%
+                          mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
+                                 .before = pres_adjusted) %>%
+                          filter(!is.na(file_id))
+
+# ensure we have a depth, pres_adjusted and nitrate_adjusted for all rows in bgc_data_nitrate
+bgc_data_nitrate <- bgc_data_nitrate %>%
+                  filter(!is.na(depth) & !is.na(pres_adjusted) & !is.na(nitrate_adjusted))
+
+# clean up working tables
+rm(bgc_data, bgc_metadata_select)
+```
+
+## Profile limits
+
+Apply the rules that are determined by options set in set_options.
+Profile must cover a set range and not contain gaps.
+
+```{r profile_limits_nitrate}
+
+# Determine profile min and max depths
+bgc_profile_limits <- bgc_data_nitrate %>%
+  group_by(file_id) %>%
+  summarise(
+    min_depth = min(depth),
+    max_depth = max(depth),
+  ) %>%
+  ungroup()
+
+# The profile much match at least one of teh range criteria
+force_min <- min(opt_profile_depth_range$min_depth)
+force_max <- min(opt_profile_depth_range$max_depth)
+
+# Apply profile min and max restrictions
+bgc_apply_limits <- bgc_profile_limits %>%
+  filter(
+    min_depth <= force_min &
+    max_depth >= force_max
+    )
+
+# Ensure working data set only contains profiles that have confrormed to the range test
+bgc_data_nitrate <- full_join(bgc_data_nitrate, bgc_apply_limits) %>%
+                        filter(!is.na(min_depth))
+
+# Add profile type field and set all to 1.  
+# All profile that meet the minimum requirements are profile_range = 1
+bgc_data_nitrate <- bgc_data_nitrate %>%
+  mutate(profile_range = 1)
+
+for (i in 2:nrow(opt_profile_depth_range)) {
+
+  #i = 3
+  range_min <- opt_profile_depth_range[i,'min_depth']
+  range_max <- opt_profile_depth_range[i,'max_depth']
+
+  # Apply profile min and max restrictions
+  bgc_apply_limits <- bgc_profile_limits %>%
+    filter(
+      min_depth <= range_min &
+      max_depth >= range_max
+      ) %>%
+    select(
+      file_id
+      ) %>%
+    mutate (
+      profile_range = i 
+    )
+
+  # Update profile range to i for these profiles
+  # bgc_data_temp <- full_join(bgc_data_temp, bgc_apply_limits) %>%
+  #                         filter(!is.na(min_depth))
+  bgc_data_nitrate <- bgc_data_nitrate %>% rows_update(bgc_apply_limits, by = "file_id")
+
+}
+
+# Find the gaps within the profiles
+profile_gaps <- bgc_data_nitrate %>%
+  select(
+    file_id,
+    depth
+    ) %>%
+  arrange(file_id, depth) %>%
+  group_by(file_id) %>%
+  mutate(gap = depth - lag(depth, default = 0)) %>%
+  ungroup()
+
+# Ensure we do not have gaps in the profile that invalidate it 
+for (i_gap in opt_gap_limit) {
+
+  # The limits to be applied in that pass of for loop
+  # i_gap <- opt_gap_limit[3]
+  i_gap_min = opt_gap_min_depth[which(opt_gap_limit == i_gap)]
+  i_gap_max = opt_gap_max_depth[which(opt_gap_limit == i_gap)]
+  
+  # Which gaps are greater than i_gap
+  profile_gaps_remove <- profile_gaps %>%
+    filter(gap > i_gap) %>%
+    filter(depth >= i_gap_min & depth <= i_gap_max) %>%
+    select(file_id, gap)
+  
+  # Remonve these profiles from working data set
+  bgc_data_nitrate <- full_join(bgc_data_nitrate, profile_gaps_remove) %>%
+                                  filter(is.na(gap)) %>%
+                                  select(-c(gap))
+}
+
+# Ensure primary fields are all present
+bgc_data_nitrate <- bgc_data_nitrate %>%
+  filter(!is.na(lat) & !is.na(lon) & !is.na(date) & !is.na(depth)) 
+
+# clean up working tables
+rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
+
+```
+
+## Vertical align nitrate
+
+We have a set of nitrate profiles that match our criteria we now need to align that data set to match the 
+depth that are in target_depth_range, this will match the range of climatology values in ucsd_clim
+
+```{r vertical_align_nitrate}
+
+# select variable of interest and prepare target_depth field
+bgc_data_nitrate_clean <- bgc_data_nitrate %>%
+                            select(
+                              file_id, 
+                              lat,
+                              lon,
+                              date,
+                              depth,
+                              profile_range,
+                              nitrate = nitrate_adjusted
+                            ) %>%
+                            mutate(
+                              target_depth = depth, .after = depth
+                            )
+
+# create all possible combinations of location, month and depth levels for interpolation
+target_depth_grid <-
+  expand_grid(target_depth_range,
+              bgc_data_nitrate_clean %>% distinct(file_id, lat, lon, date, profile_range))
+
+# Take account of the profile_range field to determine the profile_range of target_depth_grid
+target_depth_grid <- left_join(target_depth_grid, opt_profile_depth_range) %>%
+        filter(target_depth <= max_depth)
+
+target_depth_grid <- target_depth_grid %>% 
+                        select(
+                          target_depth, 
+                          file_id, 
+                          lat, 
+                          lon,
+                          date,
+                          profile_range
+                          )
+
+# extend nitrate depth vectors with target depths
+bgc_data_nitrate_extended <- full_join(bgc_data_nitrate_clean, target_depth_grid) %>% 
+  arrange(file_id, lat, lon, date, target_depth)
+
+# predict spline interpolation on adjusted depth grid for nitrate location and month
+bgc_data_nitrate_interpolated <-
+  bgc_data_nitrate_extended %>%
+  group_by(file_id, lat, lon, date) %>%
+  mutate(nitrate_spline = spline(target_depth, nitrate,
+                                method = "natural",
+                                xout = target_depth)$y) %>%
+  ungroup()
+
+# subset interpolated values on target depth range
+bgc_data_nitrate_interpolated_clean <- 
+  inner_join(target_depth_grid, bgc_data_nitrate_interpolated)
+
+# select columns and rename to initial names
+bgc_data_nitrate_interpolated_clean <-
+  bgc_data_nitrate_interpolated_clean %>%
+  select(
+    file_id, 
+    lat, 
+    lon, 
+    date,
+    profile_range,
+    depth = target_depth,
+    nitrate = nitrate_spline)
+
+# Create year and month fields
+bgc_data_nitrate_interpolated_clean <- bgc_data_nitrate_interpolated_clean %>%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
+
+# clean up working tables
+rm(bgc_data_nitrate_extended, bgc_data_nitrate_interpolated)
+
+```
+
+
+## Write files
+
+Write the interpolated nitrate profiles that map onto depth levels.
+```{r write_profile_nitrate_data}
+
+# Write files
+bgc_data_nitrate_interpolated_clean %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_va.rds"))
+
+# Rename so that names match if just reading existing files
+nitrate_bgc_va <- bgc_data_nitrate_interpolated_clean
+
+rm(bgc_data_nitrate_interpolated_clean, ucsd_clim)
+
+
+```
+
+## read files
+
+Read files that were previously created ready for analysis
+```{r read_nitrate_va}
+
+# read files
+nitrate_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_va.rds"))
+
+```
+
+## Analysis
+
+```{r set_global_theme, include=FALSE}
+
+theme_set(theme_bw())
+
+```
+
+## nitrate mean profile
+
+```{r plot_overall_mean_nitrate_profiles, fig.asp=1}
+
+max_depth_1 <- opt_profile_depth_range[1, "max_depth"]
+max_depth_2 <- opt_profile_depth_range[2, "max_depth"]
+max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
+
+# Profiles to 600m
+nitrate_overall_mean_1 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  group_by(depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+nitrate_year_mean_1 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  group_by(year, depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+# Profiles to 1200m
+nitrate_overall_mean_2 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  group_by(depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+nitrate_year_mean_2 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  group_by(year, depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+# Profiles to 1500m
+nitrate_overall_mean_3 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  group_by(depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+nitrate_year_mean_3 <- nitrate_bgc_va %>% 
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  group_by(year, depth) %>% 
+  summarise(count_measures = n(),
+            nitrate_mean = mean(nitrate, na.rm = TRUE),
+            nitrate_sd = sd(nitrate, na.rm = TRUE))
+
+# All years
+nitrate_overall_mean_1 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Overall mean nitrate to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+
+nitrate_overall_mean_2 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Overall mean nitrate to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+
+nitrate_overall_mean_3 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Overall mean nitrate to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+
+# by years
+nitrate_year_mean_1 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Yearly overall mean nitrate to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+
+nitrate_year_mean_2 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Yearly overall mean nitrate to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+
+nitrate_year_mean_3 %>% 
+  ggplot()+
+  geom_path(aes(x = nitrate_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = nitrate_mean + nitrate_sd,
+                  xmin = nitrate_mean - nitrate_sd,
+                  y = depth),
+              alpha = 0.2)+
+  scale_y_reverse()+
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim)+
+  scale_x_continuous(breaks = opt_xbreaks)+
+  labs(title = paste0('Yearly overall mean nitrate to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+
+
+#rm(anomaly_overall_mean)
+```
+
+## Profile counts
+
+Details of the number of profiles and to which depths over the analysis period
+```{r nitrate_histogram, fig.asp=1}
+
+nitrate_histogram <- nitrate_bgc_va %>%
+  group_by(year, profile_range = as.character(profile_range)) %>%
+  summarise(num_profiles = n_distinct(file_id)) %>%
+  ungroup()
+
+nitrate_histogram %>% 
+  ggplot()+
+  geom_bar(aes(x = year, y = num_profiles, fill = profile_range, group = profile_range), position = "stack", stat="identity")+
+  scale_fill_viridis_d()+
+  labs(title = "nitrate profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
+
+
+```

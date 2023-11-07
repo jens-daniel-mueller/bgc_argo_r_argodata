@@ -24,6 +24,7 @@ library(argodata)
 library(lubridate)
 library(gridExtra)
 library(gsw)
+library(ggforce)
 
 ```
 
@@ -54,7 +55,7 @@ Define options that are used to determine what analysis is done
 opt_analysis_type <- 2
 
 # opt_num_clusters
-# How many clusters are used in teh cluster analysis
+# How many clusters are used in the cluster analysis
 opt_num_clusters <- 7
 
 # opt_measure
@@ -71,6 +72,15 @@ if (opt_measure == 1){
   opt_xlim <- c(-2e-9, 2e-9)
   opt_xbreaks <- c(-2e-9, -1e-9, 0, 1e-9, 2e-9)
 }
+# Chl-a formatting
+opt_chla_measure_label <- expression("chlorophyll a ( mg m"^"-3"~")")
+opt_chla_xlim <- c(-0.5, 2.0)
+opt_chla_xbreaks <- c(-0.5, 0, 0.5, 1.0, 1.5, 2.0)
+
+# oxygen formatting
+opt_doxy_measure_label <- expression("dissolved oxygen ( µmol kg"^"-1"~")")
+opt_doxy_xlim <- c(50, 350)
+opt_doxy_xbreaks <- c(50, 100, 150, 200, 250, 300, 350)
 
 # options relating to cluster analysis
 opt_n_start <- 25
@@ -347,12 +357,12 @@ count of each cluster by year
 
 if (opt_analysis_type == 2) {
 
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
-  
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
+  # 
   # Add cluster to pH_anomaly_va
   pH_anomaly_by_cluster <- unique(full_join(pH_anomaly_va, profile_id) %>%
                               select (file_id, year, cluster) %>%
@@ -392,12 +402,12 @@ count of each cluster by month of year
 
 if (opt_analysis_type == 2) {
 
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
-  
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
+  # 
   # Add cluster to pH_anomaly_va
   pH_anomaly_by_cluster <- unique(full_join(pH_anomaly_va, profile_id) %>%
                               select (file_id, month, cluster) %>%
@@ -434,12 +444,12 @@ location of each cluster on map, spatial analysis
 
 if (opt_analysis_type == 2) {
 
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
-  
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
-  
+  # cluster_profile <- t(cl_out$centers)
+  # cluster_ids <- cl_out$cluster
+  # 
+  # profile_id <- profile_id %>%
+  #   mutate(cluster = cluster_ids)
+  # 
   # Add cluster to pH_anomaly_va
   pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
                               select (file_id, lat, lon, cluster) %>%
@@ -469,6 +479,228 @@ map +
   facet_wrap(~cluster, ncol = 2) +
   labs(title = 'cluster spatial distribution')
 
+}
+
+```
+
+### Cluster spatial year
+
+location of each cluster on map, spatial analysis by year
+
+```{r spatial_cluster_year}
+
+if (opt_analysis_type == 2) {
+
+  # Add cluster to pH_anomaly_va
+  pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
+                              select (file_id, lat, lon, year, cluster) %>%
+                              filter (!is.na(cluster)))
+  
+  pH_anomaly_spatial <- pH_anomaly_spatial %>% 
+                              mutate(cluster = as.character(cluster))
+  
+  # create figure
+  pH_anomaly_spatial %>%
+    group_split(year) %>% 
+map(
+  ~map +
+  geom_tile(data = .x, 
+            aes(x = lon, 
+                y = lat, 
+                fill = cluster))+
+  #lims(y = c(-85, -30))+
+  scale_fill_brewer(palette = 'Dark2')+
+  facet_wrap(~cluster, ncol = 2) +
+  labs(title = paste0('cluster spatial distribution ', unique(.x$year)))
+)
+
+}
+
+```
+
+### pH and Chl-a
+
+for each cluster identified by pH cluster analysis show  alongside chl-a
+
+```{r ph_with_chla}
+if (opt_analysis_type == 2) {
+  
+  # Read chl-a data and link to cluster ID
+  chla_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/chla_bgc_va.rds"))
+  chla_cluster <- full_join(chla_bgc_va, profile_id) %>%
+                    filter(!is.na(cluster))
+
+  # summarise by cluster
+  chla_cluster_mean <- chla_cluster %>% 
+      filter(cluster >= 1) %>%
+      group_by(cluster, depth) %>% 
+      summarise(chla_mean = mean(chla, na.rm = TRUE),
+                chla_sd = sd(chla, na.rm = TRUE)) %>%
+      ungroup()
+
+  # join pH anomaly with chl-a
+  cluster_ph_chla <- full_join(anomaly_cluster_mean, chla_cluster_mean)
+  
+  # create figures
+  cluster_ph_chla %>% 
+    ggplot()+
+    geom_path(aes(x = anomaly_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
+                    xmin = anomaly_mean - anomaly_sd,
+                    y = depth),
+                alpha = 0.2)+
+    geom_vline(xintercept = 0)+
+    scale_y_continuous(trans = trans_reverser("sqrt"),
+                       breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_xlim)+
+    scale_x_continuous(breaks = opt_xbreaks)+
+    labs(title = paste0('Overall mean anomaly profiles by cluster'), x = opt_measure_label, y = 'depth (m)')
+    
+  cluster_ph_chla %>% 
+    ggplot()+
+    geom_path(aes(x = chla_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = chla_mean + chla_sd,
+                    xmin = chla_mean - chla_sd,
+                    y = depth),
+                alpha = 0.2)+
+    scale_y_continuous(trans = trans_reverser("sqrt"),
+                       breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_chla_xlim)+
+    scale_x_continuous(breaks = opt_chla_xbreaks)+
+    labs(title = paste0('Overall mean profiles by cluster'), x = opt_chla_measure_label, y = 'depth (m)')
+
+
+  chla_to_ph_factor <- 1e9
+  chla_to_ph_offset <- 1
+  chla_color <- "#69b3a2"
+  
+  cluster_ph_chla %>% 
+    ggplot()+
+    geom_path(aes(x = anomaly_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
+                    xmin = anomaly_mean - anomaly_sd,
+                    y = depth),
+                alpha = 0.2)+
+    geom_path(aes(x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
+                  y = depth), color = chla_color)+
+    geom_ribbon(aes(xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
+                    xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
+                    y = depth),
+                fill = chla_color,
+                alpha = 0.2)+
+    geom_vline(xintercept = 0)+
+    scale_y_continuous(trans = trans_reverser("sqrt"),
+                       breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_xlim)+
+    scale_x_continuous( # First axis
+                        name = opt_measure_label, 
+                        breaks = opt_xbreaks, 
+                        # First axis
+                        sec.axis = sec_axis(trans=~.*chla_to_ph_factor + chla_to_ph_offset, name=opt_chla_measure_label)
+                       )+
+    labs(title = paste0('Overall mean profiles by cluster'), x = opt_measure_label, y = 'depth (m)') +
+    theme(
+      axis.title.x.top = element_text(color = chla_color)
+    )
+
+}
+
+```
+
+### pH and oxygen
+
+for each cluster identified by pH cluster analysis show  alongside oxygen
+
+```{r ph_with_oxygen}
+if (opt_analysis_type == 2) {
+  
+  # Read chl-a data and link to cluster ID
+  doxy_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds"))
+  doxy_cluster <- full_join(doxy_bgc_va, profile_id) %>%
+                    filter(!is.na(cluster))
+
+  # summarise by cluster
+  doxy_cluster_mean <- doxy_cluster %>% 
+      filter(cluster >= 1) %>%
+      group_by(cluster, depth) %>% 
+      summarise(doxy_mean = mean(doxy, na.rm = TRUE),
+                doxy_sd = sd(doxy, na.rm = TRUE)) %>%
+      ungroup()
+
+  # join pH anomaly with chl-a
+  cluster_ph_doxy <- full_join(anomaly_cluster_mean, doxy_cluster_mean)
+  
+  # create figure
+  cluster_ph_doxy %>% 
+    ggplot()+
+    geom_path(aes(x = anomaly_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
+                    xmin = anomaly_mean - anomaly_sd,
+                    y = depth),
+                alpha = 0.2)+
+    geom_vline(xintercept = 0)+
+    scale_y_reverse()+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_xlim)+
+    scale_x_continuous(breaks = opt_xbreaks)+
+    labs(title = paste0('Overall mean anomaly profiles by cluster'), x = opt_measure_label, y = 'depth (m)')
+    
+  cluster_ph_doxy %>% 
+    ggplot()+
+    geom_path(aes(x = doxy_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = doxy_mean + doxy_sd,
+                    xmin = doxy_mean - doxy_sd,
+                    y = depth),
+                alpha = 0.2)+
+    scale_y_reverse()+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_doxy_xlim)+
+    scale_x_continuous(breaks = opt_doxy_xbreaks)+
+    labs(title = paste0('Overall mean profiles by cluster'), x = opt_doxy_measure_label, y = 'depth (m)')
+
+
+  doxy_to_ph_factor <- 75e9
+  doxy_to_ph_offset <- 200
+  doxy_color <- "#5B9BD5"
+  
+  cluster_ph_doxy %>% 
+    ggplot()+
+    geom_path(aes(x = anomaly_mean,
+                  y = depth))+
+    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
+                    xmin = anomaly_mean - anomaly_sd,
+                    y = depth),
+                alpha = 0.2)+
+    geom_path(aes(x = (doxy_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+                  y = depth), color = doxy_color)+
+    geom_ribbon(aes(xmax = (doxy_mean + doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+                    xmin = (doxy_mean - doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+                    y = depth),
+                fill = doxy_color,
+                alpha = 0.2)+
+    geom_vline(xintercept = 0)+
+    scale_y_reverse()+
+    facet_wrap(~cluster)+
+    coord_cartesian(xlim = opt_xlim)+
+    scale_x_continuous( # First axis
+                        name = opt_measure_label, 
+                        breaks = opt_xbreaks, 
+                        # First axis
+                        sec.axis = sec_axis(trans=~.*doxy_to_ph_factor + doxy_to_ph_offset, name=opt_doxy_measure_label)
+                       )+
+    labs(title = paste0('Overall mean profiles by cluster'), x = opt_measure_label, y = 'depth (m)') +
+    theme(
+      axis.title.x.top = element_text(color = doxy_color)
+    )
+  
 }
 
 ```

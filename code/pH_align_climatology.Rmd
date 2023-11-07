@@ -110,9 +110,6 @@ target_depth_range <-   distinct(ucsd_clim %>%
                               mutate(target_depth = depth) %>%
                               select(target_depth))
 
-target_depth_range
-
-
 ```
 
 ## read pH data
@@ -125,28 +122,6 @@ read pH profile and carry out basic checks, good data.
 bgc_data <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_data.rds'))
 bgc_metadata <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_metadata.rds'))
 
-# # Add a profile sequence field to metadata and default to 1
-# bgc_metadata <- bgc_metadata %>%
-#   mutate (profile_seq = 1)
-# 
-# # It is possible that a combination of platform_number and cycle_number do NOT result in a unique profile they will have differing file fields
-# check_duplicates <- bgc_metadata %>%
-# select (file, date, platform_number, cycle_number, profile_seq) %>%
-#   arrange(file)
-# 
-# # These records will have the profile_seq field updated
-# modify_profile_seq <- check_duplicates %>% 
-#   group_by(platform_number, cycle_number) %>% 
-#   summarise(file_update = last(file),
-#             seq_update = n()) %>%
-#   filter(seq_update > 1) %>%
-#   ungroup()
-# 
-# # force join on file so that correct row has profile_seq updated
-# bgc_metadata <- full_join(bgc_metadata, modify_profile_seq %>% select (file_update, seq_update), by = c("file" = "file_update"))
-# bgc_metadata <- bgc_metadata %>%
-#   mutate(profile_seq = ifelse(is.na(seq_update), profile_seq, seq_update))
-
 # Select relevant field from metadata ready to join to bgc_data
 bgc_metadata_select <- bgc_metadata %>%
                             filter (position_qc == 1) %>%
@@ -158,7 +133,7 @@ bgc_metadata_select <- bgc_metadata %>%
                               ) %>%
                             mutate(year = year(date), month = month(date), .after = date)
 
-# we only want pressure and pH data
+# we drive alignment from pressure and pH data
 # conditions 
 # n_prof == 1
 # pres_adjusted_qc %in% c(1, 8) - pressure data marked as good
@@ -446,7 +421,7 @@ bgc_pH_anomaly <- full_join(bgc_pH_anomaly, remove_profiles) %>%
 ## Write files
 
 Write the climatology that maps onto depth levels, interpolated pH profiles that map onto depth levels and resulting anomaly files.
-```{r read_profile_pH_data}
+```{r write_profile_pH_data}
 
 # Write files
 bgc_data_pH_interpolated_clean %>%
@@ -707,7 +682,7 @@ anomaly_year_mean_3 %>%
 ## Profile counts
 
 Details of the number of profiles and to which depths over the analysis period
-```{r temp_histogram, fig.asp=1}
+```{r pH_histogram, fig.asp=1}
 
 pH_histogram <- pH_bgc_va %>%
   group_by(year, profile_range = as.character(profile_range)) %>%
@@ -718,7 +693,7 @@ pH_histogram %>%
   ggplot()+
   geom_bar(aes(x = year, y = num_profiles, fill = profile_range, group = profile_range), position = "stack", stat="identity")+
   scale_fill_viridis_d()+
-  labs(title = "profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
+  labs(title = "pH profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
 
 
 ```
