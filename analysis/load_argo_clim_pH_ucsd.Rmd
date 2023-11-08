@@ -4,6 +4,7 @@ author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
+  chunk_output_type: console
 chunk_output_type: console
 ---
 
@@ -36,62 +37,85 @@ theme_set(theme_bw())
 
 ```{r load_climatological_pH_data}
 
-# read pH, position and depth data
-nc_pH <- read_ncdf(fn_mazloff_ph, var = c("pH"))
-nc_pH <- as_tibble(nc_pH)
+# # read pH, position and depth data
+# nc_pH <- read_ncdf(fn_mazloff_ph, var = c("pH"))
+# nc_pH <- as_tibble(nc_pH)
+# 
+# nc_lon <- read_ncdf(fn_mazloff_ph, var = c("longitude"))
+# nc_lon <- as_tibble(nc_lon)
+# 
+# nc_lat <- read_ncdf(fn_mazloff_ph, var = c("latitude"))
+# nc_lat <- as_tibble(nc_lat)
+# 
+# nc_depth <- read_ncdf(fn_mazloff_ph, var = c("depth"))
+# nc_depth <- as_tibble(nc_depth)
+# 
+# nc_pH <- nc_pH %>%
+#    mutate(ny = ny - 0.5,
+#           nx = nx - 0.5,
+#           t = t + 0.5)
+# 
+# # Join each attribute in turn to pH data
+# clim_argo_ph <- full_join(nc_pH, nc_lat)
+# clim_argo_ph <- full_join(clim_argo_ph, nc_lon)
+# clim_argo_ph <- full_join(clim_argo_ph, nc_depth)
+# 
+# clim_argo_ph <- clim_argo_ph %>%
+#    select(-c(starts_with("n")))
+# 
+# clim_argo_ph <- clim_argo_ph %>%
+#    filter(pH != 0)
+# 
+# # harmonise data 
+# clim_argo_ph <- clim_argo_ph %>% 
+#   rename(lat = latitude,
+#          lon = longitude,
+#          month = t,
+#          clim_pH = pH) %>% 
+#   mutate(lat = lat -0.5,
+#          lon = if_else(lon < 20, lon + 360, lon))
 
-nc_lon <- read_ncdf(fn_mazloff_ph, var = c("longitude"))
-nc_lon <- as_tibble(nc_lon)
 
-nc_lat <- read_ncdf(fn_mazloff_ph, var = c("latitude"))
-nc_lat <- as_tibble(nc_lat)
+# A shorter alternative
 
-nc_depth <- read_ncdf(fn_mazloff_ph, var = c("depth"))
-nc_depth <- as_tibble(nc_depth)
+nc_pH <- read_stars(fn_mazloff_ph) %>% 
+  as_tibble()
 
-nc_pH <- nc_pH %>%
-   mutate(ny = ny - 0.5,
-          nx = nx - 0.5,
-          t = t + 0.5)
+nc_lat <- read_ncdf(fn_mazloff_ph, var = c("latitude")) %>% as_tibble()
 
-# Join each attribute in turn to pH data
-clim_argo_ph <- full_join(nc_pH, nc_lat)
-clim_argo_ph <- full_join(clim_argo_ph, nc_lon)
-clim_argo_ph <- full_join(clim_argo_ph, nc_depth)
-
-clim_argo_ph <- clim_argo_ph %>%
-   select(-c(starts_with("n")))
-
-clim_argo_ph <- clim_argo_ph %>%
-   filter(pH != 0)
+nc_pH <- full_join(nc_pH %>% rename(ny = y),
+                   nc_lat)
 
 # harmonise data 
-clim_argo_ph <- clim_argo_ph %>% 
+clim_argo_ph <- nc_pH %>% 
+  select(-ny) %>% 
   rename(lat = latitude,
-         lon = longitude,
+         lon = x,
+         depth = nz,
          month = t,
-         clim_pH = pH) %>% 
-  mutate(lat = lat -0.5,
-         lon = if_else(lon < 20, lon + 360, lon))
+         clim_pH = "PH-QCv3-v10r1.nc") %>% 
+  mutate(depth = round(depth, 2),
+         lon = if_else(lon < 20, lon + 360, lon),
+         lat = lat - 0.5)
 ```
 
 # Maps
 ```{r plots}
 clim_argo_ph %>%
-   filter(pH != 0) %>%
+   filter(depth < 30) %>%
    ggplot() +
-   geom_tile(aes(longitude, latitude, fill = pH)) +
+   geom_tile(aes(lon, lat, fill = clim_pH)) +
    facet_wrap(~depth) +
    scale_fill_viridis_c() +
    coord_quickmap()
 
 clim_argo_ph %>%
-   filter(pH != 0) %>%
-   ggplot(aes(pH)) +
+   ggplot(aes(clim_pH)) +
    geom_histogram() +
    facet_wrap(~depth) +
    scale_y_log10() +
    geom_vline(xintercept = 7.5)
+
 ```
 
 
@@ -99,7 +123,9 @@ clim_argo_ph %>%
 
 ```{r write_data_to_file}
 
-clim_argo_ph %>% write_rds(file = paste0(path_argo_preprocessed, "/ucsd_ph_clim.rds"))
+clim_argo_ph %>% 
+  drop_na() %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/ucsd_ph_clim.rds"))
 
 ```
 

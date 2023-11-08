@@ -65,7 +65,7 @@ opt_gap_max_depth <- c(400, 1000, 1600)
 # opt_measure = 1 analysis is done using pH
 # opt_measure = 2 analysis is done using h_plus
 # opt_measure_label, opt_xlim and opt_xbreaks are associated formatting
-opt_measure <- 2
+opt_measure <- 1
 if (opt_measure == 1){
   opt_measure_label <- "pH anomaly"
   opt_xlim <- c(-0.08, 0.08)
@@ -90,13 +90,6 @@ ucsd_clim <- read_rds(file = paste0(path_argo_preprocessed, '/ucsd_ph_clim.rds')
 
 # Select fields of interest
 ucsd_clim <- ucsd_clim %>% 
-  select(
-    month,
-    lat,
-    lon,
-    depth,
-    clim_pH
-  ) %>%
   mutate(
     clim_h_plus = 10^-clim_pH
   )
@@ -105,10 +98,10 @@ ucsd_clim <- ucsd_clim %>%
 opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
 
 # existing depth levels that we will align to
-target_depth_range <-   distinct(ucsd_clim %>%
-                              filter(depth <= opt_profile_max_depth) %>% 
-                              mutate(target_depth = depth) %>%
-                              select(target_depth))
+target_depth_levels <-   ucsd_clim %>%
+  filter(depth <= opt_profile_max_depth) %>%
+  rename(target_depth = depth) %>%
+  distinct(target_depth)
 
 ```
 
@@ -124,14 +117,23 @@ bgc_metadata <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_metadata.rd
 
 # Select relevant field from metadata ready to join to bgc_data
 bgc_metadata_select <- bgc_metadata %>%
-                            filter (position_qc == 1) %>%
-                            select(
-                              file_id,
-                              date,
-                              lat,
-                              lon
-                              ) %>%
-                            mutate(year = year(date), month = month(date), .after = date)
+  filter(position_qc == 1) %>%
+  select(file_id,
+         date,
+         lat,
+         lon) %>%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
+
+# create random subset of 2000 out of 163,172 profiles for review purpose only
+
+# bgc_data <-
+#   left_join(bgc_metadata_select %>%
+#               distinct(file_id) %>%
+#               slice_sample(n = 2000),
+#             bgc_data)
+
 
 # we drive alignment from pressure and pH data
 # conditions 
@@ -140,39 +142,36 @@ bgc_metadata_select <- bgc_metadata %>%
 # ph_in_situ_total_adjusted_qc %in% c(1, 8) - pH data marked as good
 # !is.na(pres_adjusted) - pressure value must be present
 # !is.na(ph_in_situ_total_adjusted) - pH value must be present
+
 bgc_data_pH <- bgc_data %>%
-                  filter(pres_adjusted_qc %in% c(1, 8) & 
-                           ph_in_situ_total_adjusted_qc %in% c(1, 8) & 
-                           n_prof == 1 & !is.na(pres_adjusted) &
-                           !is.na(ph_in_situ_total_adjusted)) %>%
-                  select(
-                    file_id,
-                    pres_adjusted,
-                    ph_in_situ_total_adjusted
-                  )
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &
+      ph_in_situ_total_adjusted_qc %in% c(1, 8) &
+      n_prof == 1 &
+      !is.na(pres_adjusted) &
+      !is.na(ph_in_situ_total_adjusted)
+  ) %>%
+  select(file_id,
+         pres_adjusted,
+         ph_in_situ_total_adjusted)
+
+rm(bgc_data)
+gc()
 
 # join with metadata information and calculate depth field
-bgc_data_pH <- full_join(bgc_metadata_select, bgc_data_pH) %>%
-                          select(
-                            file_id,
-                            lat, 
-                            lon, 
-                            date,
-                            year, 
-                            month,
-                            pres_adjusted,
-                            ph_in_situ_total_adjusted
-                          ) %>%
-                          mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
-                                 .before = pres_adjusted) %>%
-                          filter(!is.na(file_id))
+bgc_data_pH <- inner_join(bgc_metadata_select %>% select(file_id, lat),
+                          bgc_data_pH) %>%
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
+         .before = pres_adjusted) %>%
+  select(-c(lat, pres_adjusted))
+  # filter(!is.na(file_id))
 
 # ensure we have a depth, pres_adjusted and ph_in_situ_total_adjusted for all rows in bgc_data_pH
 bgc_data_pH <- bgc_data_pH %>%
-                  filter(!is.na(depth) & !is.na(pres_adjusted) & !is.na(ph_in_situ_total_adjusted))
+                  filter(!is.na(depth) & !is.na(ph_in_situ_total_adjusted))
 
 # clean up working tables
-rm(bgc_data, bgc_metadata_select)
+rm(bgc_data, bgc_metadata)
 ```
 
 ## Profile limits
@@ -191,7 +190,7 @@ bgc_profile_limits <- bgc_data_pH %>%
   ) %>%
   ungroup()
 
-# The profile much match at least one of teh range criteria
+# The profile must cover at least the weakest range criteria
 force_min <- min(opt_profile_depth_range$min_depth)
 force_max <- min(opt_profile_depth_range$max_depth)
 
@@ -202,9 +201,10 @@ bgc_apply_limits <- bgc_profile_limits %>%
     max_depth >= force_max
     )
 
-# Ensure working data set only contains profiles that have confrormed to the range test
-bgc_data_pH <- full_join(bgc_data_pH, bgc_apply_limits) %>%
-                        filter(!is.na(min_depth))
+# Ensure working data set only contains profiles that have conformed to the range test
+bgc_data_pH <- right_join(bgc_data_pH,
+                          bgc_apply_limits %>% select(file_id))
+  # filter(!is.na(min_depth))
 
 # Add profile type field and set all to 1.  
 # All profile that meet the minimum requirements are profile_range = 1
@@ -212,45 +212,41 @@ bgc_data_pH <- bgc_data_pH %>%
   mutate(profile_range = 1)
 
 for (i in 2:nrow(opt_profile_depth_range)) {
-
+  
   #i = 3
-  range_min <- opt_profile_depth_range[i,'min_depth']
-  range_max <- opt_profile_depth_range[i,'max_depth']
-
+  range_min <- opt_profile_depth_range[i, 'min_depth']
+  range_max <- opt_profile_depth_range[i, 'max_depth']
+  
   # Apply profile min and max restrictions
   bgc_apply_limits <- bgc_profile_limits %>%
-    filter(
-      min_depth <= range_min &
-      max_depth >= range_max
-      ) %>%
-    select(
-      file_id
-      ) %>%
-    mutate (
-      profile_range = i 
-    )
-
+    filter(min_depth <= range_min &
+             max_depth >= range_max) %>%
+    select(file_id) %>%
+    mutate (profile_range = i)
+  
   # Update profile range to i for these profiles
   # bgc_data_temp <- full_join(bgc_data_temp, bgc_apply_limits) %>%
   #                         filter(!is.na(min_depth))
-  bgc_data_pH <- bgc_data_pH %>% rows_update(bgc_apply_limits, by = "file_id")
-
+  bgc_data_pH <-
+    bgc_data_pH %>% rows_update(bgc_apply_limits, by = "file_id")
+  
 }
 
-# Find the gaps within the profiles
-profile_gaps <- bgc_data_pH %>%
-  select(
-    file_id,
-    depth
-    ) %>%
+# Find gaps that occur with the core profile range
+profile_gaps <- full_join(bgc_data_pH,
+                          opt_profile_depth_range) %>%
+  filter(depth >= min_depth & 
+           depth <= max_depth) %>% 
+  select(file_id,
+         depth) %>%
   arrange(file_id, depth) %>%
   group_by(file_id) %>%
   mutate(gap = depth - lag(depth, default = 0)) %>%
   ungroup()
 
-# Ensure we do not have gaps in the profile that invalidate it 
+# Ensure we do not have gaps in the profile that invalidate it
 for (i_gap in opt_gap_limit) {
-
+  
   # The limits to be applied in that pass of for loop
   # i_gap <- opt_gap_limit[3]
   i_gap_min = opt_gap_min_depth[which(opt_gap_limit == i_gap)]
@@ -260,104 +256,106 @@ for (i_gap in opt_gap_limit) {
   profile_gaps_remove <- profile_gaps %>%
     filter(gap > i_gap) %>%
     filter(depth >= i_gap_min & depth <= i_gap_max) %>%
-    select(file_id, gap)
+    distinct(file_id) %>% 
+    pull()
   
-  # Remonve these profiles from working data set
-  bgc_data_pH <- full_join(bgc_data_pH, profile_gaps_remove) %>%
-                                  filter(is.na(gap)) %>%
-                                  select(-c(gap))
+  # Remonve gap-containing profiles from working data set
+  bgc_data_pH <- bgc_data_pH %>% 
+    filter(!file_id %in% profile_gaps_remove)
 }
-
-# Ensure primary fields are all present
-bgc_data_pH <- bgc_data_pH %>%
-  filter(!is.na(lat) & !is.na(lon) & !is.na(date) & !is.na(depth)) 
 
 # clean up working tables
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
+gc()
 
 ```
 
 ## Vertical align pH
 
 We have a set of pH profiles that match our criteria we now need to align that data set to match the 
-depth that are in target_depth_range, this will match the range of climatology values in ucsd_clim
+depth that are in target_depth_levels, this will match the range of climatology values in ucsd_clim
 
 ```{r vertical_align_pH}
 
+# create unique combinations of file_id and profile ranges
+profile_range_file_id <- 
+  bgc_data_pH %>% 
+  distinct(file_id, profile_range)
+
+
 # select variable of interest and prepare target_depth field
 bgc_data_pH_clean <- bgc_data_pH %>%
-                            select(
-                              file_id, 
-                              lat,
-                              lon,
-                              date,
-                              depth,
-                              profile_range,
-                              pH = ph_in_situ_total_adjusted
-                            ) %>%
-                            mutate(
-                              target_depth = depth, .after = depth
-                            )
+  select(-profile_range) %>%
+  mutate(target_depth = depth, .after = depth)
+
+rm(bgc_data_pH)
+gc()
 
 # create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid <-
-  expand_grid(target_depth_range,
-              bgc_data_pH_clean %>% distinct(file_id, lat, lon, date, profile_range))
+  expand_grid(
+    target_depth_levels,
+    profile_range_file_id
+  )
 
-# Take account of the profile_range field to determine the profile_range of target_depth_grid
-target_depth_grid <- left_join(target_depth_grid, opt_profile_depth_range) %>%
-        filter(target_depth <= max_depth)
+# Constrain target_depth_grid to profile depth range
+target_depth_grid <-
+  left_join(target_depth_grid, opt_profile_depth_range) %>%
+  filter(target_depth <= max_depth)
 
-target_depth_grid <- target_depth_grid %>% 
-                        select(
-                          target_depth, 
-                          file_id, 
-                          lat, 
-                          lon,
-                          date,
-                          profile_range
-                          )
+target_depth_grid <- target_depth_grid %>%
+  select(target_depth,
+         file_id)
 
 # extend pH depth vectors with target depths
-bgc_data_pH_extended <- full_join(bgc_data_pH_clean, target_depth_grid) %>% 
-  arrange(file_id, lat, lon, date, target_depth)
+bgc_data_pH_extended <-
+  full_join(bgc_data_pH_clean, target_depth_grid) %>%
+  arrange(file_id, target_depth)
+
+rm(bgc_data_pH_clean)
+gc()
 
 # predict spline interpolation on adjusted depth grid for pH location and month
 bgc_data_pH_interpolated <-
   bgc_data_pH_extended %>%
-  group_by(file_id, lat, lon, date) %>%
-  mutate(pH_spline = spline(target_depth, pH,
+  group_by(file_id) %>%
+  mutate(pH_spline = spline(target_depth, ph_in_situ_total_adjusted,
                                 method = "natural",
                                 xout = target_depth)$y) %>%
   ungroup()
 
+rm(bgc_data_pH_extended)
+gc()
+
 # subset interpolated values on target depth range
 bgc_data_pH_interpolated_clean <- 
-  inner_join(target_depth_grid, bgc_data_pH_interpolated)
+  inner_join(target_depth_levels, bgc_data_pH_interpolated)
+
+rm(bgc_data_pH_interpolated)
+gc()
 
 # select columns and rename to initial names
 bgc_data_pH_interpolated_clean <-
   bgc_data_pH_interpolated_clean %>%
-  select(
-    file_id, 
-    lat, 
-    lon, 
-    date,
-    profile_range,
-    depth = target_depth,
-    pH = pH_spline)
+  select(file_id,
+         depth = target_depth,
+         pH = pH_spline)
 
-# Create year and month fields
+# merge with profile range
+bgc_data_pH_interpolated_clean <-
+  full_join(bgc_data_pH_interpolated_clean,
+            profile_range_file_id)
+
+# merge with meta data
+bgc_data_pH_interpolated_clean <-
+  left_join(bgc_data_pH_interpolated_clean,
+            bgc_metadata_select)
+
+
+# Create H+ fields
 bgc_data_pH_interpolated_clean <- bgc_data_pH_interpolated_clean %>%
-  mutate(year = year(date),
-         month = month(date),
-         .after = date) %>%
-  mutate(
-    h_plus = 10^-pH
-  )
+  mutate(h_plus = 10 ^ -pH)
 
-# clean up working tables
-rm(bgc_data_pH_extended, bgc_data_pH_interpolated)
 
 ```
 
@@ -367,51 +365,46 @@ Create anomaly profiles as observed - climatology
 ```{r pH_anomaly}
 
 # Create bgc_temp_anomaly, but only where we have an climatology temperature
-bgc_pH_anomaly <- left_join(bgc_data_pH_interpolated_clean, ucsd_clim) %>%
-                        filter(!is.na(clim_pH) & lat <= -30)
+bgc_pH_anomaly <-
+  inner_join(bgc_data_pH_interpolated_clean, ucsd_clim)
+  # filter(!is.na(clim_pH) & lat <= -30)
 
 # Calculate the anomaly temperature
 bgc_pH_anomaly <- bgc_pH_anomaly %>%
-                      mutate(
-                        anomaly_pH = pH - clim_pH,
-                        anomaly_h_plus = h_plus - clim_h_plus
-                      )
+  mutate(anomaly_pH = pH - clim_pH,
+         anomaly_h_plus = h_plus - clim_h_plus)
 
 # -----------------------------------------------------------------------------
 # Climatology check
 # -----------------------------------------------------------------------------
-# It is possible even though we have observational measures to full depth the climatology may not matach all depth.
+# It is possible even though we have observational measures to full depth the climatology may not match all depth.
 # These profiles will be removed from both temp_bgc_va and temp_anomaly_va
 
 # Anomaly max depth
 bgc_pH_anomaly_depth_check <- bgc_pH_anomaly %>%
-                                group_by(
-                                  file_id,
-                                  profile_range
-                                  ) %>%
-                                summarise(
-                                  min_pdepth = min(depth),
-                                  max_pdepth = max(depth)
-                                  ) %>%
-                                ungroup()
+  group_by(file_id,
+           profile_range) %>%
+  summarise(min_pdepth = min(depth),
+            max_pdepth = max(depth)) %>%
+  ungroup()
 
 # Add the required min depth and max depth
 bgc_pH_anomaly_depth_check <- left_join(bgc_pH_anomaly_depth_check, opt_profile_depth_range)
 
 # This profiles do not match the depth required by the profile_range
 min_depth_check <- min(target_depth_grid$target_depth)
+
+# Please double check if the criterion should be
+# min_depth_check (2.1m) or min_depth (10m) -> I think 10m
 remove_profiles <- bgc_pH_anomaly_depth_check %>%
-  filter((max_pdepth < max_depth) | (min_pdepth > min_depth_check)) %>%
-  select(file_id, max_depth)
+  filter((max_pdepth < max_depth) | (min_pdepth > min_depth)) %>%
+  distinct(file_id)
 
 # remove from both bgc_data_pH_interpolated_clean and bgc_pH_anomaly
-bgc_data_pH_interpolated_clean <- full_join(bgc_data_pH_interpolated_clean, remove_profiles) %>%
-            filter(is.na(max_depth)) %>%
-            select(-c(max_depth))
+bgc_data_pH_interpolated_clean <-
+  anti_join(bgc_data_pH_interpolated_clean, remove_profiles)
 
-bgc_pH_anomaly <- full_join(bgc_pH_anomaly, remove_profiles) %>%
-            filter(is.na(max_depth)) %>%
-            select(-c(max_depth))
+bgc_pH_anomaly <- anti_join(bgc_pH_anomaly, remove_profiles)
 
 # clean up working tables
 #rm(bgc_pH_anomaly_depth_check, remove_profiles)
@@ -439,7 +432,7 @@ pH_clim_va <- ucsd_clim
 pH_anomaly_va <- bgc_pH_anomaly
 
 rm(bgc_data_pH_interpolated_clean, ucsd_clim, bgc_pH_anomaly)
-
+gc()
 
 ```
 
@@ -471,6 +464,7 @@ theme_set(theme_bw())
 max_depth_1 <- opt_profile_depth_range[1, "max_depth"]
 max_depth_2 <- opt_profile_depth_range[2, "max_depth"]
 max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
+
 
 # Profiles to 600m
 if (opt_measure == 1){
@@ -572,109 +566,145 @@ if (opt_measure == 1){
 # anomaly_year_mean_3 <- full_join(anomaly_year_mean_3, year_mean_3)
 
 # All years
-anomaly_overall_mean_1 %>% 
-  ggplot()+
+anomaly_overall_mean_1 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
-anomaly_overall_mean_2 %>% 
-  ggplot()+
+anomaly_overall_mean_2 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
-anomaly_overall_mean_3 %>% 
-  ggplot()+
+anomaly_overall_mean_3 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 # by years
-anomaly_year_mean_1 %>% 
-  ggplot()+
+anomaly_year_mean_1 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  facet_wrap(~year)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+  facet_wrap( ~ year) +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
-anomaly_year_mean_2 %>% 
-  ggplot()+
+anomaly_year_mean_2 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  facet_wrap(~year)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+  facet_wrap( ~ year) +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 
 #min_year = min(year_mean_3$year_num)
 
-anomaly_year_mean_3 %>% 
-  ggplot()+
+anomaly_year_mean_3 %>%
+  ggplot() +
   geom_path(aes(x = anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                  xmin = anomaly_mean - anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
+                y = depth)) +
+  geom_ribbon(aes(
+    xmax = anomaly_mean + anomaly_sd,
+    xmin = anomaly_mean - anomaly_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   #geom_vline(xintercept = year_mean_3$year_mean[year[1]-2013])+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse()+
+  geom_vline(xintercept = 0) +
+  scale_y_reverse() +
   # scale_color_manual(values = HNL_colors)+
   # scale_fill_manual(values = HNL_colors)+
-  facet_wrap(~year)+
-  coord_cartesian(xlim = opt_xlim)+
-  scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+  facet_wrap( ~ year) +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 #rm(anomaly_overall_mean)
 ```
@@ -682,6 +712,7 @@ anomaly_year_mean_3 %>%
 ## Profile counts
 
 Details of the number of profiles and to which depths over the analysis period
+
 ```{r pH_histogram, fig.asp=1}
 
 pH_histogram <- pH_bgc_va %>%
@@ -689,11 +720,24 @@ pH_histogram <- pH_bgc_va %>%
   summarise(num_profiles = n_distinct(file_id)) %>%
   ungroup()
 
-pH_histogram %>% 
-  ggplot()+
-  geom_bar(aes(x = year, y = num_profiles, fill = profile_range, group = profile_range), position = "stack", stat="identity")+
-  scale_fill_viridis_d()+
-  labs(title = "pH profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
+
+pH_histogram %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = year,
+      y = num_profiles,
+      fill = profile_range,
+      group = profile_range
+    ),
+    position = "stack",
+    stat = "identity"
+  ) +
+  scale_fill_viridis_d() +
+  labs(title = "pH profiles per year and profile range",
+       x = "year",
+       y = "profile count",
+       fill = "profile range")
 
 
 ```

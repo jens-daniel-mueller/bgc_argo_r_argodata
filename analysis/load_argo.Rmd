@@ -294,13 +294,13 @@ if (!opt_qc_only) {
   # Change metadate, data and merge to have file_id
   bgc_metadata <- full_join(bgc_metadata, bgc_fileid)
   bgc_metadata <- bgc_metadata %>%
-                    select(-c(file))
+    select(-c(file))
   bgc_merge <- full_join(bgc_merge, bgc_fileid)
   bgc_merge <- bgc_merge %>%
-                    select(-c(file))
+    select(-c(file))
   bgc_data <- full_join(bgc_data, bgc_fileid)
   bgc_data <- bgc_data %>%
-                    select(-c(file))
+    select(-c(file))
 
   # Summary measurement QC data
   bgc_data_qc <- bgc_merge %>%
@@ -318,32 +318,91 @@ if (!opt_qc_only) {
            .after = date)
   
   # Create the summary file that is used later for qc analysis
-  bgc_measure_summary <- bgc_data_qc %>% 
-                                 group_by(year, measure_order = 1, measure = "Pressure", measure_qc = pres_adjusted_qc) %>% 
-                                 summarise(count_measure = n())
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 2, measure = "Temperature", measure_qc = temp_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 3, measure = "Salinity", measure_qc = psal_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 4, measure = "pH", measure_qc = ph_in_situ_total_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 5, measure = "Oxygen", measure_qc = doxy_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 6, measure = "Nitrate", measure_qc = nitrate_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-  bgc_measure_summary <- rbind(bgc_measure_summary, bgc_data_qc %>% 
-                                 group_by(year, measure_order = 7, measure = "Chl-a", measure_qc = chla_adjusted_qc) %>% 
-                                 summarise(count_measure = n()))
-
+  bgc_measure_summary <- bgc_data_qc %>%
+    group_by(
+      year,
+      measure_order = 1,
+      measure = "Pressure",
+      measure_qc = pres_adjusted_qc
+    ) %>%
+    summarise(count_measure = n())
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 2,
+        measure = "Temperature",
+        measure_qc = temp_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 3,
+        measure = "Salinity",
+        measure_qc = psal_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 4,
+        measure = "pH",
+        measure_qc = ph_in_situ_total_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 5,
+        measure = "Oxygen",
+        measure_qc = doxy_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 6,
+        measure = "Nitrate",
+        measure_qc = nitrate_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
+  bgc_measure_summary <- rbind(
+    bgc_measure_summary,
+    bgc_data_qc %>%
+      group_by(
+        year,
+        measure_order = 7,
+        measure = "Chl-a",
+        measure_qc = chla_adjusted_qc
+      ) %>%
+      summarise(count_measure = n())
+  )
+  
   rm(bgc_data_qc)
   bgc_measure_summary %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
-    
+  
 }
 
 ```
@@ -399,7 +458,7 @@ if (!opt_qc_only) {
       lon = cut(lon, seq(20, 380, 2), seq(21, 379, 2)),
       lon = as.numeric(as.character(lon))
     )   # regrid into 2x2º grid
-
+  
 }
 ```
 
@@ -501,8 +560,8 @@ if (!opt_qc_only) {
 
 ```{r write_argo_data_files}
 
-if (!opt_qc_only) {
 
+if (!opt_qc_only) {
   bgc_index %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_index.rds"))
   
@@ -514,34 +573,34 @@ if (!opt_qc_only) {
   
   bgc_fileid %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_fileid.rds"))
-
-    bgc_merge_pH_qc_1 %>%
+  
+  bgc_merge_pH_qc_1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_pH_qc_1.rds"))
   
-  bgc_merge_temp_qc_1 %>% 
+  bgc_merge_temp_qc_1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_qc_1.rds"))
   
-  bgc_merge_temp_AB %>% 
+  bgc_merge_temp_AB %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_temp_AB.rds"))
   
   bgc_merge_flag_AB %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
   
-  bgc_merge_qc_1 %>% 
+  bgc_merge_qc_1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_qc_1.rds"))
   
-  ph_merge_1x1 %>% 
+  ph_merge_1x1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/ph_merge_1x1.rds"))
   
   bgc_metadata %>%
     write_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
   
-  ph_surface_1x1 %>% 
+  ph_surface_1x1 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_1x1.rds"))
   
-  ph_surface_2x2 %>% 
+  ph_surface_2x2 %>%
     write_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x2.rds"))
-
+  
 }
 ```
 
@@ -560,71 +619,101 @@ theme_set(theme_bw())
 
 # Read metadata file and create profile summary table with a count for each year, measurement type and qc option
 bgc_metadata <-
-read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
 
-bgc_metadata["profile_pres_qc"][is.na(bgc_metadata["profile_pres_qc"])] <- "" 
-bgc_metadata["profile_temp_qc"][is.na(bgc_metadata["profile_temp_qc"])] <- "" 
-bgc_metadata["profile_psal_qc"][is.na(bgc_metadata["profile_psal_qc"])] <- "" 
-bgc_metadata["profile_doxy_qc"][is.na(bgc_metadata["profile_doxy_qc"])] <- "" 
-bgc_metadata["profile_nitrate_qc"][is.na(bgc_metadata["profile_nitrate_qc"])] <- "" 
-bgc_metadata["profile_ph_in_situ_total_qc"][is.na(bgc_metadata["profile_ph_in_situ_total_qc"])] <- "" 
-bgc_metadata["profile_chla_qc"][is.na(bgc_metadata["profile_chla_qc"])] <- "" 
+# Short version of replacing NA across columns
+bgc_metadata <-
+  bgc_metadata %>%
+  mutate(across(starts_with("profile_"), ~ replace_na(., "")))
 
-bgc_profile_summary <- bgc_metadata %>% 
+# bgc_metadata["profile_pres_qc"][is.na(bgc_metadata["profile_pres_qc"])] <- ""
+# bgc_metadata["profile_temp_qc"][is.na(bgc_metadata["profile_temp_qc"])] <- ""
+# bgc_metadata["profile_psal_qc"][is.na(bgc_metadata["profile_psal_qc"])] <- ""
+# bgc_metadata["profile_doxy_qc"][is.na(bgc_metadata["profile_doxy_qc"])] <- ""
+# bgc_metadata["profile_nitrate_qc"][is.na(bgc_metadata["profile_nitrate_qc"])] <- ""
+# bgc_metadata["profile_ph_in_situ_total_qc"][is.na(bgc_metadata["profile_ph_in_situ_total_qc"])] <- ""
+# bgc_metadata["profile_chla_qc"][is.na(bgc_metadata["profile_chla_qc"])] <- ""
+
+# Short version for data wrangling and plotting below
+bgc_metadata %>% 
+  mutate(year = year(date)) %>% 
+  select(year, starts_with("profile_")) %>% 
+  pivot_longer(-year) %>% 
+  mutate(name = str_remove(name, "profile_"),
+         name = str_remove(name, "_qc")) %>% 
+  filter(value != "") %>% 
+  count(year, name, value) %>% 
+  ggplot(aes(year, n, col = value)) +
+  geom_path() +
+  geom_point() +
+  facet_wrap( ~ name)
+  
+
+
+bgc_profile_summary <- bgc_metadata %>%
   filter (profile_chla_qc != "") %>%
   group_by(
-    year = format(date, "%Y"), 
-    measure = "Chl-a", 
-    measure_order = 7, 
+    year = format(date, "%Y"),
+    measure = "Chl-a",
+    measure_order = 7,
     profile_qc = profile_chla_qc
-    ) %>% 
-  summarise(
-    count_profiles = n()
-    )
-bgc_profile_summary <- rbind(bgc_profile_summary, 
-                              bgc_metadata %>% 
-                                filter (profile_ph_in_situ_total_qc != "") %>%
-                                group_by(
-                                  year = format(date, "%Y"), 
-                                  measure = "pH", 
-                                  measure_order = 4, 
-                                  profile_qc = profile_ph_in_situ_total_qc
-                                  ) %>% 
-                                summarise(
-                                  count_profiles = n()
-                                  ))
-bgc_profile_summary <- rbind(bgc_profile_summary, 
-                              bgc_metadata %>% 
-                                filter (profile_doxy_qc != "") %>%
-                                group_by(
-                                  year = format(date, "%Y"), 
-                                  measure = "oxygen", 
-                                  measure_order = 5, 
-                                  profile_qc = profile_doxy_qc
-                                  ) %>% 
-                                summarise(
-                                  count_profiles = n()
-                                  ))
+  ) %>%
+  summarise(count_profiles = n())
+
+bgc_profile_summary <- rbind(
+  bgc_profile_summary,
+  bgc_metadata %>%
+    filter (profile_ph_in_situ_total_qc != "") %>%
+    group_by(
+      year = format(date, "%Y"),
+      measure = "pH",
+      measure_order = 4,
+      profile_qc = profile_ph_in_situ_total_qc
+    ) %>%
+    summarise(count_profiles = n())
+)
+
+bgc_profile_summary <- rbind(
+  bgc_profile_summary,
+  bgc_metadata %>%
+    filter (profile_doxy_qc != "") %>%
+    group_by(
+      year = format(date, "%Y"),
+      measure = "oxygen",
+      measure_order = 5,
+      profile_qc = profile_doxy_qc
+    ) %>%
+    summarise(count_profiles = n())
+)
+
 # modify data frame to prepare for plotting
 bgc_profile_summary <- ungroup(bgc_profile_summary)
-bgc_profile_summary <- bgc_profile_summary %>% group_by(measure_order)
-bgc_profile_summary <- transform(bgc_profile_summary, year = as.numeric(year))
+bgc_profile_summary <-
+  bgc_profile_summary %>% group_by(measure_order)
+bgc_profile_summary <-
+  transform(bgc_profile_summary, year = as.numeric(year))
 
 year_min <- min(bgc_profile_summary$year)
 year_max <- max(bgc_profile_summary$year)
-facet_label <- as_labeller(c("7"="Chl-a", "4"="pH", "5"="Oxygen"))
-  
+facet_label <-
+  as_labeller(c("7" = "Chl-a", "4" = "pH", "5" = "Oxygen"))
+
 # draw plots for the separate parameters
 bgc_profile_summary %>%
-  ggplot(aes(x = year, y = count_profiles, col = profile_qc, group=profile_qc)) +
-          geom_point() +
-          geom_line() +
-          facet_wrap(~measure_order, labeller = facet_label) +
-          scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
-          labs(x = 'year', 
-               y = 'number of profiles', 
-               col = 'profile QC flag',
-               title = 'Count of profile qc flags by year')
+  ggplot(aes(
+    x = year,
+    y = count_profiles,
+    col = profile_qc,
+    group = profile_qc
+  )) +
+  geom_point() +
+  geom_line() +
+  facet_wrap(~ measure_order, labeller = facet_label) +
+  scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+  labs(x = 'year',
+       y = 'number of profiles',
+       col = 'profile QC flag',
+       title = 'Count of profile qc flags by year')
   
 
 ```
@@ -635,9 +724,10 @@ Produce a summary of current measurement QC flags (1-9)
 
 ```{r QC_summary_measure, fig.asp=0.6}
 
+
 # Read temp and meta_data
 bgc_measure_summary <-
-read_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_measure_summary.rds"))
 bgc_measure_summary <- ungroup(bgc_measure_summary)
 
 year_min <- min(bgc_measure_summary$year)
@@ -646,15 +736,20 @@ year_max <- max(bgc_measure_summary$year)
 # draw plots for the separate parameters
 bgc_measure_summary %>%
   filter(measure_qc != " " & measure_order %in% c(7, 4, 5)) %>%
-  ggplot(aes(x = year, y = count_measure, col = measure_qc, group=measure_qc)) +
-          geom_point() +
-          geom_line() +
-          facet_wrap(~measure_order, labeller = facet_label) +
-          scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
-          labs(x = 'year', 
-               y = 'number of measures', 
-               col = 'measure QC flag',
-               title = 'Count of measure qc flags by year')
+  ggplot(aes(
+    x = year,
+    y = count_measure,
+    col = measure_qc,
+    group = measure_qc
+  )) +
+  geom_point() +
+  geom_line() +
+  facet_wrap( ~ measure_order, labeller = facet_label) +
+  scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+  labs(x = 'year',
+       y = 'number of measures',
+       col = 'measure QC flag',
+       title = 'Count of measure qc flags by year')
 
 ```
 

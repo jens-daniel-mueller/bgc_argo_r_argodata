@@ -4,6 +4,7 @@ author: "David Stappard, Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
+  chunk_output_type: console
 chunk_output_type: console
 ---
 
@@ -150,28 +151,32 @@ Builds yearly files for temperature, salinity and metadata that can be consolida
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
 if (!opt_qc_only) {
-
   for (target_year in opt_min_year:opt_max_year) {
     # for manual testing of the loop
     # target_year <- 2014
-  
+    
     # if updating any year files it will be based on the initial index file core_index
-    if (opt_refresh_years_temp | opt_refresh_years_psal | opt_refresh_years_metadata)
+    if (opt_refresh_years_temp |
+        opt_refresh_years_psal | opt_refresh_years_metadata)
     {
       # if working in reiew mode only consider first 10 days of the year
       if (opt_review_mode) {
-        core_index <- argo_global_prof() %>% 
-          argo_filter_data_mode(data_mode = 'delayed') %>% 
-          argo_filter_date(date_min = paste0(target_year, "-01-01"),
-                           date_max = paste0(target_year, "-01-10"))
+        core_index <- argo_global_prof() %>%
+          argo_filter_data_mode(data_mode = 'delayed') %>%
+          argo_filter_date(
+            date_min = paste0(target_year, "-01-01"),
+            date_max = paste0(target_year, "-01-05")
+          )
       } else {
-        core_index <- argo_global_prof() %>% 
-          argo_filter_data_mode(data_mode = 'delayed') %>% 
-          argo_filter_date(date_min = paste0(target_year, "-01-01"),
-                           date_max = paste0(target_year, "-12-31"))
+        core_index <- argo_global_prof() %>%
+          argo_filter_data_mode(data_mode = 'delayed') %>%
+          argo_filter_date(
+            date_min = paste0(target_year, "-01-01"),
+            date_max = paste0(target_year, "-12-31")
+          )
       }
     }
-  
+    
     # if temp or psal are being updated get the profile data
     if (opt_refresh_years_temp | opt_refresh_years_psal)
     {
@@ -185,70 +190,165 @@ if (!opt_qc_only) {
             'PSAL_ADJUSTED',
             'PSAL_ADJUSTED_QC',
             'TEMP_ADJUSTED',
-            'TEMP_ADJUSTED_QC'),
+            'TEMP_ADJUSTED_QC'
+          ),
         quiet = TRUE
       )
       
       # see option section above for rational of why we want n_prof = 1 profiles
       core_data_yr <- core_data_yr %>%
-      filter(n_prof == opt_n_prof_sel)
+        filter(n_prof == opt_n_prof_sel)
       
       # if necessary make summary data frame.
       if (!exists("core_measure_summary"))
       {
-        columns = c("year","measure","measure_order","measure_qc","count_measures") 
-        core_measure_summary = data.frame(matrix(nrow = 0, ncol = length(columns))) 
-        colnames(core_measure_summary) = columns
+        core_measure_summary <- tibble(
+          "year" = numeric(),
+          "measure" = character(),
+          "measure_order" = numeric(),
+          "measure_qc" = numeric(),
+          "count_measures" = numeric()
+        )
       }
       
       # Ensure no N/A qc flags
-      core_data_yr["pres_adjusted_qc"][is.na(core_data_yr["pres_adjusted_qc"])] <- " "
-      core_data_yr["temp_adjusted_qc"][is.na(core_data_yr["temp_adjusted_qc"])] <- " "
-      core_data_yr["psal_adjusted_qc"][is.na(core_data_yr["psal_adjusted_qc"])] <- " "
+      core_data_yr <-
+        core_data_yr %>%
+        mutate(across(contains("_adjusted_qc"), ~ replace_na(., " ")))
       
+      # code from lines 231-346 could largely be replace with:
+      core_data_yr %>%
+        select(contains("_qc")) %>%
+        pivot_longer(contains("_qc")) %>%
+        mutate(name = str_remove(name, "_adjusted_qc")) %>%
+        count(name, value) %>%
+        rename(measure = name,
+               measure_qc = value,
+               count_measures = n) %>%
+        mutate(
+          year = target_year,
+          measure_order = case_when(measure == "pres" ~ 1,
+                                    measure == "temp" ~ 2,
+                                    measure == "psal" ~ 3)
+        )
+
       # Default qc counts for measurements - Pressure
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure", "Pressure"),
-                        measure_order=c(1, 1, 1, 1, 1, 1, 1, 1),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-  
+      qc_defaults <-
+        tibble(
+          year = rep(target_year, 8),
+          measure = rep("Pressure",8),
+          measure_order = rep(1, 8),
+          measure_qc = c('1', '2', '3', '4', '5', '8', '9', ' '),
+          count_measures = rep(0, 8)
+        )
+      
+      core_measure_summary = rbind(core_measure_summary, qc_defaults)
+      
       # Build summary of qc flags for pressure and update core_measure_summary
-      agg_tbl <- core_data_yr %>% group_by(year = target_year, measure = "Pressure", measure_order = 1, measure_qc = pres_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      core_measure_summary <- rows_update(core_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
-  
+      agg_tbl <-
+        core_data_yr %>% group_by(
+          year = target_year,
+          measure = "Pressure",
+          measure_order = 1,
+          measure_qc = pres_adjusted_qc
+        ) %>%
+        summarise(count_measures = n())
+      
+      core_measure_summary <-
+        rows_update(core_measure_summary,
+                    agg_tbl,
+                    by = c('year', 'measure_order', 'measure_qc'))
+      
       # Default qc counts for measurements - temperature
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature", "Temperature"),
-                        measure_order=c(2, 2, 2, 2, 2, 2, 2, 2),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-  
+      qc_defaults <-
+        data.frame(
+          year = c(
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year
+          ),
+          measure = c(
+            "Temperature",
+            "Temperature",
+            "Temperature",
+            "Temperature",
+            "Temperature",
+            "Temperature",
+            "Temperature",
+            "Temperature"
+          ),
+          measure_order = c(2, 2, 2, 2, 2, 2, 2, 2),
+          measure_qc = c('1', '2', '3', '4', '5', '8', '9', ' '),
+          count_measures = c(0, 0, 0, 0, 0, 0, 0, 0)
+        )
+      core_measure_summary = rbind(core_measure_summary, qc_defaults)
+      
       # Build summary of qc flags for temperature and update core_measure_summary
-      agg_tbl <- core_data_yr %>% group_by(year = target_year, measure = "Temperature", measure_order = 2, measure_qc = temp_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      core_measure_summary <- rows_update(core_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
+      agg_tbl <-
+        core_data_yr %>% group_by(
+          year = target_year,
+          measure = "Temperature",
+          measure_order = 2,
+          measure_qc = temp_adjusted_qc
+        ) %>%
+        summarise(count_measures = n())
+      core_measure_summary <-
+        rows_update(core_measure_summary,
+                    agg_tbl,
+                    by = c('year', 'measure_order', 'measure_qc'))
       
       # Default qc counts for measurements - salinity
-      qc_deafaults <- data.frame(year=c(target_year, target_year, target_year, target_year, target_year, target_year, target_year, target_year),
-                        measure=c("Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity", "Salinity"),
-                        measure_order=c(3, 3, 3, 3, 3, 3, 3, 3),
-                        measure_qc=c('1', '2', '3', '4', '5', '8', '9', ' '),
-                        count_measures=c(0, 0, 0, 0, 0, 0, 0, 0))
-      core_measure_summary = rbind(core_measure_summary, qc_deafaults)
-  
+      qc_defaults <-
+        data.frame(
+          year = c(
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year,
+            target_year
+          ),
+          measure = c(
+            "Salinity",
+            "Salinity",
+            "Salinity",
+            "Salinity",
+            "Salinity",
+            "Salinity",
+            "Salinity",
+            "Salinity"
+          ),
+          measure_order = c(3, 3, 3, 3, 3, 3, 3, 3),
+          measure_qc = c('1', '2', '3', '4', '5', '8', '9', ' '),
+          count_measures = c(0, 0, 0, 0, 0, 0, 0, 0)
+        )
+      core_measure_summary = rbind(core_measure_summary, qc_defaults)
+      
       # Build summary of qc flags for salinity and update core_measure_summary
-      agg_tbl <- core_data_yr %>% group_by(year = target_year, measure = "Salinity", measure_order = 3, measure_qc = psal_adjusted_qc) %>% 
-      summarise(count_measures=n())
-      core_measure_summary <- rows_update(core_measure_summary, agg_tbl, by = c('year', 'measure_order', 'measure_qc'))
+      agg_tbl <-
+        core_data_yr %>% group_by(
+          year = target_year,
+          measure = "Salinity",
+          measure_order = 3,
+          measure_qc = psal_adjusted_qc
+        ) %>%
+        summarise(count_measures = n())
+      core_measure_summary <-
+        rows_update(core_measure_summary,
+                    agg_tbl,
+                    by = c('year', 'measure_order', 'measure_qc'))
       
       rm(agg_tbl)
-  
-    } 
-  
+      
+    }
+    
     # if updating metadata get the file based on core_index
     if (opt_refresh_years_metadata)
     {
@@ -257,14 +357,13 @@ if (!opt_qc_only) {
       
       # see option section above for rational of why we want n_prof = 1 profiles
       core_metadata_yr <- core_metadata_yr %>%
-      filter(n_prof == opt_n_prof_sel)
-  
+        filter(n_prof == opt_n_prof_sel)
+      
     }
     
     # if temp or psal are being updated get the profile data
     if (opt_refresh_years_temp | opt_refresh_years_psal)
     {
-    
       # remove columns that are not needed in merged temperature and salinity files
       core_index <- core_index %>%
         select(file,
@@ -301,46 +400,48 @@ if (!opt_qc_only) {
     # Process temperature file
     # ------------------------------------------------------------------------------
     if (opt_refresh_years_temp)
-    {    
+    {
       # Base temperature data where qc flag = good
       # Could this cause incomplete profiles to be maintained?
       core_data_temp_yr <- core_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          temp_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "psal"))
-        )
+        filter(pres_adjusted_qc %in% c(1, 8) &
+                 temp_adjusted_qc %in% c(1, 8)) %>%
+        select(-contains(c("_qc", "psal")))
       
       # write this years file
       core_data_temp_yr %>%
-        write_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_data_temp.rds"))
-  
+        write_rds(file = paste0(
+          path_argo_core_preprocessed,
+          "/",
+          target_year,
+          "_core_data_temp.rds"
+        ))
+      
     }
     
     # ------------------------------------------------------------------------------
     # Process salinity file
     # ------------------------------------------------------------------------------
     if (opt_refresh_years_psal)
-    {    
+    {
       # Base salinity data where qc flag = good
       core_data_psal_yr <- core_data_yr %>%
-        filter(
-          pres_adjusted_qc %in% c(1, 8) &
-          psal_adjusted_qc %in% c(1, 8)
-        ) %>%
-        select(
-          -contains(c("_qc", "temp"))
-        )
-  
+        filter(pres_adjusted_qc %in% c(1, 8) &
+                 psal_adjusted_qc %in% c(1, 8)) %>%
+        select(-contains(c("_qc", "temp")))
+      
       # write this years file
       core_data_psal_yr %>%
-        write_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_data_psal.rds"))
-  
+        write_rds(file = paste0(
+          path_argo_core_preprocessed,
+          "/",
+          target_year,
+          "_core_data_psal.rds"
+        ))
+      
     }
-  
-  
+    
+    
     # ------------------------------------------------------------------------------
     # Process metadata file
     # ------------------------------------------------------------------------------
@@ -351,13 +452,13 @@ if (!opt_qc_only) {
         rename(lon = longitude,
                lat = latitude) %>%
         mutate(lon = if_else(lon < 20, lon + 360, lon)) %>%
-        mutate( 
+        mutate(
           lat = cut(lat, seq(-90, 90, 1), seq(-89.5, 89.5, 1)),
           lat = as.numeric(as.character(lat)),
           lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
           lon = as.numeric(as.character(lon))
         )
-    
+      
       # Select just the columns we are interested in
       core_metadata_yr <- core_metadata_yr %>%
         select (
@@ -365,24 +466,29 @@ if (!opt_qc_only) {
           date,
           lat,
           lon,
-          platform_number, 
+          platform_number,
           cycle_number,
           position_qc,
           profile_pres_qc,
           profile_temp_qc,
           profile_psal_qc
         )
-  
+      
       # write this years file
       core_metadata_yr %>%
-        write_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_metadata.rds"))
-  
+        write_rds(file = paste0(
+          path_argo_core_preprocessed,
+          "/",
+          target_year,
+          "_core_metadata.rds"
+        ))
+      
     }
-  
+    
   }
   
   # write this years file
-  core_measure_summary %>% 
+  core_measure_summary %>%
     write_rds(file = paste0(path_argo_core_preprocessed, "/core_measure_summary.rds"))
   rm(core_measure_summary)
 }
