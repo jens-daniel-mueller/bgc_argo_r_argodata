@@ -15,7 +15,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Tasks
 
-Load existing files from anomoly analysis and carry out cluster analysis
+This markdown file carries out cluster analysis on previously created pH anomaly profiles.
+
+The cluster_analysis_determine_k chunk is used to give an indication of an appropriate number of clusers and this can then set the option opt_num_clusters. Chunk cluster_analysis_cluster_details carried out the cluster analysis and the results are used in subsequent figures.
 
 ```{r loading_libraries, include=FALSE}
 
@@ -108,8 +110,8 @@ Prepare data for cluster analysis
 
 ```{r cluster_analysis_prep}
 
+# read data
 pH_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/pH_anomaly_va.rds"))
-
 
 # select just 1500m profiles
 pH_anomaly_va <- pH_anomaly_va %>% 
@@ -172,6 +174,7 @@ if (opt_analysis_type == 1) {
   for (i in 1:n_clusters) {
     
     # Fit the model: km.out
+    print(paste0('Preparing to carry out test cluster analysis with ', i , ' clusters'))
     set.seed(1)
     (km_out <- kmeans(x, i, iter.max=opt_max_iterations, nstart=opt_n_start))
 
@@ -261,36 +264,44 @@ if (opt_analysis_type == 2) {
   
   # Plot cluster mean
   if (opt_measure == 1) {
-    anomaly_cluster_mean <- pH_anomaly_cluster %>% 
+    anomaly_cluster_mean <- pH_anomaly_cluster %>%
       filter(cluster >= 1) %>%
-      group_by(cluster, depth) %>% 
-      summarise(count_cluster = n(),
-                anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-                anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %>%
-      ungroup()
-
-    anomaly_year_mean <- pH_anomaly_cluster %>% 
-      filter(cluster >= 1) %>%
-      group_by(cluster, year) %>% 
-      summarise(count_cluster = n(),
-                anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-                anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %>%
-      ungroup()
-  } else {
-    anomaly_cluster_mean <- pH_anomaly_cluster %>% 
-      filter(cluster >= 1) %>%
-      group_by(cluster, depth) %>% 
-      summarise(count_cluster = n(),
-                anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
-                anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)) %>%
+      group_by(cluster, depth) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+        anomaly_sd = sd(anomaly_pH, na.rm = TRUE)
+      ) %>%
       ungroup()
     
-    anomaly_year_mean <- pH_anomaly_cluster %>% 
+    anomaly_year_mean <- pH_anomaly_cluster %>%
       filter(cluster >= 1) %>%
-      group_by(cluster, year) %>% 
-      summarise(count_cluster = n(),
-                anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
-                anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)) %>%
+      group_by(cluster, year) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+        anomaly_sd = sd(anomaly_pH, na.rm = TRUE)
+      ) %>%
+      ungroup()
+  } else {
+    anomaly_cluster_mean <- pH_anomaly_cluster %>%
+      filter(cluster >= 1) %>%
+      group_by(cluster, depth) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
+        anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)
+      ) %>%
+      ungroup()
+    
+    anomaly_year_mean <- pH_anomaly_cluster %>%
+      filter(cluster >= 1) %>%
+      group_by(cluster, year) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
+        anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)
+      ) %>%
       ungroup()
   }
   
@@ -300,20 +311,26 @@ if (opt_analysis_type == 2) {
     ungroup ()
   
   # create figure
-  anomaly_cluster_mean %>% 
-    ggplot()+
+  anomaly_cluster_mean %>%
+    ggplot() +
     geom_path(aes(x = anomaly_mean,
-                  y = depth))+
-    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                    xmin = anomaly_mean - anomaly_sd,
-                    y = depth),
-                alpha = 0.2)+
-    geom_vline(xintercept = 0)+
-    scale_y_reverse()+
-    facet_wrap(~cluster)+
-    coord_cartesian(xlim = opt_xlim)+
-    scale_x_continuous(breaks = opt_xbreaks)+
-    labs(title = paste0('Overall mean anomaly profiles by cluster'), x = opt_measure_label, y = 'depth (m)')
+                  y = depth)) +
+    geom_ribbon(aes(
+      xmax = anomaly_mean + anomaly_sd,
+      xmin = anomaly_mean - anomaly_sd,
+      y = depth
+    ),
+    alpha = 0.2) +
+    geom_vline(xintercept = 0) +
+    scale_y_reverse() +
+    facet_wrap( ~ cluster) +
+    coord_cartesian(xlim = opt_xlim) +
+    scale_x_continuous(breaks = opt_xbreaks) +
+    labs(
+      title = paste0('Overall mean anomaly profiles by cluster'),
+      x = opt_measure_label,
+      y = 'depth (m)'
+    )
 
 }
 
@@ -334,18 +351,6 @@ if (opt_analysis_type == 2) {
     geom_smooth(method=lm, se=FALSE, col='blue', linetype='dashed') +
     labs(title = paste0('Overall variation from climatology (', line_eq, ')'), x = 'year', y = opt_measure_label)
   
-  # # annual difference from climatology - excluding 2014
-  # anomaly_year_mean_ex14 <- anomaly_year_mean %>% filter(year >= 2015)
-  # bf_coefs <- summary(lm(anomaly_year_mean_ex14$anomaly_mean ~ anomaly_year_mean_ex14$year))$coefficients
-  # line_eq <- paste0("Y = ", formatC(bf_coefs[2, 1], format = "e", digits = 2), "X ", formatC(bf_coefs[1, 1], format = "e", digits = 2, flag = "+"))
-  # 
-  # anomaly_year_mean_ex14 %>%
-  #   ggplot(aes(x = year,
-  #                 y = anomaly_mean))+
-  #   geom_point(col='red', size=2)+
-  #   geom_smooth(method=lm, se=FALSE, col='blue', linetype='dashed') +
-  #   labs(title = paste0('Overall variation from climatology - excluding 2014 (', line_eq, ')'), x = 'year', y = opt_measure_label)
-
 ```
 
 

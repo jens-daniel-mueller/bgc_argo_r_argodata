@@ -15,7 +15,12 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Load existing bgc_data.rds file and align profiles to a common vertical pattern.
+This markdown file reads previously created pH climatology file and uses that as the definition of the depth levels that the Argo pH data should be aligned to. Previously created BGC data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the BGC preprocessed folder.
+
+Base data qc flags are checked to ensure that the float position, pressure measurements and pH measurements are good. Pressure is used to derive the depth of each measurement. The pH profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 614 m, 2 = 1225 m and 3 = 1600 m.
+
+The float pH profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_pH_interpolated_clean. Processing also ensures that a [H]+ fields are created in the climatology and vertically aligned profiles. An anomaly file is then created from the vertically aligned profiles and climatology.
+
 
 ```{r loading_libraries, include=FALSE}
 
@@ -76,6 +81,13 @@ if (opt_measure == 1){
   opt_xbreaks <- c(-2e-9, -1e-9, 0, 1e-9, 2e-9)
 }
 
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
 ```
 
 
@@ -108,7 +120,6 @@ target_depth_levels <-   ucsd_clim %>%
 ## read pH data
 
 read pH profile and carry out basic checks, good data.
-
 ```{r read_profile_pH_data}
 
 # base data and associated metadata
@@ -142,21 +153,17 @@ bgc_metadata_select <- bgc_metadata %>%
 # ph_in_situ_total_adjusted_qc %in% c(1, 8) - pH data marked as good
 # !is.na(pres_adjusted) - pressure value must be present
 # !is.na(ph_in_situ_total_adjusted) - pH value must be present
-
 bgc_data_pH <- bgc_data %>%
   filter(
     pres_adjusted_qc %in% c(1, 8) &
       ph_in_situ_total_adjusted_qc %in% c(1, 8) &
-      n_prof == 1 &
+      n_prof == opt_n_prof_sel &
       !is.na(pres_adjusted) &
       !is.na(ph_in_situ_total_adjusted)
   ) %>%
   select(file_id,
          pres_adjusted,
          ph_in_situ_total_adjusted)
-
-rm(bgc_data)
-gc()
 
 # join with metadata information and calculate depth field
 bgc_data_pH <- inner_join(bgc_metadata_select %>% select(file_id, lat),
@@ -166,12 +173,13 @@ bgc_data_pH <- inner_join(bgc_metadata_select %>% select(file_id, lat),
   select(-c(lat, pres_adjusted))
   # filter(!is.na(file_id))
 
-# ensure we have a depth, pres_adjusted and ph_in_situ_total_adjusted for all rows in bgc_data_pH
+# ensure we have a depth, and ph_in_situ_total_adjusted for all rows in bgc_data_pH
 bgc_data_pH <- bgc_data_pH %>%
                   filter(!is.na(depth) & !is.na(ph_in_situ_total_adjusted))
 
 # clean up working tables
 rm(bgc_data, bgc_metadata)
+gc()
 ```
 
 ## Profile limits
@@ -189,6 +197,25 @@ bgc_profile_limits <- bgc_data_pH %>%
     max_depth = max(depth),
   ) %>%
   ungroup()
+
+# --------------------------------------------------------------------------------------
+# What is teh distribution of min depths
+out <- bgc_profile_limits %>% 
+  filter(min_depth > 0 & min_depth < 10) %>%
+  mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
+  
+out <- out %>%
+  group_by(min_bin) %>%
+  summarise(count_profiles = n())
+
+out %>%
+  ggplot(aes(min_bin)) +
+  geom_bar(aes(weight = count_profiles)) +
+  scale_fill_viridis_d() +
+  labs(title = "pH profiles minimum depth",
+       x = "min depth (m)",
+       y = "profile count")
+# --------------------------------------------------------------------------------------
 
 # The profile must cover at least the weakest range criteria
 force_min <- min(opt_profile_depth_range$min_depth)
@@ -364,12 +391,12 @@ bgc_data_pH_interpolated_clean <- bgc_data_pH_interpolated_clean %>%
 Create anomaly profiles as observed - climatology
 ```{r pH_anomaly}
 
-# Create bgc_temp_anomaly, but only where we have an climatology temperature
+# Create bgc_pH_anomaly
 bgc_pH_anomaly <-
   inner_join(bgc_data_pH_interpolated_clean, ucsd_clim)
   # filter(!is.na(clim_pH) & lat <= -30)
 
-# Calculate the anomaly temperature
+# Calculate the anomaly pH
 bgc_pH_anomaly <- bgc_pH_anomaly %>%
   mutate(anomaly_pH = pH - clim_pH,
          anomaly_h_plus = h_plus - clim_h_plus)
@@ -392,10 +419,11 @@ bgc_pH_anomaly_depth_check <- bgc_pH_anomaly %>%
 bgc_pH_anomaly_depth_check <- left_join(bgc_pH_anomaly_depth_check, opt_profile_depth_range)
 
 # This profiles do not match the depth required by the profile_range
-min_depth_check <- min(target_depth_grid$target_depth)
+# min_depth_check <- min(target_depth_grid$target_depth)
 
 # Please double check if the criterion should be
-# min_depth_check (2.1m) or min_depth (10m) -> I think 10m
+# each profile is checked against the min depth specified in min_depth 
+# max depth specified in max_depth. 
 remove_profiles <- bgc_pH_anomaly_depth_check %>%
   filter((max_pdepth < max_depth) | (min_pdepth > min_depth)) %>%
   distinct(file_id)
@@ -469,14 +497,14 @@ max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
 # Profiles to 600m
 if (opt_measure == 1){
   anomaly_overall_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
@@ -484,14 +512,14 @@ if (opt_measure == 1){
   
   # Profiles to 1200m
   anomaly_overall_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
@@ -499,28 +527,28 @@ if (opt_measure == 1){
   
   # Profiles to 1500m
   anomaly_overall_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
 } else {
   anomaly_overall_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
@@ -528,14 +556,14 @@ if (opt_measure == 1){
   
   # Profiles to 1200m
   anomaly_overall_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
@@ -543,14 +571,14 @@ if (opt_measure == 1){
   
   # Profiles to 1500m
   anomaly_overall_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
@@ -578,8 +606,6 @@ anomaly_overall_mean_1 %>%
   alpha = 0.2) +
   geom_vline(xintercept = 0) +
   scale_y_reverse() +
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
   coord_cartesian(xlim = opt_xlim) +
   scale_x_continuous(breaks = opt_xbreaks) +
   labs(
@@ -719,7 +745,6 @@ pH_histogram <- pH_bgc_va %>%
   group_by(year, profile_range = as.character(profile_range)) %>%
   summarise(num_profiles = n_distinct(file_id)) %>%
   ungroup()
-
 
 pH_histogram %>%
   ggplot() +

@@ -15,7 +15,11 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Load existing core_data.rds file and align profiles to a common vertical pattern.
+This markdown file reads previously created temperature climatology file and uses that as the definition of the depth levels that the Argo temperature data should be aligned to. As the climatology is based on pressure it is first aligned to standard depths. Previously created annual data files (yyyy_core_data_temp.rds), metadata (yyyy_core_metadata.rds) and fileid (core_fileid.rds) files are loaded from the core preprocessed folder.
+
+Base data qc flags are checked to ensure that the float position, pressure measurements and temperature measurements are good. Pressure is used to derive the depth of each measurement. The temperature profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 600 m, 2 = 1200 m and 3 = 1500 m.
+
+The float temperature profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame temp_core_va. An anomaly file is then created from the vertically aligned profiles and climatology.
 
 ```{r loading_libraries, include=FALSE}
 
@@ -69,6 +73,12 @@ opt_gap_max_depth <- c(400, 1000, 1500)
 opt_min_year = 2013
 opt_max_year = 2023
 
+# opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
+opt_measure_label <- "temperature anomaly (°C)"
+opt_xlim <- c(-4.5, 4.5)
+opt_xbreaks <- c(-4, -2, 0, 2, 4)
+
+
 ```
 
 
@@ -80,8 +90,8 @@ Temperature climatology has been prepared during BGC analysis
 
 temp_clim_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_clim_va.rds"))
 
-target_depth_range <- unique(temp_clim_va[c("depth")])
-target_depth_range <- target_depth_range %>% select(target_depth = depth)
+target_depth_levels <- unique(temp_clim_va[c("depth")])
+target_depth_levels <- target_depth_levels %>% select(target_depth = depth)
 
 ```
 
@@ -93,7 +103,7 @@ Read annual core temperature and metadata file. Validate profile against limits 
 
 for (target_year in opt_min_year:opt_max_year) {
 
-#target_year = 2023
+#target_year = 2022
 
 # --------------------------------------------------------------------------------
 # Read data
@@ -107,51 +117,47 @@ core_fileid <- read_rds(file = paste0(path_core_preprocessed, "/core_fileid.rds"
 #Replace file with file_id
 core_metadata <- full_join(core_metadata, core_fileid)
 core_metadata <- core_metadata %>%
-                  select(-c(file))
+  select(-c(file))
 core_data <- full_join(core_data, core_fileid)
 core_data <- core_data %>%
-                  select(-c(file))
+  select(-c(file))
 
 # Select relevant field from metadata ready to join to core_data
 core_metadata_select <- core_metadata %>%
-                            filter (position_qc == 1) %>%
-                            select(
-                              file_id,
-                              date,
-                              lat,
-                              lon
-                              ) %>%
-                            mutate(year = year(date), month = month(date), .after = date)
+  filter (position_qc == 1) %>%
+  select(file_id,
+         date,
+         lat,
+         lon) %>%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
 
 # we only want pressure and temperature data
 # conditions 
 # !is.na(depth) - pressure value must be present
 # !is.na(temp_adjusted) - temperature value must be present
+# pres_adjusted_qc %in% c(1, 8), temp_adjusted_qc %in% c(1, 8) and n_prof == 1 has been applied in load process
 core_data_temp <- core_data %>%
-                  filter(!is.na(depth) & !is.na(temp_adjusted)) %>%
-                  select(
-                    file_id,
-                    depth,
-                    temp_adjusted
-                  )
+  filter(!is.na(depth) & !is.na(temp_adjusted)) %>%
+  select(file_id,
+         depth,
+         temp_adjusted)
 
-# join with metadata information and calculate depth field
-core_data_temp <- full_join(core_metadata_select, core_data_temp) %>%
-                          select(
-                            file_id,
-                            lat, 
-                            lon, 
-                            date,
-                            year, 
-                            month,
-                            depth,
-                            temp = temp_adjusted
-                          ) %>%
-                          filter(!is.na(file_id))
+# # join with metadata information and calculate depth field
+# core_data_temp <-
+#   inner_join(core_metadata_select %>% select(file_id, lat),
+#              core_data_temp) %>%
+#   select(-c(lat, pres_adjusted))
+
+# # ensure we have a depth, and temp_adjusted for all rows in bgc_data_temp
+# core_data_temp <- core_data_temp %>%
+#   filter(!is.na(depth) & !is.na(temp_adjusted))
+
 
 # clean up working tables
-rm(core_data, core_metadata, core_metadata_select)
-
+rm(core_data, core_metadata)
+gc()
 
 # --------------------------------------------------------------------------------
 # Profile limits
@@ -181,8 +187,8 @@ core_apply_limits <- core_profile_limits %>%
     )
 
 # Ensure working data set only contains profiles that have confrormed to the range test
-core_data_temp <- full_join(core_data_temp, core_apply_limits) %>%
-                        filter(!is.na(min_depth))
+core_data_temp <- right_join(core_data_temp,
+                             core_apply_limits %>% select(file_id))
 
 # Add profile type field and set all to 1.  
 # All profile that meet the minimum requirements are profile_range = 1
@@ -197,30 +203,26 @@ for (i in 2:nrow(opt_profile_depth_range)) {
 
   # Apply profile min and max restrictions
   core_apply_limits <- core_profile_limits %>%
-    filter(
-      min_depth <= range_min &
-      max_depth >= range_max
-      ) %>%
-    select(
-      file_id
-      ) %>%
-    mutate (
-      profile_range = i 
-    )
+    filter(min_depth <= range_min &
+             max_depth >= range_max) %>%
+    select(file_id) %>%
+    mutate (profile_range = i)
 
   # Update profile range to i for these profiles
   # core_data_temp <- full_join(core_data_temp, core_apply_limits) %>%
   #                         filter(!is.na(min_depth))
-  core_data_temp <- core_data_temp %>% rows_update(core_apply_limits, by = "file_id")
+  core_data_temp <-
+    core_data_temp %>% rows_update(core_apply_limits, by = "file_id")
 
 }
 
 # Find the gaps within the profiles
-profile_gaps <- core_data_temp %>%
-  select(
-    file_id,
-    depth
-    ) %>%
+profile_gaps <- full_join(core_data_temp,
+                          opt_profile_depth_range) %>%
+  filter(depth >= min_depth &
+           depth <= max_depth) %>%
+  select(file_id,
+         depth) %>%
   arrange(file_id, depth) %>%
   group_by(file_id) %>%
   mutate(gap = depth - lag(depth, default = 0)) %>%
@@ -238,20 +240,17 @@ for (i_gap in opt_gap_limit) {
   profile_gaps_remove <- profile_gaps %>%
     filter(gap > i_gap) %>%
     filter(depth >= i_gap_min & depth <= i_gap_max) %>%
-    select(file_id, gap)
+    distinct(file_id) %>% 
+    pull()
   
-  # Remonve these profiles from working data set
-  core_data_temp <- full_join(core_data_temp, profile_gaps_remove) %>%
-                                  filter(is.na(gap)) %>%
-                                  select(-c(gap))
+  # Remonve gap-containing profiles from working data set
+  core_data_temp <- core_data_temp %>% 
+    filter(!file_id %in% profile_gaps_remove)
 }
-
-# Ensure primary fields are all present
-core_data_temp <- core_data_temp %>%
-  filter(!is.na(lat) & !is.na(lon) & !is.na(date) & !is.na(depth)) 
 
 # clean up working tables
 rm(core_apply_limits, core_profile_limits, profile_gaps, profile_gaps_remove)
+gc()
 
 # --------------------------------------------------------------------------------
 # vertical alignment
@@ -260,77 +259,79 @@ rm(core_apply_limits, core_profile_limits, profile_gaps, profile_gaps_remove)
 # We have a set of temperature profiles that match our criteria we now need to align that data set to match the 
 # depth that are in target_depth_range, this will match the range of climatology values in temp_clim_va
 
+# create unique combinations of file_id and profile ranges
+profile_range_file_id <- 
+  core_data_temp %>% 
+  distinct(file_id, profile_range)
+
+
 # select variable of interest and prepare target_depth field
 core_data_temp_clean <- core_data_temp %>%
-                              select(
-                                file_id, 
-                                lat,
-                                lon,
-                                date,
-                                depth,
-                                profile_range,
-                                temp
-                              ) %>%
-                              mutate(
-                                target_depth = depth, .after = depth
-                              )
+  select(-profile_range) %>%
+  mutate(target_depth = depth, .after = depth)
+
+rm(core_data_temp)
+gc()
 
 # create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid <-
-  expand_grid(target_depth_range,
-              core_data_temp_clean %>% distinct(file_id, lat, lon, date, profile_range))
+  expand_grid(
+    target_depth_levels,
+    profile_range_file_id
+  )
 
-# Take account of the profile_range field to determine the profile_range of target_depth_grid
-target_depth_grid <- left_join(target_depth_grid, opt_profile_depth_range) %>%
-        filter(target_depth <= max_depth)
+# Constrain target_depth_grid to profile depth range
+target_depth_grid <-
+  left_join(target_depth_grid, opt_profile_depth_range) %>%
+  filter(target_depth <= max_depth)
 
-target_depth_grid <- target_depth_grid %>% 
-                        select(
-                          target_depth, 
-                          file_id, 
-                          lat, 
-                          lon,
-                          date,
-                          profile_range
-                          )
+target_depth_grid <- target_depth_grid %>%
+  select(target_depth,
+         file_id)
 
-# extend temperature depth vectors with target depths
-core_data_temp_extended <- full_join(core_data_temp_clean, target_depth_grid) %>% 
-  arrange(file_id, lat, lon, date, target_depth)
+# extend temp depth vectors with target depths
+core_data_temp_extended <-
+  full_join(core_data_temp_clean, target_depth_grid) %>%
+  arrange(file_id, target_depth)
 
-# predict spline interpolation on adjusted depth grid for temperature location and month
+rm(core_data_temp_clean)
+gc()
+
+# predict spline interpolation on adjusted depth grid for temp location and month
 core_data_temp_interpolated <-
   core_data_temp_extended %>%
-  group_by(file_id, lat, lon, date) %>%
-  mutate(temp_spline = spline(target_depth, temp,
+  group_by(file_id) %>%
+  mutate(temp_spline = spline(target_depth, temp_adjusted,
                                 method = "natural",
                                 xout = target_depth)$y) %>%
   ungroup()
 
+rm(core_data_temp_extended)
+gc()
+
 # subset interpolated values on target depth range
 core_data_temp_interpolated_clean <- 
-  inner_join(target_depth_grid, core_data_temp_interpolated)
+  inner_join(target_depth_levels, core_data_temp_interpolated)
+
+rm(core_data_temp_interpolated)
+gc()
 
 # select columns and rename to initial names
 core_data_temp_interpolated_clean <-
   core_data_temp_interpolated_clean %>%
-  select(
-    file_id, 
-    lat, 
-    lon, 
-    date,
-    profile_range,
-    depth = target_depth,
-    temp = temp_spline)
+  select(file_id,
+         depth = target_depth,
+         temp = temp_spline)
 
-# Create year and month fields
-core_data_temp_interpolated_clean <- core_data_temp_interpolated_clean %>%
-  mutate(year = year(date),
-         month = month(date),
-         .after = date)
+# merge with profile range
+core_data_temp_interpolated_clean <-
+  full_join(core_data_temp_interpolated_clean,
+            profile_range_file_id)
 
-# clean up working tables
-rm(core_data_temp_clean, core_data_temp_extended, core_data_temp_interpolated)
+# merge with meta data
+core_data_temp_interpolated_clean <-
+  left_join(core_data_temp_interpolated_clean,
+            core_metadata_select)
 
 # --------------------------------------------------------------------------------
 # Create anomaly profiles
@@ -339,67 +340,58 @@ rm(core_data_temp_clean, core_data_temp_extended, core_data_temp_interpolated)
 # Create anomaly profiles as observed - climatology
 
 # Create core_temp_anomaly, but only where we have an climatology temperature
-core_temp_anomaly <- left_join(core_data_temp_interpolated_clean, temp_clim_va) %>%
-                        filter(!is.na(clim_temp))
+core_temp_anomaly <-
+  inner_join(core_data_temp_interpolated_clean,
+             temp_clim_va)
 
 # Calculate the anomaly temperature
 core_temp_anomaly <- core_temp_anomaly %>%
-                      mutate(
-                        anomaly = temp - clim_temp
-                      )
+  mutate(anomaly = temp - clim_temp)
 
 # -----------------------------------------------------------------------------
 # Climatology check
 # -----------------------------------------------------------------------------
 # It is possible even though we have observational measures to full depth the climatology may not matach all depth.
-# These profiles will be removed from both temp_bgc_va and temp_anomaly_va
+# These profiles will be removed from both temp_core_va and temp_anomaly_va
 
 # Anomaly max depth
 core_temp_anomaly_depth_check <- core_temp_anomaly %>%
-                                group_by(
-                                  file_id,
-                                  profile_range
-                                  ) %>%
-                                summarise(
-                                  min_pdepth = min(depth),
-                                  max_pdepth = max(depth)
-                                  ) %>%
-                                ungroup()
+  group_by(file_id,
+           profile_range) %>%
+  summarise(min_pdepth = min(depth),
+            max_pdepth = max(depth)) %>%
+  ungroup()
 
 # Add the required min depth and max depth
-core_temp_anomaly_depth_check <- left_join(core_temp_anomaly_depth_check, opt_profile_depth_range)
+core_temp_anomaly_depth_check <-
+  left_join(core_temp_anomaly_depth_check, opt_profile_depth_range)
 
 # This profiles do not match the depth required by the profile_range
-min_depth_check <- min(target_depth_grid$target_depth)
+# min_depth_check <- min(target_depth_grid$target_depth)
+
+# Please double check if the criterion should be
+# each profile is checked against the min depth specified in min_depth
+# max depth specified in max_depth.
 remove_profiles <- core_temp_anomaly_depth_check %>%
-  filter((max_pdepth < max_depth) | min_pdepth != min_depth_check) %>%
-  select(file_id, max_depth)
+  filter((max_pdepth < max_depth) | (min_pdepth > min_depth)) %>%
+  distinct(file_id)
 
-# remove from both core_temp_anomaly and core_data_temp_interpolated_clean
-core_temp_anomaly <- full_join(core_temp_anomaly, remove_profiles) %>%
-            filter(is.na(max_depth)) %>%
-            select(-c(max_depth))
+# remove from both core_data_temp_interpolated_clean and core_temp_anomaly
+core_data_temp_interpolated_clean <-
+  anti_join(core_data_temp_interpolated_clean, remove_profiles)
 
-core_data_temp_interpolated_clean <- full_join(core_data_temp_interpolated_clean, remove_profiles) %>%
-            filter(is.na(max_depth)) %>%
-            select(-c(max_depth))
+core_temp_anomaly <- anti_join(core_temp_anomaly, remove_profiles)
 
 # --------------------------------------------------------------------------------
 # Write files
 # --------------------------------------------------------------------------------
 
 # Write the climatology that maps onto depth levels, interpolated temperature profiles that map onto depth levels and resulting anomaly files.
-
-# Write files
 core_data_temp_interpolated_clean %>%
   write_rds(file = paste0(path_core_preprocessed, "/", target_year, "_temp_core_va.rds"))
 
 core_temp_anomaly %>%
   write_rds(file = paste0(path_core_preprocessed, "/", target_year, "_temp_anomaly_va.rds"))
-
-# Rename so that names match if just reading existing files
-temp_core_va <- core_data_temp_interpolated_clean
-temp_anomaly_va <- core_temp_anomaly
 
 rm(core_data_temp_interpolated_clean, core_temp_anomaly)
 
@@ -433,7 +425,7 @@ for (target_year in opt_min_year:opt_max_year) {
 }
 
 # write consolidated files  
-temp_core_va %>% 
+temp_core_va %>%
   write_rds(file = paste0(path_core_preprocessed, "/temp_core_va.rds"))
 
 # remove files to free space
@@ -462,7 +454,7 @@ for (target_year in opt_min_year:opt_max_year) {
 }
 
 # write consolidated files  
-temp_anomaly_va %>% 
+temp_anomaly_va %>%
   write_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds"))
 
 # remove files to free space
@@ -551,13 +543,14 @@ anomaly_overall_mean_1 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_1, 'm'), x='temperature anomaly (°C)', y='depth (m)')
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 anomaly_overall_mean_2 %>% 
   ggplot()+
@@ -568,13 +561,14 @@ anomaly_overall_mean_2 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_2, 'm'), x='temperature anomaly (°C)', y='depth (m)')
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 anomaly_overall_mean_3 %>% 
   ggplot()+
@@ -585,13 +579,14 @@ anomaly_overall_mean_3 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'), x='temperature anomaly (°C)', y='depth (m)')
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 # yearly anomaly
 anomaly_year_mean_1 %>% 
@@ -603,14 +598,15 @@ anomaly_year_mean_1 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
+  scale_y_reverse() +
   facet_wrap(~year)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_1, 'm'), x='temperature anomaly (°C)', y='depth (m)')
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 anomaly_year_mean_2 %>% 
   ggplot()+
@@ -621,14 +617,15 @@ anomaly_year_mean_2 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
+  scale_y_reverse() +
   facet_wrap(~year)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_2, 'm'), x='temperature anomaly (°C)', y='depth (m)')
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 anomaly_year_mean_3 %>% 
   ggplot()+
@@ -639,16 +636,15 @@ anomaly_year_mean_3 %>%
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
-  scale_y_continuous(trans = trans_reverser("sqrt"),
-                     breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-  # scale_color_manual(values = HNL_colors)+
-  # scale_fill_manual(values = HNL_colors)+
+  scale_y_reverse() +
   facet_wrap(~year)+
-  coord_cartesian(xlim = c(-4.5, 4.5))+
-  scale_x_continuous(breaks = c(-4, -2, 0, 2, 4))+
-  labs(title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'), x='temperature anomaly (°C)', y='depth (m)')
-
-
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 #rm(anomaly_overall_mean)
 ```
@@ -663,12 +659,22 @@ temp_histogram <- temp_core_va %>%
   summarise(num_profiles = n_distinct(file_id)) %>%
   ungroup()
 
-
-temp_histogram %>% 
-  ggplot()+
-  geom_bar(aes(x = year, y = num_profiles, fill = profile_range, group = profile_range), position = "stack", stat="identity")+
-  scale_fill_viridis_d()+
-  labs(title = "profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
-
+temp_histogram %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = year,
+      y = num_profiles,
+      fill = profile_range,
+      group = profile_range
+    ),
+    position = "stack",
+    stat = "identity"
+  ) +
+  scale_fill_viridis_d() +
+  labs(title = "temperature profiles per year and profile range",
+       x = "year",
+       y = "profile count",
+       fill = "profile range")
 
 ```

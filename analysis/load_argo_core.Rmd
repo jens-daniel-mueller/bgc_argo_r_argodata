@@ -16,7 +16,16 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 ```
 
 # Task
-Load core-Argo temperature data for comparison with BGC-Argo temperature data  
+
+Makes use of argodata libraries to load argo profile related data, stages load index, data and metadata files. Cache files (saved in /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata and dac subdirectory) are used, set option opt_refresh_cache to TRUE to force a refresh – This process takes considerable time. 
+
+The load process described in this paragraph is carried out for each year and the files are saved to the core preprocessed.  core_index data frame is created based on delayed mode files and a supplied date range. The index file is then used to load profile data into core_data and associated meta data into core_metadata. core_data is segregated into core_data_temp and core_data_psal. core_data_temp, core_data_psal and core_metadata are filtered by n_prof == opt_n_prof_sel. Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the following is from that page. The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+
+On completion combined all year core_data_temp, core_data_psal and core_metadata that incorporate all years. core_data_temp, core_data_psal and core_metadata initially contain a string field file that uniquely identifies the profile and links the two data frames. An additional data from core_fileid is created with a unique list file fields along with a numeric file_id field. The file fields in core_data and core_metadata are then replaced with file_id. 
+
+core_temp_flag_A and core_temp_flag_AB are created that support prior analysis. In addition, a data frame core_measure_summary is created that is used for load level reporting figures.
+
+Files are written to the core preprocessed folder for ongoing analysis.
 
 
 ```{r loading_libraries, include=FALSE}

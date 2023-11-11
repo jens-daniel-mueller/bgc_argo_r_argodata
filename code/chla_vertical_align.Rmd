@@ -1,5 +1,5 @@
 ---
-title: "Prepare chla data and vertically align to (pH) climatology"
+title: "Prepare chla data and vertically align to same depths as (pH) climatology"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -15,7 +15,13 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Load existing bgc_data.rds file and align profiles to a common vertical pattern.
+This markdown file reads previously created pH climatology file and uses that as the definition of the depth levels that the Argo chlorophyll a data should be aligned to. Previously created BGC data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the BGC preprocessed folder.
+
+Base data qc flags are checked to ensure that the float position, pressure measurements and chlorophyll a measurements are good. Pressure is used to derive the depth of each measurement. The chlorophyll a profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 614 m, 2 = 1225 m and 3 = 1600 m.
+
+The float chlorophyll a profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_chla_interpolated_clean.
+
+
 
 ```{r loading_libraries, include=FALSE}
 
@@ -66,6 +72,13 @@ opt_measure_label <- expression("chlorophyll a ( mg m"^"-3"~")")
 opt_xlim <- c(-0.5, 2.0)
 opt_xbreaks <- c(-0.5, 0, 0.5, 1.0, 1.5, 2.0)
 
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
 ```
 
 
@@ -78,27 +91,18 @@ read pH climatology, values are provided at set depths
 # climatology values (clim_ph) available for lat, lon, month and pressure
 ucsd_clim <- read_rds(file = paste0(path_argo_preprocessed, '/ucsd_ph_clim.rds'))
 
-# Select fields of interest
-ucsd_clim <- ucsd_clim %>% 
-  select(
-    month,
-    lat,
-    lon,
-    depth,
-    clim_pH
-  ) %>%
-  mutate(
-    clim_h_plus = 10^-clim_pH
-  )
-
-#What is the max depth we are interested in
+# What is the max depth we are interested in
 opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
 
 # existing depth levels that we will align to
-target_depth_range <-   distinct(ucsd_clim %>%
-                              filter(depth <= opt_profile_max_depth) %>% 
-                              mutate(target_depth = depth) %>%
-                              select(target_depth))
+target_depth_levels <-   ucsd_clim %>%
+  filter(depth <= opt_profile_max_depth) %>%
+  rename(target_depth = depth) %>%
+  distinct(target_depth)
+
+
+rm(ucsd_clim)
+gc()
 
 ```
 
@@ -114,14 +118,14 @@ bgc_metadata <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_metadata.rd
 
 # Select relevant field from metadata ready to join to bgc_data
 bgc_metadata_select <- bgc_metadata %>%
-                            filter (position_qc == 1) %>%
-                            select(
-                              file_id,
-                              date,
-                              lat,
-                              lon
-                              ) %>%
-                            mutate(year = year(date), month = month(date), .after = date)
+  filter(position_qc == 1) %>%
+  select(file_id,
+         date,
+         lat,
+         lon) %>%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
 
 # we drive alignment from pressure and chla data
 # conditions 
@@ -131,38 +135,32 @@ bgc_metadata_select <- bgc_metadata %>%
 # !is.na(pres_adjusted) - pressure value must be present
 # !is.na(chla_adjusted) - chla value must be present
 bgc_data_chla <- bgc_data %>%
-                  filter(pres_adjusted_qc %in% c(1, 8) & 
-                           chla_adjusted_qc %in% c(1, 8) & 
-                           n_prof == 1 & !is.na(pres_adjusted) &
-                           !is.na(chla_adjusted)) %>%
-                  select(
-                    file_id,
-                    pres_adjusted,
-                    chla_adjusted
-                  )
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &
+      chla_adjusted_qc %in% c(1, 8) &
+      n_prof == opt_n_prof_sel &
+      !is.na(pres_adjusted) &
+      !is.na(chla_adjusted)
+  ) %>%
+  select(file_id,
+         pres_adjusted,
+         chla_adjusted)
 
 # join with metadata information and calculate depth field
-bgc_data_chla <- full_join(bgc_metadata_select, bgc_data_chla) %>%
-                          select(
-                            file_id,
-                            lat, 
-                            lon, 
-                            date,
-                            year, 
-                            month,
-                            pres_adjusted,
-                            chla_adjusted
-                          ) %>%
-                          mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
-                                 .before = pres_adjusted) %>%
-                          filter(!is.na(file_id))
+bgc_data_chla <- inner_join(bgc_metadata_select %>% select(file_id, lat),
+                          bgc_data_chla) %>%
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
+         .before = pres_adjusted) %>%
+  select(-c(lat, pres_adjusted))
 
-# ensure we have a depth, pres_adjusted and chla_adjusted for all rows in bgc_data_chla
+# ensure we have a depth, and chla_adjusted for all rows in bgc_data_chla
 bgc_data_chla <- bgc_data_chla %>%
-                  filter(!is.na(depth) & !is.na(pres_adjusted) & !is.na(chla_adjusted))
+                  filter(!is.na(depth) & !is.na(chla_adjusted))
 
 # clean up working tables
-rm(bgc_data, bgc_metadata_select)
+rm(bgc_data, bgc_metadata)
+gc()
+
 ```
 
 ## Profile limits
@@ -181,7 +179,7 @@ bgc_profile_limits <- bgc_data_chla %>%
   ) %>%
   ungroup()
 
-# The profile much match at least one of teh range criteria
+# The profile much match at least one of the range criteria
 force_min <- min(opt_profile_depth_range$min_depth)
 force_max <- min(opt_profile_depth_range$max_depth)
 
@@ -193,8 +191,9 @@ bgc_apply_limits <- bgc_profile_limits %>%
     )
 
 # Ensure working data set only contains profiles that have confrormed to the range test
-bgc_data_chla <- full_join(bgc_data_chla, bgc_apply_limits) %>%
-                        filter(!is.na(min_depth))
+bgc_data_chla <- right_join(bgc_data_chla,
+                          bgc_apply_limits %>% select(file_id))
+
 
 # Add profile type field and set all to 1.  
 # All profile that meet the minimum requirements are profile_range = 1
@@ -209,30 +208,26 @@ for (i in 2:nrow(opt_profile_depth_range)) {
 
   # Apply profile min and max restrictions
   bgc_apply_limits <- bgc_profile_limits %>%
-    filter(
-      min_depth <= range_min &
-      max_depth >= range_max
-      ) %>%
-    select(
-      file_id
-      ) %>%
-    mutate (
-      profile_range = i 
-    )
+    filter(min_depth <= range_min &
+             max_depth >= range_max) %>%
+    select(file_id) %>%
+    mutate (profile_range = i)
 
   # Update profile range to i for these profiles
   # bgc_data_temp <- full_join(bgc_data_temp, bgc_apply_limits) %>%
   #                         filter(!is.na(min_depth))
-  bgc_data_chla <- bgc_data_chla %>% rows_update(bgc_apply_limits, by = "file_id")
-
+  bgc_data_chla <-
+    bgc_data_chla %>% rows_update(bgc_apply_limits, by = "file_id")
+  
 }
 
 # Find the gaps within the profiles
-profile_gaps <- bgc_data_chla %>%
-  select(
-    file_id,
-    depth
-    ) %>%
+profile_gaps <- full_join(bgc_data_chla,
+                          opt_profile_depth_range) %>%
+  filter(depth >= min_depth & 
+           depth <= max_depth) %>% 
+  select(file_id,
+         depth) %>%
   arrange(file_id, depth) %>%
   group_by(file_id) %>%
   mutate(gap = depth - lag(depth, default = 0)) %>%
@@ -250,20 +245,18 @@ for (i_gap in opt_gap_limit) {
   profile_gaps_remove <- profile_gaps %>%
     filter(gap > i_gap) %>%
     filter(depth >= i_gap_min & depth <= i_gap_max) %>%
-    select(file_id, gap)
+    distinct(file_id) %>% 
+    pull()
   
   # Remonve these profiles from working data set
-  bgc_data_chla <- full_join(bgc_data_chla, profile_gaps_remove) %>%
-                                  filter(is.na(gap)) %>%
-                                  select(-c(gap))
-}
+  bgc_data_chla <- bgc_data_chla %>% 
+    filter(!file_id %in% profile_gaps_remove)
 
-# Ensure primary fields are all present
-bgc_data_chla <- bgc_data_chla %>%
-  filter(!is.na(lat) & !is.na(lon) & !is.na(date) & !is.na(depth)) 
+}
 
 # clean up working tables
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
+gc()
 
 ```
 
@@ -274,77 +267,79 @@ depth that are in target_depth_range, this will match the range of climatology v
 
 ```{r vertical_align_chla}
 
+# create unique combinations of file_id and profile ranges
+profile_range_file_id <- 
+  bgc_data_chla %>% 
+  distinct(file_id, profile_range)
+
+
 # select variable of interest and prepare target_depth field
 bgc_data_chla_clean <- bgc_data_chla %>%
-                            select(
-                              file_id, 
-                              lat,
-                              lon,
-                              date,
-                              depth,
-                              profile_range,
-                              chla = chla_adjusted
-                            ) %>%
-                            mutate(
-                              target_depth = depth, .after = depth
-                            )
+  select(-profile_range) %>%
+  mutate(target_depth = depth, .after = depth)
+
+rm(bgc_data_chla)
+gc()
 
 # create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid <-
-  expand_grid(target_depth_range,
-              bgc_data_chla_clean %>% distinct(file_id, lat, lon, date, profile_range))
+  expand_grid(
+    target_depth_levels,
+    profile_range_file_id
+  )
 
-# Take account of the profile_range field to determine the profile_range of target_depth_grid
-target_depth_grid <- left_join(target_depth_grid, opt_profile_depth_range) %>%
-        filter(target_depth <= max_depth)
+# Constrain target_depth_grid to profile depth range
+target_depth_grid <-
+  left_join(target_depth_grid, opt_profile_depth_range) %>%
+  filter(target_depth <= max_depth)
 
-target_depth_grid <- target_depth_grid %>% 
-                        select(
-                          target_depth, 
-                          file_id, 
-                          lat, 
-                          lon,
-                          date,
-                          profile_range
-                          )
+target_depth_grid <- target_depth_grid %>%
+  select(target_depth,
+         file_id)
 
 # extend chla depth vectors with target depths
-bgc_data_chla_extended <- full_join(bgc_data_chla_clean, target_depth_grid) %>% 
-  arrange(file_id, lat, lon, date, target_depth)
+bgc_data_chla_extended <-
+  full_join(bgc_data_chla_clean, target_depth_grid) %>%
+  arrange(file_id, target_depth)
+
+rm(bgc_data_chla_clean)
+gc()
 
 # predict spline interpolation on adjusted depth grid for chla location and month
 bgc_data_chla_interpolated <-
   bgc_data_chla_extended %>%
-  group_by(file_id, lat, lon, date) %>%
-  mutate(chla_spline = spline(target_depth, chla,
+  group_by(file_id) %>%
+  mutate(chla_spline = spline(target_depth, chla_adjusted,
                                 method = "natural",
                                 xout = target_depth)$y) %>%
   ungroup()
 
+rm(bgc_data_chla_extended)
+gc()
+
 # subset interpolated values on target depth range
 bgc_data_chla_interpolated_clean <- 
-  inner_join(target_depth_grid, bgc_data_chla_interpolated)
+  inner_join(target_depth_levels, bgc_data_chla_interpolated)
+
+rm(bgc_data_chla_interpolated)
+gc()
 
 # select columns and rename to initial names
 bgc_data_chla_interpolated_clean <-
   bgc_data_chla_interpolated_clean %>%
-  select(
-    file_id, 
-    lat, 
-    lon, 
-    date,
-    profile_range,
-    depth = target_depth,
-    chla = chla_spline)
+  select(file_id,
+         depth = target_depth,
+         chla = chla_spline)
 
-# Create year and month fields
-bgc_data_chla_interpolated_clean <- bgc_data_chla_interpolated_clean %>%
-  mutate(year = year(date),
-         month = month(date),
-         .after = date)
+# merge with profile range
+bgc_data_chla_interpolated_clean <-
+  full_join(bgc_data_chla_interpolated_clean,
+            profile_range_file_id)
 
-# clean up working tables
-rm(bgc_data_chla_extended, bgc_data_chla_interpolated)
+# merge with meta data
+bgc_data_chla_interpolated_clean <-
+  left_join(bgc_data_chla_interpolated_clean,
+            bgc_metadata_select)
 
 ```
 
@@ -361,8 +356,8 @@ bgc_data_chla_interpolated_clean %>%
 # Rename so that names match if just reading existing files
 chla_bgc_va <- bgc_data_chla_interpolated_clean
 
-rm(bgc_data_chla_interpolated_clean, ucsd_clim)
-
+rm(bgc_data_chla_interpolated_clean)
+gc()
 
 ```
 
@@ -394,14 +389,14 @@ max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
 
 # Profiles to 600m
 chla_overall_mean_1 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_1 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
@@ -409,14 +404,14 @@ chla_year_mean_1 <- chla_bgc_va %>%
 
 # Profiles to 1200m
 chla_overall_mean_2 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_2 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
@@ -424,14 +419,14 @@ chla_year_mean_2 <- chla_bgc_va %>%
 
 # Profiles to 1500m
 chla_overall_mean_3 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_3 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
@@ -442,86 +437,120 @@ chla_overall_mean_1 %>%
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean chlorophyll a to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Overall mean chlorophyll a to ', max_depth_1, 'm'), 
+    x=opt_measure_label, 
+    y='depth (m)'
+  )
 
 chla_overall_mean_2 %>% 
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean chlorophyll a to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Overall mean chlorophyll a to ', max_depth_2, 'm'), 
+    x=opt_measure_label, 
+    y='depth (m)'
+  )
 
 chla_overall_mean_3 %>% 
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Overall mean chlorophyll a to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Overall mean chlorophyll a to ', max_depth_3, 'm'), 
+    x=opt_measure_label, 
+    y='depth (m)'
+  )
 
 # by years
 chla_year_mean_1 %>% 
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   facet_wrap(~year)+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly overall mean chlorophyll a to ', max_depth_1, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Yearly overall mean chlorophyll a to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 chla_year_mean_2 %>% 
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   facet_wrap(~year)+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly overall mean chlorophyll a to ', max_depth_2, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Yearly overall mean chlorophyll a to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
 chla_year_mean_3 %>% 
   ggplot()+
   geom_path(aes(x = chla_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = chla_mean + chla_sd,
-                  xmin = chla_mean - chla_sd,
-                  y = depth),
-              alpha = 0.2)+
+  geom_ribbon(aes(
+    xmax = chla_mean + chla_sd,
+    xmin = chla_mean - chla_sd,
+    y = depth
+  ),
+  alpha = 0.2) +
   scale_y_reverse()+
   facet_wrap(~year)+
   coord_cartesian(xlim = opt_xlim)+
   scale_x_continuous(breaks = opt_xbreaks)+
-  labs(title = paste0('Yearly overall mean chlorophyll a to ', max_depth_3, 'm'), x=opt_measure_label, y='depth (m)')
+  labs(
+    title = paste0('Yearly overall mean chlorophyll a to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
 
-
-#rm(anomaly_overall_mean)
 ```
 
 ## Profile counts
@@ -534,11 +563,22 @@ chla_histogram <- chla_bgc_va %>%
   summarise(num_profiles = n_distinct(file_id)) %>%
   ungroup()
 
-chla_histogram %>% 
-  ggplot()+
-  geom_bar(aes(x = year, y = num_profiles, fill = profile_range, group = profile_range), position = "stack", stat="identity")+
-  scale_fill_viridis_d()+
-  labs(title = "chlorophyll a profiles per year and profile range", x = "year", y = "profile count", fill = "profile range")
-
+chla_histogram %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = year,
+      y = num_profiles,
+      fill = profile_range,
+      group = profile_range
+    ),
+    position = "stack",
+    stat = "identity"
+  ) +
+  scale_fill_viridis_d() +
+  labs(title = "chlorophyll a profiles per year and profile range",
+       x = "year",
+       y = "profile count",
+       fill = "profile range")
 
 ```

@@ -10,7 +10,10 @@ chunk_output_type: console
 
 # Task 
 
-Explore the January climatology of Argo pH of Matt Mazloff, UCSD 
+This script loads the pH climatology as described in Mazloff et al. (2023). The climatology netCDF has previously been downloaded. The lat and lon fields are harmonised to our requirements, i.e -75.5 ≥ lat ≤ -30.5 and 20.5 ≥ lon ≤ 379.5.
+
+Mazloff, M. R., A. Verdy, S. T. Gille, K. S. Johnson, B. D. Cornuelle, and J. Sarmiento (2023), Southern Ocean Acidification Revealed by Biogeochemical-Argo Floats, Journal of Geophysical Research: Oceans, 128(5), e2022JC019530, doi:https://doi.org/10.1029/2022JC019530.
+
 
 ```{r load_libraries}
 library(tidyverse)
@@ -66,18 +69,16 @@ theme_set(theme_bw())
 # clim_argo_ph <- clim_argo_ph %>%
 #    filter(pH != 0)
 # 
-# # harmonise data 
-# clim_argo_ph <- clim_argo_ph %>% 
+# # harmonise data
+# clim_argo_ph <- clim_argo_ph %>%
 #   rename(lat = latitude,
 #          lon = longitude,
 #          month = t,
-#          clim_pH = pH) %>% 
+#          clim_pH = pH) %>%
 #   mutate(lat = lat -0.5,
 #          lon = if_else(lon < 20, lon + 360, lon))
-
-
-# A shorter alternative
-
+# 
+# read pH, position and depth data
 nc_pH <- read_stars(fn_mazloff_ph) %>% 
   as_tibble()
 

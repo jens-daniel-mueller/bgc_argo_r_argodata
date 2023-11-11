@@ -15,7 +15,15 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Load BGC data for analysis 
+makes use of argodata to load BGC Argo profile related data, stages load index, data and metadata files. Cache files (saved in /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo and dac subdirectory) are used, set option opt_refresh_cache to TRUE to force a refresh – This process takes considerable time. bgc_index data frame is created based on delayed mode files and a supplied date range. The index file is then used to load profile data into bgc_data and associated meta data into bgc_metadata.
+
+Both bgc_data and bgc_metadata are filtered by n_prof == opt_n_prof_sel. Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the following is from that page. The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+
+Both bgc_data and bgc_metadata initially contain a string field file that uniquely identifies the profile and links the two data frames. An additional data from bgc_fileid is created with a unique list file fields along with a numeric file_id field. The file fields in bgc_data and bgc_metadata are then replaced with file_id. An additional consolidated data frame bgc_merge is created to support prior analysis work.
+
+A series of files are created that support prior analysis these are. bgc_merge_pH_qc_1, ph_merge_1x1, ph_surface_1x1, ph_surface_2x2, bgc_merge_temp_qc_1, bgc_merge_temp_AB, bgc_merge_flag_AB and bgc_merge_qc_1. In addition, a data frame bgc_measure_summary is created that is used for load level reporting figures.
+
+Files are written to the BGC preprocessed folder for ongoing analysis.
 
 
 ```{r loading_libraries, include=FALSE}
@@ -646,75 +654,76 @@ bgc_metadata %>%
   ggplot(aes(year, n, col = value)) +
   geom_path() +
   geom_point() +
-  facet_wrap( ~ name)
-  
-
-
-bgc_profile_summary <- bgc_metadata %>%
-  filter (profile_chla_qc != "") %>%
-  group_by(
-    year = format(date, "%Y"),
-    measure = "Chl-a",
-    measure_order = 7,
-    profile_qc = profile_chla_qc
-  ) %>%
-  summarise(count_profiles = n())
-
-bgc_profile_summary <- rbind(
-  bgc_profile_summary,
-  bgc_metadata %>%
-    filter (profile_ph_in_situ_total_qc != "") %>%
-    group_by(
-      year = format(date, "%Y"),
-      measure = "pH",
-      measure_order = 4,
-      profile_qc = profile_ph_in_situ_total_qc
-    ) %>%
-    summarise(count_profiles = n())
-)
-
-bgc_profile_summary <- rbind(
-  bgc_profile_summary,
-  bgc_metadata %>%
-    filter (profile_doxy_qc != "") %>%
-    group_by(
-      year = format(date, "%Y"),
-      measure = "oxygen",
-      measure_order = 5,
-      profile_qc = profile_doxy_qc
-    ) %>%
-    summarise(count_profiles = n())
-)
-
-# modify data frame to prepare for plotting
-bgc_profile_summary <- ungroup(bgc_profile_summary)
-bgc_profile_summary <-
-  bgc_profile_summary %>% group_by(measure_order)
-bgc_profile_summary <-
-  transform(bgc_profile_summary, year = as.numeric(year))
-
-year_min <- min(bgc_profile_summary$year)
-year_max <- max(bgc_profile_summary$year)
-facet_label <-
-  as_labeller(c("7" = "Chl-a", "4" = "pH", "5" = "Oxygen"))
-
-# draw plots for the separate parameters
-bgc_profile_summary %>%
-  ggplot(aes(
-    x = year,
-    y = count_profiles,
-    col = profile_qc,
-    group = profile_qc
-  )) +
-  geom_point() +
-  geom_line() +
-  facet_wrap(~ measure_order, labeller = facet_label) +
-  scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+  facet_wrap( ~ name) +
   labs(x = 'year',
        y = 'number of profiles',
        col = 'profile QC flag',
        title = 'Count of profile qc flags by year')
-  
+
+# bgc_profile_summary <- bgc_metadata %>%
+#   filter (profile_chla_qc != "") %>%
+#   group_by(
+#     year = format(date, "%Y"),
+#     measure = "Chl-a",
+#     measure_order = 7,
+#     profile_qc = profile_chla_qc
+#   ) %>%
+#   summarise(count_profiles = n())
+# 
+# bgc_profile_summary <- rbind(
+#   bgc_profile_summary,
+#   bgc_metadata %>%
+#     filter (profile_ph_in_situ_total_qc != "") %>%
+#     group_by(
+#       year = format(date, "%Y"),
+#       measure = "pH",
+#       measure_order = 4,
+#       profile_qc = profile_ph_in_situ_total_qc
+#     ) %>%
+#     summarise(count_profiles = n())
+# )
+# 
+# bgc_profile_summary <- rbind(
+#   bgc_profile_summary,
+#   bgc_metadata %>%
+#     filter (profile_doxy_qc != "") %>%
+#     group_by(
+#       year = format(date, "%Y"),
+#       measure = "oxygen",
+#       measure_order = 5,
+#       profile_qc = profile_doxy_qc
+#     ) %>%
+#     summarise(count_profiles = n())
+# )
+# 
+# # modify data frame to prepare for plotting
+# bgc_profile_summary <- ungroup(bgc_profile_summary)
+# bgc_profile_summary <-
+#   bgc_profile_summary %>% group_by(measure_order)
+# bgc_profile_summary <-
+#   transform(bgc_profile_summary, year = as.numeric(year))
+# 
+# year_min <- min(bgc_profile_summary$year)
+# year_max <- max(bgc_profile_summary$year)
+# facet_label <-
+#   as_labeller(c("7" = "Chl-a", "4" = "pH", "5" = "Oxygen"))
+# 
+# # draw plots for the separate parameters
+# bgc_profile_summary %>%
+#   ggplot(aes(
+#     x = year,
+#     y = count_profiles,
+#     col = profile_qc,
+#     group = profile_qc
+#   )) +
+#   geom_point() +
+#   geom_line() +
+#   facet_wrap(~ measure_order, labeller = facet_label) +
+#   scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+#   labs(x = 'year',
+#        y = 'number of profiles',
+#        col = 'profile QC flag',
+#        title = 'Count of profile qc flags by year')
 
 ```
 
@@ -732,6 +741,8 @@ bgc_measure_summary <- ungroup(bgc_measure_summary)
 
 year_min <- min(bgc_measure_summary$year)
 year_max <- max(bgc_measure_summary$year)
+facet_label <-
+  as_labeller(c("7" = "Chl-a", "4" = "pH", "5" = "Oxygen"))
 
 # draw plots for the separate parameters
 bgc_measure_summary %>%
