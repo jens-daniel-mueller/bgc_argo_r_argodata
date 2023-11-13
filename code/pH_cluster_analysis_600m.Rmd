@@ -25,6 +25,8 @@ library(lubridate)
 library(gridExtra)
 library(gsw)
 library(ggforce)
+library(broom)
+
 
 ```
 
@@ -103,6 +105,7 @@ opt_doxy_xbreaks <- c(50, 100, 150, 200, 250, 300, 350)
 # options relating to cluster analysis
 opt_n_start <- 25
 opt_max_iterations <- 500
+opt_n_clusters <- 14 # Max number of clusters to try when determining optimal number of clusters
 
 ```
 
@@ -160,18 +163,76 @@ if (opt_measure == 1) {
     )
 }
 
+# # Mean and std deviation of anomaly
+# anomaly_stats <- pH_anomaly_va_id %>%
+#   mutate(
+#     anomaly_mean = mean(anomaly, na.rm = TRUE),
+#     anomaly_sd = sd(anomaly, na.rm = TRUE)
+#   ) %>%
+#   distinct ( anomaly_mean, anomaly_sd)
+# 
+# # Histogram of anomaly
+# pH_anomaly_va_id %>%
+#   ggplot(aes(anomaly)) +
+#   geom_histogram(binwidth = 1E-11) +
+#   geom_vline(xintercept = anomaly_stats$anomaly_mean, colour = "red") +
+#   geom_vline(
+#     xintercept = anomaly_stats$anomaly_mean - anomaly_stats$anomaly_sd,
+#     colour = "red",
+#     linetype = "dashed"
+#   ) +
+#   geom_vline(
+#     xintercept = anomaly_stats$anomaly_mean + anomaly_stats$anomaly_sd,
+#     colour = "red",
+#     linetype = "dashed"
+#   ) +
+#   labs(title = "anomaly distribution",
+#        x = opt_measure_label,
+#        y = "count")
+# 
+# # transform pH_anomaly_va_id by subtracting mean and dividing by std deviation
+# pH_anomaly_va_norm <- pH_anomaly_va_id %>%
+#   mutate (norm_anomaly = (anomaly-anomaly_stats$anomaly_mean) / anomaly_stats$anomaly_sd) %>%
+#   select (file_id, depth, norm_anomaly)
+# 
+# # histogram or normalised anomaly
+# pH_anomaly_va_norm %>%
+#   ggplot(aes(norm_anomaly)) +
+#   geom_histogram(binwidth = 0.1) +
+#   geom_vline(
+#     xintercept = -1,
+#     colour = "red",
+#     linetype = "dashed"
+#   ) +
+#   geom_vline(
+#     xintercept = 1,
+#     colour = "red",
+#     linetype = "dashed"
+#   ) +
+#   labs(title = "normalised anomaly distribution",
+#        x = opt_measure_label,
+#        y = "count")
+
+
 # wide table with each depth becoming a column
 pH_anomaly_va_wide <- pH_anomaly_va_id %>%
   pivot_wider(names_from = depth, values_from = anomaly)
 
+# pH_anomaly_va_wide_norm <- pH_anomaly_va_norm %>%
+#   pivot_wider(names_from = depth, values_from = norm_anomaly)
 
 # Drop any rows with missing values N/A caused by gaps in climatology data
 pH_anomaly_va_wide <- drop_na(pH_anomaly_va_wide)
 profile_id <- pH_anomaly_va_wide %>% select(file_id)
+# pH_anomaly_va_wide_norm <- drop_na(pH_anomaly_va_wide_norm)
 
 # Table for cluster analysis
-x <- pH_anomaly_va_wide %>%
+points <- pH_anomaly_va_wide %>%
         select(-c(file_id))
+
+# points <- pH_anomaly_va_wide_norm %>%
+#         select(-c(file_id))
+
 ```
 
 ### Number of clusters
@@ -180,37 +241,21 @@ x <- pH_anomaly_va_wide %>%
 
 if (opt_analysis_type == 1) {
 
-  # kmeansAIC = function(fit){
-  # 
-  #   m = ncol(fit$centers)
-  #   n = length(fit$cluster)
-  #   k = nrow(fit$centers)
-  #   D = fit$tot.withinss
-  #   return(data.frame(AIC = D + 2*m*k,
-  #                     BIC = D + log(n)*m*k))
-  # }
-
   # cluster analysis - What k
-  n_clusters <- 14
-  
-  wss <- numeric(n_clusters)
-  aic <- numeric(n_clusters)
-  bic <- numeric(n_clusters)
-  
-  for (i in 1:n_clusters) {
+
+  wss <- numeric(opt_n_clusters)
+  for (i in 1:opt_n_clusters) {
     
     # Fit the model: km.out
     print(paste0('Preparing to carry out test cluster analysis with ', i , ' clusters'))
     set.seed(1)
-    (km_out <- kmeans(x, i, iter.max=opt_max_iterations, nstart=opt_n_start))
-
-    # Save the within cluster sum of squares
-    wss[i] <- km_out$tot.withinss
+    kclust <- kmeans(points, centers = i, iter.max = opt_max_iterations, nstart = opt_n_start)
     
-    # km <- kmeansAIC(km_out)
-    # bic[i] <- km$BIC
-    # aic[i] <- km$AIC
+    # Save the within cluster sum of squares
+    wss[i] <- kclust$tot.withinss
+
   }
+  
   
   # Produce a scree plot
   wss_df <- tibble(clusters = 1:n_clusters, wss = wss)
@@ -230,41 +275,49 @@ if (opt_analysis_type == 1) {
       )
   
   
-  # Produce a scree plot using BIC
-  # bic_df <- tibble(clusters = 1:n_clusters, bic = bic)
-  # 
-  # bic_scree_plot <- ggplot(bic_df, aes(x = clusters, y = bic, group = 1)) +
-  #     geom_point(size = 4)+
-  #     geom_line() +
-  #     scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-  #     xlab('Number of clusters')
-  # bic_scree_plot
-  # 
-  # bic_scree_plot +
-  #     geom_hline(
-  #         yintercept = bic,
-  #         linetype = 'dashed',
-  #         col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
-  #     )
+}
 
-  # # Produce a scree plot using AIC
-  # 
-  # aic_df <- tibble(clusters = 1:n_clusters, aic = aic)
-  #  
-  # aic_scree_plot <- ggplot(aic_df, aes(x = clusters, y = aic, group = 1)) +
-  #     geom_point(size = 4)+
-  #     geom_line() +
-  #     scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-  #     xlab('Number of clusters')
-  # aic_scree_plot
-  # 
-  # aic_scree_plot +
-  #     geom_hline(
-  #         yintercept = aic, 
-  #         linetype = 'dashed', 
-  #         col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
-  #     )
-  # 
+```
+
+### Number of clusters
+
+```{r cluster_analysis_determine_k}
+
+if (opt_analysis_type == 1) {
+
+  # cluster analysis - What k? try between 1 and opt_n_clusters clusters
+  kclusts <- 
+  tibble(k = 1:opt_n_clusters) %>%
+  mutate(
+    kclust = map(k, ~kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+    tidied = map(kclust, tidy),
+    glanced = map(kclust, glance),
+    augmented = map(kclust, augment, points)
+  )
+
+  # cluster analysis data
+  clusters <-
+    kclusts %>%
+    unnest(cols = c(tidied))
+  
+  assignments <-
+    kclusts %>%
+    unnest(cols = c(augmented))
+  
+  clusterings <-
+    kclusts %>%
+    unnest(cols = c(glanced))
+  
+  # What cluster works best?
+  ggplot(clusterings, aes(k, tot.withinss)) +
+    geom_line() +
+    geom_point() +
+    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
+    geom_hline(
+        yintercept = wss, 
+        linetype = 'dashed'
+    )
+
 }
 
 ```
@@ -275,12 +328,11 @@ if (opt_analysis_type == 1) {
 
 if (opt_analysis_type == 2) {
 
-
   set.seed(1)
-  (cl_out <- kmeans(x, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
+  kclust <- kmeans(points, centers = opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start)
   
   cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
+  cluster_ids <- kclust$cluster
   
   profile_id <- profile_id %>%
     mutate(cluster = cluster_ids)

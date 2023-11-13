@@ -87,6 +87,7 @@ opt_doxy_xbreaks <- c(50, 100, 150, 200, 250, 300, 350)
 # options relating to cluster analysis
 opt_n_start <- 25
 opt_max_iterations <- 500
+opt_n_clusters <- 14 # Max number of clusters to try when determining optimal number of clusters
 
 ```
 
@@ -144,8 +145,9 @@ pH_anomaly_va_wide <- drop_na(pH_anomaly_va_wide)
 profile_id <- pH_anomaly_va_wide %>% select(file_id)
 
 # Table for cluster analysis
-x <- pH_anomaly_va_wide %>%
-        select(-c(file_id))
+points <- pH_anomaly_va_wide %>%
+  select(-c(file_id))
+
 ```
 
 ### Number of clusters
@@ -154,91 +156,36 @@ x <- pH_anomaly_va_wide %>%
 
 if (opt_analysis_type == 1) {
 
-  # kmeansAIC = function(fit){
-  # 
-  #   m = ncol(fit$centers)
-  #   n = length(fit$cluster)
-  #   k = nrow(fit$centers)
-  #   D = fit$tot.withinss
-  #   return(data.frame(AIC = D + 2*m*k,
-  #                     BIC = D + log(n)*m*k))
-  # }
+  # cluster analysis - What k? try between 1 and opt_n_clusters clusters
+  kclusts <- 
+  tibble(k = 1:opt_n_clusters) %>%
+  mutate(
+    kclust = map(k, ~kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+    tidied = map(kclust, tidy),
+    glanced = map(kclust, glance),
+    augmented = map(kclust, augment, points)
+  )
 
-  # cluster analysis - What k
-  n_clusters <- 14
+  # cluster analysis data
+  clusters <-
+    kclusts %>%
+    unnest(cols = c(tidied))
   
-  wss <- numeric(n_clusters)
-  aic <- numeric(n_clusters)
-  bic <- numeric(n_clusters)
+  assignments <-
+    kclusts %>%
+    unnest(cols = c(augmented))
   
-  for (i in 1:n_clusters) {
-    
-    # Fit the model: km.out
-    print(paste0('Preparing to carry out test cluster analysis with ', i , ' clusters'))
-    set.seed(1)
-    (km_out <- kmeans(x, i, iter.max=opt_max_iterations, nstart=opt_n_start))
+  clusterings <-
+    kclusts %>%
+    unnest(cols = c(glanced))
+  
+  # What cluster works best?
+  clusterings %>%
+  ggplot(aes(k, tot.withinss)) +
+    geom_line() +
+    geom_point() +
+    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14))
 
-    # Save the within cluster sum of squares
-    wss[i] <- km_out$tot.withinss
-    
-    # km <- kmeansAIC(km_out)
-    # bic[i] <- km$BIC
-    # aic[i] <- km$AIC
-  }
-  
-  # Produce a scree plot
-  wss_df <- tibble(clusters = 1:n_clusters, wss = wss)
-   
-  scree_plot <- ggplot(wss_df, aes(x = clusters, y = wss, group = 1)) +
-      geom_point(size = 4)+
-      geom_line() +
-      scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-      xlab('Number of clusters')
-  scree_plot
-  
-  scree_plot +
-      geom_hline(
-          yintercept = wss, 
-          linetype = 'dashed', 
-          col = c(rep('#000000',5),rep('#FF0000', 3), rep('#000000', 6))
-      )
-  
-  
-  # Produce a scree plot using BIC
-  # bic_df <- tibble(clusters = 1:n_clusters, bic = bic)
-  # 
-  # bic_scree_plot <- ggplot(bic_df, aes(x = clusters, y = bic, group = 1)) +
-  #     geom_point(size = 4)+
-  #     geom_line() +
-  #     scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-  #     xlab('Number of clusters')
-  # bic_scree_plot
-  # 
-  # bic_scree_plot +
-  #     geom_hline(
-  #         yintercept = bic,
-  #         linetype = 'dashed',
-  #         col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
-  #     )
-
-  # # Produce a scree plot using AIC
-  # 
-  # aic_df <- tibble(clusters = 1:n_clusters, aic = aic)
-  #  
-  # aic_scree_plot <- ggplot(aic_df, aes(x = clusters, y = aic, group = 1)) +
-  #     geom_point(size = 4)+
-  #     geom_line() +
-  #     scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-  #     xlab('Number of clusters')
-  # aic_scree_plot
-  # 
-  # aic_scree_plot +
-  #     geom_hline(
-  #         yintercept = aic, 
-  #         linetype = 'dashed', 
-  #         col = c(rep('#000000',4),'#FF0000', rep('#000000', 9))
-  #     )
-  # 
 }
 
 ```
@@ -249,12 +196,10 @@ if (opt_analysis_type == 1) {
 
 if (opt_analysis_type == 2) {
 
-
   set.seed(1)
-  (cl_out <- kmeans(x, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
+  (kclusts <- kmeans(points, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
   
-  cluster_profile <- t(cl_out$centers)
-  cluster_ids <- cl_out$cluster
+  cluster_ids <- kclusts$cluster
   
   profile_id <- profile_id %>%
     mutate(cluster = cluster_ids)
