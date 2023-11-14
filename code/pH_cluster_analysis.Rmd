@@ -27,6 +27,7 @@ library(lubridate)
 library(gridExtra)
 library(gsw)
 library(ggforce)
+library(broom)
 
 ```
 
@@ -52,8 +53,8 @@ Define options that are used to determine what analysis is done
 # Options
 
 # opt_analysis_type
-# opt_analysis_type = 1 do analysis to determine number of clusters to use
-# opt_analysis_type = 2 do cluster analysis and further analysis on the identified clusters clusters
+# opt_analysis_type = 1 determine number of clusters to use
+# opt_analysis_type = 2 do analysis based on identified number of clusters
 opt_analysis_type <- 2
 
 # opt_num_clusters
@@ -118,35 +119,43 @@ pH_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/pH_anomaly_va.
 pH_anomaly_va <- pH_anomaly_va %>% 
   filter(profile_range == 3)
 
-# Simplified table ready to pivot
+# Select target variable
 if (opt_measure == 1) {
   pH_anomaly_va_id <- pH_anomaly_va %>% 
-    select(
-      file_id,
-      depth,
+    rename(
       anomaly = anomaly_pH
     )
 } else {
   pH_anomaly_va_id <- pH_anomaly_va %>% 
-    select(
-      file_id,
-      depth,
+    rename(
       anomaly = anomaly_h_plus
     )
 }
 
+pH_anomaly_va_id <- pH_anomaly_va_id %>% 
+  select(
+    file_id, depth, anomaly,
+    year, month, lat, lon
+  )
+
 # wide table with each depth becoming a column
 pH_anomaly_va_wide <- pH_anomaly_va_id %>%
+  select(file_id, depth, anomaly) %>%
   pivot_wider(names_from = depth, values_from = anomaly)
 
 
 # Drop any rows with missing values N/A caused by gaps in climatology data
-pH_anomaly_va_wide <- drop_na(pH_anomaly_va_wide)
-profile_id <- pH_anomaly_va_wide %>% select(file_id)
+pH_anomaly_va_wide <- pH_anomaly_va_wide %>% 
+  drop_na()
+
+# profile_id <- pH_anomaly_va_wide %>% select(file_id)
 
 # Table for cluster analysis
+# points <- pH_anomaly_va_wide %>%
+#   select(-c(file_id))
+
 points <- pH_anomaly_va_wide %>%
-  select(-c(file_id))
+  column_to_rownames(var = "file_id")
 
 ```
 
@@ -165,6 +174,7 @@ if (opt_analysis_type == 1) {
     glanced = map(kclust, glance),
     augmented = map(kclust, augment, points)
   )
+  
 
   # cluster analysis data
   clusters <-
@@ -196,59 +206,63 @@ if (opt_analysis_type == 1) {
 
 if (opt_analysis_type == 2) {
 
+  # caution: set.seed works only for one execution of the clustering
+  # How sensitive are our results to the acutal seed?
   set.seed(1)
-  (kclusts <- kmeans(points, opt_num_clusters, iter.max=opt_max_iterations, nstart=opt_n_start))
+
+  kclusts <-
+    tibble(k = opt_num_clusters) %>%
+    mutate(
+      kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+      tidied = map(kclust, tidy),
+      glanced = map(kclust, glance),
+      augmented = map(kclust, augment, points)
+    )
   
-  cluster_ids <- kclusts$cluster
+  profile_id <-
+    kclusts %>%
+    unnest(cols = c(augmented)) %>%
+    select(file_id = .rownames,
+           cluster = .cluster) %>% 
+    mutate(file_id = as.numeric(file_id),
+           cluster = as.character(cluster))
   
-  profile_id <- profile_id %>%
-    mutate(cluster = cluster_ids)
+  
   
   # Add cluster to pH_anomaly_va
-  pH_anomaly_cluster <- full_join(pH_anomaly_va, profile_id)
+  pH_anomaly_cluster <- full_join(pH_anomaly_va_id, profile_id)
+  
+  # Why do we have NA cluster
+  pH_anomaly_cluster <- pH_anomaly_cluster %>% 
+    filter(!is.na(cluster))
   
   # Plot cluster mean
-  if (opt_measure == 1) {
-    anomaly_cluster_mean <- pH_anomaly_cluster %>%
-      filter(cluster >= 1) %>%
-      group_by(cluster, depth) %>%
-      summarise(
-        count_cluster = n(),
-        anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-        anomaly_sd = sd(anomaly_pH, na.rm = TRUE)
-      ) %>%
-      ungroup()
-    
-    anomaly_year_mean <- pH_anomaly_cluster %>%
-      filter(cluster >= 1) %>%
-      group_by(cluster, year) %>%
-      summarise(
-        count_cluster = n(),
-        anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-        anomaly_sd = sd(anomaly_pH, na.rm = TRUE)
-      ) %>%
-      ungroup()
-  } else {
-    anomaly_cluster_mean <- pH_anomaly_cluster %>%
-      filter(cluster >= 1) %>%
-      group_by(cluster, depth) %>%
-      summarise(
-        count_cluster = n(),
-        anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
-        anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)
-      ) %>%
-      ungroup()
-    
-    anomaly_year_mean <- pH_anomaly_cluster %>%
-      filter(cluster >= 1) %>%
-      group_by(cluster, year) %>%
-      summarise(
-        count_cluster = n(),
-        anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
-        anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE)
-      ) %>%
-      ungroup()
-  }
+  anomaly_cluster_mean <- pH_anomaly_cluster %>%
+    group_by(cluster, depth) %>%
+    summarise(
+      count_cluster = n(),
+      anomaly_mean = mean(anomaly, na.rm = TRUE),
+      anomaly_sd = sd(anomaly, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  anomaly_cluster_mean_year <- pH_anomaly_cluster %>%
+    group_by(cluster, depth, year) %>%
+    summarise(
+      count_cluster = n(),
+      anomaly_mean = mean(anomaly, na.rm = TRUE),
+      anomaly_sd = sd(anomaly, na.rm = TRUE)
+    ) %>%
+    ungroup()
+  
+  anomaly_year_mean <- pH_anomaly_cluster %>%
+    group_by(cluster, year) %>%
+    summarise(
+      count_cluster = n(),
+      anomaly_mean = mean(anomaly, na.rm = TRUE),
+      anomaly_sd = sd(anomaly, na.rm = TRUE)
+    ) %>%
+    ungroup()
   
   anomaly_year_mean <- anomaly_year_mean %>%
     group_by(year) %>%
@@ -276,6 +290,24 @@ if (opt_analysis_type == 2) {
       x = opt_measure_label,
       y = 'depth (m)'
     )
+  
+  anomaly_cluster_mean_year %>%
+    mutate(year = as.factor(year)) %>% 
+    ggplot() +
+    geom_path(aes(x = anomaly_mean,
+                  y = depth, 
+                  col = year)) +
+    geom_vline(xintercept = 0) +
+    scale_y_reverse() +
+    facet_wrap( ~ cluster) +
+    coord_cartesian(xlim = opt_xlim) +
+    scale_x_continuous(breaks = opt_xbreaks) +
+    scale_color_viridis_d() +
+    labs(
+      title = paste0('Overall mean anomaly profiles by cluster'),
+      x = opt_measure_label,
+      y = 'depth (m)'
+    )
 
 }
 
@@ -285,16 +317,48 @@ if (opt_analysis_type == 2) {
 
 ```{r cluster_climatology_shift}
 
-  bf_coefs <- summary(lm(anomaly_year_mean$anomaly_mean ~ anomaly_year_mean$year))$coefficients
-  line_eq <- paste0("Y = ", formatC(bf_coefs[2, 1], format = "e", digits = 2), "X ", formatC(bf_coefs[1, 1], format = "e", digits = 2, flag = "+"))
-  
-  # annual difference from climatology
-  anomaly_year_mean %>%
-    ggplot(aes(x = year,
-                  y = anomaly_mean))+
-    geom_point(col='red', size=2)+
-    geom_smooth(method=lm, se=FALSE, col='blue', linetype='dashed') +
-    labs(title = paste0('Overall variation from climatology (', line_eq, ')'), x = 'year', y = opt_measure_label)
+bf_coefs <-
+  summary(lm(anomaly_year_mean$anomaly_mean ~ anomaly_year_mean$year))$coefficients
+
+line_eq <-
+  paste0(
+    "Y = ",
+    formatC(bf_coefs[2, 1], format = "e", digits = 2),
+    "X ",
+    formatC(
+      bf_coefs[1, 1],
+      format = "e",
+      digits = 2,
+      flag = "+"
+    )
+  )
+
+# annual difference from climatology
+anomaly_year_mean %>%
+  ggplot(aes(x = year,
+             y = anomaly_mean)) +
+  geom_point(col = 'red', size = 2) +
+  geom_smooth(
+    method = lm,
+    se = FALSE,
+    col = 'blue',
+    linetype = 'dashed'
+  ) +
+  labs(
+    title = paste0('Overall variation from climatology (', line_eq, ')'),
+    x = 'year',
+    y = opt_measure_label
+  )
+
+# A nice short alternative, but requires you to manual install package
+library(ggpmisc)
+
+anomaly_year_mean %>%
+  ggplot(aes(x = year,
+             y = anomaly_mean)) +
+  stat_poly_line() +
+  stat_poly_eq(use_label(c("eq", "R2","P", "n"))) +
+  geom_point()
   
 ```
 
@@ -314,16 +378,17 @@ if (opt_analysis_type == 2) {
   #   mutate(cluster = cluster_ids)
   # 
   # Add cluster to pH_anomaly_va
-  pH_anomaly_by_cluster <- unique(full_join(pH_anomaly_va, profile_id) %>%
-                              select (file_id, year, cluster) %>%
-                              filter (!is.na(cluster)))
+  # pH_anomaly_by_cluster <-
+  #   unique(
+  #     pH_anomaly_cluster %>%
+  #       select(file_id, year, cluster) %>%
+  #       filter(!is.na(cluster))
+  #   )
   
   # Determine profile count by cluster and year
-  cluster_by_year <- pH_anomaly_by_cluster %>% 
-    filter(cluster >= 1) %>%
-    group_by(cluster = as.character(cluster), year) %>% 
-    summarise(count_cluster = n()) %>%
-    ungroup()
+  cluster_by_year <- pH_anomaly_cluster %>% 
+    count(cluster, year,
+          name = "count_cluster")
 
   year_min <- min(cluster_by_year$year)
   year_max <- max(cluster_by_year$year)
@@ -359,16 +424,14 @@ if (opt_analysis_type == 2) {
   #   mutate(cluster = cluster_ids)
   # 
   # Add cluster to pH_anomaly_va
-  pH_anomaly_by_cluster <- unique(full_join(pH_anomaly_va, profile_id) %>%
-                              select (file_id, month, cluster) %>%
-                              filter (!is.na(cluster)))
+  # pH_anomaly_by_cluster <- unique(full_join(pH_anomaly_va, profile_id) %>%
+  #                             select (file_id, month, cluster) %>%
+  #                             filter (!is.na(cluster)))
   
   # Determine profile count by cluster and year
-  cluster_by_year <- pH_anomaly_by_cluster %>% 
-    filter(cluster >= 1) %>%
-    group_by(cluster = as.character(cluster), month) %>% 
-    summarise(count_cluster = n()) %>%
-    ungroup()
+  cluster_by_year <- pH_anomaly_cluster %>% 
+    count(cluster, month,
+          name = "count_cluster")
 
   # create figure
   cluster_by_year %>% 
@@ -401,16 +464,16 @@ if (opt_analysis_type == 2) {
   #   mutate(cluster = cluster_ids)
   # 
   # Add cluster to pH_anomaly_va
-  pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
-                              select (file_id, lat, lon, cluster) %>%
-                              filter (!is.na(cluster)))
-  
-  pH_anomaly_spatial <- pH_anomaly_spatial %>% 
-                              mutate(cluster = as.character(cluster))
+  # pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
+  #                             select (file_id, lat, lon, cluster) %>%
+  #                             filter (!is.na(cluster)))
+  # 
+  # pH_anomaly_spatial <- pH_anomaly_spatial %>% 
+  #                             mutate(cluster = as.character(cluster))
   
   # create figure
 map +
-  geom_tile(data = pH_anomaly_spatial, 
+  geom_tile(data = pH_anomaly_cluster, 
             aes(x = lon, 
                 y = lat, 
                 fill = cluster))+
@@ -420,13 +483,24 @@ map +
 
   # create figure
 map +
-  geom_tile(data = pH_anomaly_spatial, 
-            aes(x = lon, 
-                y = lat, 
-                fill = cluster))+
-  lims(y = c(-85, -30))+
-  scale_fill_brewer(palette = 'Dark2')+
-  facet_wrap(~cluster, ncol = 2) +
+  geom_tile(data = pH_anomaly_cluster,
+            aes(x = lon,
+                y = lat,
+                fill = cluster)) +
+  lims(y = c(-85, -30)) +
+  scale_fill_brewer(palette = 'Dark2') +
+  facet_wrap( ~ cluster, ncol = 2) +
+  labs(title = 'cluster spatial distribution')
+
+map +
+  geom_tile(data = pH_anomaly_cluster %>% 
+              count(lat, lon, cluster),
+            aes(x = lon,
+                y = lat,
+                fill = n)) +
+  lims(y = c(-85, -30)) +
+  scale_fill_viridis_c(option = "cividis", direction = -1, trans = "log10") +
+  facet_wrap( ~ cluster, ncol = 2) +
   labs(title = 'cluster spatial distribution')
 
 }
@@ -442,27 +516,32 @@ location of each cluster on map, spatial analysis by year
 if (opt_analysis_type == 2) {
 
   # Add cluster to pH_anomaly_va
-  pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
-                              select (file_id, lat, lon, year, cluster) %>%
-                              filter (!is.na(cluster)))
-  
-  pH_anomaly_spatial <- pH_anomaly_spatial %>% 
-                              mutate(cluster = as.character(cluster))
+  # pH_anomaly_spatial <- unique(full_join(pH_anomaly_va, profile_id) %>%
+  #                             select (file_id, lat, lon, year, cluster) %>%
+  #                             filter (!is.na(cluster)))
+  # 
+  # pH_anomaly_spatial <- pH_anomaly_spatial %>% 
+  #                             mutate(cluster = as.character(cluster))
   
   # create figure
-  pH_anomaly_spatial %>%
-    group_split(year) %>% 
-map(
-  ~map +
-  geom_tile(data = .x, 
-            aes(x = lon, 
-                y = lat, 
-                fill = cluster))+
-  #lims(y = c(-85, -30))+
-  scale_fill_brewer(palette = 'Dark2')+
-  facet_wrap(~cluster, ncol = 2) +
-  labs(title = paste0('cluster spatial distribution ', unique(.x$year)))
-)
+  pH_anomaly_cluster %>%
+    group_split(year) %>%
+    head(1) %>%
+    map(
+      ~ map +
+        geom_tile(data = .x,
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = cluster
+                  )) +
+        #lims(y = c(-85, -30))+
+        scale_fill_brewer(palette = 'Dark2') +
+        facet_wrap( ~ cluster, ncol = 2) +
+        labs(title = paste0(
+          'cluster spatial distribution ', unique(.x$year)
+        ))
+    )
 
 }
 
@@ -477,12 +556,10 @@ if (opt_analysis_type == 2) {
   
   # Read chl-a data and link to cluster ID
   chla_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/chla_bgc_va.rds"))
-  chla_cluster <- full_join(chla_bgc_va, profile_id) %>%
-                    filter(!is.na(cluster))
+  chla_cluster <- right_join(chla_bgc_va, profile_id)
 
   # summarise by cluster
   chla_cluster_mean <- chla_cluster %>% 
-      filter(cluster >= 1) %>%
       group_by(cluster, depth) %>% 
       summarise(chla_mean = mean(chla, na.rm = TRUE),
                 chla_sd = sd(chla, na.rm = TRUE)) %>%
@@ -528,36 +605,52 @@ if (opt_analysis_type == 2) {
   chla_to_ph_offset <- 1
   chla_color <- "#69b3a2"
   
-  cluster_ph_chla %>% 
-    ggplot()+
+  cluster_ph_chla %>%
+    ggplot() +
     geom_path(aes(x = anomaly_mean,
-                  y = depth))+
-    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                    xmin = anomaly_mean - anomaly_sd,
-                    y = depth),
-                alpha = 0.2)+
-    geom_path(aes(x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
-                  y = depth), color = chla_color)+
-    geom_ribbon(aes(xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-                    xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-                    y = depth),
-                fill = chla_color,
-                alpha = 0.2)+
-    geom_vline(xintercept = 0)+
+                  y = depth)) +
+    geom_ribbon(aes(
+      xmax = anomaly_mean + anomaly_sd,
+      xmin = anomaly_mean - anomaly_sd,
+      y = depth
+    ),
+    alpha = 0.2) +
+    geom_path(aes(
+      x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
+      y = depth
+    ), color = chla_color) +
+    geom_ribbon(
+      aes(
+        xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
+        xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
+        y = depth
+      ),
+      fill = chla_color,
+      alpha = 0.2
+    ) +
+    geom_vline(xintercept = 0) +
     scale_y_continuous(trans = trans_reverser("sqrt"),
-                       breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))+
-    facet_wrap(~cluster)+
-    coord_cartesian(xlim = opt_xlim)+
-    scale_x_continuous( # First axis
-                        name = opt_measure_label, 
-                        breaks = opt_xbreaks, 
-                        # First axis
-                        sec.axis = sec_axis(trans=~.*chla_to_ph_factor + chla_to_ph_offset, name=opt_chla_measure_label)
-                       )+
-    labs(title = paste0('Overall mean profiles by cluster'), x = opt_measure_label, y = 'depth (m)') +
-    theme(
-      axis.title.x.top = element_text(color = chla_color)
-    )
+                       breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+    facet_wrap( ~ cluster,
+                strip.position = "right") +
+    coord_cartesian(xlim = opt_xlim) +
+    scale_x_continuous(
+      # First axis
+      name = opt_measure_label,
+      breaks = opt_xbreaks,
+      # Second axis
+      sec.axis = sec_axis(
+        trans =  ~ . * chla_to_ph_factor + chla_to_ph_offset,
+        name = opt_chla_measure_label
+      )
+    ) +
+    labs(
+      title = paste0('Overall mean profiles by cluster'),
+      x = opt_measure_label,
+      y = 'depth (m)'
+    ) +
+    theme(axis.title.x.top = element_text(color = chla_color),
+          axis.text.x.top = element_text(color = chla_color))
 
 }
 
@@ -572,12 +665,10 @@ if (opt_analysis_type == 2) {
   
   # Read chl-a data and link to cluster ID
   doxy_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds"))
-  doxy_cluster <- full_join(doxy_bgc_va, profile_id) %>%
-                    filter(!is.na(cluster))
+  doxy_cluster <- right_join(doxy_bgc_va, profile_id)
 
   # summarise by cluster
   doxy_cluster_mean <- doxy_cluster %>% 
-      filter(cluster >= 1) %>%
       group_by(cluster, depth) %>% 
       summarise(doxy_mean = mean(doxy, na.rm = TRUE),
                 doxy_sd = sd(doxy, na.rm = TRUE)) %>%
@@ -621,35 +712,51 @@ if (opt_analysis_type == 2) {
   doxy_to_ph_offset <- 200
   doxy_color <- "#5B9BD5"
   
-  cluster_ph_doxy %>% 
-    ggplot()+
+  cluster_ph_doxy %>%
+    ggplot() +
     geom_path(aes(x = anomaly_mean,
-                  y = depth))+
-    geom_ribbon(aes(xmax = anomaly_mean + anomaly_sd,
-                    xmin = anomaly_mean - anomaly_sd,
-                    y = depth),
-                alpha = 0.2)+
-    geom_path(aes(x = (doxy_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
-                  y = depth), color = doxy_color)+
-    geom_ribbon(aes(xmax = (doxy_mean + doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-                    xmin = (doxy_mean - doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-                    y = depth),
-                fill = doxy_color,
-                alpha = 0.2)+
-    geom_vline(xintercept = 0)+
-    scale_y_reverse()+
-    facet_wrap(~cluster)+
-    coord_cartesian(xlim = opt_xlim)+
-    scale_x_continuous( # First axis
-                        name = opt_measure_label, 
-                        breaks = opt_xbreaks, 
-                        # First axis
-                        sec.axis = sec_axis(trans=~.*doxy_to_ph_factor + doxy_to_ph_offset, name=opt_doxy_measure_label)
-                       )+
-    labs(title = paste0('Overall mean profiles by cluster'), x = opt_measure_label, y = 'depth (m)') +
-    theme(
-      axis.title.x.top = element_text(color = doxy_color)
-    )
+                  y = depth)) +
+    geom_ribbon(aes(
+      xmax = anomaly_mean + anomaly_sd,
+      xmin = anomaly_mean - anomaly_sd,
+      y = depth
+    ),
+    alpha = 0.2) +
+    geom_path(aes(
+      x = (doxy_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+      y = depth
+    ), color = doxy_color) +
+    geom_ribbon(
+      aes(
+        xmax = (doxy_mean + doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+        xmin = (doxy_mean - doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+        y = depth
+      ),
+      fill = doxy_color,
+      alpha = 0.2
+    ) +
+    geom_vline(xintercept = 0) +
+    scale_y_reverse() +
+    facet_wrap( ~ cluster,
+                strip.position = "right") +
+    coord_cartesian(xlim = opt_xlim) +
+    scale_x_continuous(
+      # First axis
+      name = opt_measure_label,
+      breaks = opt_xbreaks,
+      # First axis
+      sec.axis = sec_axis(
+        trans =  ~ . * doxy_to_ph_factor + doxy_to_ph_offset,
+        name = opt_doxy_measure_label
+      )
+    ) +
+    labs(
+      title = paste0('Overall mean profiles by cluster'),
+      x = opt_measure_label,
+      y = 'depth (m)'
+    ) +
+    theme(axis.title.x.top = element_text(color = doxy_color),
+          axis.text.x.top = element_text(color = doxy_color))
   
 }
 
