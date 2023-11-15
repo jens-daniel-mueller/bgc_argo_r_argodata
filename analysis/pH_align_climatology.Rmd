@@ -86,7 +86,23 @@ if (opt_measure == 1){
 # Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
 #     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
 #     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
-opt_n_prof_sel = 1
+opt_n_prof_sel <- 1
+
+# opt_exclude_shallower
+# This option will exclude depths from the climatology and subsequent vertically aligned data that are shallower than opt_exclude_shallower.
+# e.g. set to 2.2 to ensure that the top depth of 2.1 m is excluded
+# Set to 0.0 to ensure no depths are excluded.
+opt_exclude_shallower <- 2.2
+
+# opt_shallow_check_perc and opt_shallow_check_diff
+# A check is made to ensure that the pH of the shallowest depth in the profile after vertical alignment is within a limit of the
+# pH of the shallowest depth in the profile before vertical alignment
+# a opt_shallow_check values of 0.01 results in those with greater than a 1% difference will be reported. Set to 0.0 if percentage check is not required.
+# a opt_shallow_report_diff that is non-zero and positive will check that absolute difference. Set to 0.0 if absolute difference check is not required.  
+opt_shallow_check_perc <- 0.01
+opt_shallow_report_perc <- 'profile where shallow check exceeds percentage criteria: '
+opt_shallow_check_diff <- 0.025
+opt_shallow_report_diff <- 'profile where shallow check exceeds absolute difference criteria: '
 
 ```
 
@@ -114,6 +130,10 @@ target_depth_levels <-   ucsd_clim %>%
   filter(depth <= opt_profile_max_depth) %>%
   rename(target_depth = depth) %>%
   distinct(target_depth)
+
+# Exclude 2.1m depth from the climatology and target_depth_levels
+target_depth_levels <- target_depth_levels %>% filter(target_depth > opt_exclude_shallower)
+ucsd_clim <- ucsd_clim %>% filter(depth > opt_exclude_shallower)
 
 ```
 
@@ -199,7 +219,7 @@ bgc_profile_limits <- bgc_data_pH %>%
   ungroup()
 
 # --------------------------------------------------------------------------------------
-# What is teh distribution of min depths
+# What is the distribution of min depths
 out <- bgc_profile_limits %>% 
   filter(min_depth > 0 & min_depth < 10) %>%
   mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
@@ -295,6 +315,16 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()
 
+# For each profile what is the pH at the shallowest depth of the profile, this is used in a comparison after vertical alignment
+shallow_pH_raw <- right_join(
+  bgc_data_pH,
+  bgc_data_pH %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>%
+    ungroup()
+) %>%
+  select (file_id, pH_shallow_raw = ph_in_situ_total_adjusted)
+
 ```
 
 ## Vertical align pH
@@ -383,6 +413,55 @@ bgc_data_pH_interpolated_clean <-
 bgc_data_pH_interpolated_clean <- bgc_data_pH_interpolated_clean %>%
   mutate(h_plus = 10 ^ -pH)
 
+# For each profile what is the pH at the shallowest depth of the profile after vertical alignment
+shallow_pH_va <- right_join(
+  bgc_data_pH_interpolated_clean,
+  bgc_data_pH_interpolated_clean %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>% 
+    ungroup()
+) %>%
+  select (file_id, pH_shallow_va = pH)
+
+```
+
+## Check shallow
+
+A check is made that the shallowest pH value after the vertical alignment is within a specified percentage of the shallowest pH value before the vertical alignment
+```{r check_shallow}
+
+# Combined dataframe with shallow value pre and post vertical alignment
+shallow_ph_check <- 
+  full_join(shallow_pH_raw, shallow_pH_va)
+
+# Determine those profile that are outside of percentage criteria.
+if (opt_shallow_check_perc > 0.0){
+  shallow_check_report <- shallow_ph_check %>%
+    filter (abs((pH_shallow_raw - pH_shallow_va) / pH_shallow_raw) > opt_shallow_check_perc)
+  
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_perc)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+# Determine those profile that are outside of absolute difference criteria.
+if (opt_shallow_check_diff > 0.0){
+  shallow_check_report <- shallow_ph_check %>%
+    filter (abs(pH_shallow_raw - pH_shallow_va) > opt_shallow_check_diff)
+  
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_diff)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+
+# remove working files
+rm(shallow_ph_check, shallow_pH_raw, shallow_pH_va, shallow_check_report)
+gc()
 
 ```
 
@@ -497,14 +576,14 @@ max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
 # Profiles to 600m
 if (opt_measure == 1){
   anomaly_overall_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
@@ -512,14 +591,14 @@ if (opt_measure == 1){
   
   # Profiles to 1200m
   anomaly_overall_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
@@ -527,28 +606,28 @@ if (opt_measure == 1){
   
   # Profiles to 1500m
   anomaly_overall_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
   
   anomaly_year_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
               anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
 } else {
   anomaly_overall_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_1 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+    filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
@@ -556,14 +635,14 @@ if (opt_measure == 1){
   
   # Profiles to 1200m
   anomaly_overall_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_2 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+    filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
@@ -571,14 +650,14 @@ if (opt_measure == 1){
   
   # Profiles to 1500m
   anomaly_overall_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
     group_by(depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),
               anomaly_sd = sd(anomaly_h_plus, na.rm = TRUE))
   
   anomaly_year_mean_3 <- pH_anomaly_va %>% 
-    filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+    filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
     group_by(year, depth) %>% 
     summarise(count_anomaly = n(),
               anomaly_mean = mean(anomaly_h_plus, na.rm = TRUE),

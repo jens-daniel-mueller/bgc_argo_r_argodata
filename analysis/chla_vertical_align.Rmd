@@ -88,20 +88,19 @@ read pH climatology, values are provided at set depths
 
 ```{r read_climatology}
 
-# climatology values (clim_ph) available for lat, lon, month and pressure
-ucsd_clim <- read_rds(file = paste0(path_argo_preprocessed, '/ucsd_ph_clim.rds'))
+# climatology values (pH_clim_va) available for lat, lon, month and depth
+pH_clim_va <- read_rds(file = paste0(path_argo_preprocessed, "/pH_clim_va.rds"))
 
 # What is the max depth we are interested in
 opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
 
 # existing depth levels that we will align to
-target_depth_levels <-   ucsd_clim %>%
+target_depth_levels <-   pH_clim_va %>%
   filter(depth <= opt_profile_max_depth) %>%
   rename(target_depth = depth) %>%
   distinct(target_depth)
 
-
-rm(ucsd_clim)
+rm(pH_clim_va)
 gc()
 
 ```
@@ -389,14 +388,14 @@ max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
 
 # Profiles to 600m
 chla_overall_mean_1 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_1 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth >= 10 & depth <= max_depth_1) %>%
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
@@ -404,14 +403,14 @@ chla_year_mean_1 <- chla_bgc_va %>%
 
 # Profiles to 1200m
 chla_overall_mean_2 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_2 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(2, 3) & depth >= 10 & depth <= max_depth_2) %>%
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
@@ -419,14 +418,14 @@ chla_year_mean_2 <- chla_bgc_va %>%
 
 # Profiles to 1500m
 chla_overall_mean_3 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
   group_by(depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),
             chla_sd = sd(chla, na.rm = TRUE))
 
 chla_year_mean_3 <- chla_bgc_va %>% 
-  filter(profile_range %in% c(3) & depth >= 10 & depth <= max_depth_3) %>%
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
   group_by(year, depth) %>% 
   summarise(count_measures = n(),
             chla_mean = mean(chla, na.rm = TRUE),

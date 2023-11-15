@@ -56,7 +56,7 @@ Define options that are used to determine profiles that we will us in the ongoin
 # The profile must have at least one temperature reading at a depth >= opt_profile_depth_range[2, ].
 # In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 600) it will be removed.
 profile_range <- c(1, 2, 3)
-min_depth <- c(7.5, 7.5, 7.5)
+min_depth <- c(5.0, 5.0, 5.0)
 max_depth <- c(600, 1200, 1500)
 opt_profile_depth_range <- data.frame(profile_range, min_depth, max_depth)
 
@@ -77,6 +77,22 @@ opt_xbreaks <- c(-4, -2, 0, 2, 4)
 #     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
 #     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
 opt_n_prof_sel = 1
+
+# opt_exclude_shallower
+# This option will exclude depths from the climatology and subsequent vertically aligned data that are shallower than opt_exclude_shallower.
+# e.g. set to 4.5 to ensure that the top depth of 0.0 m is excluded
+# Set to 0.0 to ensure no depths are excluded.
+opt_exclude_shallower <- 4.5
+
+# opt_shallow_check_perc and opt_shallow_check_diff
+# A check is made to ensure that the pH of the shallowest depth in the profile after vertical alignment is within a limit of the
+# pH of the shallowest depth in the profile before vertical alignment
+# a opt_shallow_check values of 0.01 results in those with greater than a 1% difference will be reported. Set to 0.0 if percentage check is not required.
+# a opt_shallow_report_diff that is non-zero and positive will check that absolute difference. Set to 0.0 if absolute difference check is not required.  
+opt_shallow_check_perc <- 0.05
+opt_shallow_report_perc <- 'profile where shallow check exceeds percentage criteria: '
+opt_shallow_check_diff <- 0.5
+opt_shallow_report_diff <- 'profile where shallow check exceeds absolute difference criteria: '
 
 ```
 
@@ -109,6 +125,10 @@ boa_temp_clim_clean <- boa_temp_clim %>%
                           mutate(
                             target_depth = depth, .after = depth
                           )
+
+# Exclude 0.0 m depth from the climatology and target_depth_levels
+target_depth_levels <- target_depth_levels %>% filter(target_depth > opt_exclude_shallower)
+boa_temp_clim_clean <- boa_temp_clim_clean %>% filter(depth > opt_exclude_shallower)
   
 # create all possible combinations of location and month climatologies and depth levels for interpolation
 target_depth_grid <-
@@ -328,6 +348,18 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()
 
+# For each profile what is the temp at the shallowest depth of the profile, this is used in a comparison after vertical alignment
+shallow_temp_raw <- right_join(
+  bgc_data_temp,
+  bgc_data_temp %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>%
+    ungroup()
+) %>%
+  select (file_id, temp_shallow_raw = temp_adjusted)
+
+
+
 ```
 
 ## Vertical align temp
@@ -410,6 +442,57 @@ bgc_data_temp_interpolated_clean <-
 bgc_data_temp_interpolated_clean <-
   left_join(bgc_data_temp_interpolated_clean,
             bgc_metadata_select)
+
+# For each profile what is the temp at the shallowest depth of the profile after vertical alignment
+shallow_temp_va <- right_join(
+  bgc_data_temp_interpolated_clean,
+  bgc_data_temp_interpolated_clean %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>% 
+    ungroup()
+) %>%
+  select (file_id, temp_shallow_va = temp)
+
+```
+
+## Check shallow
+
+A check is made that the shallowest temp value after the vertical alignment is within a specified percentage of the shallowest temp value before the vertical alignment
+```{r check_shallow, eval=FALSE}
+
+# Combined dataframe with shallow value pre and post vertical alignment
+shallow_temp_check <- 
+  full_join(shallow_temp_raw, shallow_temp_va)
+
+# Determine those profile that are outside of percentage criteria.
+if (opt_shallow_check_perc > 0.0){
+  shallow_check_report <- shallow_temp_check %>%
+    filter (abs((temp_shallow_raw - temp_shallow_va) / temp_shallow_raw) > opt_shallow_check_perc)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_perc)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+# Determine those profile that are outside of absolute difference criteria.
+if (opt_shallow_check_diff > 0.0){
+  shallow_check_report <- shallow_temp_check %>%
+    filter (abs(temp_shallow_raw - temp_shallow_va) > opt_shallow_check_diff)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_diff)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+
+# remove working files
+rm(shallow_temp_check, shallow_temp_raw, shallow_temp_va, shallow_check_report)
+gc()
+
 ```
 
 ## Create anomaly profiles
