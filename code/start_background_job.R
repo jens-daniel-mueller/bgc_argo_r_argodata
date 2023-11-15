@@ -1,5 +1,5 @@
 # commit changes including _site.yml (locally) and rebuild entire site in the specified order
-wflow_publish(here::here(
+workflowr::wflow_publish(here::here(
   "analysis",
   c(
     "index.Rmd",
