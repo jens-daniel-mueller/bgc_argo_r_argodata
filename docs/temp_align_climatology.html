@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="David Stappard &amp; Jens Daniel Müller" />
+
+
+<title>Prepare temperature data and vertically align to climatology</title>
+
+<script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/main/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+.tocify-subheader {
+  display: inline;
+}
+.tocify-subheader .tocify-item {
+  font-size: 0.95em;
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">bgc_argo_r_argodata</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Load data
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="load_argo.html">BGC-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_core.html">Core-Argo</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_pH_ucsd.html">Argo pH Climatology</a>
+    </li>
+    <li>
+      <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
+    </li>
+    <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
+      <a href="load_OceanSODA.html">OceanSODA</a>
+    </li>
+    <li>
+      <a href="load_biomes.html">Biomes</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data coverage
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="coverage_timeseries.html">Time series</a>
+    </li>
+    <li>
+      <a href="coverage_maps.html">Maps</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Vertical alignment
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pH_align_climatology.html">BGC pH</a>
+    </li>
+    <li>
+      <a href="doxy_vertical_align.html">BGC dissolved oxygen</a>
+    </li>
+    <li>
+      <a href="chla_vertical_align.html">BGC chlorophyll α</a>
+    </li>
+    <li>
+      <a href="nitrate_vertical_align.html">BGC nitrate</a>
+    </li>
+    <li>
+      <a href="temp_align_climatology.html">BGC temperature</a>
+    </li>
+    <li>
+      <a href="temp_core_align_climatology.html">Core temperature</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Spatiotemporal Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="argo_ph.html">Argo pH</a>
+    </li>
+    <li>
+      <a href="argo_oxygen.html">Argo Oxygen</a>
+    </li>
+    <li>
+      <a href="argo_temp.html">Argo BGC-SST</a>
+    </li>
+    <li>
+      <a href="argo_temp_core.html">Argo Core-SST</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_pH.html">OceanSODA-Argo pH</a>
+    </li>
+    <li>
+      <a href="oceanSODA_argo_temp.html">OceanSODA-BGC-Argo SST</a>
+    </li>
+    <li>
+      <a href="extreme_pH.html">Extreme pH Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp.html">Extreme BGC-Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_temp_core.html">Extreme Core-Temperature Profiles</a>
+    </li>
+    <li>
+      <a href="extreme_compound.html">Compound extremes</a>
+    </li>
+    <li>
+      <a href="variability_temp.html">Argo Temperature Variability</a>
+    </li>
+    <li>
+      <a href="variability_pH.html">Argo pH variability</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Cluster analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="pH_cluster_analysis.html">BGC pH</a>
+    </li>
+    <li>
+      <a href="temp_cluster_analysis.html">BGC temperature</a>
+    </li>
+    <li>
+      <a href="temp_core_cluster_analysis.html">Core temperature</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata">
+    <span class="fa fa-github"></span>
+     
+    Code
+  </a>
+</li>
+<li>
+  <a href="https://jens-daniel-mueller.github.io/">
+    <span class="fa fa-home"></span>
+     
+    Jens home
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Prepare temperature data and vertically
+align to climatology</h1>
+<h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
+<h4 class="date">15 November, 2023</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span>
+workflowr <span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2023-11-15
+</p>
+<p>
+<strong>Checks:</strong> <span
+class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
+<span class="glyphicon glyphicon-exclamation-sign text-danger"
+aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+class="glyphicon glyphicon-question-sign" aria-hidden="true"
+title="This is the local directory in which the code in this file was executed.">
+</span>
+</p>
+<p>
+This reproducible <a href="https://rmarkdown.rstudio.com">R Markdown</a>
+analysis was created with <a
+  href="https://github.com/workflowr/workflowr">workflowr</a> (version
+1.7.0). The <em>Checks</em> tab describes the reproducibility checks
+that were applied when the results were created. The <em>Past
+versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date
+</a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git
+repository, you know the exact version of the code that produced these
+results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the
+global environment can affect the analysis in your R Markdown file in
+unknown ways. For reproduciblity it’s best to always run the code in an
+empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20211008code">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Seed:</strong>
+<code>set.seed(20211008)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20211008code"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20211008)</code> was run prior to running
+the code in the R Markdown file. Setting a seed ensures that any results
+that rely on randomness, e.g. subsampling or permutations, are
+reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Session information:</strong>
+recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package
+versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be
+confident that you successfully produced the results during this
+run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr
+project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a">
+<span class="glyphicon glyphicon-ok text-success"
+aria-hidden="true"></span> <strong>Repository version:</strong>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>
+</a>
+</p>
+</div>
+<div
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a"
+class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development
+and connecting the code version to the results is critical for
+reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>.
+See the <em>Past versions</em> tab to see a history of the changes made
+to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for
+the analysis have been committed to Git prior to generating the results
+(you can use <code>wflow_publish</code> or
+<code>wflow_git_commit</code>). workflowr only checks the R Markdown
+file, but you know if there are other scripts or data files that it
+depends on. Below is the status of the Git repository when the results
+were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    output/
+
+Unstaged changes:
+    Modified:   code/start_background_job.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not
+included in this status report because it is ok for generated content to
+have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were
+made to the R Markdown
+(<code>analysis/temp_align_climatology.Rmd</code>) and HTML
+(<code>docs/temp_align_climatology.html</code>) files. If you’ve
+configured a remote Git repository (see <code>?wflow_git_remote</code>),
+click on the hyperlinks in the table below to view the files as they
+were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3eba51856e1002a42b8cba6abf6fc9362d2a0168/analysis/temp_align_climatology.Rmd" target="_blank">3eba518</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+<td>
+Introduction of vertical alignment and cluster analysis to github
+website.
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="task" class="section level1">
+<h1>Task</h1>
+<p>This markdown file reads previously created temperature climatology
+file and uses that as the definition of the depth levels that the Argo
+temperature data should be aligned to. As the climatology is based on
+pressure it is first aligned to standard depths. Previously created BGC
+data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the
+BGC preprocessed folder.</p>
+<p>Base data qc flags are checked to ensure that the float position,
+pressure measurements and temperature measurements are good. Pressure is
+used to derive the depth of each measurement. The temperature profile is
+checked to ensure that significant gaps (specified by the opt_gap_limit,
+opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are
+assigned a profile_range field that identifies the depth 1 = 600 m, 2 =
+1200 m and 3 = 1500 m.</p>
+<p>The float temperature profiles are then aligned using the spline
+function to match the depth levels of the climatology resulting in data
+frame bgc_data_temp_interpolated_clean. An anomaly file is then created
+from the vertically aligned profiles and climatology.</p>
+<div id="set-directories" class="section level2">
+<h2>Set directories</h2>
+<p>location of pre-prepared data</p>
+</div>
+<div id="set-options" class="section level2">
+<h2>Set options</h2>
+<p>Define options that are used to determine profiles that we will us in
+the ongoing analysis</p>
+<pre class="r"><code># Options
+
+# opt_profile_depth_range
+# The profile must have at least one temperature reading at a depth &lt;= opt_profile_depth_range[1, ]
+# The profile must have at least one temperature reading at a depth &gt;= opt_profile_depth_range[2, ].
+# In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 600) it will be removed.
+profile_range &lt;- c(1, 2, 3)
+min_depth &lt;- c(5.0, 5.0, 5.0)
+max_depth &lt;- c(600, 1200, 1500)
+opt_profile_depth_range &lt;- data.frame(profile_range, min_depth, max_depth)
+
+# opt_gap...
+# The profile should not have a gap greater that opt_gap_limit within the range defined by opt_gap_min_depth and opt_gap_max_depth
+opt_gap_limit &lt;- c(28, 55, 110)
+opt_gap_min_depth &lt;- c(0, 400, 1000)
+opt_gap_max_depth &lt;- c(400, 1000, 1500)
+
+# opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
+opt_measure_label &lt;- &quot;temperature anomaly (°C)&quot;
+opt_xlim &lt;- c(-4.5, 4.5)
+opt_xbreaks &lt;- c(-4, -2, 0, 2, 4)
+
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
+# opt_exclude_shallower
+# This option will exclude depths from the climatology and subsequent vertically aligned data that are shallower than opt_exclude_shallower.
+# e.g. set to 4.5 to ensure that the top depth of 0.0 m is excluded
+# Set to 0.0 to ensure no depths are excluded.
+opt_exclude_shallower &lt;- 4.5
+
+# opt_shallow_check_perc and opt_shallow_check_diff
+# A check is made to ensure that the pH of the shallowest depth in the profile after vertical alignment is within a limit of the
+# pH of the shallowest depth in the profile before vertical alignment
+# a opt_shallow_check values of 0.01 results in those with greater than a 1% difference will be reported. Set to 0.0 if percentage check is not required.
+# a opt_shallow_report_diff that is non-zero and positive will check that absolute difference. Set to 0.0 if absolute difference check is not required.  
+opt_shallow_check_perc &lt;- 0.05
+opt_shallow_report_perc &lt;- &#39;profile where shallow check exceeds percentage criteria: &#39;
+opt_shallow_check_diff &lt;- 0.5
+opt_shallow_report_diff &lt;- &#39;profile where shallow check exceeds absolute difference criteria: &#39;</code></pre>
+</div>
+<div id="read-climatology" class="section level2">
+<h2>read climatology</h2>
+<p>read temperature climatology and prepare to a set range of depths</p>
+<pre class="r"><code># climatology values (clim_temp (°C)) available for lat, lon, month and pressure
+boa_temp_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/boa_temp_clim.rds&#39;))
+
+#What is the max depth we are interested in
+opt_profile_max_depth &lt;- max(opt_profile_depth_range$max_depth)
+
+# existing pressure levels become the target depths that we align to
+pressure_range &lt;- unique(boa_temp_clim[c(&quot;pres&quot;)])
+target_depth_levels &lt;- pressure_range %&gt;% filter (pres &lt;= opt_profile_max_depth) %&gt;% mutate(target_depth = pres) %&gt;% select(target_depth)
+
+# select variable of interest and prepare target_depth field
+boa_temp_clim_clean &lt;- boa_temp_clim %&gt;%
+                          select(
+                            lat,
+                            lon,
+                            month,
+                            depth,
+                            clim_temp
+                          ) %&gt;%
+                          mutate(
+                            target_depth = depth, .after = depth
+                          )
+
+# Exclude 0.0 m depth from the climatology and target_depth_levels
+target_depth_levels &lt;- target_depth_levels %&gt;% filter(target_depth &gt; opt_exclude_shallower)
+boa_temp_clim_clean &lt;- boa_temp_clim_clean %&gt;% filter(depth &gt; opt_exclude_shallower)
+  
+# create all possible combinations of location and month climatologies and depth levels for interpolation
+target_depth_grid &lt;-
+  expand_grid(target_depth_levels,
+              boa_temp_clim_clean %&gt;% distinct(lat, lon, month))
+
+# extend climatology depth vectors with target depths
+boa_temp_clim_extended &lt;-
+  full_join(boa_temp_clim_clean, target_depth_grid) %&gt;% 
+  arrange(lat, lon, month, target_depth)
+
+
+# filter where target depths outside range of climatology depths
+# depth is slightly lower than pressure so 1.02 factor is used to ensure bottom value is not lost.
+boa_temp_clim_extended &lt;-
+  boa_temp_clim_extended %&gt;%
+  group_by(lat, lon, month) %&gt;%
+  filter(
+    target_depth &lt;= max(depth, na.rm = TRUE)*1.02,
+    target_depth &gt;= min(depth, na.rm = TRUE)
+  ) %&gt;%
+  ungroup()
+
+# predict spline interpolation on adjusted depth grid for climatology loaction and month
+boa_temp_clim_interpolated &lt;-
+  boa_temp_clim_extended %&gt;%
+  group_by(lat, lon, month) %&gt;%
+  mutate(clim_temp_spline = spline(target_depth, clim_temp,
+                                       method = &quot;natural&quot;,
+                                       xout = target_depth)$y) %&gt;%
+  ungroup()
+
+# subset interpolated values on traget depth grid
+boa_temp_clim_interpolated_clean &lt;- 
+  inner_join(target_depth_levels, boa_temp_clim_interpolated)
+
+# select columns and rename to initial names
+boa_temp_clim_interpolated_clean &lt;-
+  boa_temp_clim_interpolated_clean %&gt;%
+  select(lat, lon, month,
+         depth = target_depth,
+         clim_temp = clim_temp_spline)
+
+# clean up working tables
+rm(boa_temp_clim_clean, boa_temp_clim_extended, boa_temp_clim_interpolated)</code></pre>
+</div>
+<div id="read-temp-data" class="section level2">
+<h2>read temp data</h2>
+<p>read temperature profile and carry out basic checks, good data.</p>
+<pre class="r"><code># base data and associated metadata
+bgc_data &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/bgc_data.rds&#39;))
+bgc_metadata &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/bgc_metadata.rds&#39;))
+
+# Select relevant field from metadata ready to join to bgc_data
+bgc_metadata_select &lt;- bgc_metadata %&gt;%
+  filter (position_qc == 1) %&gt;%
+  select(file_id,
+         date,
+         lat,
+         lon) %&gt;%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
+
+# we only want pressure and temperature data
+# conditions 
+# n_prof == 1
+# pres_adjusted_qc %in% c(1, 8) - pressure data marked as good
+# temp_adjusted_qc %in% c(1, 8) - temperature data marked as good
+# !is.na(pres_adjusted) - pressure value must be present
+# !is.na(temp_adjusted) - temperature value must be present
+bgc_data_temp &lt;- bgc_data %&gt;%
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &amp;
+      temp_adjusted_qc %in% c(1, 8) &amp;
+      n_prof == opt_n_prof_sel &amp;
+      !is.na(pres_adjusted) &amp;
+      !is.na(temp_adjusted)
+  ) %&gt;%
+  select(file_id,
+         pres_adjusted,
+         temp_adjusted)
+
+# join with metadata information and calculate depth field
+bgc_data_temp &lt;-
+  inner_join(bgc_metadata_select %&gt;% select(file_id, lat),
+             bgc_data_temp) %&gt;%
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
+         .before = pres_adjusted) %&gt;%
+  select(-c(lat, pres_adjusted))
+
+# ensure we have a depth, and temp_adjusted for all rows in bgc_data_temp
+bgc_data_temp &lt;- bgc_data_temp %&gt;%
+  filter(!is.na(depth) &amp; !is.na(temp_adjusted))
+
+# clean up working tables
+rm(bgc_data, bgc_metadata)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1351538   72.2    4162172   222.3    5202714   277.9
+Vcells 581532719 4436.8 4853790924 37031.5 6033520929 46032.2</code></pre>
+</div>
+<div id="profile-limits" class="section level2">
+<h2>Profile limits</h2>
+<p>Apply the rules that are determined by options set in set_options.
+Profile must cover a set range and not contain gaps.</p>
+<pre class="r"><code># Determine profile min and max depths
+bgc_profile_limits &lt;- bgc_data_temp %&gt;%
+  group_by(file_id) %&gt;%
+  summarise(
+    min_depth = min(depth),
+    max_depth = max(depth),
+  ) %&gt;%
+  ungroup()
+
+# --------------------------------------------------------------------------------------
+# What is the distribution of min depths
+out &lt;- bgc_profile_limits %&gt;% 
+  filter(min_depth &gt; 0 &amp; min_depth &lt; 10) %&gt;%
+  mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
+  
+out &lt;- out %&gt;%
+  group_by(min_bin) %&gt;%
+  summarise(count_profiles = n())
+
+out %&gt;%
+  ggplot(aes(min_bin)) +
+  geom_bar(aes(weight = count_profiles)) +
+  scale_fill_viridis_d() +
+  labs(title = &quot;temperature profiles minimum depth&quot;,
+       x = &quot;min depth (m)&quot;,
+       y = &quot;profile count&quot;)</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/profile_limits_temperature-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>rm(out)
+# --------------------------------------------------------------------------------------
+
+# The profile much match at least one of teh range criteria
+force_min &lt;- min(opt_profile_depth_range$min_depth)
+force_max &lt;- min(opt_profile_depth_range$max_depth)
+
+# Apply profile min and max restrictions
+bgc_apply_limits &lt;- bgc_profile_limits %&gt;%
+  filter(
+    min_depth &lt;= force_min &amp;
+    max_depth &gt;= force_max
+    )
+
+# Ensure working data set only contains profiles that have confrormed to the range test
+bgc_data_temp &lt;- right_join(bgc_data_temp,
+                            bgc_apply_limits %&gt;% select(file_id))
+
+# Add profile type field and set all to 1.  
+# All profile that meet the minimum requirements are profile_range = 1
+bgc_data_temp &lt;- bgc_data_temp %&gt;%
+  mutate(profile_range = 1)
+
+for (i in 2:nrow(opt_profile_depth_range)) {
+
+  #i = 3
+  range_min &lt;- opt_profile_depth_range[i,&#39;min_depth&#39;]
+  range_max &lt;- opt_profile_depth_range[i,&#39;max_depth&#39;]
+
+  # Apply profile min and max restrictions
+  bgc_apply_limits &lt;- bgc_profile_limits %&gt;%
+    filter(min_depth &lt;= range_min &amp;
+             max_depth &gt;= range_max) %&gt;%
+    select(file_id) %&gt;%
+    mutate (profile_range = i)
+  
+  # Update profile range to i for these profiles
+  # bgc_data_temp &lt;- full_join(bgc_data_temp, bgc_apply_limits) %&gt;%
+  #                         filter(!is.na(min_depth))
+  bgc_data_temp &lt;-
+    bgc_data_temp %&gt;% rows_update(bgc_apply_limits, by = &quot;file_id&quot;)
+
+}
+
+# Find the gaps within the profiles
+profile_gaps &lt;- full_join(bgc_data_temp,
+                          opt_profile_depth_range) %&gt;%
+  filter(depth &gt;= min_depth &amp; 
+           depth &lt;= max_depth) %&gt;% 
+  select(file_id,
+         depth) %&gt;%
+  arrange(file_id, depth) %&gt;%
+  group_by(file_id) %&gt;%
+  mutate(gap = depth - lag(depth, default = 0)) %&gt;%
+  ungroup()
+
+# Ensure we do not have gaps in the profile that invalidate it 
+for (i_gap in opt_gap_limit) {
+
+  # The limits to be applied in that pass of for loop
+  # i_gap &lt;- opt_gap_limit[3]
+  i_gap_min = opt_gap_min_depth[which(opt_gap_limit == i_gap)]
+  i_gap_max = opt_gap_max_depth[which(opt_gap_limit == i_gap)]
+  
+  # Which gaps are greater than i_gap
+  profile_gaps_remove &lt;- profile_gaps %&gt;%
+    filter(gap &gt; i_gap) %&gt;%
+    filter(depth &gt;= i_gap_min &amp; depth &lt;= i_gap_max) %&gt;%
+    distinct(file_id) %&gt;% 
+    pull()
+  
+  # Remonve gap-containing profiles from working data set
+  bgc_data_temp &lt;- bgc_data_temp %&gt;% 
+    filter(!file_id %in% profile_gaps_remove)
+}
+
+# clean up working tables
+rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1497477   80.0    4162172   222.3    5202714   277.9
+Vcells 660480418 5039.1 3883032740 29625.2 6033520929 46032.2</code></pre>
+<pre class="r"><code># For each profile what is the temp at the shallowest depth of the profile, this is used in a comparison after vertical alignment
+shallow_temp_raw &lt;- right_join(
+  bgc_data_temp,
+  bgc_data_temp %&gt;%
+    group_by(file_id) %&gt;%
+    summarise(depth = min(depth)) %&gt;%
+    ungroup()
+) %&gt;%
+  select (file_id, temp_shallow_raw = temp_adjusted)</code></pre>
+</div>
+<div id="vertical-align-temp" class="section level2">
+<h2>Vertical align temp</h2>
+<p>We have a set of temperature profiles that match our criteria we now
+need to align that data set to match the depth that are in
+target_depth_levels, this will match the range of climatology values in
+boa_temp_clim_interpolated_clean</p>
+<pre class="r"><code># create unique combinations of file_id and profile ranges
+profile_range_file_id &lt;- 
+  bgc_data_temp %&gt;% 
+  distinct(file_id, profile_range)
+
+
+# select variable of interest and prepare target_depth field
+bgc_data_temp_clean &lt;- bgc_data_temp %&gt;%
+  select(-profile_range) %&gt;%
+  mutate(target_depth = depth, .after = depth)
+
+rm(bgc_data_temp)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1486314   79.4    4162172   222.3    5202714   277.9
+Vcells 565022774 4310.8 3106426192 23700.2 6033520929 46032.2</code></pre>
+<pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
+target_depth_grid &lt;-
+  expand_grid(
+    target_depth_levels,
+    profile_range_file_id
+  )
+
+# Constrain target_depth_grid to profile depth range
+target_depth_grid &lt;-
+  left_join(target_depth_grid, opt_profile_depth_range) %&gt;%
+  filter(target_depth &lt;= max_depth)
+
+target_depth_grid &lt;- target_depth_grid %&gt;%
+  select(target_depth,
+         file_id)
+
+# extend temp depth vectors with target depths
+bgc_data_temp_extended &lt;-
+  full_join(bgc_data_temp_clean, target_depth_grid) %&gt;%
+  arrange(file_id, target_depth)
+
+rm(bgc_data_temp_clean)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1486509   79.4    4162172   222.3    5202714   277.9
+Vcells 608413397 4641.9 2485140954 18960.2 6033520929 46032.2</code></pre>
+<pre class="r"><code># predict spline interpolation on adjusted depth grid for temp location and month
+bgc_data_temp_interpolated &lt;-
+  bgc_data_temp_extended %&gt;%
+  group_by(file_id) %&gt;%
+  mutate(temp_spline = spline(target_depth, temp_adjusted,
+                                method = &quot;natural&quot;,
+                                xout = target_depth)$y) %&gt;%
+  ungroup()
+
+rm(bgc_data_temp_extended)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1486550   79.4    4162172   222.3    5202714   277.9
+Vcells 710273027 5419.0 1988112764 15168.1 6033520929 46032.2</code></pre>
+<pre class="r"><code># subset interpolated values on target depth range
+bgc_data_temp_interpolated_clean &lt;- 
+  inner_join(target_depth_levels, bgc_data_temp_interpolated)
+
+rm(bgc_data_temp_interpolated)
+gc()</code></pre>
+<pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
+Ncells   1486594   79.4    4162172   222.3    5202714   277.9
+Vcells 279120340 2129.6 1590490212 12134.5 6033520929 46032.2</code></pre>
+<pre class="r"><code># select columns and rename to initial names
+bgc_data_temp_interpolated_clean &lt;-
+  bgc_data_temp_interpolated_clean %&gt;%
+  select(file_id,
+         depth = target_depth,
+         temp = temp_spline)
+
+# merge with profile range
+bgc_data_temp_interpolated_clean &lt;-
+  full_join(bgc_data_temp_interpolated_clean,
+            profile_range_file_id)
+
+# merge with meta data
+bgc_data_temp_interpolated_clean &lt;-
+  left_join(bgc_data_temp_interpolated_clean,
+            bgc_metadata_select)
+
+# For each profile what is the temp at the shallowest depth of the profile after vertical alignment
+shallow_temp_va &lt;- right_join(
+  bgc_data_temp_interpolated_clean,
+  bgc_data_temp_interpolated_clean %&gt;%
+    group_by(file_id) %&gt;%
+    summarise(depth = min(depth)) %&gt;% 
+    ungroup()
+) %&gt;%
+  select (file_id, temp_shallow_va = temp)</code></pre>
+</div>
+<div id="check-shallow" class="section level2">
+<h2>Check shallow</h2>
+<p>A check is made that the shallowest temp value after the vertical
+alignment is within a specified percentage of the shallowest temp value
+before the vertical alignment</p>
+<pre class="r"><code># Combined dataframe with shallow value pre and post vertical alignment
+shallow_temp_check &lt;- 
+  full_join(shallow_temp_raw, shallow_temp_va)
+
+# Determine those profile that are outside of percentage criteria.
+if (opt_shallow_check_perc &gt; 0.0){
+  shallow_check_report &lt;- shallow_temp_check %&gt;%
+    filter (abs((temp_shallow_raw - temp_shallow_va) / temp_shallow_raw) &gt; opt_shallow_check_perc)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) &gt; 0) {
+    print (opt_shallow_report_perc)
+    shallow_check_report %&gt;% rmarkdown::paged_table()
+  }
+}
+
+# Determine those profile that are outside of absolute difference criteria.
+if (opt_shallow_check_diff &gt; 0.0){
+  shallow_check_report &lt;- shallow_temp_check %&gt;%
+    filter (abs(temp_shallow_raw - temp_shallow_va) &gt; opt_shallow_check_diff)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) &gt; 0) {
+    print (opt_shallow_report_diff)
+    shallow_check_report %&gt;% rmarkdown::paged_table()
+  }
+}
+
+
+# remove working files
+rm(shallow_temp_check, shallow_temp_raw, shallow_temp_va, shallow_check_report)
+gc()</code></pre>
+</div>
+<div id="create-anomaly-profiles" class="section level2">
+<h2>Create anomaly profiles</h2>
+<p>Create anomaly profiles as observed - climatology</p>
+<pre class="r"><code># Create bgc_temp_anomaly, but only where we have an climatology temperature
+bgc_temp_anomaly &lt;-
+  inner_join(bgc_data_temp_interpolated_clean, boa_temp_clim_interpolated_clean)
+
+# Calculate the anomaly temperature
+bgc_temp_anomaly &lt;- bgc_temp_anomaly %&gt;%
+                      mutate(
+                        anomaly = temp - clim_temp
+                      )
+
+# -----------------------------------------------------------------------------
+# Climatology check
+# -----------------------------------------------------------------------------
+# It is possible even though we have observational measures to full depth the climatology may not matach all depth.
+# These profiles will be removed from both temp_bgc_va and temp_anomaly_va
+
+# Anomaly max depth
+bgc_temp_anomaly_depth_check &lt;- bgc_temp_anomaly %&gt;%
+  group_by(file_id,
+           profile_range) %&gt;%
+  summarise(min_pdepth = min(depth),
+            max_pdepth = max(depth)) %&gt;%
+  ungroup()
+
+# Add the required min depth and max depth
+bgc_temp_anomaly_depth_check &lt;- left_join(bgc_temp_anomaly_depth_check, opt_profile_depth_range)
+
+# This profiles do not match the depth required by the profile_range
+# min_depth_check &lt;- min(target_depth_grid$target_depth)
+
+# Please double check if the criterion should be
+# each profile is checked against the min depth specified in min_depth 
+# max depth specified in max_depth. 
+remove_profiles &lt;- bgc_temp_anomaly_depth_check %&gt;%
+  filter((max_pdepth &lt; max_depth) | (min_pdepth &gt; min_depth)) %&gt;%
+  distinct(file_id)
+
+# remove from both bgc_data_temp_interpolated_clean and bgc_temp_anomaly
+bgc_data_temp_interpolated_clean &lt;-
+  anti_join(bgc_data_temp_interpolated_clean, remove_profiles)
+
+bgc_temp_anomaly &lt;- anti_join(bgc_temp_anomaly, remove_profiles)</code></pre>
+</div>
+<div id="write-files" class="section level2">
+<h2>Write files</h2>
+<p>Write the climatology that maps onto depth levels, interpolated
+temperature profiles that map onto depth levels and resulting anomaly
+files.</p>
+<pre class="r"><code># Write files
+bgc_data_temp_interpolated_clean %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/temp_bgc_va.rds&quot;))
+
+boa_temp_clim_interpolated_clean %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/temp_clim_va.rds&quot;))
+
+bgc_temp_anomaly %&gt;%
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/temp_anomaly_va.rds&quot;))
+
+# Rename so that names match if just reading existing files
+temp_bgc_va &lt;- bgc_data_temp_interpolated_clean
+temp_clim_va &lt;- boa_temp_clim_interpolated_clean
+temp_anomaly_va &lt;- bgc_temp_anomaly
+
+#rm(bgc_data_temp_interpolated_clean, boa_temp_clim_interpolated_clean, bgc_temp_anomaly)</code></pre>
+</div>
+<div id="read-files" class="section level2">
+<h2>read files</h2>
+<p>Read files that were previously created ready for analysis</p>
+<pre class="r"><code># read files
+temp_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_bgc_va.rds&quot;))
+
+temp_clim_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_clim_va.rds&quot;))
+
+temp_anomaly_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_anomaly_va.rds&quot;))</code></pre>
+</div>
+<div id="analysis" class="section level2">
+<h2>Analysis</h2>
+</div>
+<div id="temperature-anomaly" class="section level2">
+<h2>Temperature anomaly</h2>
+<p>Details of mean anomaly over analysis period</p>
+<pre class="r"><code>max_depth_1 &lt;- opt_profile_depth_range[1, &quot;max_depth&quot;]
+max_depth_2 &lt;- opt_profile_depth_range[2, &quot;max_depth&quot;]
+max_depth_3 &lt;- opt_profile_depth_range[3, &quot;max_depth&quot;]
+
+# Profiles to 600m
+anomaly_overall_mean_1 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(1, 2, 3) &amp; depth &lt;= max_depth_1) %&gt;%
+  group_by(depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_1 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(1, 2, 3) &amp; depth &lt;= max_depth_1) %&gt;%
+  group_by(year, depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# Profiles to 1200m
+anomaly_overall_mean_2 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(2, 3) &amp; depth &lt;= max_depth_2) %&gt;%
+  group_by(depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_2 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(2, 3) &amp; depth &lt;= max_depth_2) %&gt;%
+  group_by(year, depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# Profiles to 1500m
+anomaly_overall_mean_3 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(3) &amp; depth &lt;= max_depth_3) %&gt;%
+  group_by(depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_3 &lt;- temp_anomaly_va %&gt;% 
+  filter(profile_range %in% c(3) &amp; depth &lt;= max_depth_3) %&gt;%
+  group_by(year, depth) %&gt;% 
+  summarise(temp_count = n(),
+            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# All years anomaly
+anomaly_overall_mean_1 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Overall mean anomaly profiles to &#39;, max_depth_1, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anomaly_overall_mean_2 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Overall mean anomaly profiles to &#39;, max_depth_2, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anomaly_overall_mean_3 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Overall mean anomaly profiles to &#39;, max_depth_3, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># yearly anomaly
+anomaly_year_mean_1 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Yearly mean anomaly profiles to &#39;, max_depth_1, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anomaly_year_mean_2 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Yearly mean anomaly profiles to &#39;, max_depth_2, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>anomaly_year_mean_3 %&gt;% 
+  ggplot()+
+  geom_path(aes(x = temp_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
+                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0(&#39;Yearly mean anomaly profiles to &#39;, max_depth_3, &#39;m&#39;),
+    x = opt_measure_label,
+    y = &#39;depth (m)&#39;
+  )</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#rm(anomaly_overall_mean)</code></pre>
+</div>
+<div id="profile-counts" class="section level2">
+<h2>Profile counts</h2>
+<p>Details of the number of profiles and to which depths over the
+analysis period</p>
+<pre class="r"><code>temp_histogram &lt;- temp_bgc_va %&gt;%
+  group_by(year, profile_range = as.character(profile_range)) %&gt;%
+  summarise(num_profiles = n_distinct(file_id)) %&gt;%
+  ungroup()
+
+temp_histogram %&gt;%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = year,
+      y = num_profiles,
+      fill = profile_range,
+      group = profile_range
+    ),
+    position = &quot;stack&quot;,
+    stat = &quot;identity&quot;
+  ) +
+  scale_fill_viridis_d() +
+  labs(title = &quot;temperature profiles per year and profile range&quot;,
+       x = &quot;year&quot;,
+       y = &quot;profile count&quot;,
+       fill = &quot;profile range&quot;)</code></pre>
+<p><img src="figure/temp_align_climatology.Rmd/temp_histogram-1.png" width="672" style="display: block; margin: auto;" /></p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 4.2.2 (2022-10-31)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: openSUSE Leap 15.4
+
+Matrix products: default
+BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
+LAPACK: /usr/local/R-4.2.2/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] ggforce_0.4.1    gsw_1.1-1        gridExtra_2.3    lubridate_1.9.0 
+ [5] timechange_0.1.1 argodata_0.1.0   forcats_0.5.2    stringr_1.5.0   
+ [9] dplyr_1.1.3      purrr_1.0.2      readr_2.1.3      tidyr_1.3.0     
+[13] tibble_3.2.1     ggplot2_3.4.4    tidyverse_1.3.2 
+
+loaded via a namespace (and not attached):
+ [1] httr_1.4.4          sass_0.4.4          viridisLite_0.4.1  
+ [4] jsonlite_1.8.3      modelr_0.1.10       bslib_0.4.1        
+ [7] assertthat_0.2.1    highr_0.9           googlesheets4_1.0.1
+[10] cellranger_1.1.0    yaml_2.3.6          pillar_1.9.0       
+[13] backports_1.4.1     glue_1.6.2          digest_0.6.30      
+[16] promises_1.2.0.1    polyclip_1.10-4     rvest_1.0.3        
+[19] colorspace_2.0-3    htmltools_0.5.3     httpuv_1.6.6       
+[22] pkgconfig_2.0.3     broom_1.0.5         haven_2.5.1        
+[25] scales_1.2.1        tweenr_2.0.2        whisker_0.4        
+[28] later_1.3.0         tzdb_0.3.0          git2r_0.30.1       
+[31] googledrive_2.0.0   generics_0.1.3      farver_2.1.1       
+[34] ellipsis_0.3.2      cachem_1.0.6        withr_2.5.0        
+[37] cli_3.6.1           magrittr_2.0.3      crayon_1.5.2       
+[40] readxl_1.4.1        evaluate_0.18       fs_1.5.2           
+[43] fansi_1.0.3         MASS_7.3-58.1       xml2_1.3.3         
+[46] tools_4.2.2         hms_1.1.2           gargle_1.2.1       
+[49] lifecycle_1.0.3     munsell_0.5.0       reprex_2.0.2       
+[52] compiler_4.2.2      jquerylib_0.1.4     RNetCDF_2.6-1      
+[55] rlang_1.1.1         grid_4.2.2          rstudioapi_0.15.0  
+[58] labeling_0.4.2      rmarkdown_2.18      gtable_0.3.1       
+[61] DBI_1.1.3           R6_2.5.1            knitr_1.41         
+[64] fastmap_1.1.0       utf8_1.2.2          workflowr_1.7.0    
+[67] rprojroot_2.0.3     stringi_1.7.8       Rcpp_1.0.10        
+[70] vctrs_0.6.4         dbplyr_2.2.1        tidyselect_1.2.0   
+[73] xfun_0.35          </code></pre>
+</div>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+https://docs.mathjax.org/en/latest/web/configuration.html. This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = false;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
