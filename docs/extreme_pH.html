@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="Pasqualina Vonlanthen, David Stappard &amp; Jens Daniel Müller" />
 
 
 <title>Extreme pH Profiles</title>
@@ -510,8 +510,9 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Extreme pH Profiles</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">15 November, 2023</h4>
+<h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
+Daniel Müller</h4>
+<h4 class="date">20 November, 2023</h4>
 
 </div>
 
@@ -540,7 +541,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-11-15
+<strong>Last updated:</strong> 2023-11-20
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -671,15 +672,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree44ce1133de36fec8ffe70464cdac4dd30890dd4ftargetblank44ce113a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/44ce1133de36fec8ffe70464cdac4dd30890dd4f" target="_blank">44ce113</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree44ce1133de36fec8ffe70464cdac4dd30890dd4ftargetblank44ce113a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -689,7 +690,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/44ce1133de36fec8ffe70464cdac4dd30890dd4f" target="_blank">44ce113</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -708,8 +709,12 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/extreme_pH.Rmd
+
 Unstaged changes:
-    Modified:   code/start_background_job.R
+    Modified:   analysis/pH_align_climatology.Rmd
+    Modified:   code/start_background_job_core_load.R
 
 </code></pre>
 <p>
@@ -755,6 +760,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44ce1133de36fec8ffe70464cdac4dd30890dd4f/analysis/extreme_pH.Rmd" target="_blank">44ce113</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-20
+</td>
+<td>
+Switched to new profile details.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/extreme_pH.html" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -3367,7 +3406,8 @@ added Argo profiles
 <div id="task" class="section level1">
 <h1>Task</h1>
 <p>Compare depth profiles of normal pH and of extreme pH, as identified
-in the surface OceanSODA pH data product</p>
+in the surface OceanSODA pH data product. BGC pH profiles have already
+been validate for coverage and aligned to climatology depths.</p>
 <pre class="r"><code>theme_set(theme_bw())
 HNL_colors &lt;- c(&quot;H&quot; = &quot;#b2182b&quot;,
                 &quot;N&quot; = &quot;#636363&quot;,
@@ -3386,16 +3426,7 @@ path_emlr_utilities &lt;- &quot;/nfs/kryo/work/jenmueller/emlr_cant/utilities/fi
 path_argo &lt;- &#39;/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo&#39;
 # /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo/preprocessed_bgc_data
 path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot;)</code></pre>
-<pre class="r"><code># RECCAP2-ocean region mask
-
-# region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed,
-#                                               &quot;/region_masks_all_2x2.rds&quot;))
-# 
-# region_masks_all_2x2 &lt;- region_masks_all_2x2 %&gt;%
-#   rename(biome = value) %&gt;% 
-#   mutate(coast = as.character(coast))
-
-# load in new Mayot biomes 
+<pre class="r"><code># load in new Mayot biomes 
 
 nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))
 
@@ -3420,19 +3451,12 @@ OceanSODA &lt;- OceanSODA %&gt;%
   mutate(year = year(date),
          month = month(date))
 
-# argo pH data (flag A only)
+# lead validated and vertically aligned pH profiles, 
 full_argo &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
-  select(-c(temp_adjusted:temp_adjusted_error,
-            profile_temp_qc))
-
-
-# change the date format for compatibility with OceanSODA pH data
-full_argo &lt;- full_argo %&gt;%
-  mutate(year = year(date),
-         month = month(date)) %&gt;%
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/pH_bgc_va.rds&quot;)) %&gt;%
   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
+# map data
 map &lt;-
   read_rds(paste(path_emlr_utilities,
                  &quot;map_landmask_WOA18.rds&quot;,
@@ -6076,7 +6100,7 @@ OceanSODA_regression_tidied &lt;- OceanSODA_SO %&gt;%
             intercept = mean(clim_diff, na.rm = TRUE)) %&gt;% 
   ungroup()
 
-OceanSODA_regression_glanced &lt;- OceanSODA_2x2_SO %&gt;% 
+OceanSODA_regression_glanced &lt;- OceanSODA_SO %&gt;% 
   # filter(basin_AIP == &quot;Indian&quot;,
   #        biome_name == &quot;SPSS&quot;,
   #        lon &lt; 40) %&gt;%
@@ -6084,7 +6108,7 @@ OceanSODA_regression_glanced &lt;- OceanSODA_2x2_SO %&gt;%
   summarise(sigma = sd(clim_diff, na.rm = TRUE)) %&gt;% 
   ungroup()
 
-OceanSODA_regression_augmented &lt;- OceanSODA_2x2_SO %&gt;% 
+OceanSODA_regression_augmented &lt;- OceanSODA_SO %&gt;% 
   # filter(basin_AIP == &quot;Indian&quot;,
   #        biome_name == &quot;SPSS&quot;,
   #        lon &lt; 40) %&gt;%
@@ -9911,19 +9935,35 @@ OceanSODA_SO_extreme_grid &lt;- OceanSODA_SO_extreme_grid %&gt;%
 
 # combine the argo profile data to the surface extreme data
 profile_extreme &lt;- inner_join(
-  full_argo %&gt;% 
-    select(year, month, date, lon, lat, depth,
-           ph_in_situ_total_adjusted,
-           platform_number,
-           cycle_number),
-  OceanSODA_SO_extreme_grid %&gt;% 
-    select(year, month, date, lon, lat,
-           OceanSODA_ph, ph_extreme,
-           clim_ph, clim_diff,
-           biome_name, basin_AIP))
-  
-profile_extreme &lt;- profile_extreme %&gt;% 
-  unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
+  full_argo %&gt;%
+    select(
+      file_id, 
+      year, 
+      month, 
+      date, 
+      lon, 
+      lat, 
+      depth, 
+      pH
+      ),
+  OceanSODA_SO_extreme_grid %&gt;%
+    select(
+      year,
+      month,
+      date,
+      lon,
+      lat,
+      OceanSODA_ph,
+      ph_extreme,
+      clim_ph,
+      clim_diff,
+      biome_name,
+      basin_AIP
+    )
+)
+
+# profile_extreme &lt;- profile_extreme %&gt;% 
+#   unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
 </div>
 </div>
 <div id="location-of-argo-profiles" class="section level1">
@@ -9944,7 +9984,7 @@ profile_extreme &lt;- profile_extreme %&gt;%
       new_scale_fill() +
       geom_tile(
         data = profile_extreme %&gt;%
-          distinct(lon, lat, platform_cycle, year, month),
+          distinct(lon, lat, file_id, year, month),
         aes(
           x = lon,
           y = lat,
@@ -11535,22 +11575,22 @@ OceanSODA</p>
     ~ ggplot(
       data = .x,
       aes(
-        x = ph_in_situ_total_adjusted,
+        x = pH,
         y = depth,
-        group = platform_cycle,
+        group = file_id,
         col = ph_extreme
       )
     ) +
       geom_path(data = .x %&gt;% filter(ph_extreme == &#39;N&#39;),
-                aes(x = ph_in_situ_total_adjusted,
+                aes(x = pH,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = ph_extreme),
                 size = 0.3) +
       geom_path(data = .x %&gt;% filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
-                aes(x = ph_in_situ_total_adjusted,
+                aes(x = pH,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = ph_extreme),
                 size = 0.5)+
       scale_y_reverse() +
@@ -12724,19 +12764,19 @@ profile_extreme_Atl_2017 &lt;- profile_extreme %&gt;%
 
 profile_extreme_Atl_2017 %&gt;% 
   ggplot(aes(y = depth, 
-             x = ph_in_situ_total_adjusted,
-             group = platform_cycle,
+             x = pH,
+             group = file_id,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2017 %&gt;% filter(ph_extreme == &#39;N&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth, 
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2017 %&gt;% filter(ph_extreme == &#39;H&#39;| ph_extreme == &#39;L&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -12772,19 +12812,19 @@ profile_extreme_Atl_2017 &lt;- profile_extreme %&gt;%
 
 profile_extreme_Atl_2017 %&gt;% 
   ggplot(aes(y = depth, 
-             x = ph_in_situ_total_adjusted,
-             group = platform_cycle,
+             x = pH,
+             group = file_id,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2017 %&gt;% filter(ph_extreme == &#39;N&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2017 %&gt;% filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -12818,19 +12858,19 @@ profile_extreme_Atl_2018 &lt;- profile_extreme %&gt;%
 
 profile_extreme_Atl_2018 %&gt;% 
   ggplot(aes(y = depth, 
-             x = ph_in_situ_total_adjusted,
-             group = platform_cycle,
+             x = pH,
+             group = file_id,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2018 %&gt;% filter(ph_extreme == &#39;N&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2018 %&gt;% filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -12854,15 +12894,6 @@ rm(OceanSODA_SO_extreme_grid_2018, profile_extreme_Atl_2018)</code></pre>
 
 profile_extreme &lt;- profile_extreme %&gt;%
   mutate(
-    depth = Hmisc::cut2(
-      depth,
-      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
-      m = 5,
-      levels.mean = TRUE
-    ),
-    depth = as.numeric(as.character(depth))
-  ) %&gt;%
-  mutate(
     season = case_when(
       between(month, 3, 5) ~ &#39;autumn&#39;,
       between(month, 6, 8) ~ &#39;winter&#39;,
@@ -12881,8 +12912,8 @@ profile_extreme &lt;- profile_extreme %&gt;%
 <h3>Overall mean</h3>
 <pre class="r"><code>profile_extreme_mean &lt;- profile_extreme %&gt;%
   group_by(ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(pH, na.rm = TRUE),
+            ph_std = sd(pH, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_mean %&gt;%
@@ -13126,7 +13157,7 @@ jens-daniel-mueller
 <pre class="r"><code>rm(profile_extreme_mean)</code></pre>
 <p>Number of profiles</p>
 <pre class="r"><code>profile_count_mean &lt;- profile_extreme %&gt;% 
-  distinct(ph_extreme, platform_number, cycle_number) %&gt;% 
+  distinct(ph_extreme, file_id) %&gt;% 
   count(ph_extreme)
 
 profile_count_mean %&gt;% 
@@ -13321,9 +13352,11 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo pH, for each profile 
 surface_ph_mean &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(ph_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
+  group_by(ph_extreme, file_id) %&gt;% 
+  summarise(argo_surf_ph = mean(pH, na.rm = TRUE),
+            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE)) %&gt;%
+  ungroup()
+
 
 
 surface_ph_mean %&gt;% 
@@ -13998,8 +14031,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>profile_extreme_mean_jan &lt;- profile_extreme %&gt;%
   filter(month == 1) %&gt;% 
   group_by(ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(pH, na.rm = TRUE),
+            ph_std = sd(pH, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_mean_jan %&gt;%
@@ -14136,8 +14169,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x Mayot biome</h3>
 <pre class="r"><code>profile_extreme_biome &lt;- profile_extreme %&gt;% 
   group_by(season_order, season, biome_name, ph_extreme, depth) %&gt;% 
-  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(ph_biome = mean(pH, na.rm = TRUE),
+            ph_biome_std = sd(pH, na.rm = TRUE)) %&gt;% 
   ungroup()
 
 facet_label &lt;- as_labeller(c(&quot;1&quot;=&quot;summer&quot;, 
@@ -14404,7 +14437,7 @@ jens-daniel-mueller
 <pre class="r"><code>rm(profile_extreme_biome)</code></pre>
 <p>Number of profiles season x biome</p>
 <pre class="r"><code>profile_count_biome &lt;- profile_extreme %&gt;% 
-  distinct(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
+  distinct(season_order, season, biome_name, ph_extreme, file_id) %&gt;% 
   group_by(season_order, season, biome_name, ph_extreme) %&gt;% 
   count(ph_extreme)
 
@@ -14611,8 +14644,8 @@ pasqualina-vonlanthendinenna
 <p>Surface Argo vs surface OceanSODA pH (20 m) season x biome</p>
 <pre class="r"><code>surface_ph_biome &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+  group_by(season_order, season, biome_name, ph_extreme, file_id) %&gt;% 
+  summarise(argo_surf_ph = mean(pH, na.rm=TRUE),
             OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
 surface_ph_biome %&gt;% 
@@ -15319,8 +15352,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x basin</h3>
 <pre class="r"><code>profile_extreme_basin &lt;- profile_extreme %&gt;% 
   group_by(season_order, season, basin_AIP, ph_extreme, depth) %&gt;% 
-  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(ph_basin = mean(pH, na.rm = TRUE),
+            ph_basin_std = sd(pH, na.rm = TRUE)) %&gt;% 
   ungroup()
 
 profile_extreme_basin %&gt;% 
@@ -15595,7 +15628,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_extreme_basin)</code></pre>
 <p>Number of profiles season x basin</p>
 <pre class="r"><code>profile_count_basin &lt;- profile_extreme %&gt;% 
-  distinct(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
+  distinct(season_order, season, basin_AIP, ph_extreme, file_id) %&gt;% 
   group_by(season_order, season, basin_AIP, ph_extreme) %&gt;% 
   count(ph_extreme)
 
@@ -15803,8 +15836,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_ph_basin &lt;- profile_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+  group_by(season_order, season, basin_AIP, ph_extreme, file_id) %&gt;% 
+  summarise(surf_argo_ph = mean(pH, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_basin %&gt;% 
@@ -16545,8 +16578,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>profile_extreme_biome_basin_jan &lt;- profile_extreme %&gt;%
   filter(month == 1) %&gt;% 
   group_by(biome_name, basin_AIP, ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(pH, na.rm = TRUE),
+            ph_std = sd(pH, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_biome_basin_jan %&gt;%
@@ -16690,8 +16723,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x biome x basin</h3>
 <pre class="r"><code>profile_extreme_season &lt;- profile_extreme %&gt;%
   group_by(season_order, season, biome_name, basin_AIP, ph_extreme, depth) %&gt;%
-  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
-            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(ph_mean = mean(pH, na.rm = TRUE),
+            ph_std = sd(pH, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_extreme_season %&gt;%
@@ -17638,7 +17671,7 @@ jens-daniel-mueller
 <p>Number of profiles per season x biome x basin x pH extreme</p>
 <pre class="r"><code>profile_count_season &lt;- profile_extreme %&gt;% 
   distinct(season_order, season, biome_name, basin_AIP,
-           ph_extreme, platform_number, cycle_number) %&gt;% 
+           ph_extreme, file_id) %&gt;% 
   group_by(season_order, season, biome_name, basin_AIP, ph_extreme) %&gt;% 
   count(ph_extreme)
 
@@ -18535,9 +18568,8 @@ surface_ph_season &lt;- profile_extreme %&gt;%
            basin_AIP, 
            biome_name, 
            ph_extreme, 
-           platform_number, 
-           cycle_number) %&gt;% 
-  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
+           file_id) %&gt;% 
+  summarise(surf_argo_ph = mean(pH, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_season %&gt;% 
@@ -21710,43 +21742,92 @@ pasqualina-vonlanthendinenna
 <h1>Remove climatology</h1>
 <div id="broullón-ta-dic-ph-climatology" class="section level2">
 <h2>Broullón TA-DIC pH climatology</h2>
-<pre class="r"><code>profile_extreme_binned &lt;- profile_extreme %&gt;%
-  group_by(lon, lat, year, month, platform_cycle,
-           biome_name, basin_AIP, ph_extreme,
-           depth, season, season_order) %&gt;%
-  summarise(ph_adjusted_binned = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %&gt;%
-  ungroup()</code></pre>
-<pre class="r"><code>broullon_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, 
-                                        &#39;/broullon_TA_DIC_clim_SO_pH.rds&#39;))
+<pre class="r"><code># profile_extreme_binned &lt;- profile_extreme %&gt;%
+#   group_by(lon, lat, year, month, file_id,
+#            biome_name, basin_AIP, ph_extreme,
+#            depth, season, season_order) %&gt;%
+#   summarise(ph_adjusted_binned = mean(pH, na.rm = TRUE)) %&gt;%
+#   ungroup()</code></pre>
+<pre class="r"><code># broullon_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, 
+#                                         &#39;/broullon_TA_DIC_clim_SO_pH.rds&#39;))
+# 
+# # compatibility with profile_extreme
+# broullon_clim &lt;- broullon_clim %&gt;% 
+#   mutate(depth_broullon = depth)
+# 
+# # grid average climatological temp into the argo depth bins 
+# broullon_clim &lt;- broullon_clim %&gt;%
+#   mutate(
+#     depth = cut(
+#       depth_broullon,
+#       breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
+#       include.lowest = TRUE,
+#       labels = as.factor(unique(profile_extreme$depth))[1:12]
+#     ),
+#     depth = as.numeric(as.character(depth))
+#   )
+# 
+# 
+# # calculate mean climatological pH per depth bin
+# broullon_clim_binned &lt;- broullon_clim %&gt;% 
+#   group_by(lon, lat, depth, month, basin_AIP, biome_name) %&gt;% 
+#   summarise(clim_ph_binned = mean(pH, na.rm = TRUE)) %&gt;%
+#   ungroup()
+# 
+# 
+# # join climatology and ARGO profiles
+# remove_clim &lt;- inner_join(profile_extreme_binned, 
+#                               broullon_clim_binned)
 
-# compatibility with profile_extreme
-broullon_clim &lt;- broullon_clim %&gt;% 
-  mutate(depth_broullon = depth)
 
-# grid average climatological temp into the argo depth bins 
-broullon_clim &lt;- broullon_clim %&gt;%
+remove_clim &lt;-
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/pH_anomaly_va.rds&quot;)) %&gt;%
+  mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
+
+remove_clim &lt;- inner_join(
+  remove_clim %&gt;%
+    select(
+      file_id, 
+      year, 
+      month, 
+      date, 
+      lon, 
+      lat, 
+      depth, 
+      pH,
+      clim_pH,
+      anomaly_pH
+      ),
+  OceanSODA_SO_extreme_grid %&gt;%
+    select(
+      year,
+      month,
+      date,
+      lon,
+      lat,
+      OceanSODA_ph,
+      ph_extreme,
+      biome_name,
+      basin_AIP
+    )
+)
+
+remove_clim &lt;- remove_clim %&gt;%
   mutate(
-    depth = cut(
-      depth_broullon,
-      breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
-      include.lowest = TRUE,
-      labels = as.factor(unique(profile_extreme$depth))[1:12]
+    season = case_when(
+      between(month, 3, 5) ~ &#39;autumn&#39;,
+      between(month, 6, 8) ~ &#39;winter&#39;,
+      between(month, 9, 11) ~ &#39;spring&#39;,
+      month == 12 | 1 | 2 ~ &#39;summer&#39;
     ),
-    depth = as.numeric(as.character(depth))
-  )
-
-
-# calculate mean climatological pH per depth bin
-broullon_clim_binned &lt;- broullon_clim %&gt;% 
-  group_by(lon, lat, depth, month, basin_AIP, biome_name) %&gt;% 
-  summarise(clim_ph_binned = mean(pH, na.rm = TRUE)) %&gt;%
-  ungroup()
-
-
-# join climatology and ARGO profiles
-
-remove_clim &lt;- inner_join(profile_extreme_binned, 
-                              broullon_clim_binned)</code></pre>
+    season_order = case_when(
+      between(month, 3, 5) ~ 2,
+      between(month, 6, 8) ~ 3,
+      between(month, 9, 11) ~ 4,
+      month == 12 | 1 | 2 ~ 1
+    ),
+    .after = date
+  ) </code></pre>
 <div id="profiles---absolute" class="section level3">
 <h3>Profiles - Absolute</h3>
 <pre class="r"><code>remove_clim %&gt;%
@@ -21758,9 +21839,9 @@ remove_clim &lt;- inner_join(profile_extreme_binned,
         data = .x %&gt;%
           filter(ph_extreme == &#39;N&#39;),
         aes(
-          x = ph_adjusted_binned,
+          x = pH,
           y = depth,
-          group = platform_cycle,
+          group = file_id,
           col = ph_extreme
         ),
         size = 0.3
@@ -21769,16 +21850,16 @@ remove_clim &lt;- inner_join(profile_extreme_binned,
         data = .x %&gt;%
           filter(ph_extreme == &#39;H&#39; | ph_extreme == &#39;L&#39;),
         aes(
-          x = ph_adjusted_binned,
+          x = pH,
           y = depth,
-          group = platform_cycle,
+          group = file_id,
           col = ph_extreme
         ),
         size = 0.5
       ) +
       geom_point(
         data = .x,
-        aes(x = clim_ph_binned,
+        aes(x = clim_pH,
             y = depth,
             col = ph_extreme),
         size = 0.5
@@ -21823,6 +21904,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-1.png" target="_blank">1cd9ec1</a>
@@ -21942,6 +22034,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-2.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-2.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -22057,6 +22160,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-3.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-3.png" target="_blank">1cd9ec1</a>
@@ -22176,6 +22290,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-4.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-4.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -22291,6 +22416,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-5.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-5.png" target="_blank">1cd9ec1</a>
@@ -22410,6 +22546,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-6.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_raw_profiles_with_broullon_clim-6.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -22503,23 +22650,21 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="profiles---anomaly" class="section level3">
 <h3>Profiles - Anomaly</h3>
-<pre class="r"><code>remove_clim &lt;- remove_clim %&gt;% 
-  mutate(argo_ph_anomaly = ph_adjusted_binned - clim_ph_binned)</code></pre>
 <pre class="r"><code>remove_clim %&gt;% 
   group_split(month) %&gt;% 
   #head(1) %&gt;% 
   map(
     ~ggplot()+
       geom_path(data = .x %&gt;% filter(ph_extreme == &#39;N&#39;),
-                aes(x = argo_ph_anomaly,
+                aes(x = anomaly_pH,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = ph_extreme),
                 size = 0.2)+
       geom_path(data = .x %&gt;% filter(ph_extreme == &#39;H&#39;| ph_extreme == &#39;L&#39;),
-                 aes(x = argo_ph_anomaly,
+                 aes(x = anomaly_pH,
                      y = depth,
-                     group = platform_cycle,
+                     group = file_id,
                      col = ph_extreme),
                  size = 0.3)+
       geom_vline(xintercept = 0)+
@@ -22554,6 +22699,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-1.png" target="_blank">1cd9ec1</a>
@@ -22673,6 +22829,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-2.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-2.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -22788,6 +22955,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-3.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-3.png" target="_blank">1cd9ec1</a>
@@ -22907,6 +23085,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-4.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-4.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -23022,6 +23211,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-5.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-5.png" target="_blank">1cd9ec1</a>
@@ -23141,6 +23341,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-6.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-6.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -23256,6 +23467,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-7.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-7.png" target="_blank">1cd9ec1</a>
@@ -23375,6 +23597,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-8.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-8.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -23490,6 +23723,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-9.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-9.png" target="_blank">1cd9ec1</a>
@@ -23609,6 +23853,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-10.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-10.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -23724,6 +23979,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-11.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-11.png" target="_blank">1cd9ec1</a>
@@ -23843,6 +24109,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-12.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/plot_anomaly_profiles_broullon_clim-12.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -23938,8 +24215,9 @@ pasqualina-vonlanthendinenna
 <h3>Overall mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_overall_mean &lt;- remove_clim %&gt;% 
   group_by(ph_extreme, depth) %&gt;% 
-  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
-            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %&gt;%
+  ungroup()
 
 remove_clim_overall_mean %&gt;% 
   ggplot()+
@@ -24010,6 +24288,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/overall_mean_anomaly_profiles_broullon-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/overall_mean_anomaly_profiles_broullon-1.png" target="_blank">1cd9ec1</a>
@@ -24141,8 +24430,8 @@ pasqualina-vonlanthendinenna
 <h3>Biome-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_biome &lt;- remove_clim %&gt;% 
   group_by(depth, ph_extreme, biome_name, season_order, season) %&gt;% 
-  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
-            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
 
 remove_clim_biome %&gt;% 
   ggplot()+
@@ -24214,6 +24503,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/biome_mean_broullon_anomaly-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/biome_mean_broullon_anomaly-1.png" target="_blank">1cd9ec1</a>
@@ -24356,8 +24656,8 @@ pasqualina-vonlanthendinenna
 <h3>Basin-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_basin &lt;-  remove_clim %&gt;% 
   group_by(depth, ph_extreme, basin_AIP, season_order, season) %&gt;% 
-  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
-            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
+            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
 
 remove_clim_basin %&gt;% 
   ggplot()+
@@ -24429,6 +24729,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/basin_mean_anomaly_profiles_broullon-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/basin_mean_anomaly_profiles_broullon-1.png" target="_blank">1cd9ec1</a>
@@ -24571,8 +24882,8 @@ pasqualina-vonlanthendinenna
 <h3>Basin-biome-mean anomaly profiles</h3>
 <pre class="r"><code>remove_clim_basin_biome &lt;- remove_clim %&gt;% 
   group_by(depth, ph_extreme, season_order, season, basin_AIP, biome_name) %&gt;% 
-  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm=TRUE),
-            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm=TRUE),
+            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
 
 remove_clim_basin_biome %&gt;% 
   group_by(season_order) %&gt;% 
@@ -24644,6 +24955,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-1.png" target="_blank">1cd9ec1</a>
@@ -24807,6 +25129,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-2.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-2.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -24968,6 +25301,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-3.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-3.png" target="_blank">1cd9ec1</a>
 </td>
 <td>
@@ -25127,6 +25471,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-4.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1cd9ec13744260535ff56a1779f2b9769f33635f/docs/figure/extreme_pH.Rmd/basin_biome_mean_broullon-4.png" target="_blank">1cd9ec1</a>
@@ -25300,43 +25655,37 @@ other attached packages:
 [17] tibble_3.2.1      ggplot2_3.4.4     tidyverse_1.3.2  
 
 loaded via a namespace (and not attached):
-  [1] googledrive_2.0.0   colorspace_2.0-3    deldir_1.0-6       
-  [4] ellipsis_0.3.2      class_7.3-20        rprojroot_2.0.3    
-  [7] htmlTable_2.4.1     base64enc_0.1-3     fs_1.5.2           
- [10] rstudioapi_0.15.0   proxy_0.4-27        farver_2.1.1       
- [13] bit64_4.0.5         fansi_1.0.3         xml2_1.3.3         
- [16] splines_4.2.2       codetools_0.2-18    cachem_1.0.6       
- [19] knitr_1.41          polyclip_1.10-4     Formula_1.2-4      
- [22] jsonlite_1.8.3      workflowr_1.7.0     cluster_2.1.4      
- [25] dbplyr_2.2.1        png_0.1-8           rgeos_0.5-9        
- [28] compiler_4.2.2      httr_1.4.4          backports_1.4.1    
- [31] Matrix_1.5-3        assertthat_0.2.1    fastmap_1.1.0      
- [34] gargle_1.2.1        cli_3.6.1           later_1.3.0        
- [37] tweenr_2.0.2        htmltools_0.5.3     tools_4.2.2        
- [40] gtable_0.3.1        glue_1.6.2          Rcpp_1.0.10        
- [43] cellranger_1.1.0    jquerylib_0.1.4     raster_3.6-11      
- [46] vctrs_0.6.4         xfun_0.35           rvest_1.0.3        
- [49] lifecycle_1.0.3     googlesheets4_1.0.1 terra_1.7-39       
- [52] MASS_7.3-58.1       scales_1.2.1        vroom_1.6.0        
- [55] hms_1.1.2           promises_1.2.0.1    parallel_4.2.2     
- [58] RColorBrewer_1.1-3  yaml_2.3.6          gridExtra_2.3      
- [61] memoise_2.0.1       sass_0.4.4          rpart_4.1.19       
- [64] latticeExtra_0.6-30 stringi_1.7.8       highr_0.9          
- [67] e1071_1.7-12        checkmate_2.1.0     rlang_1.1.1        
- [70] pkgconfig_2.0.3     evaluate_0.18       lattice_0.20-45    
- [73] sf_1.0-9            htmlwidgets_1.5.4   labeling_0.4.2     
- [76] bit_4.0.5           tidyselect_1.2.0    magrittr_2.0.3     
- [79] R6_2.5.1            generics_0.1.3      Hmisc_4.7-2        
- [82] DBI_1.1.3           foreign_0.8-83      pillar_1.9.0       
- [85] haven_2.5.1         whisker_0.4         withr_2.5.0        
- [88] units_0.8-0         nnet_7.3-18         survival_3.4-0     
- [91] sp_1.5-1            modelr_0.1.10       crayon_1.5.2       
- [94] interp_1.1-3        KernSmooth_2.23-20  utf8_1.2.2         
- [97] tzdb_0.3.0          rmarkdown_2.18      jpeg_0.1-10        
-[100] grid_4.2.2          readxl_1.4.1        data.table_1.14.6  
-[103] git2r_0.30.1        reprex_2.0.2        digest_0.6.30      
-[106] classInt_0.4-8      httpuv_1.6.6        munsell_0.5.0      
-[109] viridisLite_0.4.1   bslib_0.4.1        </code></pre>
+ [1] fs_1.5.2            sf_1.0-9            bit64_4.0.5        
+ [4] RColorBrewer_1.1-3  httr_1.4.4          rprojroot_2.0.3    
+ [7] tools_4.2.2         backports_1.4.1     bslib_0.4.1        
+[10] utf8_1.2.2          R6_2.5.1            KernSmooth_2.23-20 
+[13] rgeos_0.5-9         DBI_1.1.3           colorspace_2.0-3   
+[16] raster_3.6-11       withr_2.5.0         sp_1.5-1           
+[19] tidyselect_1.2.0    bit_4.0.5           compiler_4.2.2     
+[22] git2r_0.30.1        cli_3.6.1           rvest_1.0.3        
+[25] xml2_1.3.3          labeling_0.4.2      sass_0.4.4         
+[28] checkmate_2.1.0     scales_1.2.1        classInt_0.4-8     
+[31] proxy_0.4-27        digest_0.6.30       rmarkdown_2.18     
+[34] pkgconfig_2.0.3     htmltools_0.5.3     highr_0.9          
+[37] dbplyr_2.2.1        fastmap_1.1.0       rlang_1.1.1        
+[40] readxl_1.4.1        rstudioapi_0.15.0   farver_2.1.1       
+[43] jquerylib_0.1.4     generics_0.1.3      jsonlite_1.8.3     
+[46] vroom_1.6.0         googlesheets4_1.0.1 magrittr_2.0.3     
+[49] Rcpp_1.0.10         munsell_0.5.0       fansi_1.0.3        
+[52] lifecycle_1.0.3     terra_1.7-39        stringi_1.7.8      
+[55] whisker_0.4         yaml_2.3.6          MASS_7.3-58.1      
+[58] grid_4.2.2          parallel_4.2.2      promises_1.2.0.1   
+[61] crayon_1.5.2        lattice_0.20-45     haven_2.5.1        
+[64] hms_1.1.2           knitr_1.41          pillar_1.9.0       
+[67] codetools_0.2-18    reprex_2.0.2        glue_1.6.2         
+[70] evaluate_0.18       data.table_1.14.6   modelr_0.1.10      
+[73] tweenr_2.0.2        vctrs_0.6.4         tzdb_0.3.0         
+[76] httpuv_1.6.6        cellranger_1.1.0    polyclip_1.10-4    
+[79] gtable_0.3.1        assertthat_0.2.1    cachem_1.0.6       
+[82] xfun_0.35           e1071_1.7-12        later_1.3.0        
+[85] viridisLite_0.4.1   class_7.3-20        googledrive_2.0.0  
+[88] gargle_1.2.1        memoise_2.0.1       workflowr_1.7.0    
+[91] units_0.8-0         ellipsis_0.3.2     </code></pre>
 </div>
 </div>
 </div>
