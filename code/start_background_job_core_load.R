@@ -15,10 +15,10 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'load_argo_core.Rmd'
+    'extreme_pH.Rmd'
   )
 ),
-message = "Added load qc metrics")
+message = "Switched to new profile details.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",

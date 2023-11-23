@@ -1,6 +1,6 @@
 ---
 title: "Extreme pH Profiles"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -62,16 +62,41 @@ pH_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anom
 
 temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field.rds"))
 
+# load validated and vertically aligned pH profiles, 
+argo_pH <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%
+  select(file_id,
+         date,
+         year,
+         month,
+         lat,
+         lon,
+         depth,
+         profile_range_pH = profile_range,
+         pH,
+         h_plus)
+argo_temp <- read_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_va.rds")) %>%
+  select(file_id,
+         date,
+         year,
+         month,
+         lat,
+         lon,
+         depth,
+         profile_range_temp = profile_range,
+         temp)
 
-# argo pH data (flag A only)
-full_argo <- read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds"))
+full_argo <- full_join(argo_pH, argo_temp)
 
+# list where both pH and temp exist and apply to full_argo
+argo_file_id <- inner_join(argo_pH %>% distinct(file_id), argo_temp %>% distinct(file_id))
+full_argo <- left_join(argo_file_id, full_argo)
 
 # change the date format for compatibility with OceanSODA pH data
 full_argo <- full_argo %>%
-  mutate(year = year(date),
-         month = month(date)) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
+
+rm(argo_pH, argo_temp, argo_file_id)
+
 ```
 
 # Anomaly maps
@@ -258,17 +283,11 @@ anomaly_field <- anomaly_field %>%
          lon = lon_raw) %>% 
   filter(year >= 2013)
   
-profile_double_extreme <- inner_join(full_argo %>% 
-                                       select(-c(temp_adjusted_error, 
-                                                 temp_adjusted_qc,
-                                                 ph_in_situ_total_adjusted_error,
-                                                 ph_in_situ_total_adjusted_qc,
-                                                 profile_temp_qc,
-                                                 profile_ph_in_situ_total_qc)),
-                                     anomaly_field)
+profile_double_extreme <- inner_join(full_argo, anomaly_field)
 
-profile_double_extreme <- profile_double_extreme %>% 
-  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+# profile_double_extreme <- profile_double_extreme %>% 
+#   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+
 ```
 
 ```{r anomaly_field_maps_with_argo_locations}
@@ -318,20 +337,20 @@ profile_double_extreme %>%
   group_split(biome_name, basin_AIP, year) %>% 
   map(
     ~ggplot(data = .x,
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = double_extreme))+
       geom_path(data = .x %>% filter(double_extreme == 'N'),
-                aes(x = ph_in_situ_total_adjusted,
+                aes(x = pH,
                     y = depth, 
-                    group = platform_cycle,
+                    group = file_id,
                     col = double_extreme),
                 size = 0.3)+
       geom_path(data = .x %>% filter(double_extreme == 'E'),
-                aes(x = ph_in_situ_total_adjusted,
+                aes(x = pH,
                     y = depth, 
-                    group = platform_cycle,
+                    group = file_id,
                     col = double_extreme),
                 size = 0.5)+
       scale_y_reverse()+
@@ -353,20 +372,20 @@ profile_double_extreme %>%
   group_split(biome_name, basin_AIP, year) %>% 
   map(
     ~ggplot(data = .x,
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = double_extreme))+
       geom_path(data = .x %>% filter(double_extreme == 'N'),
-                aes(x = temp_adjusted,
+                aes(x = temp,
                     y = depth, 
-                    group = platform_cycle,
+                    group = file_id,
                     col = double_extreme),
                 size = 0.3)+
       geom_path(data = .x %>% filter(double_extreme == 'E'),
-                aes(x = temp_adjusted,
+                aes(x = temp,
                     y = depth, 
-                    group = platform_cycle,
+                    group = file_id,
                     col = double_extreme),
                 size = 0.5)+
       scale_y_reverse()+
@@ -395,15 +414,15 @@ Pacific_STSS_2017 <- profile_double_extreme %>%
 Pacific_STSS_2017 %>% 
   ggplot()+
   geom_path(data = Pacific_STSS_2017 %>% filter(double_extreme == 'N'),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle, 
+                group = file_id, 
                 col = double_extreme),
             size = 0.3)+
   geom_path(data = Pacific_STSS_2017 %>% filter(double_extreme == 'E'),
-            aes(x = ph_in_situ_total_adjusted,
+            aes(x = pH,
                 y = depth,
-                group = platform_cycle, 
+                group = file_id, 
                 col = double_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -418,15 +437,15 @@ Pacific_STSS_2017 %>%
 Pacific_STSS_2017 %>% 
   ggplot()+
   geom_path(data = Pacific_STSS_2017 %>% filter(double_extreme == 'N'),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth,
-                group = platform_cycle, 
+                group = file_id, 
                 col = double_extreme),
             size = 0.3)+
   geom_path(data = Pacific_STSS_2017 %>% filter(double_extreme == 'E'),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth,
-                group = platform_cycle, 
+                group = file_id, 
                 col = double_extreme),
             size = 0.5)+
   scale_y_reverse()+

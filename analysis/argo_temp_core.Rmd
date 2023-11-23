@@ -1,6 +1,6 @@
 ---
 title: "Core-Argo Temperature Data"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -56,15 +56,12 @@ Using only core-temperature flag A profiles
 
 ```{r load_core_temp_data}
 
-# flag A temperature data in the top 20 m 
+# read validated temperature profile and restrict to the top 20 m 
 sst <-
-  read_rds(file = paste0(path_argo_core_preprocessed, "/core_temp_flag_A.rds")) %>%
-  filter(between(depth, 0, 20)) %>%
-  mutate(year = year(date),
-         month = month(date))
+  read_rds(file = paste0(path_argo_core_preprocessed, "/temp_core_observed.rds")) %>%
+  filter(between(depth, 0, 20))
 
 # load in biome separations 
-
 nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
 ```
 
@@ -85,7 +82,7 @@ Difference between the in-situ measured sst (20 m) and the profile-mean 20m temp
 
 # calculate the mean sst for each surface profile 
 mean_profile_sst <- sst_SO %>% 
-  group_by(platform_number, cycle_number) %>% 
+  group_by(file_id) %>% 
   mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE), 
          .before = depth) %>% 
   ungroup() %>% 
@@ -114,7 +111,7 @@ Bin the sst data into 2m-depth intervals and calculate the offset for each sst o
 mean_profile_sst_binned <- sst_SO %>% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %>% 
-  group_by(platform_number, cycle_number) %>% 
+  group_by(file_id) %>% 
   mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE),
          .before = depth) %>% 
   ungroup() %>% 
@@ -142,7 +139,7 @@ Mean binned offset
 profile_sst_binned_ave <- sst_SO %>% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %>% 
-  group_by(platform_number, cycle_number) %>% 
+  group_by(file_id) %>% 
   mutate(mean_prof_sst = mean(temp_adjusted, na.rm = TRUE),
          .before = depth) %>% 
   ungroup() %>% 
@@ -215,7 +212,7 @@ basemap(limits = -32, data = sst_clim_SO) +   # change to polar projection
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST',
-       title = 'monthly climatological \nArgo SST (Apr 2014 - Dec 2021)')+
+       title = 'monthly climatological \nArgo SST')+
   facet_wrap(~month, ncol = 2)
 ```
 
@@ -258,7 +255,7 @@ sst_month_SO %>%
   geom_point() +
   labs(x = 'year', 
        y = 'SST (ºC)', 
-       title = 'monthly mean Argo SST (Apr 2014-Dec 2021, Southern Ocean)', 
+       title = 'monthly mean Argo SST (Southern Ocean)', 
        col = 'region')
 
 ```
@@ -280,7 +277,7 @@ sst_month_SO %>%
   facet_wrap(~biome_name)+
   labs(x = 'month',
        y = 'SST (ºC)',
-       title = 'monthly mean Argo SST (Apr 2014-Dec 2021, Southern Ocean regions)',
+       title = 'monthly mean Argo SST (Southern Ocean regions)',
        col = 'year')
 
 ```
@@ -299,7 +296,7 @@ sst_year_SO %>%
   geom_point()+
   labs(x = 'year',
        y = 'SST (ºC)',
-       title = 'yearly mean Argo SST (Apr 2014-Dec 2021, south of 30ºS)', 
+       title = 'yearly mean Argo SST (south of 30ºS)', 
        col = 'region')
 
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Extreme pH Profiles"
-author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
+author: "Pasqualina Vonlanthen & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -13,8 +13,7 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Compare depth profiles of normal pH and of extreme pH, as identified in the surface OceanSODA pH data product.
-BGC pH profiles have already been validate for coverage and aligned to climatology depths.
+Compare depth profiles of normal pH and of extreme pH, as identified in the surface OceanSODA pH data product
 
 ```{r load_libraries, include=FALSE}
 library(tidyverse)
@@ -56,6 +55,15 @@ path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 ```{r load_data}
 
+# RECCAP2-ocean region mask
+
+# region_masks_all_2x2 <- read_rds(file = paste0(path_argo_preprocessed,
+#                                               "/region_masks_all_2x2.rds"))
+# 
+# region_masks_all_2x2 <- region_masks_all_2x2 %>%
+#   rename(biome = value) %>% 
+#   mutate(coast = as.character(coast))
+
 # load in new Mayot biomes 
 
 nm_biomes <- read_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
@@ -81,12 +89,19 @@ OceanSODA <- OceanSODA %>%
   mutate(year = year(date),
          month = month(date))
 
-# load validated and vertically aligned pH profiles, 
+# argo pH data (flag A only)
 full_argo <-
-  read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%
+  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
+  select(-c(temp_adjusted:temp_adjusted_error,
+            profile_temp_qc))
+
+
+# change the date format for compatibility with OceanSODA pH data
+full_argo <- full_argo %>%
+  mutate(year = year(date),
+         month = month(date)) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
-# map data
 map <-
   read_rds(paste(path_emlr_utilities,
                  "map_landmask_WOA18.rds",
@@ -425,7 +440,7 @@ OceanSODA_regression_tidied <- OceanSODA_SO %>%
             intercept = mean(clim_diff, na.rm = TRUE)) %>% 
   ungroup()
 
-OceanSODA_regression_glanced <- OceanSODA_SO %>% 
+OceanSODA_regression_glanced <- OceanSODA_2x2_SO %>% 
   # filter(basin_AIP == "Indian",
   #        biome_name == "SPSS",
   #        lon < 40) %>%
@@ -433,7 +448,7 @@ OceanSODA_regression_glanced <- OceanSODA_SO %>%
   summarise(sigma = sd(clim_diff, na.rm = TRUE)) %>% 
   ungroup()
 
-OceanSODA_regression_augmented <- OceanSODA_SO %>% 
+OceanSODA_regression_augmented <- OceanSODA_2x2_SO %>% 
   # filter(basin_AIP == "Indian",
   #        biome_name == "SPSS",
   #        lon < 40) %>%
@@ -668,35 +683,19 @@ OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
 
 # combine the argo profile data to the surface extreme data
 profile_extreme <- inner_join(
-  full_argo %>%
-    select(
-      file_id, 
-      year, 
-      month, 
-      date, 
-      lon, 
-      lat, 
-      depth, 
-      pH
-      ),
-  OceanSODA_SO_extreme_grid %>%
-    select(
-      year,
-      month,
-      date,
-      lon,
-      lat,
-      OceanSODA_ph,
-      ph_extreme,
-      clim_ph,
-      clim_diff,
-      biome_name,
-      basin_AIP
-    )
-)
-
-# profile_extreme <- profile_extreme %>% 
-#   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+  full_argo %>% 
+    select(year, month, date, lon, lat, depth,
+           ph_in_situ_total_adjusted,
+           platform_number,
+           cycle_number),
+  OceanSODA_SO_extreme_grid %>% 
+    select(year, month, date, lon, lat,
+           OceanSODA_ph, ph_extreme,
+           clim_ph, clim_diff,
+           biome_name, basin_AIP))
+  
+profile_extreme <- profile_extreme %>% 
+  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
 
 ```
 
@@ -721,7 +720,7 @@ OceanSODA_SO_extreme_grid %>%
       new_scale_fill() +
       geom_tile(
         data = profile_extreme %>%
-          distinct(lon, lat, file_id, year, month),
+          distinct(lon, lat, platform_cycle, year, month),
         aes(
           x = lon,
           y = lat,
@@ -761,22 +760,22 @@ profile_extreme %>%
     ~ ggplot(
       data = .x,
       aes(
-        x = pH,
+        x = ph_in_situ_total_adjusted,
         y = depth,
-        group = file_id,
+        group = platform_cycle,
         col = ph_extreme
       )
     ) +
       geom_path(data = .x %>% filter(ph_extreme == 'N'),
-                aes(x = pH,
+                aes(x = ph_in_situ_total_adjusted,
                     y = depth,
-                    group = file_id,
+                    group = platform_cycle,
                     col = ph_extreme),
                 size = 0.3) +
       geom_path(data = .x %>% filter(ph_extreme == 'H' | ph_extreme == 'L'),
-                aes(x = pH,
+                aes(x = ph_in_situ_total_adjusted,
                     y = depth,
-                    group = file_id,
+                    group = platform_cycle,
                     col = ph_extreme),
                 size = 0.5)+
       scale_y_reverse() +
@@ -825,19 +824,19 @@ profile_extreme_Atl_2017 <- profile_extreme %>%
 
 profile_extreme_Atl_2017 %>% 
   ggplot(aes(y = depth, 
-             x = pH,
-             group = file_id,
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'N'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth, 
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'H'| ph_extreme == 'L'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth,
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -876,19 +875,19 @@ profile_extreme_Atl_2017 <- profile_extreme %>%
 
 profile_extreme_Atl_2017 %>% 
   ggplot(aes(y = depth, 
-             x = pH,
-             group = file_id,
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'N'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth,
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2017 %>% filter(ph_extreme == 'H' | ph_extreme == 'L'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth,
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -925,19 +924,19 @@ profile_extreme_Atl_2018 <- profile_extreme %>%
 
 profile_extreme_Atl_2018 %>% 
   ggplot(aes(y = depth, 
-             x = pH,
-             group = file_id,
+             x = ph_in_situ_total_adjusted,
+             group = platform_cycle,
              col = ph_extreme))+
   geom_path(data = profile_extreme_Atl_2018 %>% filter(ph_extreme == 'N'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth,
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.3)+
   geom_path(data = profile_extreme_Atl_2018 %>% filter(ph_extreme == 'H' | ph_extreme == 'L'),
-            aes(x = pH,
+            aes(x = ph_in_situ_total_adjusted,
                 y = depth,
-                group = file_id,
+                group = platform_cycle,
                 col = ph_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -962,6 +961,15 @@ rm(OceanSODA_SO_extreme_grid_2018, profile_extreme_Atl_2018)
 
 profile_extreme <- profile_extreme %>%
   mutate(
+    depth = Hmisc::cut2(
+      depth,
+      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+      m = 5,
+      levels.mean = TRUE
+    ),
+    depth = as.numeric(as.character(depth))
+  ) %>%
+  mutate(
     season = case_when(
       between(month, 3, 5) ~ 'autumn',
       between(month, 6, 8) ~ 'winter',
@@ -985,8 +993,8 @@ profile_extreme <- profile_extreme %>%
 
 profile_extreme_mean <- profile_extreme %>%
   group_by(ph_extreme, depth) %>%
-  summarise(ph_mean = mean(pH, na.rm = TRUE),
-            ph_std = sd(pH, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_mean %>%
@@ -1022,7 +1030,7 @@ Number of profiles
 ```{r mean_profile_count, fig.asp=1}
 
 profile_count_mean <- profile_extreme %>% 
-  distinct(ph_extreme, file_id) %>% 
+  distinct(ph_extreme, platform_number, cycle_number) %>% 
   count(ph_extreme)
 
 profile_count_mean %>% 
@@ -1042,11 +1050,9 @@ Surface Argo pH vs surface OceanSODA pH (20 m)
 # calculate surface-mean argo pH, for each profile 
 surface_ph_mean <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(ph_extreme, file_id) %>% 
-  summarise(argo_surf_ph = mean(pH, na.rm = TRUE),
-            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE)) %>%
-  ungroup()
-
+  group_by(ph_extreme, platform_number, cycle_number) %>% 
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
 
 surface_ph_mean %>% 
@@ -1078,8 +1084,8 @@ rm(surface_ph_mean)
 profile_extreme_mean_jan <- profile_extreme %>%
   filter(month == 1) %>% 
   group_by(ph_extreme, depth) %>%
-  summarise(ph_mean = mean(pH, na.rm = TRUE),
-            ph_std = sd(pH, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_mean_jan %>%
@@ -1117,8 +1123,8 @@ rm(profile_extreme_mean_jan)
 
 profile_extreme_biome <- profile_extreme %>% 
   group_by(season_order, season, biome_name, ph_extreme, depth) %>% 
-  summarise(ph_biome = mean(pH, na.rm = TRUE),
-            ph_biome_std = sd(pH, na.rm = TRUE)) %>% 
+  summarise(ph_biome = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_biome_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
 
 facet_label <- as_labeller(c("1"="summer", 
@@ -1166,7 +1172,7 @@ Number of profiles season x biome
 ```{r count_profiles_season_biome, fig.asp=1}
 
 profile_count_biome <- profile_extreme %>% 
-  distinct(season_order, season, biome_name, ph_extreme, file_id) %>% 
+  distinct(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
   group_by(season_order, season, biome_name, ph_extreme) %>% 
   count(ph_extreme)
 
@@ -1187,8 +1193,8 @@ Surface Argo vs surface OceanSODA pH (20 m) season x biome
 
 surface_ph_biome <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(season_order, season, biome_name, ph_extreme, file_id) %>% 
-  summarise(argo_surf_ph = mean(pH, na.rm=TRUE),
+  group_by(season_order, season, biome_name, ph_extreme, platform_number, cycle_number) %>% 
+  summarise(argo_surf_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             OceanSODA_surf_ph = mean(OceanSODA_ph, na.rm = TRUE))
 
 surface_ph_biome %>% 
@@ -1219,8 +1225,8 @@ rm(surface_ph_biome)
 
 profile_extreme_basin <- profile_extreme %>% 
   group_by(season_order, season, basin_AIP, ph_extreme, depth) %>% 
-  summarise(ph_basin = mean(pH, na.rm = TRUE),
-            ph_basin_std = sd(pH, na.rm = TRUE)) %>% 
+  summarise(ph_basin = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_basin_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>% 
   ungroup()
 
 profile_extreme_basin %>% 
@@ -1254,7 +1260,7 @@ Number of profiles season x basin
 ```{r count_basin_profiles, fig.asp=1}
 
 profile_count_basin <- profile_extreme %>% 
-  distinct(season_order, season, basin_AIP, ph_extreme, file_id) %>% 
+  distinct(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
   group_by(season_order, season, basin_AIP, ph_extreme) %>% 
   count(ph_extreme)
 
@@ -1276,8 +1282,8 @@ Surface Argo vs surface OceanSODA pH (20 m) season x basin
 # calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
 surface_ph_basin <- profile_extreme %>% 
   filter(depth <= 20) %>% 
-  group_by(season_order, season, basin_AIP, ph_extreme, file_id) %>% 
-  summarise(surf_argo_ph = mean(pH, na.rm=TRUE),
+  group_by(season_order, season, basin_AIP, ph_extreme, platform_number, cycle_number) %>% 
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_basin %>% 
@@ -1309,8 +1315,8 @@ rm(surface_ph_basin)
 profile_extreme_biome_basin_jan <- profile_extreme %>%
   filter(month == 1) %>% 
   group_by(biome_name, basin_AIP, ph_extreme, depth) %>%
-  summarise(ph_mean = mean(pH, na.rm = TRUE),
-            ph_std = sd(pH, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_biome_basin_jan %>%
@@ -1343,8 +1349,8 @@ rm(profile_extreme_biome_basin_jan)
 
 profile_extreme_season <- profile_extreme %>%
   group_by(season_order, season, biome_name, basin_AIP, ph_extreme, depth) %>%
-  summarise(ph_mean = mean(pH, na.rm = TRUE),
-            ph_std = sd(pH, na.rm = TRUE)) %>%
+  summarise(ph_mean = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
+            ph_std = sd(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
   ungroup()
 
 profile_extreme_season %>%
@@ -1390,7 +1396,7 @@ Number of profiles per season x biome x basin x pH extreme
 
 profile_count_season <- profile_extreme %>% 
   distinct(season_order, season, biome_name, basin_AIP,
-           ph_extreme, file_id) %>% 
+           ph_extreme, platform_number, cycle_number) %>% 
   group_by(season_order, season, biome_name, basin_AIP, ph_extreme) %>% 
   count(ph_extreme)
 
@@ -1426,8 +1432,9 @@ surface_ph_season <- profile_extreme %>%
            basin_AIP, 
            biome_name, 
            ph_extreme, 
-           file_id) %>% 
-  summarise(surf_argo_ph = mean(pH, na.rm=TRUE),
+           platform_number, 
+           cycle_number) %>% 
+  summarise(surf_argo_ph = mean(ph_in_situ_total_adjusted, na.rm=TRUE),
             surf_OceanSODA_ph = mean(OceanSODA_ph, na.rm = TRUE)) 
 
 surface_ph_season %>% 
@@ -1517,104 +1524,54 @@ profile_extreme_season %>%
         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500)))
 ```
 
-# Anomaly profiles
+# Remove climatology
 
-## Read anomalies
+## Broullón TA-DIC pH climatology
 
 ```{r average_ph_argo_depth_levels}
 
-# profile_extreme_binned <- profile_extreme %>%
-#   group_by(lon, lat, year, month, file_id,
-#            biome_name, basin_AIP, ph_extreme,
-#            depth, season, season_order) %>%
-#   summarise(ph_adjusted_binned = mean(pH, na.rm = TRUE)) %>%
-#   ungroup()
+profile_extreme_binned <- profile_extreme %>%
+  group_by(lon, lat, year, month, platform_cycle,
+           biome_name, basin_AIP, ph_extreme,
+           depth, season, season_order) %>%
+  summarise(ph_adjusted_binned = mean(ph_in_situ_total_adjusted, na.rm = TRUE)) %>%
+  ungroup()
 
 ```
 
 ```{r load_broullon_clim}
 
-# broullon_clim <- read_rds(file = paste0(path_argo_preprocessed, 
-#                                         '/broullon_TA_DIC_clim_SO_pH.rds'))
-# 
-# # compatibility with profile_extreme
-# broullon_clim <- broullon_clim %>% 
-#   mutate(depth_broullon = depth)
-# 
-# # grid average climatological temp into the argo depth bins 
-# broullon_clim <- broullon_clim %>%
-#   mutate(
-#     depth = cut(
-#       depth_broullon,
-#       breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
-#       include.lowest = TRUE,
-#       labels = as.factor(unique(profile_extreme$depth))[1:12]
-#     ),
-#     depth = as.numeric(as.character(depth))
-#   )
-# 
-# 
-# # calculate mean climatological pH per depth bin
-# broullon_clim_binned <- broullon_clim %>% 
-#   group_by(lon, lat, depth, month, basin_AIP, biome_name) %>% 
-#   summarise(clim_ph_binned = mean(pH, na.rm = TRUE)) %>%
-#   ungroup()
-# 
-# 
-# # join climatology and ARGO profiles
-# remove_clim <- inner_join(profile_extreme_binned, 
-#                               broullon_clim_binned)
+broullon_clim <- read_rds(file = paste0(path_argo_preprocessed, 
+                                        '/broullon_TA_DIC_clim_SO_pH.rds'))
 
+# compatibility with profile_extreme
+broullon_clim <- broullon_clim %>% 
+  mutate(depth_broullon = depth)
 
-remove_clim <-
-  read_rds(file = paste0(path_argo_preprocessed, "/pH_anomaly_va.rds")) %>%
-  mutate(date = ymd(format(date, "%Y-%m-15")))
-
-remove_clim <- inner_join(
-  remove_clim %>%
-    select(
-      file_id, 
-      year, 
-      month, 
-      date, 
-      lon, 
-      lat, 
-      depth, 
-      pH,
-      clim_pH,
-      anomaly_pH
-      ),
-  OceanSODA_SO_extreme_grid %>%
-    select(
-      year,
-      month,
-      date,
-      lon,
-      lat,
-      OceanSODA_ph,
-      ph_extreme,
-      biome_name,
-      basin_AIP
-    )
-)
-
-remove_clim <- remove_clim %>%
+# grid average climatological temp into the argo depth bins 
+broullon_clim <- broullon_clim %>%
   mutate(
-    season = case_when(
-      between(month, 3, 5) ~ 'autumn',
-      between(month, 6, 8) ~ 'winter',
-      between(month, 9, 11) ~ 'spring',
-      month == 12 | 1 | 2 ~ 'summer'
+    depth = cut(
+      depth_broullon,
+      breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
+      include.lowest = TRUE,
+      labels = as.factor(unique(profile_extreme$depth))[1:12]
     ),
-    season_order = case_when(
-      between(month, 3, 5) ~ 2,
-      between(month, 6, 8) ~ 3,
-      between(month, 9, 11) ~ 4,
-      month == 12 | 1 | 2 ~ 1
-    ),
-    .after = date
-  ) 
+    depth = as.numeric(as.character(depth))
+  )
 
+
+# calculate mean climatological pH per depth bin
+broullon_clim_binned <- broullon_clim %>% 
+  group_by(lon, lat, depth, month, basin_AIP, biome_name) %>% 
+  summarise(clim_ph_binned = mean(pH, na.rm = TRUE)) %>%
+  ungroup()
+
+
+# join climatology and ARGO profiles
+
+remove_clim <- inner_join(profile_extreme_binned, 
+                              broullon_clim_binned)
 
 ```
 
@@ -1631,9 +1588,9 @@ remove_clim %>%
         data = .x %>%
           filter(ph_extreme == 'N'),
         aes(
-          x = pH,
+          x = ph_adjusted_binned,
           y = depth,
-          group = file_id,
+          group = platform_cycle,
           col = ph_extreme
         ),
         size = 0.3
@@ -1642,16 +1599,16 @@ remove_clim %>%
         data = .x %>%
           filter(ph_extreme == 'H' | ph_extreme == 'L'),
         aes(
-          x = pH,
+          x = ph_adjusted_binned,
           y = depth,
-          group = file_id,
+          group = platform_cycle,
           col = ph_extreme
         ),
         size = 0.5
       ) +
       geom_point(
         data = .x,
-        aes(x = clim_pH,
+        aes(x = clim_ph_binned,
             y = depth,
             col = ph_extreme),
         size = 0.5
@@ -1677,6 +1634,13 @@ remove_clim %>%
 
 ### Profiles - Anomaly
 
+```{r remove_broullon_ph_clim}
+
+remove_clim <- remove_clim %>% 
+  mutate(argo_ph_anomaly = ph_adjusted_binned - clim_ph_binned)
+
+```
+
 ```{r plot_anomaly_profiles_broullon_clim, fig.asp=1}
 
 remove_clim %>% 
@@ -1685,15 +1649,15 @@ remove_clim %>%
   map(
     ~ggplot()+
       geom_path(data = .x %>% filter(ph_extreme == 'N'),
-                aes(x = anomaly_pH,
+                aes(x = argo_ph_anomaly,
                     y = depth,
-                    group = file_id,
+                    group = platform_cycle,
                     col = ph_extreme),
                 size = 0.2)+
       geom_path(data = .x %>% filter(ph_extreme == 'H'| ph_extreme == 'L'),
-                 aes(x = anomaly_pH,
+                 aes(x = argo_ph_anomaly,
                      y = depth,
-                     group = file_id,
+                     group = platform_cycle,
                      col = ph_extreme),
                  size = 0.3)+
       geom_vline(xintercept = 0)+
@@ -1713,9 +1677,8 @@ remove_clim %>%
 
 remove_clim_overall_mean <- remove_clim %>% 
   group_by(ph_extreme, depth) %>% 
-  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE)) %>%
-  ungroup()
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_overall_mean %>% 
   ggplot()+
@@ -1777,8 +1740,8 @@ rm(remove_clim_overall_mean, profile_count_mean)
 
 remove_clim_biome <- remove_clim %>% 
   group_by(depth, ph_extreme, biome_name, season_order, season) %>% 
-  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_biome %>% 
   ggplot()+
@@ -1837,8 +1800,8 @@ rm(remove_clim_biome, profile_count_biome)
 
 remove_clim_basin <-  remove_clim %>% 
   group_by(depth, ph_extreme, basin_AIP, season_order, season) %>% 
-  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm = TRUE),
-            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm = TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_basin %>% 
   ggplot()+
@@ -1897,8 +1860,8 @@ rm(remove_clim_basin, profile_count_basin)
 
 remove_clim_basin_biome <- remove_clim %>% 
   group_by(depth, ph_extreme, season_order, season, basin_AIP, biome_name) %>% 
-  summarise(ph_anomaly_mean = mean(anomaly_pH, na.rm=TRUE),
-            ph_anomaly_sd = sd(anomaly_pH, na.rm = TRUE))
+  summarise(ph_anomaly_mean = mean(argo_ph_anomaly, na.rm=TRUE),
+            ph_anomaly_sd = sd(argo_ph_anomaly, na.rm = TRUE))
 
 remove_clim_basin_biome %>% 
   group_by(season_order) %>% 

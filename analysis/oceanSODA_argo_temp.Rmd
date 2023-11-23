@@ -1,6 +1,6 @@
 ---
 title: "OceanSODA-Argo SST"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -55,19 +55,22 @@ path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 
 OceanSODA_temp <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_temp.rds"))
 
-argo_surf_temp <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
-  filter(between(depth, 0, 20)) %>%
-  mutate(year = year(date),
-         month = month(date)) %>%
-  select(
-    -c(
-      ph_in_situ_total_adjusted,
-      ph_in_situ_total_adjusted_qc,
-      ph_in_situ_total_adjusted_error,
-      profile_ph_in_situ_total_qc
-    )
-  )
+argo_surf_temp <- read_rds(file = paste0(path_argo_preprocessed, '/temp_bgc_observed.rds')) %>%
+  filter(between(depth, 0, 20))
+
+# argo_surf_temp <-
+#   read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
+#   filter(between(depth, 0, 20)) %>%
+#   mutate(year = year(date),
+#          month = month(date)) %>%
+#   select(
+#     -c(
+#       ph_in_situ_total_adjusted,
+#       ph_in_situ_total_adjusted_qc,
+#       ph_in_situ_total_adjusted_error,
+#       profile_ph_in_situ_total_qc
+#     )
+#   )
 
 # for plotting later, load in region information  
 
@@ -136,7 +139,7 @@ Climatological OceanSODA SST
 
 ```{r climatological_map, fig.asp=2}
 
-# calculate average monthly pH between April 2013 and August 2021, and the difference between the two (offset)
+# calculate average monthly pH, and the difference between the two (offset)
 
 argo_OceanSODA_temp_SO_clim <- argo_OceanSODA_temp_SO %>%
   group_by(lon, lat, month) %>%
@@ -171,7 +174,7 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'Monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)') +
+       title = 'Monthly climatological \nOceanSODA SST') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 ```
@@ -192,7 +195,7 @@ basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to po
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)')+
+       title = 'monthly climatological \nOceanSODA SST')+
   facet_wrap(~month, ncol = 2)
 ```
 
@@ -209,7 +212,7 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'Monthly climatological \nArgo SST (Jan 2013 - Dec 2021)') +
+       title = 'Monthly climatological \nArgo SST') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 ```
@@ -229,7 +232,7 @@ basemap(limits = -32, data = argo_OceanSODA_temp_SO_clim_2x2) +   # change to po
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'monthly climatological \nArgo SST (Jan 2013 - Dec 2021)')+
+       title = 'monthly climatological \nArgo SST')+
   facet_wrap(~month, ncol = 2)
 ```
 
@@ -275,7 +278,7 @@ argo_OceanSODA_temp_SO_clim_regional %>%
   geom_point() +
   labs(x = 'year',
        y = 'SST (ºC)',
-       title = 'monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)',
+       title = 'monthly mean SST (Southern Ocean)',
        col = 'biome')
 ```
 
@@ -294,7 +297,7 @@ argo_OceanSODA_temp_SO_clim_regional %>%
   lims(y = c(-5, 20))+
   labs(x = 'month',
        y = 'SST (ºC)',
-       title = 'monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)',
+       title = 'monthly mean SST (Southern Ocean)',
        col = 'year')
 ```
 
@@ -315,7 +318,7 @@ argo_OceanSODA_temp_SO %>%
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
   geom_point(aes(x = year_month, y = offset, col = biome_name), size = 0.7, pch = 19) +
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01', '2022-01', '2023-01'))+
   labs(title = 'oceanSODA SST - Argo SST',
        x = 'date',
        y = 'offset (ºC)',
@@ -388,7 +391,7 @@ mean_insitu_offset %>%
                   group = biome_name, 
                   fill =biome_name),
               alpha = 0.2)+
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01', '2022-01', '2023-01'))+
   # facet_wrap(~year)+
   labs(title = 'Mean offset (in situ oceanSODA SST - in situ Argo SST)',
        x = 'date',
@@ -538,7 +541,7 @@ OceanSODA_temp_SO_clim_subregional %>%
   facet_grid(biome_name~basin_AIP)+
   labs(x = 'month',
        y = 'SST (ºC)',
-       title = 'monthly mean OceanSODA SST (Jan 2013-Dec 2020, Southern Ocean basins)',
+       title = 'monthly mean OceanSODA SST (Southern Ocean basins)',
        col = 'year')
 ```
 
@@ -553,7 +556,7 @@ OceanSODA_temp_SO_clim_subregional %>%
   geom_point() +
   labs(x = 'year',
        y = 'SST (ºC)',
-       title = 'monthly mean OceanSODA SST (Jan 2013-Dec 2020, Southern Ocean basins)',
+       title = 'monthly mean OceanSODA SST (Southern Ocean basins)',
        col = 'region')
 ```
 
@@ -600,12 +603,16 @@ Repeat analysis with SST data from the Core-Argo dataset
 
 ```{r load_core_sst_data}
 
-argo_surf_temp_core <-
-  read_rds(file = paste0(
-    path_argo_core_preprocessed, "/core_temp_flag_A.rds")) %>%
-  filter(between(depth, 0, 20)) %>%
-  mutate(year = year(date),
-         month = month(date))
+# argo_surf_temp_core <-
+#   read_rds(file = paste0(
+#     path_argo_core_preprocessed, "/core_temp_flag_A.rds")) %>%
+#   filter(between(depth, 0, 20)) %>%
+#   mutate(year = year(date),
+#          month = month(date))
+
+argo_surf_temp_core <- read_rds(file = paste0(path_argo_core_preprocessed, '/temp_core_observed.rds')) %>%
+  filter(between(depth, 0, 20))
+
 
 ```
 
@@ -659,7 +666,7 @@ Map OceanSODA SST where Core-Argo SST measurements exist
 
 ```{r OceanSODA_core_climatological_map, fig.asp=2}
 
-# calculate average monthly SST between April 2013 and August 2021, and the difference between the two (offset)
+# calculate average monthly SST between, and the difference between the two (offset)
 
 argo_OceanSODA_temp_SO_clim <- argo_OceanSODA_temp_SO %>%
   group_by(lon, lat, month) %>%
@@ -694,7 +701,7 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'Monthly climatological \nOceanSODA SST (Jan 2013 - Dec 2020)') +
+       title = 'Monthly climatological \nOceanSODA SST') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 ```
@@ -710,7 +717,7 @@ map +
   labs(x = 'lon',
        y = 'lat',
        fill = 'SST (ºC)',
-       title = 'Monthly climatological \nArgo SST (Jan 2013 - Dec 2021)') +
+       title = 'Monthly climatological \nArgo SST') +
   theme(legend.position = 'right') +
   facet_wrap(~month, ncol = 2)
 ```
@@ -746,7 +753,7 @@ argo_OceanSODA_temp_SO_clim_regional %>%
   lims(y = c(-5, 20))+
   labs(x = 'month',
        y = 'SST (ºC)',
-       title = 'monthly mean SST (Jan 2013-Dec 2021, Southern Ocean)',
+       title = 'monthly mean SST (Southern Ocean)',
        col = 'year')
 ```
 
@@ -763,7 +770,7 @@ argo_OceanSODA_temp_SO %>%
   ggplot() +
   geom_hline(yintercept = 0, size = 1)+
   geom_point(aes(x = year_month, y = offset, col = biome_name), size = 0.7, pch = 19) +
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01', '2022-01', '2023-01'))+
   labs(title = 'oceanSODA SST - Argo SST',
        x = 'date',
        y = 'offset (ºC)',
@@ -836,7 +843,7 @@ mean_insitu_offset %>%
                   group = biome_name, 
                   fill =biome_name),
               alpha = 0.2)+
-  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01'))+
+  scale_x_discrete(breaks = c('2013-01', '2014-01', '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', '2021-01', '2022-01', '2023-01'))+
   # facet_wrap(~year)+
   labs(title = 'Mean offset (in situ oceanSODA SST - in situ Argo SST)',
        x = 'date',

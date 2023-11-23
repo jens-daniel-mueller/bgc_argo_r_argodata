@@ -1,6 +1,6 @@
 ---
 title: "Argo Temperature Variability"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "Pasqualina Vonlanthen, David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -70,20 +70,25 @@ basinmask <- basinmask %>%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %>% 
   select(-c(MLR_basins, basin))
 
-# full argo data (temperature)
-full_argo <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
-  select(
-    -c(
-      ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-      profile_ph_in_situ_total_qc
-    )
-  )
+# # full argo data (temperature)
+# full_argo <-
+#   read_rds(file = paste0(path_argo_preprocessed, "/bgc_merge_flag_AB.rds")) %>%
+#   select(
+#     -c(
+#       ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+#       profile_ph_in_situ_total_qc
+#     )
+#   )
+# 
+# # change the date format for compatibility with OceanSODA data
+# full_argo <- full_argo %>%
+#   mutate(year = year(date),
+#          month = month(date)) %>%
+#   mutate(date = ymd(format(date, "%Y-%m-15")))
 
-# change the date format for compatibility with OceanSODA data
-full_argo <- full_argo %>%
-  mutate(year = year(date),
-         month = month(date)) %>%
+# load validated and vertically aligned temp profiles, 
+full_argo <-
+  read_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_observed.rds")) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 map <-
@@ -151,8 +156,9 @@ full_argo_SO <- inner_join(full_argo, region_masks_all_1x1)
 
 full_argo_SO <- inner_join(full_argo_SO, basinmask)
 
-full_argo_SO <- full_argo_SO %>% 
-  unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+# full_argo_SO <- full_argo_SO %>% 
+#   unite('platform_cycle', platform_number:cycle_number, sep = '_', remove = FALSE)
+
 ```
 
 ## Profiles by longitude 
@@ -163,19 +169,19 @@ full_argo_SO <- full_argo_SO %>%
 
 full_argo_SO %>% 
   group_split(biome, basin_AIP, year) %>% 
-  head(3) %>% 
+  head(12) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = lon))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = lon), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       scale_color_viridis_c()+
       facet_wrap(~month, ncol = 6)+
@@ -194,19 +200,19 @@ full_argo_SO %>%
 
 full_argo_SO %>% 
   group_split(biome, basin_AIP, year) %>% 
-  head(3) %>% 
+  head(12) %>% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = lat))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = lat), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       scale_color_viridis_c()+
       facet_wrap(~month, ncol = 6)+
@@ -231,14 +237,14 @@ full_argo_SO %>%
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = as.character(year)))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = as.character(year)), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       facet_wrap(~month, ncol = 6)+
       labs(title = paste0('biome: ', unique(.x$biome), '| basin: ', unique(.x$basin_AIP)),

@@ -359,6 +359,16 @@ shallow_temp_raw <- right_join(
   select (file_id, temp_shallow_raw = temp_adjusted)
 
 
+# Write file that are observations prior to vertical alignment 
+bgc_data_temp_full <- left_join(bgc_data_temp, bgc_metadata_select)
+
+bgc_data_temp_full %>%
+  select(file_id, lat, lon, date, year, month, depth, temp_adjusted) %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_observed.rds"))
+
+rm(bgc_data_temp_full)
+gc()
+
 
 ```
 

@@ -110,7 +110,7 @@ Read annual core temperature and metadata file. Validate profile against limits 
 
 for (target_year in opt_min_year:opt_max_year) {
 
-#target_year = 2022
+#target_year = 2023
 
 # --------------------------------------------------------------------------------
 # Read data
@@ -259,6 +259,9 @@ for (i_gap in opt_gap_limit) {
 rm(core_apply_limits, core_profile_limits, profile_gaps, profile_gaps_remove)
 gc()
 
+# create df that contains the observations prior to vertical alignment 
+core_data_temp_full <- left_join(core_data_temp, core_metadata_select)
+
 # --------------------------------------------------------------------------------
 # vertical alignment
 # --------------------------------------------------------------------------------
@@ -400,7 +403,11 @@ core_data_temp_interpolated_clean %>%
 core_temp_anomaly %>%
   write_rds(file = paste0(path_core_preprocessed, "/", target_year, "_temp_anomaly_va.rds"))
 
-rm(core_data_temp_interpolated_clean, core_temp_anomaly)
+core_data_temp_full %>%
+  select(file_id, lat, lon, date, year, month, depth, temp_adjusted) %>%
+  write_rds(file = paste0(path_core_preprocessed, "/", target_year, "_temp_core_observed.rds"))
+
+rm(core_data_temp_interpolated_clean, core_temp_anomaly, core_data_temp_full)
 
 }
 
@@ -468,7 +475,36 @@ temp_anomaly_va %>%
 rm(temp_anomaly_va)
 rm(temp_anomaly_va_yr)
 gc()
-  
+
+# ------------------------------------------------------------------------------
+# Process observed file
+# ------------------------------------------------------------------------------
+consolidated_created = 0
+
+for (target_year in opt_min_year:opt_max_year) {
+
+  # read the yearly file based on target_year
+  temp_core_observed_yr <-
+  read_rds(file = paste0(path_core_preprocessed, "/", target_year, "_temp_core_observed.rds"))
+
+  # Combine into a consolidated all years file
+  if (consolidated_created == 0) {
+    temp_core_observed <- temp_core_observed_yr
+    consolidated_created = 1
+  } else {
+    temp_core_observed <- rbind(temp_core_observed, temp_core_observed_yr)
+  }
+}
+
+# write consolidated files  
+temp_core_observed %>%
+  write_rds(file = paste0(path_core_preprocessed, "/temp_core_observed.rds"))
+
+# remove files to free space
+rm(temp_core_observed)
+rm(temp_core_observed_yr)
+gc()
+
 
 ```
 

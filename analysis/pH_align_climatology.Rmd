@@ -200,6 +200,7 @@ bgc_data_pH <- bgc_data_pH %>%
 # clean up working tables
 rm(bgc_data, bgc_metadata)
 gc()
+
 ```
 
 ## Profile limits
@@ -324,6 +325,27 @@ shallow_pH_raw <- right_join(
     ungroup()
 ) %>%
   select (file_id, pH_shallow_raw = ph_in_situ_total_adjusted)
+
+
+
+# Write file that are observations prior to vertical alignment 
+bgc_data_pH_full <- left_join(bgc_data_pH, bgc_metadata_select)
+
+bgc_data_pH_full %>%
+  select(file_id, lat, lon, date, year, month, depth, ph_in_situ_total_adjusted) %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_observed.rds"))
+
+# # also add file name and write CSV file for Joel
+# bgc_fileID <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_fileid.rds'))
+# bgc_data_pH_full <- left_join(bgc_data_pH_full, bgc_fileID)
+# 
+# bgc_data_pH_full %>%
+#   select(file_id, file, lat, lon, date, year, month, depth, ph_in_situ_total_adjusted) %>%
+#   write_csv(file = paste0(path_argo_preprocessed, "/pH_bgc_observed.csv"))
+# rm(bgc_fileID)
+  
+rm(bgc_data_pH_full)
+gc()
 
 ```
 
