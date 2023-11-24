@@ -373,7 +373,7 @@ if (opt_analysis_type == 2) {
 
 location of each cluster on map, spatial analysis
 
-```{r spatial_cluster}
+```{r spatial_cluster_01}
 
 if (opt_analysis_type == 2) {
 
@@ -387,6 +387,15 @@ map +
   scale_fill_brewer(palette = 'Dark2')+
   labs(title = 'cluster spatial distribution')
 
+}
+```
+
+location of each cluster on separate maps, spatial analysis
+
+```{r spatial_cluster_02}
+
+if (opt_analysis_type == 2) {
+
   # create figure
 map +
   geom_tile(data = temp_anomaly_cluster,
@@ -398,6 +407,15 @@ map +
   facet_wrap( ~ cluster, ncol = 2) +
   labs(title = 'cluster spatial distribution')
 
+}
+```
+
+count of measurements for each cluster on separate maps, spatial analysis
+
+```{r spatial_cluster_03}
+
+if (opt_analysis_type == 2) {
+  
   # create figure
 map +
   geom_tile(data = temp_anomaly_cluster %>% 
@@ -447,7 +465,7 @@ if (opt_analysis_type == 2) {
 
 ## Cluster by surface Extreme
 
-```{r cluster_analysis_prep}
+```{r cluster_analysis_prep_ext}
 
 # Carried out for 1500m profiles
 opt_profile_range = 3
@@ -580,7 +598,7 @@ for (i in 1:3) {
 
 ### Cluster mean
 
-```{r cluster_mean_extreme}
+```{r cluster_mean_ext}
 
 # create figure of mean clusters
 anomaly_cluster_mean_ext %>%
@@ -618,7 +636,7 @@ anomaly_cluster_mean_ext %>%
 
 ### Clusters mean by year
 
-```{r cluster_mean_extreme_year}
+```{r cluster_mean_year_ext}
 
 # cluster means by year
 anomaly_cluster_mean_year_ext %>%
@@ -654,7 +672,7 @@ anomaly_cluster_mean_year_ext %>%
 
 count of each cluster by year
 
-```{r cluster_by_year}
+```{r cluster_by_year_ext}
 
 # Determine profile count by extreme and cluster and year
 # Count the measurements
@@ -704,7 +722,7 @@ cluster_by_year %>%
 
 count of each cluster by month of year
 
-```{r cluster_by_month}
+```{r cluster_by_month_ext}
 
 # Determine profile count by cluster and year
 # Count the measurements
@@ -752,7 +770,7 @@ cluster_by_year %>%
 
 location of each cluster on map, spatial analysis
 
-```{r spatial_cluster_combined}
+```{r spatial_cluster_combined_ext}
 
 # create figure combined
 temp_anomaly_cluster_ext %>%
@@ -782,7 +800,7 @@ temp_anomaly_cluster_ext %>%
 
 location of each cluster on map, spatial analysis
 
-```{r spatial_cluster}
+```{r spatial_cluster_ext}
 
 # create figure by cluster
 temp_anomaly_cluster_ext %>%
@@ -813,7 +831,7 @@ temp_anomaly_cluster_ext %>%
 
 location of each cluster on map, spatial analysis
 
-```{r spatial_cluster}
+```{r spatial_cluster_count_ext}
 
 # create figure
 temp_anomaly_cluster_ext %>%
