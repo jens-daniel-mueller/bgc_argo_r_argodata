@@ -512,7 +512,7 @@ div.tocify {
 <h1 class="title toc-ignore">Extreme BGC-Temperature Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">15 November, 2023</h4>
+<h4 class="date">24 November, 2023</h4>
 
 </div>
 
@@ -541,7 +541,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-11-15
+<strong>Last updated:</strong> 2023-11-24
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -672,15 +672,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -690,7 +690,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -709,8 +709,13 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/start_background_job_partial.R
+
 Unstaged changes:
-    Modified:   code/start_background_job.R
+    Modified:   analysis/pH_cluster_analysis.Rmd
+    Modified:   analysis/temp_cluster_analysis.Rmd
+    Deleted:    code/start_background_job_core_load.R
 
 </code></pre>
 <p>
@@ -756,6 +761,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/3dc557de301106f339f6a491e860d9554b542946/analysis/extreme_temp.Rmd" target="_blank">3dc557d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-24
+</td>
+<td>
+Switched to new profile details.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/59f5cc4c69f9b179fbf9fcfeae117ee3d0896f10/analysis/extreme_temp.Rmd" target="_blank">59f5cc4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-23
+</td>
+<td>
+Moved spatiotemporal analysis to use aligned profiles.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/extreme_temp.html" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2831,7 +2887,11 @@ HNL_colors &lt;- c(&quot;H&quot; = &quot;#b2182b&quot;,
 
 HNL_colors_map &lt;- c(&#39;H&#39; = &#39;red3&#39;,
                     &#39;N&#39; = &#39;transparent&#39;,
-                    &#39;L&#39; = &#39;blue3&#39;)</code></pre>
+                    &#39;L&#39; = &#39;blue3&#39;)
+
+# opt_min_profile_range
+# profiles with profile_range &gt;= opt_min_profile_range will be selected 1 = profiles of at least 600m, 2 = profiles of at least 1200m, 3 = profiles of at least 1500m
+opt_min_profile_range = 3</code></pre>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -2878,28 +2938,35 @@ OceanSODA_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/Ocean
 OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
   mutate(month = month(date))
 
-# Argo flag A profiles
-
+# load validated and vertically aligned temp profiles, 
 full_argo &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
-
-full_argo &lt;- full_argo %&gt;%
-  select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-            profile_ph_in_situ_total_qc))
-
-# change the date format for compatibility with OceanSODA data
-full_argo &lt;- full_argo %&gt;%
-  mutate(year = year(date),
-         month = month(date)) %&gt;%
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_bgc_va.rds&quot;)) %&gt;%
+  filter(profile_range &gt;= opt_min_profile_range) %&gt;%
   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
-# load in bgc-temperature data with profile QC flags of A and B, irrespective of whether a corresponding pH measurement exists 
-argo_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
 
-argo_temp &lt;- argo_temp %&gt;%
-  mutate(year = year(date),
-         month = month(date)) %&gt;%
-  mutate(date = ymd(format(date, &#39;%Y-%m-15&#39;)))
+# # Argo flag A profiles
+# full_argo &lt;-
+#   read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;))
+# 
+# full_argo &lt;- full_argo %&gt;%
+#   select(-c(ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+#             profile_ph_in_situ_total_qc))
+# 
+# # change the date format for compatibility with OceanSODA data
+# full_argo &lt;- full_argo %&gt;%
+#   mutate(year = year(date),
+#          month = month(date)) %&gt;%
+#   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
+# 
+# 
+# # load in bgc-temperature data with profile QC flags of A and B, irrespective of whether a corresponding pH measurement exists 
+# argo_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_temp_AB.rds&quot;))
+# 
+# argo_temp &lt;- argo_temp %&gt;%
+#   mutate(year = year(date),
+#          month = month(date)) %&gt;%
+#   mutate(date = ymd(format(date, &#39;%Y-%m-15&#39;)))
 
 # base map for plotting
 map &lt;-
@@ -8295,6 +8362,100 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
+<div id="global-anomaly-identification" class="section level2">
+<h2>Global anomaly identification</h2>
+<pre class="r"><code># Check valid temperature
+OceanSODA_temp &lt;- OceanSODA_temp %&gt;% 
+   filter(!is.na(temperature))
+
+# fit a linear regression of OceanSODA temp against time (temporal trend)
+# in each lat/lon/month grid
+
+# create a decimal_year column to use are the parameter to the regression function
+OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
+  mutate(decimal_year = decimal_date(date), .after = year)
+
+OceanSODA_temp_regression &lt;- OceanSODA_temp %&gt;% 
+  nest(data = -c(lon, lat)) %&gt;%
+  mutate(fit = map(.x = data,
+                   .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
+         tidied = map(.x = fit, .f = tidy),
+         glanced = map(.x = fit, .f = glance),
+         augmented = map(.x = fit, .f = augment)) 
+
+OceanSODA_temp_regression_tidied &lt;- OceanSODA_temp_regression %&gt;%
+  select(-c(data, fit, augmented, glanced)) %&gt;%
+  unnest(tidied) 
+
+OceanSODA_temp_regression_tidied &lt;- OceanSODA_temp_regression_tidied %&gt;% 
+  select(lon:estimate) %&gt;% 
+  pivot_wider(names_from = term,
+              values_from = estimate) %&gt;% 
+  rename(intercept = `(Intercept)`,
+         slope = decimal_year)
+
+OceanSODA_temp_regression_augmented &lt;- OceanSODA_temp_regression %&gt;%
+  select(-c(fit, tidied, glanced, data)) %&gt;%
+  unnest(augmented) %&gt;% 
+  select(lon:decimal_year, .resid) 
+
+OceanSODA_temp_regression_data &lt;- OceanSODA_temp_regression %&gt;% 
+  select(-c(fit, tidied, glanced, augmented)) %&gt;% 
+  unnest(data) 
+
+OceanSODA_temp_regression_augmented &lt;- bind_cols(
+  OceanSODA_temp_regression_augmented,
+  OceanSODA_temp_regression_data %&gt;% 
+    select(date,
+           temperature, clim_temp, 
+           lat_raw, lon_raw))
+
+OceanSODA_temp_regression_glanced &lt;- OceanSODA_temp_regression %&gt;%
+  select(-c(data, fit, tidied, augmented)) %&gt;%
+  unnest(glanced) 
+
+# Anomally identification
+
+# when the in-situ OceanSODA temperature is lower than the 5th percentile (predicted - 2*residual.st.dev), assign &#39;L&#39; for low extreme
+# when the in-situ OceanSODA temperature exceeds the 95th percentile (predicted + 2*residual.st.dev), assign &#39;H&#39; for high extreme
+# when the in-situ OceanSODA temperature is within 95% of the range, then assign &#39;N&#39; for normal pH
+
+# combine observations and regression statistics
+OceanSODA_temp_extreme_grid &lt;-
+  full_join(
+    OceanSODA_temp_regression_augmented,
+    OceanSODA_temp_regression_glanced %&gt;%
+      select(lon:lat, sigma)
+  )
+
+# identify observations in anomaly classes
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
+  mutate(
+    temp_extreme = case_when(
+      .resid &lt; -sigma*2 ~ &#39;L&#39;,
+      .resid &gt; sigma*2 ~ &#39;H&#39;,
+      TRUE ~ &#39;N&#39;
+    )
+  ) 
+
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
+  mutate(temp_extreme = fct_relevel(temp_extreme, &quot;H&quot;, &quot;N&quot;, &quot;L&quot;))
+
+# combine with regression coefficients
+OceanSODA_temp_extreme_grid &lt;-
+  full_join(OceanSODA_temp_extreme_grid,
+            OceanSODA_temp_regression_tidied) 
+
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
+  mutate(year = year(date),
+         month = month(date),
+         .after = decimal_year)
+
+
+# Write anomalies to file
+OceanSODA_temp_extreme_grid %&gt;% 
+  write_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA_global_SST_anomaly_field.rds&quot;))</code></pre>
+</div>
 <div id="anomaly-maps" class="section level2">
 <h2>Anomaly maps</h2>
 <pre class="r"><code># anomaly maps on a 1x1 grid 
@@ -10399,7 +10560,7 @@ pasqualina-vonlanthendinenna
 </div>
 <div id="anomaly-timeseries" class="section level2">
 <h2>Anomaly timeseries</h2>
-<pre class="r"><code># calculate a regional mean temperature for each biome, basin, and ph extreme (H/L/N) and plot a timeseries 
+<pre class="r"><code># calculate a regional mean temperature for each biome, basin, and temp extreme (H/L/N) and plot a timeseries 
 
 OceanSODA_temp_SO_extreme_grid %&gt;% 
   group_by(year, biome_name, basin_AIP, temp_extreme) %&gt;% 
@@ -10878,8 +11039,8 @@ pasqualina-vonlanthendinenna
 </div>
 </div>
 </div>
-<div id="argo-bgc-temperature-with-ph" class="section level1">
-<h1>Argo (BGC-temperature with pH)</h1>
+<div id="argo-bgc-temperature" class="section level1">
+<h1>Argo (BGC-temperature)</h1>
 <div id="grid-reduction-1" class="section level2">
 <h2>Grid reduction</h2>
 <pre class="r"><code># Note: While reducing lon x lat grid,
@@ -10921,23 +11082,28 @@ OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
 
 # combine the argo profile data to the surface extreme data
 profile_temp_extreme &lt;- inner_join(
-  full_argo %&gt;% 
-    select(c(year, month, date, lon, lat, depth,
-           temp_adjusted,
-           platform_number,
-           cycle_number)),                 # 567 327 obs 
+  full_argo %&gt;%
+    select(
+      file_id, 
+      year, 
+      month, 
+      date, 
+      lon, 
+      lat, 
+      depth, 
+      temp
+      ),
   OceanSODA_temp_SO_extreme_grid %&gt;% 
     select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
            clim_temp, clim_diff,
            basin_AIP, biome_name)))
 
-profile_temp_extreme &lt;- profile_temp_extreme %&gt;% 
-  unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
+# profile_temp_extreme &lt;- profile_temp_extreme %&gt;% 
+#   unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
 </div>
-<div id="location-of-bgc-temperature-profiles-with-ph"
-class="section level1">
-<h1>Location of BGC-temperature profiles (with pH)</h1>
+<div id="location-of-bgc-temperature-profiles" class="section level1">
+<h1>Location of BGC-temperature profiles</h1>
 <pre class="r"><code>OceanSODA_temp_SO_extreme_grid %&gt;%
   group_split(month) %&gt;%
   # head(1) %&gt;%
@@ -10954,7 +11120,7 @@ class="section level1">
       new_scale_fill() +
       geom_tile(
         data = profile_temp_extreme %&gt;%
-          distinct(lon, lat, platform_cycle, year, month),
+          distinct(lon, lat, file_id, year, month),
         aes(
           x = lon,
           y = lat,
@@ -12911,15 +13077,15 @@ recorded in OceanSODA</p>
   map(
     ~ ggplot() +
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;N&#39;),
-                aes(x = temp_adjusted, 
+                aes(x = temp, 
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = temp_extreme),
                 size = 0.3) +
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;H&#39; | temp_extreme == &#39;L&#39;),
-                aes(x = temp_adjusted,
+                aes(x = temp,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = temp_extreme),
                 size = 0.5)+
       scale_y_reverse() +
@@ -13766,20 +13932,20 @@ pasqualina-vonlanthendinenna
          biome_name == &#39;STSS&#39;) 
 
 profile_temp_Atl_2017 %&gt;% 
-  ggplot(aes(x = temp_adjusted,
+  ggplot(aes(x = temp,
              y = depth,
-             group = platform_cycle,
+             group = file_id,
              col = temp_extreme))+
   geom_path(data = profile_temp_Atl_2017 %&gt;% filter(temp_extreme == &#39;N&#39;),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = temp_extreme),
             size = 0.3)+
   geom_path(data = profile_temp_Atl_2017 %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth,
-                group = platform_cycle,
+                group = file_id,
                 col = temp_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -13926,20 +14092,20 @@ profile_temp_Atl_2016 &lt;- profile_temp_extreme %&gt;%
          biome_name == &#39;SPSS&#39;) 
 
 profile_temp_Atl_2016 %&gt;% 
-  ggplot(aes(x = temp_adjusted,
+  ggplot(aes(x = temp,
              y = depth,
-             group = platform_cycle,
+             group = file_id,
              col = temp_extreme))+
   geom_path(data = profile_temp_Atl_2016 %&gt;% filter(temp_extreme == &#39;N&#39;),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth, 
-                group = platform_cycle,
+                group = file_id,
                 col = temp_extreme),
             size = 0.3)+
   geom_path(data = profile_temp_Atl_2016 %&gt;% filter(temp_extreme == &#39;H&#39;|temp_extreme == &#39;L&#39;),
-            aes(x = temp_adjusted,
+            aes(x = temp,
                 y = depth, 
-                group = platform_cycle,
+                group = file_id,
                 col = temp_extreme),
             size = 0.5)+
   scale_y_reverse()+
@@ -13961,15 +14127,15 @@ rm(profile_temp_Atl_2016, OceanSODA_temp_SO_extreme_grid_2016)</code></pre>
 # Sep, Oct, Nov &lt;- spring 
 
 profile_temp_extreme &lt;- profile_temp_extreme %&gt;%
-  mutate(
-    depth = Hmisc::cut2(
-      depth,
-      cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
-      levels.mean = TRUE,
-      digits = 3
-    ),
-    depth = as.numeric(as.character(depth))
-  ) %&gt;%
+  # mutate(
+  #   depth = Hmisc::cut2(
+  #     depth,
+  #     cuts = c(10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000, 2500),
+  #     levels.mean = TRUE,
+  #     digits = 3
+  #   ),
+  #   depth = as.numeric(as.character(depth))
+  # ) %&gt;%
   mutate(
     season = case_when(
       between(month, 3, 5) ~ &#39;autumn&#39;,
@@ -13989,8 +14155,8 @@ profile_temp_extreme &lt;- profile_temp_extreme %&gt;%
 <h3>Overall mean</h3>
 <pre class="r"><code>profile_temp_extreme_mean &lt;- profile_temp_extreme %&gt;%
   group_by(temp_extreme, depth) %&gt;%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
-            temp_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(temp_mean = mean(temp, na.rm = TRUE),
+            temp_std = sd(temp, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_temp_extreme_mean %&gt;%
@@ -14294,7 +14460,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_temp_extreme_mean)</code></pre>
 <p>Number of profiles</p>
 <pre class="r"><code>profile_temp_count_mean &lt;- profile_temp_extreme %&gt;% 
-  distinct(temp_extreme, platform_number, cycle_number) %&gt;% 
+  distinct(temp_extreme, file_id) %&gt;% 
   count(temp_extreme)
 
 profile_temp_count_mean %&gt;% 
@@ -14566,8 +14732,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># calculate surface-mean argo SST, for each profile 
 surface_temp_mean &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(temp_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(argo_surf_temp = mean(temp_adjusted, na.rm = TRUE),
+  group_by(temp_extreme, file_id) %&gt;% 
+  summarise(argo_surf_temp = mean(temp, na.rm = TRUE),
             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
 
 surface_temp_mean %&gt;% 
@@ -15396,8 +15562,8 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>profile_temp_extreme_mean_jan &lt;- profile_temp_extreme %&gt;%
   filter(month == 1) %&gt;% 
   group_by(temp_extreme, depth) %&gt;%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
-            temp_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(temp_mean = mean(temp, na.rm = TRUE),
+            temp_std = sd(temp, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_temp_extreme_mean_jan %&gt;%
@@ -15425,8 +15591,8 @@ rm(profile_temp_extreme_mean_jan)</code></pre>
 <h3>Season x Mayot biome</h3>
 <pre class="r"><code>profile_temp_extreme_biome &lt;- profile_temp_extreme %&gt;% 
   group_by(season_order, season, biome_name, temp_extreme, depth) %&gt;% 
-  summarise(temp_biome = mean(temp_adjusted, na.rm = TRUE),
-            temp_std_biome = sd(temp_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(temp_biome = mean(temp, na.rm = TRUE),
+            temp_std_biome = sd(temp, na.rm = TRUE)) %&gt;% 
   ungroup()
   
 facet_label &lt;- as_labeller(c(&quot;1&quot;=&quot;summer&quot;, 
@@ -15605,7 +15771,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_temp_extreme_biome)</code></pre>
 <p>Number of profiles per season per Mayot biome</p>
 <pre class="r"><code>profile_temp_count_biome &lt;- profile_temp_extreme %&gt;% 
-  distinct(season_order, season, biome_name, temp_extreme, platform_number, cycle_number) %&gt;%
+  distinct(season_order, season, biome_name, temp_extreme, file_id) %&gt;%
   group_by(season_order, season, biome_name, temp_extreme) %&gt;% 
   count(temp_extreme)
 
@@ -15747,8 +15913,8 @@ pasqualina-vonlanthendinenna
 m)</p>
 <pre class="r"><code>surface_temp_biome &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season_order, season, biome_name, temp_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(argo_surf_temp = mean(temp_adjusted, na.rm=TRUE),
+  group_by(season_order, season, biome_name, temp_extreme, file_id) %&gt;% 
+  summarise(argo_surf_temp = mean(temp, na.rm=TRUE),
             OceanSODA_surf_temp = mean(OceanSODA_temp, na.rm = TRUE))
 
 surface_temp_biome %&gt;% 
@@ -16158,8 +16324,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x basin</h3>
 <pre class="r"><code>profile_temp_extreme_basin &lt;- profile_temp_extreme %&gt;% 
   group_by(season_order, season, basin_AIP, temp_extreme, depth) %&gt;% 
-  summarise(temp_basin = mean(temp_adjusted, na.rm = TRUE),
-            temp_basin_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;% 
+  summarise(temp_basin = mean(temp, na.rm = TRUE),
+            temp_basin_std = sd(temp, na.rm = TRUE)) %&gt;% 
   ungroup()
 
 profile_temp_extreme_basin %&gt;% 
@@ -16477,7 +16643,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code>rm(profile_temp_extreme_basin)</code></pre>
 <p>Number of profiles season x basin</p>
 <pre class="r"><code>profile_temp_count_basin &lt;- profile_temp_extreme %&gt;% 
-  distinct(season_order, season, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
+  distinct(season_order, season, basin_AIP, temp_extreme, file_id) %&gt;% 
   group_by(season_order, season, basin_AIP, temp_extreme) %&gt;% 
   count(temp_extreme)
 
@@ -16760,11 +16926,11 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># rm(profile_temp_count_basin)</code></pre>
 <p>Surface Argo temperature vs surface OceanSODA temperature (20 m)
 season x basin</p>
-<pre class="r"><code># calculate surface-mean argo pH to compare against OceanSODA surface pH (one value)
+<pre class="r"><code># calculate surface-mean argo temp to compare against OceanSODA surface temp (one value)
 surface_temp_basin &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
-  group_by(season_order, season, basin_AIP, temp_extreme, platform_number, cycle_number) %&gt;% 
-  summarise(surf_argo_temp = mean(temp_adjusted, na.rm=TRUE),
+  group_by(season_order, season, basin_AIP, temp_extreme, file_id) %&gt;% 
+  summarise(surf_argo_temp = mean(temp, na.rm=TRUE),
             surf_OceanSODA_temp = mean(OceanSODA_temp, na.rm = TRUE)) 
 
 surface_temp_basin %&gt;% 
@@ -17625,8 +17791,8 @@ pasqualina-vonlanthendinenna
 <h3>Season x Mayot biome x Basin</h3>
 <pre class="r"><code>profile_temp_extreme_season &lt;- profile_temp_extreme %&gt;%
   group_by(season_order, season, biome_name, basin_AIP, temp_extreme, depth) %&gt;%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
-            temp_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(temp_mean = mean(temp, na.rm = TRUE),
+            temp_std = sd(temp, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_temp_extreme_season %&gt;%
@@ -18196,7 +18362,7 @@ pasqualina-vonlanthendinenna
 <p>Number of profiles season x Mayot biome x basin</p>
 <pre class="r"><code>profile_temp_count_season &lt;- profile_temp_extreme %&gt;% 
   distinct(season_order, season, biome_name, basin_AIP,
-           temp_extreme, platform_number, cycle_number) %&gt;% 
+           temp_extreme, file_id) %&gt;% 
   group_by(season_order, season, biome_name, basin_AIP, temp_extreme) %&gt;% 
   count(temp_extreme)
 
@@ -18668,7 +18834,7 @@ pasqualina-vonlanthendinenna
 <pre class="r"><code># rm(profile_temp_count_season)</code></pre>
 <p>Surface Argo temperature vs surface OceanSODA temperature (20m) in
 each season, Mayot biome, basin</p>
-<pre class="r"><code># calculate surface-mean argo pH, for each season x biome x basin x ph extreme 
+<pre class="r"><code># calculate surface-mean argo temp, for each season x biome x basin x temp extreme 
 surface_temp_season &lt;- profile_temp_extreme %&gt;% 
   filter(depth &lt;= 20) %&gt;% 
   group_by(season_order, 
@@ -18676,9 +18842,8 @@ surface_temp_season &lt;- profile_temp_extreme %&gt;%
            basin_AIP, 
            biome_name, 
            temp_extreme,  
-           platform_number, 
-           cycle_number) %&gt;%  
-  summarise(surf_argo_temp = mean(temp_adjusted, na.rm=TRUE),
+           file_id) %&gt;%  
+  summarise(surf_argo_temp = mean(temp, na.rm=TRUE),
             surf_OceanSODA_temp = mean(OceanSODA_temp, na.rm = TRUE)) 
 
 surface_temp_season %&gt;% 
@@ -20500,8 +20665,8 @@ class="section level3">
 <pre class="r"><code>profile_temp_extreme_biome_basin_jan &lt;- profile_temp_extreme %&gt;%
   filter(month == 1) %&gt;% 
   group_by(biome_name, basin_AIP, temp_extreme, depth) %&gt;%
-  summarise(temp_mean = mean(temp_adjusted, na.rm = TRUE),
-            temp_std = sd(temp_adjusted, na.rm = TRUE)) %&gt;%
+  summarise(temp_mean = mean(temp, na.rm = TRUE),
+            temp_std = sd(temp, na.rm = TRUE)) %&gt;%
   ungroup()
 
 profile_temp_extreme_biome_basin_jan %&gt;%
@@ -20533,46 +20698,96 @@ profile_temp_extreme_biome_basin_jan %&gt;%
 temperature climatology</p>
 <div id="argo-profiles" class="section level2">
 <h2>Argo profiles</h2>
-<pre class="r"><code>profile_temp_extreme_binned &lt;- profile_temp_extreme %&gt;%
-  group_by(lon, lat, year, month, platform_cycle,
-           biome_name, basin_AIP, temp_extreme,
-           depth) %&gt;%
-  summarize(temp_adjusted_binned = mean(temp_adjusted, na.rm = TRUE)) %&gt;%
-  ungroup()</code></pre>
+<pre class="r"><code># profile_temp_extreme_binned &lt;- profile_temp_extreme %&gt;%
+#   group_by(lon, lat, year, month, file_id,
+#            biome_name, basin_AIP, temp_extreme,
+#            depth) %&gt;%
+#   summarize(temp_adjusted_binned = mean(temp_adjusted, na.rm = TRUE)) %&gt;%
+#   ungroup()</code></pre>
 </div>
 <div id="argo-climatology" class="section level2">
 <h2>ARGO climatology</h2>
-<pre class="r"><code>boa_temp_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/boa_temp_clim.rds&#39;))
-
-# compatibility with profile_temp_extreme_jan
-boa_temp_clim_SO &lt;- boa_temp_clim %&gt;% 
-  filter(lat &lt;= -30) %&gt;% 
-  mutate(depth_boa = depth)
-
-# grid average climatological temp into the argo depth bins 
-boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;%
-  mutate(
-    depth = cut(
-      depth_boa,
-      breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
-      include.lowest = TRUE,
-      labels = as.factor(unique(profile_temp_extreme$depth))[1:12]
-    ),
-    depth = as.numeric(as.character(depth))
-  )
+<pre class="r"><code># boa_temp_clim &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/boa_temp_clim.rds&#39;))
+# 
+# # compatibility with profile_temp_extreme_jan
+# boa_temp_clim_SO &lt;- boa_temp_clim %&gt;% 
+#   filter(lat &lt;= -30) %&gt;% 
+#   mutate(depth_boa = depth)
+# 
+# # grid average climatological temp into the argo depth bins 
+# boa_temp_clim_SO &lt;- boa_temp_clim_SO %&gt;%
+#   mutate(
+#     depth = cut(
+#       depth_boa,
+#       breaks = c(0, 10, 20, 30, 50, 70, 100, 300, 500, 800, 1000, 1500, 2000),
+#       include.lowest = TRUE,
+#       labels = as.factor(unique(profile_temp_extreme$depth))[1:12]
+#     ),
+#     depth = as.numeric(as.character(depth))
+#   )
 
 
 # calculate mean climatological pH per depth bin
-boa_temp_clim_SO_binned &lt;- boa_temp_clim_SO %&gt;% 
-  group_by(lon, lat, depth, month) %&gt;% 
-  summarise(clim_temp_binned = mean(clim_temp, na.rm = TRUE)) %&gt;%
-  ungroup()
+# boa_temp_clim_SO_binned &lt;- boa_temp_clim_SO %&gt;% 
+#   group_by(lon, lat, depth, month) %&gt;% 
+#   summarise(clim_temp_binned = mean(clim_temp, na.rm = TRUE)) %&gt;%
+#   ungroup()
+# 
+# 
+# # join climatology and ARGO profiles
+# 
+# remove_clim &lt;- inner_join(profile_temp_extreme_binned,
+#                               boa_temp_clim_SO_binned)
 
+remove_clim &lt;-
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_anomaly_va.rds&quot;)) %&gt;%
+  filter(profile_range &gt;= opt_min_profile_range) %&gt;%
+  mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
-# join climatology and ARGO profiles
+remove_clim &lt;- inner_join(
+  remove_clim %&gt;%
+    select(
+      file_id, 
+      year, 
+      month, 
+      date, 
+      lon, 
+      lat, 
+      depth, 
+      temp,
+      clim_temp,
+      anomaly
+      ),
+  OceanSODA_temp_SO_extreme_grid %&gt;%
+    select(
+      year,
+      month,
+      date,
+      lon,
+      lat,
+      OceanSODA_temp,
+      temp_extreme,
+      biome_name,
+      basin_AIP
+    )
+)
 
-remove_clim &lt;- inner_join(profile_temp_extreme_binned,
-                              boa_temp_clim_SO_binned)</code></pre>
+remove_clim &lt;- remove_clim %&gt;%
+  mutate(
+    season = case_when(
+      between(month, 3, 5) ~ &#39;autumn&#39;,
+      between(month, 6, 8) ~ &#39;winter&#39;,
+      between(month, 9, 11) ~ &#39;spring&#39;,
+      month == 12 | 1 | 2 ~ &#39;summer&#39;
+    ),
+    season_order = case_when(
+      between(month, 3, 5) ~ 2,
+      between(month, 6, 8) ~ 3,
+      between(month, 9, 11) ~ 4,
+      month == 12 | 1 | 2 ~ 1
+    ),
+    .after = date
+  ) </code></pre>
 </div>
 <div id="profiles" class="section level2">
 <h2>Profiles</h2>
@@ -20589,9 +20804,9 @@ Argo profiles colored by H/N/L classification</p>
         data = .x %&gt;%
           filter(temp_extreme == &#39;N&#39;),
         aes(
-          x = temp_adjusted_binned,
+          x = temp,
           y = depth,
-          group = platform_cycle,
+          group = file_id,
           col = temp_extreme
         ),
         size = 0.3
@@ -20600,16 +20815,16 @@ Argo profiles colored by H/N/L classification</p>
         data = .x %&gt;%
           filter(temp_extreme == &#39;H&#39; | temp_extreme == &#39;L&#39;),
         aes(
-          x = temp_adjusted_binned,
+          x = temp,
           y = depth,
-          group = platform_cycle,
+          group = file_id,
           col = temp_extreme
         ),
         size = 0.5
       ) +
       geom_point(
         data = .x,
-        aes(x = clim_temp_binned,
+        aes(x = clim_temp,
             y = depth,
             col = temp_extreme),
         size = 0.5
@@ -21751,20 +21966,20 @@ pasqualina-vonlanthendinenna
 </div>
 <pre class="r"><code># calculate the difference between the binned climatological argo and in-situ argo for each depth level and grid cell 
 
-remove_clim &lt;- remove_clim %&gt;% 
-  mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_binned,
-          season = case_when(
-                between(month, 3, 5) ~ &#39;autumn&#39;,
-                between(month, 6, 8) ~ &#39;winter&#39;,
-                between(month, 9, 11) ~ &#39;spring&#39;,
-                month == 12 | 1 | 2 ~ &#39;summer&#39;),
-          season_order = case_when(
-                between(month, 3, 5) ~ 2,
-                between(month, 6, 8) ~ 3,
-                between(month, 9, 11) ~ 4,
-                month == 12 | 1 | 2 ~ 1
-          )
-         )</code></pre>
+# remove_clim &lt;- remove_clim %&gt;% 
+#   mutate(argo_temp_anomaly = temp_adjusted_binned - clim_temp_binned,
+#           season = case_when(
+#                 between(month, 3, 5) ~ &#39;autumn&#39;,
+#                 between(month, 6, 8) ~ &#39;winter&#39;,
+#                 between(month, 9, 11) ~ &#39;spring&#39;,
+#                 month == 12 | 1 | 2 ~ &#39;summer&#39;),
+#           season_order = case_when(
+#                 between(month, 3, 5) ~ 2,
+#                 between(month, 6, 8) ~ 3,
+#                 between(month, 9, 11) ~ 4,
+#                 month == 12 | 1 | 2 ~ 1
+#           )
+#          )</code></pre>
 </div>
 <div id="anomaly" class="section level3">
 <h3>Anomaly</h3>
@@ -21774,15 +21989,15 @@ remove_clim &lt;- remove_clim %&gt;%
   map(
     ~ggplot()+
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;N&#39;),
-                aes(x = argo_temp_anomaly,
+                aes(x = anomaly,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = temp_extreme),
                 size = 0.2)+
       geom_path(data = .x %&gt;% filter(temp_extreme == &#39;H&#39;| temp_extreme == &#39;L&#39;),
-                 aes(x = argo_temp_anomaly,
+                 aes(x = anomaly,
                      y = depth,
-                     group = platform_cycle,
+                     group = file_id,
                      col = temp_extreme),
                  size = 0.3)+
       geom_vline(xintercept = 0)+
@@ -22981,8 +23196,8 @@ pasqualina-vonlanthendinenna
 <h3>Overall mean anomaly</h3>
 <pre class="r"><code>remove_clim_overall_mean &lt;- remove_clim %&gt;% 
   group_by(temp_extreme, depth) %&gt;% 
-  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
+  summarise(temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
 remove_clim_overall_mean %&gt;% 
   ggplot()+
@@ -23288,8 +23503,8 @@ pasqualina-vonlanthendinenna
 <h3>Biome x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_biome_mean &lt;- remove_clim %&gt;% 
   group_by(temp_extreme, depth, season_order, season, biome_name) %&gt;% 
-  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
+  summarise(temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
 remove_clim_biome_mean %&gt;% 
   ggplot(aes(x = temp_anomaly_mean,
@@ -23605,8 +23820,8 @@ pasqualina-vonlanthendinenna
 <h3>Basin x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_basin_mean &lt;- remove_clim %&gt;% 
   group_by(basin_AIP, temp_extreme, depth, season_order, season) %&gt;% 
-  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
+  summarise(temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
 remove_clim_basin_mean %&gt;% 
   ggplot(aes(x = temp_anomaly_mean,
@@ -23918,8 +24133,8 @@ pasqualina-vonlanthendinenna
 <h3>Basin x biome x season mean anomaly</h3>
 <pre class="r"><code>remove_clim_basin_biome_mean &lt;- remove_clim %&gt;% 
   group_by(basin_AIP, biome_name, temp_extreme, season_order, season, depth) %&gt;% 
-  summarise(temp_anomaly_mean = mean(argo_temp_anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(argo_temp_anomaly, na.rm = TRUE))
+  summarise(temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
 remove_clim_basin_biome_mean %&gt;% 
   group_by(season_order) %&gt;% 
@@ -24595,8 +24810,7 @@ class="section level1">
   argo_temp %&gt;% 
     select(c(year, month, date, lon, lat, depth,
            temp_adjusted,
-           platform_number,
-           cycle_number)),                 # 567 327 obs 
+           file_id)),                 # 567 327 obs 
   OceanSODA_temp_SO_extreme_grid %&gt;% 
     select(c(year, month, date, lon, lat,
            OceanSODA_temp, temp_extreme,
@@ -24642,1145 +24856,6 @@ class="section level1">
       labs(title = paste(&#39;month:&#39;, unique(.x$month))
       )
   )</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-1">
-Past versions of map_all_temp_profiles-1.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-1.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-2">
-Past versions of map_all_temp_profiles-2.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-2.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-3">
-Past versions of map_all_temp_profiles-3.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-3.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[4]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-4">
-Past versions of map_all_temp_profiles-4.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-4.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[5]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-5">
-Past versions of map_all_temp_profiles-5.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-5.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[6]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-6">
-Past versions of map_all_temp_profiles-6.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-6.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[7]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-7">
-Past versions of map_all_temp_profiles-7.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-7.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[8]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-8">
-Past versions of map_all_temp_profiles-8.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-8.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[9]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-9">
-Past versions of map_all_temp_profiles-9.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-9.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[10]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-10">
-Past versions of map_all_temp_profiles-10.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-10.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[11]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-11">
-Past versions of map_all_temp_profiles-11.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-11.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[12]]</code></pre>
-<p><img src="figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_all_temp_profiles-12">
-Past versions of map_all_temp_profiles-12.png
-</button>
-</p>
-<div id="fig-map_all_temp_profiles-12" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">15c1d68</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2f4ea7e0c9f6cbd08d24fd63fbd476586a238e3b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">2f4ea7e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-19
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4b55c43b07570111ff3dfa2d5d811936fd691ae8/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">4b55c43</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1ae81b36ae3dbe954c1d574aad7d0ff88725e46b/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">1ae81b3</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44f57206f0b67114274b0c90b9a1083d29fbef29/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">44f5720</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/extreme_temp.Rmd/map_all_temp_profiles-12.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -25792,7 +24867,7 @@ Session information
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.4
+Running under: openSUSE Leap 15.5
 
 Matrix products: default
 BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
@@ -25818,43 +24893,37 @@ other attached packages:
 [21] tidyverse_1.3.2  
 
 loaded via a namespace (and not attached):
-  [1] googledrive_2.0.0   colorspace_2.0-3    deldir_1.0-6       
-  [4] ellipsis_0.3.2      class_7.3-20        rprojroot_2.0.3    
-  [7] htmlTable_2.4.1     base64enc_0.1-3     fs_1.5.2           
- [10] rstudioapi_0.15.0   proxy_0.4-27        farver_2.1.1       
- [13] bit64_4.0.5         fansi_1.0.3         xml2_1.3.3         
- [16] splines_4.2.2       codetools_0.2-18    cachem_1.0.6       
- [19] knitr_1.41          polyclip_1.10-4     Formula_1.2-4      
- [22] jsonlite_1.8.3      workflowr_1.7.0     cluster_2.1.4      
- [25] dbplyr_2.2.1        png_0.1-8           rgeos_0.5-9        
- [28] compiler_4.2.2      httr_1.4.4          backports_1.4.1    
- [31] Matrix_1.5-3        assertthat_0.2.1    fastmap_1.1.0      
- [34] gargle_1.2.1        cli_3.6.1           later_1.3.0        
- [37] tweenr_2.0.2        htmltools_0.5.3     tools_4.2.2        
- [40] gtable_0.3.1        glue_1.6.2          Rcpp_1.0.10        
- [43] cellranger_1.1.0    jquerylib_0.1.4     raster_3.6-11      
- [46] vctrs_0.6.4         xfun_0.35           rvest_1.0.3        
- [49] lifecycle_1.0.3     googlesheets4_1.0.1 terra_1.7-39       
- [52] MASS_7.3-58.1       scales_1.2.1        vroom_1.6.0        
- [55] hms_1.1.2           promises_1.2.0.1    parallel_4.2.2     
- [58] RColorBrewer_1.1-3  yaml_2.3.6          gridExtra_2.3      
- [61] memoise_2.0.1       sass_0.4.4          rpart_4.1.19       
- [64] latticeExtra_0.6-30 stringi_1.7.8       highr_0.9          
- [67] e1071_1.7-12        checkmate_2.1.0     rlang_1.1.1        
- [70] pkgconfig_2.0.3     evaluate_0.18       lattice_0.20-45    
- [73] sf_1.0-9            htmlwidgets_1.5.4   labeling_0.4.2     
- [76] bit_4.0.5           tidyselect_1.2.0    magrittr_2.0.3     
- [79] R6_2.5.1            Hmisc_4.7-2         generics_0.1.3     
- [82] DBI_1.1.3           foreign_0.8-83      pillar_1.9.0       
- [85] haven_2.5.1         whisker_0.4         withr_2.5.0        
- [88] units_0.8-0         nnet_7.3-18         survival_3.4-0     
- [91] sp_1.5-1            modelr_0.1.10       crayon_1.5.2       
- [94] interp_1.1-3        KernSmooth_2.23-20  utf8_1.2.2         
- [97] tzdb_0.3.0          rmarkdown_2.18      jpeg_0.1-10        
-[100] grid_4.2.2          readxl_1.4.1        data.table_1.14.6  
-[103] git2r_0.30.1        reprex_2.0.2        digest_0.6.30      
-[106] classInt_0.4-8      httpuv_1.6.6        munsell_0.5.0      
-[109] viridisLite_0.4.1   bslib_0.4.1        </code></pre>
+ [1] googledrive_2.0.0   colorspace_2.0-3    ellipsis_0.3.2     
+ [4] class_7.3-20        rprojroot_2.0.3     fs_1.5.2           
+ [7] rstudioapi_0.15.0   proxy_0.4-27        farver_2.1.1       
+[10] bit64_4.0.5         fansi_1.0.3         xml2_1.3.3         
+[13] codetools_0.2-18    cachem_1.0.6        knitr_1.41         
+[16] polyclip_1.10-4     jsonlite_1.8.3      workflowr_1.7.0    
+[19] dbplyr_2.2.1        rgeos_0.5-9         compiler_4.2.2     
+[22] httr_1.4.4          backports_1.4.1     assertthat_0.2.1   
+[25] fastmap_1.1.0       gargle_1.2.1        cli_3.6.1          
+[28] later_1.3.0         tweenr_2.0.2        htmltools_0.5.3    
+[31] tools_4.2.2         gtable_0.3.1        glue_1.6.2         
+[34] Rcpp_1.0.10         cellranger_1.1.0    jquerylib_0.1.4    
+[37] raster_3.6-11       vctrs_0.6.4         xfun_0.35          
+[40] rvest_1.0.3         lifecycle_1.0.3     googlesheets4_1.0.1
+[43] terra_1.7-39        MASS_7.3-58.1       scales_1.2.1       
+[46] vroom_1.6.0         hms_1.1.2           promises_1.2.0.1   
+[49] parallel_4.2.2      RColorBrewer_1.1-3  yaml_2.3.6         
+[52] memoise_2.0.1       sass_0.4.4          stringi_1.7.8      
+[55] highr_0.9           e1071_1.7-12        checkmate_2.1.0    
+[58] rlang_1.1.1         pkgconfig_2.0.3     evaluate_0.18      
+[61] lattice_0.20-45     sf_1.0-9            labeling_0.4.2     
+[64] bit_4.0.5           tidyselect_1.2.0    magrittr_2.0.3     
+[67] R6_2.5.1            generics_0.1.3      DBI_1.1.3          
+[70] pillar_1.9.0        haven_2.5.1         whisker_0.4        
+[73] withr_2.5.0         units_0.8-0         sp_1.5-1           
+[76] modelr_0.1.10       crayon_1.5.2        KernSmooth_2.23-20 
+[79] utf8_1.2.2          tzdb_0.3.0          rmarkdown_2.18     
+[82] grid_4.2.2          readxl_1.4.1        data.table_1.14.6  
+[85] git2r_0.30.1        reprex_2.0.2        digest_0.6.30      
+[88] classInt_0.4-8      httpuv_1.6.6        munsell_0.5.0      
+[91] viridisLite_0.4.1   bslib_0.4.1        </code></pre>
 </div>
 </div>
 

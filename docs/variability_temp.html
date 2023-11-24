@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="Pasqualina Vonlanthen, David Stappard &amp; Jens Daniel Müller" />
 
 
 <title>Argo Temperature Variability</title>
@@ -510,8 +510,9 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Argo Temperature Variability</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">15 November, 2023</h4>
+<h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
+Daniel Müller</h4>
+<h4 class="date">24 November, 2023</h4>
 
 </div>
 
@@ -540,7 +541,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-11-15
+<strong>Last updated:</strong> 2023-11-24
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -671,15 +672,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -689,7 +690,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -708,8 +709,13 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/start_background_job_partial.R
+
 Unstaged changes:
-    Modified:   code/start_background_job.R
+    Modified:   analysis/pH_cluster_analysis.Rmd
+    Modified:   analysis/temp_cluster_analysis.Rmd
+    Deleted:    code/start_background_job_core_load.R
 
 </code></pre>
 <p>
@@ -755,6 +761,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/59f5cc4c69f9b179fbf9fcfeae117ee3d0896f10/analysis/variability_temp.Rmd" target="_blank">59f5cc4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-23
+</td>
+<td>
+Moved spatiotemporal analysis to use aligned profiles.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/variability_temp.html" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1156,20 +1196,25 @@ basinmask &lt;- basinmask %&gt;%
   filter(MLR_basins == unique(basinmask$MLR_basins)[1]) %&gt;% 
   select(-c(MLR_basins, basin))
 
-# full argo data (temperature)
-full_argo &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
-  select(
-    -c(
-      ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
-      profile_ph_in_situ_total_qc
-    )
-  )
+# # full argo data (temperature)
+# full_argo &lt;-
+#   read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
+#   select(
+#     -c(
+#       ph_in_situ_total_adjusted:ph_in_situ_total_adjusted_error,
+#       profile_ph_in_situ_total_qc
+#     )
+#   )
+# 
+# # change the date format for compatibility with OceanSODA data
+# full_argo &lt;- full_argo %&gt;%
+#   mutate(year = year(date),
+#          month = month(date)) %&gt;%
+#   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
-# change the date format for compatibility with OceanSODA data
-full_argo &lt;- full_argo %&gt;%
-  mutate(year = year(date),
-         month = month(date)) %&gt;%
+# load validated and vertically aligned temp profiles, 
+full_argo &lt;-
+  read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_bgc_observed.rds&quot;)) %&gt;%
   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
 
 map &lt;-
@@ -1295,27 +1340,27 @@ pasqualina-vonlanthendinenna
 
 full_argo_SO &lt;- inner_join(full_argo_SO, basinmask)
 
-full_argo_SO &lt;- full_argo_SO %&gt;% 
-  unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
+# full_argo_SO &lt;- full_argo_SO %&gt;% 
+#   unite(&#39;platform_cycle&#39;, platform_number:cycle_number, sep = &#39;_&#39;, remove = FALSE)</code></pre>
 <div id="profiles-by-longitude" class="section level2">
 <h2>Profiles by longitude</h2>
 <pre class="r"><code># plot the argo temperature profiles according to their longitude, in each biome, basin, and year
 
 full_argo_SO %&gt;% 
   group_split(biome, basin_AIP, year) %&gt;% 
-  head(3) %&gt;% 
+  head(12) %&gt;% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = lon))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = lon), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       scale_color_viridis_c()+
       facet_wrap(~month, ncol = 6)+
@@ -1348,6 +1393,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-1.png" target="_blank">e12a216</a>
@@ -1399,6 +1455,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-2.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-2.png" target="_blank">b917bd0</a>
@@ -1463,6 +1530,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-3.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-3.png" target="_blank">b917bd0</a>
 </td>
 <td>
@@ -1498,6 +1576,663 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-4">
+Past versions of plot_raw_profiles_by_longitude-4.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-4.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-4.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-4.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-4.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-5">
+Past versions of plot_raw_profiles_by_longitude-5.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-5.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-5.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-5.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-5.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-6">
+Past versions of plot_raw_profiles_by_longitude-6.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-6.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-6.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-6.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-6.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-7">
+Past versions of plot_raw_profiles_by_longitude-7.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-7.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-7.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-7.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-7.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-8">
+Past versions of plot_raw_profiles_by_longitude-8.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-8.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-8.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-8.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-8.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-9">
+Past versions of plot_raw_profiles_by_longitude-9.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-9.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-9.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-9.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-9.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-10">
+Past versions of plot_raw_profiles_by_longitude-10.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-10.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-10.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-10.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-10.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-11">
+Past versions of plot_raw_profiles_by_longitude-11.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-11.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-11.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-11.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-11.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_longitude-12">
+Past versions of plot_raw_profiles_by_longitude-12.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_longitude-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-12.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-12.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-12.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_longitude-12.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="profiles-by-latitude" class="section level2">
 <h2>Profiles by latitude</h2>
@@ -1505,19 +2240,19 @@ pasqualina-vonlanthendinenna
 
 full_argo_SO %&gt;% 
   group_split(biome, basin_AIP, year) %&gt;% 
-  head(3) %&gt;% 
+  head(12) %&gt;% 
   map(
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = lat))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = lat), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       scale_color_viridis_c()+
       facet_wrap(~month, ncol = 6)+
@@ -1550,6 +2285,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-1.png" target="_blank">e12a216</a>
@@ -1601,6 +2347,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-2.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-2.png" target="_blank">b917bd0</a>
@@ -1665,6 +2422,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-3.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-3.png" target="_blank">b917bd0</a>
 </td>
 <td>
@@ -1700,6 +2468,663 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-4">
+Past versions of plot_raw_profiles_by_latitude-4.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-4.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-4.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-4.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-4.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-5">
+Past versions of plot_raw_profiles_by_latitude-5.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-5.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-5.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-5.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-5.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-6">
+Past versions of plot_raw_profiles_by_latitude-6.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-6.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-6.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-6.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-6.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-7">
+Past versions of plot_raw_profiles_by_latitude-7.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-7.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-7.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-7.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-7.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-8">
+Past versions of plot_raw_profiles_by_latitude-8.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-8.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-8.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-8.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-8.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-9">
+Past versions of plot_raw_profiles_by_latitude-9.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-9.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-9.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-9.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-9.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-10">
+Past versions of plot_raw_profiles_by_latitude-10.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-10" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-10.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-10.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-10.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-10.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-11">
+Past versions of plot_raw_profiles_by_latitude-11.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-11" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-11.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-11.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-11.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-11.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_raw_profiles_by_latitude-12">
+Past versions of plot_raw_profiles_by_latitude-12.png
+</button>
+</p>
+<div id="fig-plot_raw_profiles_by_latitude-12" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-12.png" target="_blank">710edd4</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b917bd056fbca6967fa9f18128cb90ffeccf943e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-12.png" target="_blank">b917bd0</a>
+</td>
+<td>
+jens-daniel-mueller
+</td>
+<td>
+2022-05-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e12a216a6bb69399b00a8ec56e4eca67057e53d4/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-12.png" target="_blank">e12a216</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-15
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/c8451b950c04e147b31dfc32ba5d606bbc7f2a8e/docs/figure/variability_temp.Rmd/plot_raw_profiles_by_latitude-12.png" target="_blank">c8451b9</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-03-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="profiles-by-year" class="section level2">
 <h2>Profiles by year</h2>
@@ -1711,14 +3136,14 @@ full_argo_SO %&gt;%
     ~ ggplot(data = .x,
              aes(x = temp_adjusted,
                  y = depth,
-                 group = platform_cycle,
+                 group = file_id,
                  col = as.character(year)))+
       geom_path(data = .x,
                 aes(x = temp_adjusted,
                     y = depth,
-                    group = platform_cycle,
+                    group = file_id,
                     col = as.character(year)), 
-                size = 0.3)+
+                linewidth = 0.3)+
       scale_y_reverse()+
       facet_wrap(~month, ncol = 6)+
       labs(title = paste0(&#39;biome: &#39;, unique(.x$biome), &#39;| basin: &#39;, unique(.x$basin_AIP)),
@@ -1737,7 +3162,7 @@ Session information
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.4
+Running under: openSUSE Leap 15.5
 
 Matrix products: default
 BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so

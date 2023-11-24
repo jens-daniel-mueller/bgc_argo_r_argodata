@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="Pasqualina Vonlanthen, David Stappard &amp; Jens Daniel Müller" />
 
 
 <title>BGC-Argo pH Data</title>
@@ -510,8 +510,9 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">BGC-Argo pH Data</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">15 November, 2023</h4>
+<h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
+Daniel Müller</h4>
+<h4 class="date">24 November, 2023</h4>
 
 </div>
 
@@ -540,7 +541,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-11-15
+<strong>Last updated:</strong> 2023-11-24
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -671,15 +672,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3eba51856e1002a42b8cba6abf6fc9362d2a0168targetblank3eba518a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3dc557de301106f339f6a491e860d9554b542946targetblank3dc557da"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -689,7 +690,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3eba51856e1002a42b8cba6abf6fc9362d2a0168" target="_blank">3eba518</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3dc557de301106f339f6a491e860d9554b542946" target="_blank">3dc557d</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -708,8 +709,13 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/start_background_job_partial.R
+
 Unstaged changes:
-    Modified:   code/start_background_job.R
+    Modified:   analysis/pH_cluster_analysis.Rmd
+    Modified:   analysis/temp_cluster_analysis.Rmd
+    Deleted:    code/start_background_job_core_load.R
 
 </code></pre>
 <p>
@@ -755,6 +761,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/59f5cc4c69f9b179fbf9fcfeae117ee3d0896f10/analysis/argo_ph.Rmd" target="_blank">59f5cc4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-23
+</td>
+<td>
+Moved spatiotemporal analysis to use aligned profiles.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/argo_ph.html" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -936,21 +976,9 @@ path_argo_preprocessed &lt;- paste0(path_argo, &quot;/preprocessed_bgc_data&quot
 Loading Data</p>
 <pre class="r"><code># keep only pH data and associated CTD variables 
 
-# load in surface pH data 
-# ph_surface_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/ph_surface_2x2.rds&#39;))
-# 
-# ph_surface_1x1 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/ph_surface_1x1.rds&quot;))
-
-ph_surface &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_merge_flag_AB.rds&quot;)) %&gt;%
-  filter(between(depth, 0, 20)) %&gt;%
-  mutate(year = year(date),
-         month = month(date))
-
-# region_masks_all_seamask_2x2 &lt;- read_rds(file = paste0(
-#   path_argo_preprocessed, &quot;/region_masks_all_seamask_2x2.rds&quot;))
-# 
-# region_masks_all_2x2 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/region_masks_all_2x2.rds&quot;))
+# load in pH data that has been validated but has not be vertically aligned. Only top 20 m.
+ph_surface &lt;- read_rds(file = paste0(path_argo_preprocessed, &#39;/pH_bgc_observed.rds&#39;)) %&gt;%
+  filter(between(depth, 0, 20))
 
 nm_biomes &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nm_biomes.rds&quot;))</code></pre>
 <div id="southern-ocean-surface-ph" class="section level3">
@@ -975,7 +1003,7 @@ variability of the surface pH values with respect to the mean surface pH
 of the upper 20 m.</p>
 <pre class="r"><code># calculate the mean pH for each surface profile 
 mean_profile_ph &lt;- ph_surface_SO %&gt;% 
-  group_by(platform_number, cycle_number) %&gt;% 
+  group_by(file_id) %&gt;% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE), 
          .before = depth) %&gt;% 
   ungroup() %&gt;% 
@@ -1016,6 +1044,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/SO_offset_from_the_mean-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/SO_offset_from_the_mean-1.png" target="_blank">710edd4</a>
 </td>
 <td>
@@ -1037,7 +1076,7 @@ pH</p>
 mean_profile_ph_binned &lt;- ph_surface_SO %&gt;% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %&gt;% 
-  group_by(platform_number, cycle_number) %&gt;% 
+  group_by(file_id) %&gt;% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
          .before = depth) %&gt;% 
   ungroup() %&gt;% 
@@ -1079,6 +1118,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/offset_SO_binned_by_depth-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/offset_SO_binned_by_depth-1.png" target="_blank">710edd4</a>
 </td>
 <td>
@@ -1097,7 +1147,7 @@ jens-daniel-mueller
 profile_ph_binned_ave &lt;- ph_surface_SO %&gt;% 
   mutate(depth = cut(depth, seq(0, 20, 2), seq(1, 19, 2)),
          depth = as.numeric(as.character(depth))) %&gt;% 
-  group_by(platform_number, cycle_number) %&gt;% 
+  group_by(file_id) %&gt;% 
   mutate(mean_prof_ph = mean(ph_in_situ_total_adjusted, na.rm = TRUE),
          .before = depth) %&gt;% 
   ungroup() %&gt;% 
@@ -1142,6 +1192,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/pH_offset_mean_binned-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/pH_offset_mean_binned-1.png" target="_blank">710edd4</a>
 </td>
 <td>
@@ -1156,11 +1217,11 @@ jens-daniel-mueller
 </div>
 </div>
 </div>
-<div id="monthly-climatological-map" class="section level4">
-<h4>Monthly climatological map</h4>
-<p>Create a climatological monthly map of surface pH, in a 2x2º
-longitude/latitude grid, for the region south of 30ºS (monthly pH
-averaged over April 2014-December 2021)</p>
+<div id="monthly-mean-map" class="section level4">
+<h4>Monthly mean map</h4>
+<p>Create a mean monthly map of surface pH, in a 2x2º longitude/latitude
+grid, for the region south of 30ºS (monthly pH averaged over April
+2014-December 2021)</p>
 <pre class="r"><code># average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_clim_SO &lt;- ph_surface_SO %&gt;%
   group_by(lat, lon, month) %&gt;%
@@ -1181,7 +1242,7 @@ map +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
-       title = &#39;Monthly climatological \nArgo pH (Apr 2014 - Dec 2021)&#39;) +
+       title = &#39;Monthly mean BGC Argo pH&#39;) +
   theme(legend.position = &#39;right&#39;) +
   facet_wrap(~month, ncol = 2)</code></pre>
 <p><img src="figure/argo_ph.Rmd/climatological_monthly_map-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -1207,6 +1268,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/climatological_monthly_map-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/climatological_monthly_map-1.png" target="_blank">710edd4</a>
@@ -1235,7 +1307,7 @@ jens-daniel-mueller
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
-       title = &#39;monthly climatological \nArgo pH (Apr 2014 - Dec 2021)&#39;)+
+       title = &#39;Monthly mean BGC Argo pH&#39;)+
   facet_wrap(~month, ncol = 2)</code></pre>
 </div>
 <div id="monthly-timeseries" class="section level4">
@@ -1308,7 +1380,7 @@ ph_month_SO %&gt;%
   geom_point() +
   labs(x = &#39;year&#39;, 
        y = &#39;pH in situ (total scale)&#39;, 
-       title = &#39;monthly mean Argo pH (Apr 2014-Dec 2021, Southern Ocean)&#39;, 
+       title = &#39;monthly mean Argo pH (Southern Ocean)&#39;, 
        col = &#39;region&#39;)</code></pre>
 <p><img src="figure/argo_ph.Rmd/plot_monthly_ph_timeseries-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1333,6 +1405,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/plot_monthly_ph_timeseries-1.png" target="_blank">710edd4</a>
@@ -1369,7 +1452,7 @@ ph_month_SO %&gt;%
   facet_wrap(~biome_name)+
   labs(x = &#39;month&#39;,
        y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;monthly mean Argo pH (Jan 2015-Dec 2021, Southern Ocean regions)&#39;,
+       title = &#39;monthly mean Argo pH (Southern Ocean regions)&#39;,
        col = &#39;year&#39;)</code></pre>
 <p><img src="figure/argo_ph.Rmd/monthly_pH_per_year-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -1394,6 +1477,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/argo_ph.Rmd/monthly_pH_per_year-1.png" target="_blank">80c16c2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-15
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/argo_ph.Rmd/monthly_pH_per_year-1.png" target="_blank">710edd4</a>
@@ -1421,7 +1515,7 @@ ph_year_SO %&gt;%
   geom_point()+
   labs(x = &#39;year&#39;,
        y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;yearly mean Argo pH (Apr 2014-Aug 2021, south of 30ºS)&#39;, 
+       title = &#39;yearly mean Argo pH (south of 30ºS)&#39;, 
        col = &#39;region&#39;)</code></pre>
 </div>
 </div>
@@ -1435,10 +1529,10 @@ ph_nepacific &lt;- ph_surface %&gt;%
   filter(between(lat, 10, 70),
          between(lon, 190, 240)) 
 # longitudes larger than -180ºE are lon-380</code></pre>
-<div id="monthly-climatological-map-1" class="section level4">
-<h4>Monthly climatological map</h4>
-<p>Create a map of climatological monthly surface pH values, in the
-north-west Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for</p>
+<div id="monthly-mean-map-1" class="section level4">
+<h4>Monthly mean map</h4>
+<p>Create a map of mean monthly surface pH values, in the north-west
+Pacific ocean (10ºN - 70ºN, -190ºE, -140ºE), for</p>
 <pre class="r"><code># average pH values in the top 20 m for each month in each 2 x 2º longitude/latitude grid 
 ph_mean_nepacific &lt;- ph_nepacific %&gt;%
   group_by(lat, lon, month) %&gt;%
@@ -1454,7 +1548,7 @@ map +
   labs(x = &#39;lon&#39;,
        y = &#39;lat&#39;,
        fill = &#39;pH&#39;,
-       title = &#39;Monthly average pH (Jan 2013-Aug 2021)&#39;) +
+       title = &#39;Monthly mean pH&#39;) +
   theme(legend.position = &#39;right&#39;)+
   facet_wrap(~month)</code></pre>
 <pre class="r"><code># using the ggOceanMaps package
@@ -1491,7 +1585,7 @@ ph_month_nepacific %&gt;%
   geom_point() +
   labs(x = &#39;year&#39;, 
        y = &#39;pH in situ (total scale)&#39;, 
-       title = &#39;monthly mean pH (Jan 2013-Aug 2021, NE Pacific)&#39;)</code></pre>
+       title = &#39;monthly mean pH (NE Pacific)&#39;)</code></pre>
 <p>Monthly average pH, per year, over the NE Pacific region</p>
 <pre class="r"><code># timeseries of monthly pH values for each year (separate years on the same plot)
 ph_month_nepacific %&gt;%   
@@ -1501,7 +1595,7 @@ ph_month_nepacific %&gt;%
   scale_x_continuous(breaks = seq(1, 12, 1))+
   labs(x = &#39;month&#39;,
        y = &#39;pH in situ (total scale)&#39;,
-       title = &#39;monthly mean pH (Jan 2013-Dec 2020, NE Pacific)&#39;,
+       title = &#39;monthly mean pH (NE Pacific)&#39;,
        col = &#39;year&#39;)</code></pre>
 <br>
 <p>
@@ -1514,7 +1608,7 @@ Session information
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 4.2.2 (2022-10-31)
 Platform: x86_64-pc-linux-gnu (64-bit)
-Running under: openSUSE Leap 15.4
+Running under: openSUSE Leap 15.5
 
 Matrix products: default
 BLAS:   /usr/local/R-4.2.2/lib64/R/lib/libRblas.so
