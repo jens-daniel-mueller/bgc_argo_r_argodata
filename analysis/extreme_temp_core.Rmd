@@ -38,6 +38,11 @@ HNL_colors <- c("H" = "#b2182b",
 HNL_colors_map <- c('H' = 'red3',
                     'N' = 'transparent',
                     'L' = 'blue3')
+
+# opt_min_profile_range
+# profiles with profile_range >= opt_min_profile_range will be selected 1 = profiles of at least 600m, 2 = profiles of at least 1200m, 3 = profiles of at least 1500m
+opt_min_profile_range = 3
+
 ```
 
 # Load data 
@@ -83,6 +88,7 @@ basinmask <- basinmask %>%
 # load validated and vertically aligned temp profiles, 
 full_argo <-
   read_rds(file = paste0(path_argo_core_preprocessed, "/temp_core_va.rds")) %>%
+  filter(profile_range >= opt_min_profile_range) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 # # load in core-temperature data with profile QC flags of A and B
@@ -853,6 +859,7 @@ Plot the H/L/N profiles as anomalies relative to the CSIO-MNR Argo temperature c
 
 remove_clim <-
   read_rds(file = paste0(path_argo_core_preprocessed, "/temp_anomaly_va.rds")) %>%
+  filter(profile_range >= opt_min_profile_range) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 remove_clim <- inner_join(

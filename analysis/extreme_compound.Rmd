@@ -36,6 +36,11 @@ HNL_colors_map <- c('H' = 'red3',
                     'N' = 'gray90',
                     'L' = 'blue3')
 
+# opt_min_profile_range
+# profiles with profile_range >= opt_min_profile_range will be selected 
+# 1 = profiles of at least pH = 614m temp = 600m, 2 = profiles of at least pH = 1225m temp = 1200m, 3 = profiles of at least pH = 1600m temp = 1500m
+opt_min_profile_range = 3
+
 ```
 
 
@@ -64,6 +69,7 @@ temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_a
 
 # load validated and vertically aligned pH profiles, 
 argo_pH <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%
+  filter(profile_range >= opt_min_profile_range) %>%
   select(file_id,
          date,
          year,
@@ -74,7 +80,9 @@ argo_pH <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%
          profile_range_pH = profile_range,
          pH,
          h_plus)
+
 argo_temp <- read_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_va.rds")) %>%
+  filter(profile_range >= opt_min_profile_range) %>%
   select(file_id,
          date,
          year,
