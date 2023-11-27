@@ -80,6 +80,11 @@ opt_n_start <- 15
 opt_max_iterations <- 500
 opt_n_clusters <- 14 # Max number of clusters to try when determining optimal number of clusters
 
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 2
+
 ```
 
 
@@ -485,8 +490,13 @@ num_clusters <- c(5, 6, 5)
 # read data
 # ---------------------------------------------------------------------------------------------
 # load previously created OceanSODA extreme data. date, position and nature of extreme
-temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field.rds")) %>%
-  select(lon, lat, date, temp_extreme)
+if (opt_extreme_determination == 1){
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_01.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+} else if (opt_extreme_determination == 2){
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+}
 
 # read data
 temp_anomaly_va <- read_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds")) %>%
