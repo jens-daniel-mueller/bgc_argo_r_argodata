@@ -839,7 +839,7 @@ anomaly_cluster_mean_ext <- left_join(anomaly_cluster_mean_ext, cluster_count)
   
 # create figure of cluster mean profiles
 anomaly_cluster_mean_ext %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~  ggplot(data = .x, ) +
       geom_path(aes(x = anomaly_mean,
@@ -879,7 +879,7 @@ anomaly_cluster_mean_ext %>%
 # cluster means by year
 anomaly_cluster_mean_year_ext %>%
   mutate(year = as.factor(year)) %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~  ggplot(data = .x,) +
       geom_path(aes(
@@ -927,7 +927,7 @@ year_max <- max(cluster_by_year$year)
 
 # create figure
 cluster_by_year %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -974,7 +974,7 @@ cluster_by_year <- cluster_by_year %>%
 
 # create figure
 cluster_by_year %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -1012,7 +1012,7 @@ location of each cluster on map, spatial analysis
 
 # create figure combined
 temp_anomaly_cluster_ext %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -1042,7 +1042,7 @@ location of each cluster on map, spatial analysis
 
 # create figure by cluster
 temp_anomaly_cluster_ext %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -1079,7 +1079,7 @@ cluster_by_location <- temp_anomaly_cluster_ext %>%
 
 # create figure
 cluster_by_location %>%
-  group_split(temp_extreme_order, num_clusters) %>%
+  group_split(num_clusters, temp_extreme_order) %>%
   map(
     ~ map +
       geom_tile(data = .x %>%
