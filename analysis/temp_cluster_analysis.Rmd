@@ -60,7 +60,8 @@ opt_analysis_type <- 2
 
 # opt_num_clusters
 # How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
-opt_num_clusters <- c(8, 8, 8)
+opt_num_clusters_min <- c(8, 8, 1)
+opt_num_clusters_max <- c(8, 8, 8)
 # What is the max depth of each profile_range
 opt_max_depth <- c(600, 1000, 1500)
 # Which profile range is used
@@ -75,6 +76,23 @@ opt_xbreaks <- c(-4, -2, 0, 2, 4)
 opt_n_start <- 15
 opt_max_iterations <- 500
 opt_n_clusters <- 14 # Max number of clusters to try when determining optimal number of clusters
+
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 2
+
+# Options associated with profiles under surface extreme conditions
+# Carried out for 1500m profiles
+opt_profile_range = 3
+extreme_type <- c('L', 'N', 'H')
+opt_num_clusters_ext_min <- c(4, 4, 4)
+opt_num_clusters_ext_max <- c(6, 6, 6)
+
+# Option related to normalising the anomaly profiles.
+# TRUE - anomaly profiles are normalised by the surface anomaly. Every depth anomaly is divided by the surface anomaly.
+# FALSE - The normalisation process is not carried out. 
+opt_norm_amolaly <- FALSE
 
 ```
 
@@ -113,6 +131,22 @@ temp_anomaly_va_id <- temp_anomaly_va %>%
          month, 
          lat, 
          lon)
+
+# normalisation?
+if (opt_norm_amolaly) {
+  surf_anomaly <- abs(temp_anomaly_va_id %>% 
+    filter (depth == 5) %>%
+    select (file_id, abs_sa = anomaly))
+  
+  temp_anomaly_va_id <- left_join(temp_anomaly_va_id, surf_anomaly)
+  
+  temp_anomaly_va_id <- rbind(
+  temp_anomaly_va_id %>%
+    filter (abs_sa < 1.0),
+  temp_anomaly_va_id %>% 
+    filter (abs_sa >= 1.0) %>%
+    mutate(anomaly = anomaly/abs_sa))
+}
 
 # wide table with each depth becoming a column
 temp_anomaly_va_wide <- temp_anomaly_va_id %>%
@@ -178,38 +212,52 @@ if (opt_analysis_type == 1) {
 
 ### Cluster analysis
 
+Based on all floats regardless of surface condition.
+
 ```{r cluster_analysis_cluster_details}
 
 if (opt_analysis_type == 2) {
-
-  set.seed(1)
-  kclusts <-
-    tibble(k = opt_num_clusters[opt_profile_range]) %>%
-    mutate(
-      kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
-      tidied = map(kclust, tidy),
-      glanced = map(kclust, glance),
-      augmented = map(kclust, augment, points)
-    )
   
-  profile_id <-
-    kclusts %>%
-    unnest(cols = c(augmented)) %>%
-    select(file_id = .rownames,
-           cluster = .cluster) %>% 
-    mutate(file_id = as.numeric(file_id),
-           cluster = as.character(cluster))
-  
-  # Add cluster to temp_anomaly_va
-  temp_anomaly_cluster <- full_join(temp_anomaly_va, profile_id)
+  for (inum_clusters in opt_num_clusters_min[opt_profile_range]:opt_num_clusters_max[opt_profile_range]) {    
+    
+    set.seed(1)
+    kclusts <-
+      tibble(k = inum_clusters) %>%
+      mutate(
+        kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+        tidied = map(kclust, tidy),
+        glanced = map(kclust, glance),
+        augmented = map(kclust, augment, points)
+      )
+    
+    profile_id <-
+      kclusts %>%
+      unnest(cols = c(augmented)) %>%
+      select(file_id = .rownames,
+             cluster = .cluster) %>% 
+      mutate(file_id = as.numeric(file_id),
+             cluster = as.character(cluster))
+    
+    # Add cluster to temp_anomaly_va
+    temp_anomaly_cluster <- full_join(temp_anomaly_va_id, profile_id)
+    
+    # Check null clusters
+    temp_anomaly_cluster <- temp_anomaly_cluster %>% 
+      filter(!is.na(cluster))
+    
+    # Create table to be used for later analysis and Set the number of clusters field
+    if (inum_clusters == opt_num_clusters_min[opt_profile_range]){
+      temp_anomaly_cluster_all <- temp_anomaly_cluster %>%
+        mutate(num_clusters = inum_clusters)
+    } else {
+      temp_anomaly_cluster_all <- rbind(temp_anomaly_cluster_all, temp_anomaly_cluster %>%
+        mutate(num_clusters = inum_clusters))
+    }
+  }
   
   # Plot cluster mean
-  temp_anomaly_cluster <- temp_anomaly_cluster %>% 
-    filter(!is.na(cluster))
-  
-  # Plot cluster mean
-  anomaly_cluster_mean <- temp_anomaly_cluster %>%
-    group_by(cluster, depth) %>%
+  anomaly_cluster_mean <- temp_anomaly_cluster_all %>%
+    group_by(num_clusters, cluster, depth) %>%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -217,8 +265,8 @@ if (opt_analysis_type == 2) {
     ) %>%
     ungroup()
   
-  anomaly_cluster_mean_year <- temp_anomaly_cluster %>%
-    group_by(cluster, depth, year) %>%
+  anomaly_cluster_mean_year <- temp_anomaly_cluster_all %>%
+    group_by(num_clusters, cluster, depth, year) %>%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -226,8 +274,8 @@ if (opt_analysis_type == 2) {
     ) %>%
     ungroup()
   
-  anomaly_year_mean <- temp_anomaly_cluster %>%
-    group_by(cluster, year) %>%
+  anomaly_year_mean <- temp_anomaly_cluster_all %>%
+    group_by(num_clusters, cluster, year) %>%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -236,30 +284,58 @@ if (opt_analysis_type == 2) {
     ungroup()
   
   anomaly_year_mean <- anomaly_year_mean %>%
-    group_by(year) %>%
+    group_by(num_clusters, year) %>%
     summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %>%
     ungroup ()
+
+  # Determine profile count by cluster and year
+  # Count the measurements
+  cluster_by_year <- temp_anomaly_cluster_all %>% 
+    count(num_clusters, file_id, cluster, year,
+          name = "count_cluster")
+
+  # Convert to profiles
+  cluster_by_year <- cluster_by_year %>% 
+    count(num_clusters, cluster, year,
+          name = "count_cluster")
   
-  # create figure
+  # total of each type of cluster
+  cluster_count <- cluster_by_year %>%
+    group_by(num_clusters, cluster) %>% 
+    summarise(count_profiles = sum(count_cluster)) %>%
+    ungroup()
+  
+  anomaly_cluster_mean <- left_join(anomaly_cluster_mean, cluster_count)
+  
+  # create figure of cluster mean profiles
   anomaly_cluster_mean %>%
-    ggplot() +
-    geom_path(aes(x = anomaly_mean,
-                  y = depth)) +
-    geom_ribbon(aes(
-      xmax = anomaly_mean + anomaly_sd,
-      xmin = anomaly_mean - anomaly_sd,
-      y = depth
-    ),
-    alpha = 0.2) +
-    geom_vline(xintercept = 0) +
-    scale_y_reverse() +
-    facet_wrap( ~ cluster) +
-    coord_cartesian(xlim = opt_xlim) +
-    scale_x_continuous(breaks = opt_xbreaks) +
-    labs(
-      title = paste0('Overall mean anomaly profiles by cluster'),
-      x = opt_measure_label,
-      y = 'depth (m)'
+    group_split(num_clusters) %>%
+    map(
+      ~ ggplot(data = .x,) +
+        geom_path(aes(x = anomaly_mean,
+                      y = depth)) +
+        geom_ribbon(
+          aes(
+            xmax = anomaly_mean + anomaly_sd,
+            xmin = anomaly_mean - anomaly_sd,
+            y = depth
+          ),
+          alpha = 0.2
+        ) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")")) +
+        coord_cartesian(xlim = opt_xlim) +
+        scale_x_continuous(breaks = opt_xbreaks) +
+        labs(
+          title = paste0(
+            'Overall mean anomaly profiles by cluster \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = 'depth (m)'
+        )
     )
 }
 
@@ -273,20 +349,29 @@ if (opt_analysis_type == 2) {
   # cluster means by year
   anomaly_cluster_mean_year %>%
     mutate(year = as.factor(year)) %>%
-    ggplot() +
-    geom_path(aes(x = anomaly_mean,
-                  y = depth,
-                  col = year)) +
-    geom_vline(xintercept = 0) +
-    scale_y_reverse() +
-    facet_wrap( ~ cluster) +
-    coord_cartesian(xlim = opt_xlim) +
-    scale_x_continuous(breaks = opt_xbreaks) +
-    scale_color_viridis_d() +
-    labs(
-      title = paste0('Overall mean anomaly profiles by cluster'),
-      x = opt_measure_label,
-      y = 'depth (m)'
+    group_split(num_clusters) %>%
+    map(
+      ~ ggplot(data = .x, ) +
+        geom_path(aes(
+          x = anomaly_mean,
+          y = depth,
+          col = year
+        )) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ cluster) +
+        coord_cartesian(xlim = opt_xlim) +
+        scale_x_continuous(breaks = opt_xbreaks) +
+        scale_color_viridis_d() +
+        labs(
+          title = paste0(
+            'Overall mean anomaly profiles by cluster \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = 'depth (m)'
+        )
     )
   
 }
@@ -296,7 +381,7 @@ if (opt_analysis_type == 2) {
 
 ### Cluster climatology
 
-```{r cluster_climatology_shift}
+```{r cluster_climatology_shift, eval=FALSE}
 
 # A nice short alternative, uses the package ggpmisc
 anomaly_year_mean %>%
@@ -316,26 +401,35 @@ count of each cluster by year
 
 if (opt_analysis_type == 2) {
 
-  # Determine profile count by cluster and year
-  cluster_by_year <- temp_anomaly_cluster %>% 
-    count(cluster, year,
-          name = "count_cluster")
-
   year_min <- min(cluster_by_year$year)
   year_max <- max(cluster_by_year$year)
   
   # create figure
-  cluster_by_year %>% 
-    ggplot(aes(x = year, y = count_cluster, col = cluster, group=cluster))+
-    geom_point() +
-    geom_line() +
-    scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
-    scale_color_brewer(palette = 'Dark2')+
-    labs(x = 'year', 
-         y = 'number of profiles', 
-         col = 'cluster',
-         title = 'Count of profiles by year and cluster')
-
+  cluster_by_year %>%
+    group_split(num_clusters) %>%
+    map(
+      ~ ggplot(data = .x, aes(
+          x = year,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+        scale_color_brewer(palette = 'Dark2') +
+        labs(
+          title = paste0(
+            'Count of profiles by year and cluster \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          ),
+          x = 'year',
+          y = 'number of profiles',
+          col = 'cluster'
+        )
+    )
+  
 }
 
 ```
@@ -349,22 +443,45 @@ count of each cluster by month of year
 if (opt_analysis_type == 2) {
 
   # Determine profile count by cluster and year
-  cluster_by_year <- temp_anomaly_cluster %>% 
-    count(cluster, month,
+  # Count the measurements
+  cluster_by_year <- temp_anomaly_cluster_all %>% 
+    count(num_clusters, file_id, cluster, month,
+          name = "count_cluster")
+
+  # Convert to profiles
+  cluster_by_year <- cluster_by_year %>% 
+    count(num_clusters, cluster, month,
           name = "count_cluster")
 
   # create figure
-  cluster_by_year %>% 
-    ggplot(aes(x = month, y = count_cluster, col = cluster, group=cluster))+
-    geom_point() +
-    geom_line() +
-    scale_x_continuous(breaks = seq(1, 12, 2)) +
-    scale_color_brewer(palette = 'Dark2')+
-    labs(x = 'month', 
-         y = 'number of profiles', 
-         col = 'cluster',
-         title = 'Count of profiles by month and cluster')
-
+  cluster_by_year %>%
+    group_split(num_clusters) %>%
+    map(
+      ~ ggplot(
+        data = .x,
+        aes(
+          x = month,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )
+      ) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(1, 12, 2)) +
+        scale_color_brewer(palette = 'Dark2') +
+        labs(
+          title = paste0(
+            'Count of profiles by month and cluster \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          ),
+          x = 'month',
+          y = 'number of profiles',
+          col = 'cluster'
+        )
+    )
+  
 }
 
 ```
@@ -378,21 +495,33 @@ location of each cluster on map, spatial analysis
 if (opt_analysis_type == 2) {
 
   # create figure
-map +
-  geom_tile(data = temp_anomaly_cluster, 
-            aes(x = lon, 
-                y = lat, 
-                fill = cluster))+
-  lims(y = c(-85, -30))+
-  scale_fill_brewer(palette = 'Dark2')+
-  labs(title = 'cluster spatial distribution')
-
+  temp_anomaly_cluster_all %>%
+    group_split(num_clusters) %>%
+    map(
+      ~ map +
+        geom_tile(data = .x,
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = cluster
+                  )) +
+        lims(y = c(-85,-30)) +
+        scale_fill_brewer(palette = 'Dark2') +
+        labs(
+          title = paste0(
+            'cluster spatial distribution \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          ),
+        )
+    )
+  
 }
 ```
 
 location of each cluster on separate maps, spatial analysis
 
-```{r spatial_cluster_02}
+```{r spatial_cluster_02, eval=FALSE}
 
 if (opt_analysis_type == 2) {
 
@@ -415,18 +544,39 @@ count of measurements for each cluster on separate maps, spatial analysis
 ```{r spatial_cluster_03}
 
 if (opt_analysis_type == 2) {
+
+  # Count profiles    
+  cluster_by_location <- temp_anomaly_cluster_all %>%
+    count(num_clusters, file_id, lat, lon, cluster,
+          name = "count_cluster")
   
   # create figure
-map +
-  geom_tile(data = temp_anomaly_cluster %>% 
-              count(lat, lon, cluster),
-            aes(x = lon,
-                y = lat,
-                fill = n)) +
-  lims(y = c(-85, -30)) +
-  scale_fill_viridis_c(option = "cividis", direction = -1, trans = "log10") +
-  facet_wrap( ~ cluster, ncol = 2) +
-  labs(title = 'cluster spatial distribution')
+  cluster_by_location %>%
+    group_split(num_clusters) %>%
+    map(
+      ~ map +
+        geom_tile(data = .x %>%
+                    count(lat, lon, cluster),
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = n
+                  )) +
+        lims(y = c(-85,-30)) +
+        scale_fill_viridis_c(
+          option = "cividis",
+          direction = -1,
+          trans = "log10"
+        ) +
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            'cluster spatial distribution \n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          )
+        )
+    )
 
 }
 
@@ -436,13 +586,13 @@ map +
 
 location of each cluster on map, spatial analysis by year
 
-```{r spatial_cluster_year}
+```{r spatial_cluster_year, eval=FALSE}
 
 if (opt_analysis_type == 2) {
 
   # create figure
-  temp_anomaly_cluster %>%
-    group_split(year) %>%
+  temp_anomaly_cluster_all %>%
+    group_split(num_clusters, year) %>%
     map(
       ~ map +
         geom_tile(data = .x,
@@ -453,12 +603,18 @@ if (opt_analysis_type == 2) {
                   )) +
         #lims(y = c(-85, -30))+
         scale_fill_brewer(palette = 'Dark2') +
-        facet_wrap( ~ cluster, ncol = 2) +
-        labs(title = paste0(
-          'cluster spatial distribution ', unique(.x$year)
-        ))
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            'cluster spatial distribution ',
+            unique(.x$year),
+            '\n',
+            'num cluesters = ',
+            unique(.x$num_clusters)
+          )
+        )
     )
-
+      
 }
 
 ```
@@ -467,18 +623,17 @@ if (opt_analysis_type == 2) {
 
 ```{r cluster_analysis_prep_ext}
 
-# Carried out for 1500m profiles
-opt_profile_range = 3
-extreme_type <- c('L', 'N', 'H')
-num_clusters <- c(5, 6, 5)
-
 # ---------------------------------------------------------------------------------------------
 # read data
 # ---------------------------------------------------------------------------------------------
 # load previously created OceanSODA extreme data. date, position and nature of extreme
-temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field.rds")) %>%
-  select(lon, lat, date, temp_extreme)
-
+if (opt_extreme_determination == 1){
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_01.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+} else if (opt_extreme_determination == 2){
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+}
 # read data
 temp_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds")) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
@@ -486,7 +641,10 @@ temp_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly
 # Add the OceanSODA extreme condition
 temp_anomaly_va <- left_join(temp_anomaly_va, temp_extreme)
 
+# If temp_extreme is NA set it to N
+temp_anomaly_va <- temp_anomaly_va %>% replace_na(list(temp_extreme = 'N'))
 
+# loop through surface condition
 for (i in 1:3) {
 
   # ---------------------------------------------------------------------------------------------
@@ -522,76 +680,134 @@ for (i in 1:3) {
   # ---------------------------------------------------------------------------------------------
   # cluster analysis
   # ---------------------------------------------------------------------------------------------
-  set.seed(1)
-  kclusts <-
-    tibble(k = num_clusters[i]) %>%
-    mutate(
-      kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
-      tidied = map(kclust, tidy),
-      glanced = map(kclust, glance),
-      augmented = map(kclust, augment, points)
-    )
-  
-  profile_id <-
-    kclusts %>%
-    unnest(cols = c(augmented)) %>%
-    select(file_id = .rownames,
-           cluster = .cluster) %>% 
-    mutate(file_id = as.numeric(file_id),
-           cluster = as.character(cluster))
-  
-  # Add cluster to temp_anomaly_va
-  temp_anomaly_cluster <- full_join(temp_anomaly_va, profile_id)
-  
-  # Plot cluster mean
-  temp_anomaly_cluster <- temp_anomaly_cluster %>% 
-    filter(!is.na(cluster))
-  
-  # Plot cluster mean
-  anomaly_cluster_mean <- temp_anomaly_cluster %>%
-    group_by(cluster, depth) %>%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %>%
-    ungroup()
-  
-  anomaly_cluster_mean_year <- temp_anomaly_cluster %>%
-    group_by(cluster, depth, year) %>%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %>%
-    ungroup()
-  
-  anomaly_year_mean <- temp_anomaly_cluster %>%
-    group_by(cluster, year) %>%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %>%
-    ungroup()
-  
-  anomaly_year_mean <- anomaly_year_mean %>%
-    group_by(year) %>%
-    summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %>%
-    ungroup ()
-  
-  if (i == 1) {
-    anomaly_cluster_mean_ext <- anomaly_cluster_mean %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    anomaly_cluster_mean_year_ext <- anomaly_cluster_mean_year %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    anomaly_year_mean_ext <- anomaly_year_mean %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    temp_anomaly_cluster_ext <- temp_anomaly_cluster %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-  } else {
-    anomaly_cluster_mean_ext <- rbind(anomaly_cluster_mean_ext, anomaly_cluster_mean %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    anomaly_cluster_mean_year_ext <- rbind(anomaly_cluster_mean_year_ext, anomaly_cluster_mean_year %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    anomaly_year_mean_ext <- rbind(anomaly_year_mean_ext, anomaly_year_mean %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    temp_anomaly_cluster_ext <- rbind(temp_anomaly_cluster_ext, temp_anomaly_cluster_ext <- temp_anomaly_cluster %>% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-  }
+  # loop through number of clusters
+  for (inum_clusters in opt_num_clusters_ext_min[i]:opt_num_clusters_ext_max[i]) {    
 
+    set.seed(1)
+    kclusts <-
+      tibble(k = inum_clusters) %>%
+      mutate(
+        kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+        tidied = map(kclust, tidy),
+        glanced = map(kclust, glance),
+        augmented = map(kclust, augment, points)
+      )
+    
+    profile_id <-
+      kclusts %>%
+      unnest(cols = c(augmented)) %>%
+      select(file_id = .rownames,
+             cluster = .cluster) %>% 
+      mutate(file_id = as.numeric(file_id),
+             cluster = as.character(cluster))
+    
+    # Add cluster to temp_anomaly_va
+    temp_anomaly_cluster <- full_join(temp_anomaly_va_id, profile_id)
+    
+    # Plot cluster mean
+    temp_anomaly_cluster <- temp_anomaly_cluster %>% 
+      filter(!is.na(cluster))
+    
+    # cluster mean
+    anomaly_cluster_mean <- temp_anomaly_cluster %>%
+      group_by(cluster, depth) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly, na.rm = TRUE),
+        anomaly_sd = sd(anomaly, na.rm = TRUE)
+      ) %>%
+      ungroup()
+    
+    anomaly_cluster_mean_year <- temp_anomaly_cluster %>%
+      group_by(cluster, depth, year) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly, na.rm = TRUE),
+        anomaly_sd = sd(anomaly, na.rm = TRUE)
+      ) %>%
+      ungroup()
+    
+    anomaly_year_mean <- temp_anomaly_cluster %>%
+      group_by(cluster, year) %>%
+      summarise(
+        count_cluster = n(),
+        anomaly_mean = mean(anomaly, na.rm = TRUE),
+        anomaly_sd = sd(anomaly, na.rm = TRUE)
+      ) %>%
+      ungroup()
+    
+    anomaly_year_mean <- anomaly_year_mean %>%
+      group_by(year) %>%
+      summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %>%
+      ungroup ()
+    
+    if (!exists('anomaly_cluster_mean_ext')) {
+      anomaly_cluster_mean_ext <-
+        anomaly_cluster_mean %>% mutate(
+          temp_extreme_order = i,
+          temp_extreme = extreme_type[i],
+          num_clusters = inum_clusters
+        )
+      anomaly_cluster_mean_year_ext <-
+        anomaly_cluster_mean_year %>% mutate(
+          temp_extreme_order = i,
+          temp_extreme = extreme_type[i],
+          num_clusters = inum_clusters
+        )
+      anomaly_year_mean_ext <-
+        anomaly_year_mean %>% mutate(
+          temp_extreme_order = i,
+          temp_extreme = extreme_type[i],
+          num_clusters = inum_clusters
+        )
+      temp_anomaly_cluster_ext <-
+        temp_anomaly_cluster %>% mutate(
+          temp_extreme_order = i,
+          temp_extreme = extreme_type[i],
+          num_clusters = inum_clusters
+        )
+    } else {
+      anomaly_cluster_mean_ext <-
+        rbind(
+          anomaly_cluster_mean_ext,
+          anomaly_cluster_mean %>% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters
+          )
+        )
+      anomaly_cluster_mean_year_ext <-
+        rbind(
+          anomaly_cluster_mean_year_ext,
+          anomaly_cluster_mean_year %>% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters
+          )
+        )
+      anomaly_year_mean_ext <-
+        rbind(
+          anomaly_year_mean_ext,
+          anomaly_year_mean %>% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters
+          )
+        )
+      temp_anomaly_cluster_ext <-
+        rbind(
+          temp_anomaly_cluster_ext,
+          temp_anomaly_cluster_ext <-
+            temp_anomaly_cluster %>% mutate(
+              temp_extreme_order = i,
+              temp_extreme = extreme_type[i],
+              num_clusters = inum_clusters
+            )
+        )
+    }
+
+  }
+  
 }
 
 ```
@@ -600,9 +816,30 @@ for (i in 1:3) {
 
 ```{r cluster_mean_ext}
 
-# create figure of mean clusters
+# Determine profile count by cluster and year
+# Count the measurements
+cluster_by_year <- temp_anomaly_cluster_ext %>% 
+  count(num_clusters, temp_extreme, temp_extreme_order, file_id, cluster, year,
+        name = "count_cluster")
+
+#cluster_by_year %>% filter (num_clusters == 5 & temp_extreme == 'N')
+
+# Convert to profiles
+cluster_by_year <- cluster_by_year %>% 
+  count(num_clusters, temp_extreme, temp_extreme_order, cluster, year,
+        name = "count_cluster")
+
+# total of each type of cluster
+cluster_count <- cluster_by_year %>%
+  group_by(num_clusters, temp_extreme, temp_extreme_order, cluster) %>% 
+  summarise(count_profiles = sum(count_cluster)) %>%
+  ungroup()
+
+anomaly_cluster_mean_ext <- left_join(anomaly_cluster_mean_ext, cluster_count)
+  
+# create figure of cluster mean profiles
 anomaly_cluster_mean_ext %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~  ggplot(data = .x, ) +
       geom_path(aes(x = anomaly_mean,
@@ -617,14 +854,15 @@ anomaly_cluster_mean_ext %>%
       ) +
       geom_vline(xintercept = 0) +
       scale_y_reverse() +
-      facet_wrap(~ cluster) +
+      #facet_wrap(~ cluster) +
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")")) +
       coord_cartesian(xlim = opt_xlim) +
       scale_x_continuous(breaks = opt_xbreaks) +
       labs(
         title = paste0(
           'Overall mean anomaly profiles by cluster \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         ),
         x = opt_measure_label,
         y = 'depth (m)'
@@ -641,7 +879,7 @@ anomaly_cluster_mean_ext %>%
 # cluster means by year
 anomaly_cluster_mean_year_ext %>%
   mutate(year = as.factor(year)) %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~  ggplot(data = .x,) +
       geom_path(aes(
@@ -658,8 +896,8 @@ anomaly_cluster_mean_year_ext %>%
       labs(
         title = paste0(
           'Overall mean anomaly profiles by cluster by year \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         ),
         x = opt_measure_label,
         y = 'depth (m)'
@@ -677,11 +915,11 @@ count of each cluster by year
 # Determine profile count by extreme and cluster and year
 # Count the measurements
 cluster_by_year <- temp_anomaly_cluster_ext %>% 
-  count(file_id, temp_extreme_order, temp_extreme, cluster, year,
+  count(file_id, num_clusters, temp_extreme_order, temp_extreme, cluster, year,
         name = "count_cluster")
 # Convert to profiles
 cluster_by_year <- cluster_by_year %>% 
-  count(temp_extreme_order, temp_extreme, cluster, year,
+  count(num_clusters, temp_extreme_order, temp_extreme, cluster, year,
         name = "count_cluster")
 
 year_min <- min(cluster_by_year$year)
@@ -689,7 +927,7 @@ year_max <- max(cluster_by_year$year)
 
 # create figure
 cluster_by_year %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -710,8 +948,8 @@ cluster_by_year %>%
         col = 'cluster',
         title = paste0(
           'Count of profiles by year and cluster \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         )
       )
   )
@@ -727,16 +965,16 @@ count of each cluster by month of year
 # Determine profile count by cluster and year
 # Count the measurements
 cluster_by_year <- temp_anomaly_cluster_ext %>% 
-  count(file_id, temp_extreme_order, temp_extreme, cluster, month,
+  count(file_id, num_clusters, temp_extreme_order, temp_extreme, cluster, month,
         name = "count_cluster")
 # Convert to profiles
 cluster_by_year <- cluster_by_year %>% 
-  count(temp_extreme_order, temp_extreme, cluster, month,
+  count(num_clusters, temp_extreme_order, temp_extreme, cluster, month,
         name = "count_cluster")
 
 # create figure
 cluster_by_year %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~ ggplot(
       data = .x,
@@ -757,8 +995,8 @@ cluster_by_year %>%
         col = 'cluster',
         title = paste0(
           'Count of profiles by month and cluster \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         )
       )
   )
@@ -774,7 +1012,7 @@ location of each cluster on map, spatial analysis
 
 # create figure combined
 temp_anomaly_cluster_ext %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -788,8 +1026,8 @@ temp_anomaly_cluster_ext %>%
       labs(
         title = paste0(
           'cluster spatial distribution \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         )
       )
   )
@@ -800,11 +1038,11 @@ temp_anomaly_cluster_ext %>%
 
 location of each cluster on map, spatial analysis
 
-```{r spatial_cluster_ext}
+```{r spatial_cluster_ext, eval=FALSE}
 
 # create figure by cluster
 temp_anomaly_cluster_ext %>%
-  group_split(temp_extreme_order) %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -819,8 +1057,8 @@ temp_anomaly_cluster_ext %>%
       labs(
         title = paste0(
           'cluster spatial distribution \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         )
       )
   )
@@ -833,9 +1071,15 @@ location of each cluster on map, spatial analysis
 
 ```{r spatial_cluster_count_ext}
 
+# Count profiles    
+cluster_by_location <- temp_anomaly_cluster_ext %>%
+  count(num_clusters, temp_extreme_order, temp_extreme, file_id, lat, lon, cluster,
+        name = "count_cluster")
+
+
 # create figure
-temp_anomaly_cluster_ext %>%
-  group_split(temp_extreme_order) %>%
+cluster_by_location %>%
+  group_split(temp_extreme_order, num_clusters) %>%
   map(
     ~ map +
       geom_tile(data = .x %>%
@@ -855,8 +1099,8 @@ temp_anomaly_cluster_ext %>%
       labs(
         title = paste0(
           'cluster spatial distribution \n',
-          'Surface extreme: ',
-          unique(.x$temp_extreme)
+          'Surface extreme: ', unique(.x$temp_extreme), ', ', 
+          'number clusters: ', unique(.x$num_clusters)
         )
       )
   )
