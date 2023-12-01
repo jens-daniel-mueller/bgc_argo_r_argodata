@@ -41,6 +41,11 @@ HNL_colors_map <- c('H' = 'red3',
 # 1 = profiles of at least pH = 614m temp = 600m, 2 = profiles of at least pH = 1225m temp = 1200m, 3 = profiles of at least pH = 1600m temp = 1500m
 opt_min_profile_range = 3
 
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 1
+
 ```
 
 
@@ -63,9 +68,13 @@ map <-
                  "map_landmask_WOA18.rds",
                  sep = ""))
 
-pH_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field.rds"))
-
-temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field.rds"))
+if (opt_extreme_determination == 1){
+  pH_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_01.rds"))
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_01.rds"))
+} else if (opt_extreme_determination == 2){
+  pH_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_02.rds"))
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_02.rds"))
+}
 
 # load validated and vertically aligned pH profiles, 
 argo_pH <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%

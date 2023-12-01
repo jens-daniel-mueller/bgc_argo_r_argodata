@@ -43,6 +43,11 @@ HNL_colors_map <- c('H' = 'red3',
 # profiles with profile_range >= opt_min_profile_range will be selected 1 = profiles of at least 600m, 2 = profiles of at least 1200m, 3 = profiles of at least 1500m
 opt_min_profile_range = 3
 
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 1
+
 ```
 
 # Load data 
@@ -100,8 +105,11 @@ full_argo <-
 #   mutate(date = ymd(format(date, '%Y-%m-15')))
 
 # OceanSODA extremes detected 
-
-OceanSODA_temp_SO_extreme_grid <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field.rds"))
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_SO_extreme_grid <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_01.rds"))
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_SO_extreme_grid <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_02.rds"))
+}
 
 # base map for plotting
 map <-

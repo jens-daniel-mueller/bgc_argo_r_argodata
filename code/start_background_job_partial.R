@@ -17,9 +17,6 @@
 #     'nitrate_vertical_align.Rmd',
 #     'temp_align_climatology.Rmd',
 #     'temp_core_align_climatology.Rmd',
-#     'pH_cluster_analysis.Rmd',
-#     'temp_cluster_analysis.Rmd',
-#     'temp_core_cluster_analysis.Rmd',
 #     'argo_ph.Rmd',
 #     'argo_oxygen.Rmd',
 #     'argo_temp.Rmd',
@@ -31,7 +28,10 @@
 #     'extreme_temp_core.Rmd',
 #     'extreme_compound.Rmd',
 #     'variability_temp.Rmd',
-#     'variability_pH.Rmd'
+#     'variability_pH.Rmd',
+#     'pH_cluster_analysis.Rmd',
+#     'temp_cluster_analysis.Rmd',
+#     'temp_core_cluster_analysis.Rmd'
 #   )
 # ),
 # message = "Changed core Argo location folders and run for 2013-2015")
@@ -39,7 +39,7 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'temp_core_cluster_analysis.Rmd'
+    'temp_cluster_analysis.Rmd'
   )
 ),
 message = "Cluster under surface extreme.")

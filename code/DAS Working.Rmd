@@ -1,0 +1,258 @@
+---
+title: "Extreme detection analysis"
+author: "David Stappard"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
+library(argodata)
+library(lubridate)
+library(gridExtra)
+library(gsw)
+library(ggforce)
+library(ggpmisc)
+library(tidymodels)
+
+```
+
+## Set directories
+
+location of pre-prepared data
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
+```
+
+## Set options
+
+Define options that are used to determine what analysis is done
+
+```{r set_options}
+
+# Options
+
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 2
+
+
+```
+
+## Extreme SO Temp
+
+What level of SO temperature extreme are identified
+
+```{r SO_SST_extreme}
+
+# -------------------------------------------------------------------------------------------------------------
+# Temp - review incidences of extremes based on method.
+# -------------------------------------------------------------------------------------------------------------
+
+temp_extreme_info_01 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_01.rds")) %>%
+  select(lon, lat, date, temp_extreme)
+
+temp_extreme_info_01 <- temp_extreme_info_01 %>%
+  group_by(temp_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+temp_extreme_info_01 %>%
+  filter (temp_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = temp_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3200)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of SO SST extreme pixels - single trend'
+    )
+  )
+
+
+temp_extreme_info_02 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+
+temp_extreme_info_02 <- temp_extreme_info_02 %>%
+  group_by(temp_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+temp_extreme_info_02 %>%
+  filter (temp_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = temp_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3200)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of SO SST extreme pixels - monthly trends'
+    )
+  )
+
+```
+
+## Extreme SO pH
+
+What level of SO pH extreme are identified
+
+```{r SO pH extreme}
+
+# -------------------------------------------------------------------------------------------------------------
+# pH - review incidences of extremes based on method.
+# -------------------------------------------------------------------------------------------------------------
+
+pH_extreme_info_01 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_01.rds")) %>%
+  select(lon, lat, date, ph_extreme)
+
+pH_extreme_info_01 <- pH_extreme_info_01 %>%
+  group_by(ph_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+pH_extreme_info_01 %>%
+  filter (ph_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = ph_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3000)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of SO pH extreme pixels - single trend'
+    )
+  )
+
+
+pH_extreme_info_02 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, ph_extreme)
+
+pH_extreme_info_02 <- pH_extreme_info_02 %>%
+  group_by(ph_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+pH_extreme_info_02 %>%
+  filter (ph_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = ph_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3000)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of SO pH extreme pixels - monthly trends'
+    )
+  )
+
+```
+
+
+## Extreme global Temp
+
+What level of global temperature extreme are identified
+
+```{r global_SST_extreme}
+
+# -------------------------------------------------------------------------------------------------------------
+# Temp - review incidences of extremes based on method.
+# -------------------------------------------------------------------------------------------------------------
+
+temp_extreme_info_01 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_01.rds")) %>%
+  select(lon, lat, date, temp_extreme)
+
+temp_extreme_info_01 <- temp_extreme_info_01 %>%
+  group_by(temp_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+temp_extreme_info_01 %>%
+  filter (temp_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = temp_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3200)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of Global SST extreme pixels - single trend'
+    )
+  )
+
+
+temp_extreme_info_02 <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, temp_extreme)
+
+temp_extreme_info_02 <- temp_extreme_info_02 %>%
+  group_by(temp_extreme, date) %>%
+  summarise(n = n()) %>%
+  ungroup()
+
+temp_extreme_info_02 %>%
+  filter (temp_extreme %in% c('H', 'L') & date >= '2013-01-01') %>%
+  ggplot(aes(
+           x = date,
+           y = n,
+           col = temp_extreme
+         )) +
+  geom_point() +
+  geom_line() +
+  lims(y = c(0,3200)) +
+  labs(
+    x = 'date',
+    y = 'number of extreme pixels',
+    col = 'extreme type',
+    title = paste0(
+      'Count of Global SST extreme pixels - monthly trends'
+    )
+  )
+
+```

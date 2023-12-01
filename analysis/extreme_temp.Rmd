@@ -43,6 +43,11 @@ HNL_colors_map <- c('H' = 'red3',
 # profiles with profile_range >= opt_min_profile_range will be selected 1 = profiles of at least 600m, 2 = profiles of at least 1200m, 3 = profiles of at least 1500m
 opt_min_profile_range = 3
 
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 1
+
 ```
 
 # Load data
@@ -426,30 +431,35 @@ OceanSODA_temp_SO %>%
 
 # SST anomalies
 
-Through setting only one of the following two code chunks to "eval=FALSE" you can choose between a lm- and a mean-based anomaly detection.
+Through setting only one of the following two code chunks to "eval=FALSE" you can choose between a lr- and a mean-based anomaly detection.
 
-## Fit lm models
+## Fit lr models
 
 ```{r fit_temp_linear_regression}
-
-# fit a linear regression of OceanSODA pH against time (temporal trend)
-# in each lat/lon/month grid
 
 # create a decimal_year column to use are the parameter to the regression function
 OceanSODA_temp_SO <- OceanSODA_temp_SO %>%
   mutate(decimal_year = decimal_date(date), .after = year)
 
-OceanSODA_temp_regression <- OceanSODA_temp_SO %>% 
-  # filter(basin_AIP == "Indian",
-  #        biome_name == "SPSS",
-  #        lon < 40) %>%
-  nest(data = -c(lon, lat)) %>%
-  mutate(fit = map(.x = data,
-                   .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
-         tidied = map(.x = fit, .f = tidy),
-         glanced = map(.x = fit, .f = glance),
-         augmented = map(.x = fit, .f = augment)) 
-
+# fit a linear regression of OceanSODA temp against time (temporal trend)
+# in each lat/lon/month grid, month is used depending on opt_extreme_determination
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_regression <- OceanSODA_temp_SO %>% 
+    nest(data = -c(lon, lat)) %>%
+    mutate(fit = map(.x = data,
+                     .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
+           tidied = map(.x = fit, .f = tidy),
+           glanced = map(.x = fit, .f = glance),
+           augmented = map(.x = fit, .f = augment)) 
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_regression <- OceanSODA_temp_SO %>% 
+    nest(data = -c(lon, lat, month)) %>%
+    mutate(fit = map(.x = data,
+                     .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
+           tidied = map(.x = fit, .f = tidy),
+           glanced = map(.x = fit, .f = glance),
+           augmented = map(.x = fit, .f = augment)) 
+}
 
 OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression %>%
   select(-c(data, fit, augmented, glanced)) %>%
@@ -490,28 +500,18 @@ OceanSODA_temp_regression_glanced <- OceanSODA_temp_regression %>%
 
 # identify the mean value
 # in each lat/lon/month grid
-
 OceanSODA_temp_regression_tidied <- OceanSODA_temp_2x2_SO %>% 
-  # filter(basin_AIP == "Indian",
-  #        biome_name == "SPSS",
-  #        lon < 40) %>%
   group_by(lon, lat, month) %>%
   summarise(slope = 0,
             intercept = mean(clim_diff, na.rm = TRUE)) %>% 
   ungroup()
 
 OceanSODA_temp_regression_glanced <- OceanSODA_temp_2x2_SO %>% 
-  # filter(basin_AIP == "Indian",
-  #        biome_name == "SPSS",
-  #        lon < 40) %>%
   group_by(lon, lat, month) %>%
   summarise(sigma = sd(clim_diff, na.rm = TRUE)) %>% 
   ungroup()
 
 OceanSODA_temp_regression_augmented <- OceanSODA_temp_2x2_SO %>% 
-  # filter(basin_AIP == "Indian",
-  #        biome_name == "SPSS",
-  #        lon < 40) %>%
   mutate(.resid = clim_diff)
 
 ```
@@ -520,14 +520,22 @@ OceanSODA_temp_regression_augmented <- OceanSODA_temp_2x2_SO %>%
 
 ```{r map_temp_regression_slopes_flat, fig.asp=1}
 
-map+
-  geom_tile(data = OceanSODA_temp_regression_tidied,
-            aes(x = lon,
-                y = lat, 
-                fill = slope))+
-  scale_fill_scico(palette = 'vik', midpoint = 0)
-# +
-#   facet_wrap(~month, ncol = 2)
+if (opt_extreme_determination == 1){
+  map +
+    geom_tile(data = OceanSODA_temp_regression_tidied,
+              aes(x = lon,
+                  y = lat,
+                  fill = slope)) +
+    scale_fill_scico(palette = 'vik', midpoint = 0)
+} else if (opt_extreme_determination == 2){
+  map +
+    geom_tile(data = OceanSODA_temp_regression_tidied,
+              aes(x = lon,
+                  y = lat,
+                  fill = slope)) +
+    scale_fill_scico(palette = 'vik', midpoint = 0) +
+    facet_wrap( ~ month, ncol = 2)
+}
 
 ```
 
@@ -535,14 +543,24 @@ map+
 
 ```{r temp_map_sigma, fig.asp=1}
 
-map+
-  geom_tile(data = OceanSODA_temp_regression_glanced,
-            aes(x = lon,
-                y = lat, 
-                fill = sigma))+
-  scale_fill_viridis_c()+
-  labs(fill = '1 residual \nst. dev.')
-  # facet_wrap(~month, ncol = 2)+
+if (opt_extreme_determination == 1){
+  map +
+    geom_tile(data = OceanSODA_temp_regression_glanced,
+              aes(x = lon,
+                  y = lat,
+                  fill = sigma)) +
+    scale_fill_viridis_c() +
+    labs(fill = '1 residual \nst. dev.')
+} else if (opt_extreme_determination == 2){
+  map +
+    geom_tile(data = OceanSODA_temp_regression_glanced,
+              aes(x = lon,
+                  y = lat,
+                  fill = sigma)) +
+    scale_fill_viridis_c() +
+    labs(fill = '1 residual \nst. dev.') +
+    facet_wrap(~month, ncol = 2)
+}  
 
 ```
 
@@ -557,17 +575,24 @@ Calculate OceanSODA surface temperature anomalies; L for abnormally low, H for a
 # when the in-situ OceanSODA temperature is within 95% of the range, then assign 'N' for normal pH
 
 # combine observations and regression statistics
-
-OceanSODA_temp_SO_extreme_grid <-
-  full_join(
-    OceanSODA_temp_regression_augmented,
-    OceanSODA_temp_regression_glanced %>%
-      select(lon:lat, sigma)
-  )
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_SO_extreme_grid <-
+    full_join(
+      OceanSODA_temp_regression_augmented,
+      OceanSODA_temp_regression_glanced %>%
+        select(lon:lat, sigma)
+    )
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_SO_extreme_grid <-
+    full_join(
+      OceanSODA_temp_regression_augmented,
+      OceanSODA_temp_regression_glanced %>%
+        select(lon:month, sigma)
+    )
+}
 # results in 925 056 rows 
 
 # identify observations in anomaly classes
-
 OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
   mutate(
     temp_extreme = case_when(
@@ -599,33 +624,89 @@ OceanSODA_temp_SO_extreme_grid <- OceanSODA_temp_SO_extreme_grid %>%
 
 ```{r OceanSODA_SST_anomalies_to_file}
 
-OceanSODA_temp_SO_extreme_grid %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field.rds"))
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_SO_extreme_grid %>%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      "/OceanSODA_SST_anomaly_field_01.rds"
+    ))
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_SO_extreme_grid %>%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      "/OceanSODA_SST_anomaly_field_02.rds"
+    ))
+}
 
 ```
 
 ```{r temp_anomaly_test_plot_grid, fig.asp=0.4}
 
-OceanSODA_temp_SO_extreme_grid %>%
-  group_split(lon, lat) %>%
-  head(6) %>%
-  map(~ ggplot(data = .x) +
-        geom_point(aes(x = year,
-                       y = clim_diff,
-                       col = temp_extreme)) +
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_SO_extreme_grid %>%
+    group_split(lon, lat) %>%
+    head(6) %>%
+    map(
+      ~ ggplot(data = .x) +
+        geom_point(aes(
+          x = year,
+          y = clim_diff,
+          col = temp_extreme
+        )) +
         geom_abline(data = .x, aes(slope = slope,
-                    intercept = intercept)) +
+                                   intercept = intercept)) +
+        geom_abline(
+          data = .x,
+          aes(slope = slope,
+              intercept = intercept + 2 * sigma),
+          linetype = 2
+        ) +
+        geom_abline(
+          data = .x,
+          aes(slope = slope,
+              intercept = intercept - 2 * sigma),
+          linetype = 2
+        ) +
+        labs(title = paste(
+          fititle = paste("lon:", unique(.x$lon),
+                          "| lat:", unique(.x$lat))
+        )) +
+        scale_color_manual(values = HNL_colors)
+    )
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_SO_extreme_grid %>%
+    group_split(lon, lat, month) %>%
+    head(6) %>%
+    map(
+      ~ ggplot(data = .x) +
+        geom_point(aes(
+          x = year,
+          y = clim_diff,
+          col = temp_extreme
+        )) +
         geom_abline(data = .x, aes(slope = slope,
-                    intercept = intercept + 2*sigma),
-                    linetype = 2) +
-        geom_abline(data = .x, aes(slope = slope,
-                    intercept = intercept - 2*sigma),
-                    linetype = 2) +
+                                   intercept = intercept)) +
+        geom_abline(
+          data = .x,
+          aes(slope = slope,
+              intercept = intercept + 2 * sigma),
+          linetype = 2
+        ) +
+        geom_abline(
+          data = .x,
+          aes(slope = slope,
+              intercept = intercept - 2 * sigma),
+          linetype = 2
+        ) +
         labs(title = paste(fititle = paste(
           "lon:", unique(.x$lon),
-          "| lat:", unique(.x$lat)
-          ))) +
-        scale_color_manual(values = HNL_colors))
+          "| lat:", unique(.x$lat),
+          "| month:", unique(.x$month)
+        ))) +
+        scale_color_manual(values = HNL_colors)
+    )
+}
+
 ```
 
 ## Global anomaly identification
@@ -636,20 +717,37 @@ OceanSODA_temp_SO_extreme_grid %>%
 OceanSODA_temp <- OceanSODA_temp %>% 
    filter(!is.na(temperature))
 
-# fit a linear regression of OceanSODA temp against time (temporal trend)
-# in each lat/lon/month grid
-
 # create a decimal_year column to use are the parameter to the regression function
 OceanSODA_temp <- OceanSODA_temp %>%
   mutate(decimal_year = decimal_date(date), .after = year)
 
-OceanSODA_temp_regression <- OceanSODA_temp %>% 
-  nest(data = -c(lon, lat)) %>%
-  mutate(fit = map(.x = data,
-                   .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
-         tidied = map(.x = fit, .f = tidy),
-         glanced = map(.x = fit, .f = glance),
-         augmented = map(.x = fit, .f = augment)) 
+# fit a linear regression of OceanSODA temp against time (temporal trend)
+# in each lat/lon/month grid, month is used depending on opt_extreme_determination
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_regression <- OceanSODA_temp %>%
+    nest(data = -c(lon, lat)) %>%
+    mutate(
+      fit = map(
+        .x = data,
+        .f = ~ lm(clim_diff ~ decimal_year, data = .x)
+      ),
+      tidied = map(.x = fit, .f = tidy),
+      glanced = map(.x = fit, .f = glance),
+      augmented = map(.x = fit, .f = augment)
+    )
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_regression <- OceanSODA_temp %>%
+    nest(data = -c(lon, lat, month)) %>%
+    mutate(
+      fit = map(
+        .x = data,
+        .f = ~ lm(clim_diff ~ decimal_year, data = .x)
+      ),
+      tidied = map(.x = fit, .f = tidy),
+      glanced = map(.x = fit, .f = glance),
+      augmented = map(.x = fit, .f = augment)
+    )
+}
 
 OceanSODA_temp_regression_tidied <- OceanSODA_temp_regression %>%
   select(-c(data, fit, augmented, glanced)) %>%
@@ -689,12 +787,21 @@ OceanSODA_temp_regression_glanced <- OceanSODA_temp_regression %>%
 # when the in-situ OceanSODA temperature is within 95% of the range, then assign 'N' for normal pH
 
 # combine observations and regression statistics
-OceanSODA_temp_extreme_grid <-
-  full_join(
-    OceanSODA_temp_regression_augmented,
-    OceanSODA_temp_regression_glanced %>%
-      select(lon:lat, sigma)
-  )
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_extreme_grid <-
+    full_join(
+      OceanSODA_temp_regression_augmented,
+      OceanSODA_temp_regression_glanced %>%
+        select(lon:lat, sigma)
+    )
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_extreme_grid <-
+    full_join(
+      OceanSODA_temp_regression_augmented,
+      OceanSODA_temp_regression_glanced %>%
+        select(lon:month, sigma)
+    )
+}
 
 # identify observations in anomaly classes
 OceanSODA_temp_extreme_grid <- OceanSODA_temp_extreme_grid %>%
@@ -721,8 +828,19 @@ OceanSODA_temp_extreme_grid <- OceanSODA_temp_extreme_grid %>%
 
 
 # Write anomalies to file
-OceanSODA_temp_extreme_grid %>% 
-  write_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field.rds"))
+if (opt_extreme_determination == 1){
+  OceanSODA_temp_extreme_grid %>%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      "/OceanSODA_global_SST_anomaly_field_01.rds"
+    ))
+} else if (opt_extreme_determination == 2){
+  OceanSODA_temp_extreme_grid %>%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      "/OceanSODA_global_SST_anomaly_field_02.rds"
+    ))
+}
 
 ```
 
@@ -730,23 +848,6 @@ OceanSODA_temp_extreme_grid %>%
 
 ```{r map_temp_extremes_1x1_plot, fig.asp=1.5}
 # anomaly maps on a 1x1 grid 
-
-# OceanSODA_temp_SO_extreme_grid %>%
-#   group_split(year) %>%
-#   # head(1) %>%
-#   map(
-#     ~map +
-#       geom_tile(data = .x,
-#                 aes(x = lon_raw,
-#                     y = lat_raw,
-#                     fill = temp_extreme),
-#                 width = 1,
-#                 height = 1)+
-#       scale_fill_manual(values = HNL_colors_map)+
-#       facet_wrap(~month, ncol = 2)+
-#       labs(title = paste('Year:', unique(.x$year)),
-#            fill = 'temperature')
-#   )
 
 OceanSODA_temp_SO_extreme_grid %>% 
   filter(year >= 2013) %>% 
@@ -782,6 +883,7 @@ OceanSODA_temp_SO_extreme_grid %>%
   scale_color_manual(values = HNL_colors) +
   facet_grid(basin_AIP~biome_name)+
   theme(legend.position = 'bottom')
+
 ```
 
 ## Anomaly histogram
@@ -824,7 +926,6 @@ full_argo <- full_argo %>%
   mutate(
     lat_raw = lat,
     lon_raw = lon)
-
 
 ```
 
@@ -945,13 +1046,13 @@ profile_temp_extreme %>%
                     y = depth,
                     group = file_id,
                     col = temp_extreme),
-                size = 0.3) +
+                linewidth = 0.3) +
       geom_path(data = .x %>% filter(temp_extreme == 'H' | temp_extreme == 'L'),
                 aes(x = temp,
                     y = depth,
                     group = file_id,
                     col = temp_extreme),
-                size = 0.5)+
+                linewidth = 0.5)+
       scale_y_reverse() +
       scale_color_manual(values = HNL_colors) +
       facet_wrap(~ month, ncol = 6) +
@@ -1005,13 +1106,13 @@ profile_temp_Atl_2017 %>%
                 y = depth,
                 group = file_id,
                 col = temp_extreme),
-            size = 0.3)+
+            linewidth = 0.3)+
   geom_path(data = profile_temp_Atl_2017 %>% filter(temp_extreme == 'H'| temp_extreme == 'L'),
             aes(x = temp,
                 y = depth,
                 group = file_id,
                 col = temp_extreme),
-            size = 0.5)+
+            linewidth = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
   labs(title = 'Atlantic, STSS biome, October 2017',
@@ -1055,13 +1156,13 @@ profile_temp_Atl_2016 %>%
                 y = depth, 
                 group = file_id,
                 col = temp_extreme),
-            size = 0.3)+
+            linewidth = 0.3)+
   geom_path(data = profile_temp_Atl_2016 %>% filter(temp_extreme == 'H'|temp_extreme == 'L'),
             aes(x = temp,
                 y = depth, 
                 group = file_id,
                 col = temp_extreme),
-            size = 0.5)+
+            linewidth = 0.5)+
   scale_y_reverse()+
   scale_color_manual(values = HNL_colors)+
   labs(title = 'Atlantic, SPSS biome, July 2016',
