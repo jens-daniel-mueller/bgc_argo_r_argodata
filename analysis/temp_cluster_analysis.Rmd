@@ -155,12 +155,12 @@ if (opt_norm_amolaly) {
     select (file_id, abs_sa = anomaly))
   
   # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
-  surf_anomaly <- abs(temp_anomaly_va_id %>%
+  surf_anomaly <- temp_anomaly_va_id %>%
     group_by(file_id) %>%
-    summarise(abs_sa = max(anomaly)) %>%
+    summarise(abs_sa = max(abs(anomaly))) %>%
     ungroup() %>%
-    select (file_id, abs_sa))
-  
+    select (file_id, abs_sa)
+
   temp_anomaly_va_id_normalised <- left_join(temp_anomaly_va_id, surf_anomaly)
   
   temp_anomaly_va_id_normalised <- temp_anomaly_va_id_normalised %>%
@@ -795,11 +795,11 @@ if (opt_norm_amolaly){
     select (file_id, abs_sa = anomaly))
 
   # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
-  surf_anomaly <- abs(temp_anomaly_va_id %>%
+  surf_anomaly <- temp_anomaly_va_id %>%
     group_by(file_id) %>%
-    summarise(abs_sa = max(anomaly)) %>%
+    summarise(abs_sa = max(abs(anomaly))) %>%
     ungroup() %>%
-    select (file_id, abs_sa))
+    select (file_id, abs_sa)
   
   temp_anomaly_va_norm <- left_join(temp_anomaly_va_norm, surf_anomaly)
     
