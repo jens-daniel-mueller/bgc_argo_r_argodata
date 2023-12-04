@@ -671,15 +671,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree1d850afdbd66bf28068547d5ff3da5cd9729978etargetblank1d850afa">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree44c5dc47244172a0cb16f2f20749ca2e9ed8490atargetblank44c5dc4a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/1d850afdbd66bf28068547d5ff3da5cd9729978e" target="_blank">1d850af</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/44c5dc47244172a0cb16f2f20749ca2e9ed8490a" target="_blank">44c5dc4</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree1d850afdbd66bf28068547d5ff3da5cd9729978etargetblank1d850afa"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree44c5dc47244172a0cb16f2f20749ca2e9ed8490atargetblank44c5dc4a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -689,7 +689,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/1d850afdbd66bf28068547d5ff3da5cd9729978e" target="_blank">1d850af</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/44c5dc47244172a0cb16f2f20749ca2e9ed8490a" target="_blank">44c5dc4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -709,6 +709,8 @@ Ignored files:
     Ignored:    output/
 
 Unstaged changes:
+    Modified:   analysis/pH_cluster_analysis.Rmd
+    Modified:   analysis/temp_cluster_analysis.Rmd
     Modified:   code/start_background_job_partial.R
 
 </code></pre>
@@ -756,6 +758,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/44c5dc47244172a0cb16f2f20749ca2e9ed8490a/analysis/temp_core_cluster_analysis.Rmd" target="_blank">44c5dc4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+<td>
+Cluster under surface extreme.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/temp_core_cluster_analysis.html" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -958,7 +994,7 @@ opt_analysis_type &lt;- 2
 
 # opt_num_clusters
 # How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
-opt_num_clusters_min &lt;- c(8, 8, 7)
+opt_num_clusters_min &lt;- c(8, 8, 1)
 opt_num_clusters_max &lt;- c(8, 8, 8)
 # What is the max depth of each profile_range
 opt_max_depth &lt;- c(600, 1000, 1500)
@@ -989,7 +1025,7 @@ opt_extreme_determination &lt;- 2
 # Carried out for 1500m profiles
 opt_profile_range = 3
 extreme_type &lt;- c(&#39;L&#39;, &#39;N&#39;, &#39;H&#39;)
-opt_num_clusters_ext_min &lt;- c(5, 5, 5)
+opt_num_clusters_ext_min &lt;- c(1, 1, 1)
 opt_num_clusters_ext_max &lt;- c(6, 6, 6)
 
 # Option related to normalising the anomaly profiles.
@@ -997,7 +1033,7 @@ opt_num_clusters_ext_max &lt;- c(6, 6, 6)
 #      - The is only carried out for profiles where the abs(surface temp) &gt; 1.
 #      - This analysis is carried out in addition to the analysis on base anomaly profiles.  
 # FALSE - The normalisation process is not carried out. 
-opt_norm_amolaly &lt;- TRUE</code></pre>
+opt_norm_anomaly &lt;- TRUE</code></pre>
 <pre class="r"><code>theme_set(theme_bw())
 
 map &lt;-
@@ -1038,7 +1074,7 @@ points &lt;- temp_anomaly_va_wide %&gt;%
   column_to_rownames(var = &quot;file_id&quot;)
 
 # normalisation?
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   surf_anomaly &lt;- abs(temp_anomaly_va_id %&gt;% 
     filter (depth == 5) %&gt;%
@@ -1167,7 +1203,7 @@ if (opt_norm_amolaly) {
             )
         }
         
-      } else if (iType == 2 &amp; opt_norm_amolaly) {
+      } else if (iType == 2 &amp; opt_norm_anomaly) {
 
         set.seed(1)
         kclusts &lt;-
@@ -1327,6 +1363,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-1.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -1354,8 +1401,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_analysis_cluster_details-2">
+Past versions of cluster_analysis_cluster_details-2.png
+</button>
+</p>
+<div id="fig-cluster_analysis_cluster_details-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # repeat for adjusted profiles profiles
   anomaly_cluster_mean %&gt;%
@@ -1391,9 +1493,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_analysis_cluster_details_adj-1">
+Past versions of cluster_analysis_cluster_details_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_analysis_cluster_details_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-2.png" width="672" style="display: block; margin: auto;" />
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_analysis_cluster_details_adj-2">
+Past versions of cluster_analysis_cluster_details_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_analysis_cluster_details_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-8.png" width="672" style="display: block; margin: auto;" />
 ### Cluster mean by year</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
@@ -1452,6 +1646,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-1.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -1468,8 +1673,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year-2">
+Past versions of cluster_mean_year-2.png
+</button>
+</p>
+<div id="fig-cluster_mean_year-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
   
   # Repeat for adjusted profiles
   anomaly_cluster_mean_year %&gt;%
@@ -1503,9 +1763,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_adj-1">
+Past versions of cluster_mean_year_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_adj-2">
+Past versions of cluster_mean_year_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-climatology" class="section level3">
 <h3>Cluster climatology</h3>
@@ -1579,6 +1931,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year-1.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -1606,8 +1969,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year-2">
+Past versions of cluster_by_year-2.png
+</button>
+</p>
+<div id="fig-cluster_by_year-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   year_min &lt;- min(cluster_by_year$year)
   year_max &lt;- max(cluster_by_year$year)
@@ -1642,9 +2060,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_adj-1">
+Past versions of cluster_by_year_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_by_year_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_adj-2">
+Past versions of cluster_by_year_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_by_year_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-month" class="section level3">
 <h3>Cluster by month</h3>
@@ -1719,6 +2229,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month-1.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -1746,8 +2267,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month-2">
+Past versions of cluster_by_month-2.png
+</button>
+</p>
+<div id="fig-cluster_by_month-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %&gt;%
@@ -1782,9 +2358,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_adj-1">
+Past versions of cluster_by_month_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_by_month_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_adj-2">
+Past versions of cluster_by_month_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_by_month_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial" class="section level3">
 <h3>Cluster spatial</h3>
@@ -1840,6 +2508,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/55244e475d20263aaf04e5f888f97563f888c9ed/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-1.png" target="_blank">55244e4</a>
 </td>
 <td>
@@ -1867,8 +2546,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_01-2">
+Past versions of spatial_cluster_01-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_01-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure
   temp_anomaly_cluster_all %&gt;%
@@ -1895,9 +2629,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_01_adj-1">
+Past versions of spatial_cluster_01_adj-1.png
+</button>
+</p>
+<div id="fig-spatial_cluster_01_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_01_adj-2">
+Past versions of spatial_cluster_01_adj-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_01_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>location of each cluster on separate maps, spatial analysis</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
@@ -1976,6 +2802,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-1.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -1992,8 +2829,63 @@ ds2n19
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_03-2">
+Past versions of spatial_cluster_03-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_03-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-8.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_location %&gt;%
@@ -2026,9 +2918,101 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_03_adj-1">
+Past versions of spatial_cluster_03_adj-1.png
+</button>
+</p>
+<div id="fig-spatial_cluster_03_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_03_adj-2">
+Past versions of spatial_cluster_03_adj-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_03_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial-year" class="section level3">
 <h3>Cluster spatial year</h3>
@@ -2147,7 +3131,7 @@ temp_anomaly_va &lt;- temp_anomaly_va %&gt;% replace_na(list(temp_extreme = &#39
 temp_anomaly_va &lt;- temp_anomaly_va %&gt;% mutate (profile_type = &#39;base&#39;)
 
 # Create a replica data set with profile_type = adjusted 
-if (opt_norm_amolaly){
+if (opt_norm_anomaly){
   # mark as adjusted
   temp_anomaly_va_norm &lt;- temp_anomaly_va %&gt;% mutate (profile_type = &#39;adjusted&#39;)
 
@@ -2443,6 +3427,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-1.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -2492,6 +3487,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-2.png" target="_blank">128e47d</a>
@@ -2545,6 +3551,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -2572,14 +3589,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext-4">
+Past versions of cluster_mean_ext-4.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext-5">
+Past versions of cluster_mean_ext-5.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext-6">
+Past versions of cluster_mean_ext-6.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure of cluster mean profiles
   anomaly_cluster_mean_ext %&gt;%
@@ -2618,21 +3782,279 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-1">
+Past versions of cluster_mean_ext_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-2">
+Past versions of cluster_mean_ext_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-3">
+Past versions of cluster_mean_ext_adj-3.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-4">
+Past versions of cluster_mean_ext_adj-4.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-5">
+Past versions of cluster_mean_ext_adj-5.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_ext_adj-6">
+Past versions of cluster_mean_ext_adj-6.png
+</button>
+</p>
+<div id="fig-cluster_mean_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="clusters-mean-by-year" class="section level3">
 <h3>Clusters mean by year</h3>
@@ -2691,6 +4113,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-1.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -2740,6 +4173,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-2.png" target="_blank">128e47d</a>
@@ -2793,6 +4237,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -2820,14 +4275,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext-4">
+Past versions of cluster_mean_year_ext-4.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext-5">
+Past versions of cluster_mean_year_ext-5.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext-6">
+Past versions of cluster_mean_year_ext-6.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # cluster means by year
   anomaly_cluster_mean_year_ext %&gt;%
@@ -2862,21 +4464,279 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-1">
+Past versions of cluster_mean_year_ext_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-2">
+Past versions of cluster_mean_year_ext_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-3">
+Past versions of cluster_mean_year_ext_adj-3.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-4">
+Past versions of cluster_mean_year_ext_adj-4.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-5">
+Past versions of cluster_mean_year_ext_adj-5.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year_ext_adj-6">
+Past versions of cluster_mean_year_ext_adj-6.png
+</button>
+</p>
+<div id="fig-cluster_mean_year_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-year-1" class="section level3">
 <h3>Cluster by year</h3>
@@ -2950,6 +4810,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-1.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -2999,6 +4870,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-2.png" target="_blank">128e47d</a>
@@ -3052,6 +4934,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3079,14 +4972,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext-4">
+Past versions of cluster_by_year_ext-4.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext-5">
+Past versions of cluster_by_year_ext-5.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext-6">
+Past versions of cluster_by_year_ext-6.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %&gt;%
@@ -3122,21 +5162,279 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-1">
+Past versions of cluster_by_year_ext_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-2">
+Past versions of cluster_by_year_ext_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-3">
+Past versions of cluster_by_year_ext_adj-3.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-4">
+Past versions of cluster_by_year_ext_adj-4.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-5">
+Past versions of cluster_by_year_ext_adj-5.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year_ext_adj-6">
+Past versions of cluster_by_year_ext_adj-6.png
+</button>
+</p>
+<div id="fig-cluster_by_year_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-month-1" class="section level3">
 <h3>Cluster by month</h3>
@@ -3207,6 +5505,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-1.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3256,6 +5565,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-2.png" target="_blank">128e47d</a>
@@ -3309,6 +5629,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3336,14 +5667,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext-4">
+Past versions of cluster_by_month_ext-4.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext-5">
+Past versions of cluster_by_month_ext-5.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext-6">
+Past versions of cluster_by_month_ext-6.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %&gt;%
@@ -3379,21 +5857,279 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-1">
+Past versions of cluster_by_month_ext_adj-1.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-2">
+Past versions of cluster_by_month_ext_adj-2.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-3">
+Past versions of cluster_by_month_ext_adj-3.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-4">
+Past versions of cluster_by_month_ext_adj-4.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-5">
+Past versions of cluster_by_month_ext_adj-5.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month_ext_adj-6">
+Past versions of cluster_by_month_ext_adj-6.png
+</button>
+</p>
+<div id="fig-cluster_by_month_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial-1" class="section level3">
 <h3>Cluster spatial</h3>
@@ -3444,6 +6180,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-1.png" target="_blank">128e47d</a>
@@ -3497,6 +6244,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-2.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3548,6 +6306,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3575,14 +6344,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext-4">
+Past versions of spatial_cluster_combined_ext-4.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext-5">
+Past versions of spatial_cluster_combined_ext-5.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext-6">
+Past versions of spatial_cluster_combined_ext-6.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   # create figure combined
   temp_anomaly_cluster_ext %&gt;%
@@ -3610,21 +6526,279 @@ ds2n19
 }</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-1">
+Past versions of spatial_cluster_combined_ext_adj-1.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-2">
+Past versions of spatial_cluster_combined_ext_adj-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-3">
+Past versions of spatial_cluster_combined_ext_adj-3.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-4">
+Past versions of spatial_cluster_combined_ext_adj-4.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-5">
+Past versions of spatial_cluster_combined_ext_adj-5.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_combined_ext_adj-6">
+Past versions of spatial_cluster_combined_ext_adj-6.png
+</button>
+</p>
+<div id="fig-spatial_cluster_combined_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="spatial-by-cluster" class="section level3">
 <h3>Spatial by cluster</h3>
@@ -3715,6 +6889,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-1.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3764,6 +6949,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-2.png" target="_blank">128e47d</a>
@@ -3817,6 +7013,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-3.png" target="_blank">128e47d</a>
 </td>
 <td>
@@ -3844,14 +7051,161 @@ ds2n19
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext-4">
+Past versions of spatial_cluster_count_ext-4.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext-5">
+Past versions of spatial_cluster_count_ext-5.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext-6">
+Past versions of spatial_cluster_count_ext-6.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-18.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_norm_amolaly) {
+<pre class="r"><code>if (opt_norm_anomaly) {
 
   cluster_by_location %&gt;%
     filter (profile_type == &quot;adjusted&quot;) %&gt;%
@@ -3884,21 +7238,279 @@ ds2n19
 }    </code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-1">
+Past versions of spatial_cluster_count_ext_adj-1.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-1.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-2">
+Past versions of spatial_cluster_count_ext_adj-2.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-2.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-3">
+Past versions of spatial_cluster_count_ext_adj-3.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-3.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-4">
+Past versions of spatial_cluster_count_ext_adj-4.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-4.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-5">
+Past versions of spatial_cluster_count_ext_adj-5.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-5.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_count_ext_adj-6">
+Past versions of spatial_cluster_count_ext_adj-6.png
+</button>
+</p>
+<div id="fig-spatial_cluster_count_ext_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/b22f258e5495228e34d104b716105fdbe1b44a3f/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-6.png" target="_blank">b22f258</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[16]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[17]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[18]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-18.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
