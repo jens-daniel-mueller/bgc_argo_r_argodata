@@ -64,7 +64,7 @@ opt_analysis_type <- 2
 
 # opt_num_clusters
 # How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
-opt_num_clusters_min <- c(8, 8, 7)
+opt_num_clusters_min <- c(8, 8, 1)
 opt_num_clusters_max <- c(8, 8, 8)
 # What is the max depth of each profile_range
 opt_max_depth <- c(600, 1000, 1500)
@@ -95,7 +95,7 @@ opt_extreme_determination <- 2
 # Carried out for 1500m profiles
 opt_profile_range = 3
 extreme_type <- c('L', 'N', 'H')
-opt_num_clusters_ext_min <- c(5, 5, 5)
+opt_num_clusters_ext_min <- c(1, 1, 1)
 opt_num_clusters_ext_max <- c(6, 6, 6)
 
 # Option related to normalising the anomaly profiles.
@@ -103,7 +103,7 @@ opt_num_clusters_ext_max <- c(6, 6, 6)
 #      - The is only carried out for profiles where the abs(surface temp) > 1.
 #      - This analysis is carried out in addition to the analysis on base anomaly profiles.  
 # FALSE - The normalisation process is not carried out. 
-opt_norm_amolaly <- TRUE
+opt_norm_anomaly <- TRUE
 
 ```
 
@@ -155,7 +155,7 @@ points <- temp_anomaly_va_wide %>%
   column_to_rownames(var = "file_id")
 
 # normalisation?
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   surf_anomaly <- abs(temp_anomaly_va_id %>% 
     filter (depth == 5) %>%
@@ -293,7 +293,7 @@ if (opt_analysis_type == 2) {
             )
         }
         
-      } else if (iType == 2 & opt_norm_amolaly) {
+      } else if (iType == 2 & opt_norm_anomaly) {
 
         set.seed(1)
         kclusts <-
@@ -434,7 +434,7 @@ Adjusted profiles
 
 ```{r cluster_analysis_cluster_details_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # repeat for adjusted profiles profiles
   anomaly_cluster_mean %>%
@@ -512,7 +512,7 @@ Adjusted profiles
 
 ```{r cluster_mean_year_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   # Repeat for adjusted profiles
   anomaly_cluster_mean_year %>%
@@ -607,7 +607,7 @@ Adjusted profiles
 
 ```{r cluster_by_year_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   year_min <- min(cluster_by_year$year)
   year_max <- max(cluster_by_year$year)
@@ -700,7 +700,7 @@ Adjusted profiles
 
 ```{r cluster_by_month_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -774,7 +774,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_01_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   temp_anomaly_cluster_all %>%
@@ -868,7 +868,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_03_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_location %>%
@@ -1024,7 +1024,7 @@ temp_anomaly_va <- temp_anomaly_va %>% replace_na(list(temp_extreme = 'N'))
 temp_anomaly_va <- temp_anomaly_va %>% mutate (profile_type = 'base')
 
 # Create a replica data set with profile_type = adjusted 
-if (opt_norm_amolaly){
+if (opt_norm_anomaly){
   # mark as adjusted
   temp_anomaly_va_norm <- temp_anomaly_va %>% mutate (profile_type = 'adjusted')
 
@@ -1305,7 +1305,7 @@ Adjusted profiles
 
 ```{r cluster_mean_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure of cluster mean profiles
   anomaly_cluster_mean_ext %>%
@@ -1385,7 +1385,7 @@ Adjusted profiles
 
 ```{r cluster_mean_year_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # cluster means by year
   anomaly_cluster_mean_year_ext %>%
@@ -1476,7 +1476,7 @@ Adjusted profiles
 
 ```{r cluster_by_year_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -1566,7 +1566,7 @@ Adjusted profiles
 
 ```{r cluster_by_month_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -1638,7 +1638,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_combined_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure combined
   temp_anomaly_cluster_ext %>%
@@ -1745,7 +1745,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_count_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   cluster_by_location %>%
     filter (profile_type == "adjusted") %>%
