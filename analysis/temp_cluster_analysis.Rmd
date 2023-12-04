@@ -72,6 +72,10 @@ opt_measure_label <- "temperature anomaly (°C)"
 opt_xlim <- c(-4.5, 4.5)
 opt_xbreaks <- c(-4, -2, 0, 2, 4)
 
+# adjusted to be in scale -1 to 1
+opt_xlim_adjusted <- c(-1, 1)
+opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
+
 # options relating to cluster analysis
 opt_n_start <- 15
 opt_max_iterations <- 500
@@ -390,6 +394,7 @@ if (opt_analysis_type == 2) {
   
   # create figure of cluster mean profiles
   anomaly_cluster_mean %>%
+    filter (profile_type == "base") %>%
     group_split(profile_type, num_clusters) %>%
     map(
       ~ ggplot(data = .x,) +
@@ -418,6 +423,39 @@ if (opt_analysis_type == 2) {
           y = 'depth (m)'
         )
     )
+
+  # repeat for adjusted profiles profiles
+  anomaly_cluster_mean %>%
+    filter (profile_type == "adjusted") %>%
+    group_split(profile_type, num_clusters) %>%
+    map(
+      ~ ggplot(data = .x,) +
+        geom_path(aes(x = anomaly_mean,
+                      y = depth)) +
+        geom_ribbon(
+          aes(
+            xmax = anomaly_mean + anomaly_sd,
+            xmin = anomaly_mean - anomaly_sd,
+            y = depth
+          ),
+          alpha = 0.2
+        ) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")")) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
+        labs(
+          title = paste0(
+            'Overall mean anomaly profiles by cluster \n',
+            'type = ', unique(.x$profile_type), ', ', 
+            'num clusters = ', unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = 'depth (m)'
+        )
+    )
+
 }
 
 ```
@@ -443,6 +481,35 @@ if (opt_analysis_type == 2) {
         facet_wrap(~ cluster) +
         coord_cartesian(xlim = opt_xlim) +
         scale_x_continuous(breaks = opt_xbreaks) +
+        scale_color_viridis_d() +
+        labs(
+          title = paste0(
+            'Overall mean anomaly profiles by cluster \n',
+            'type = ', unique(.x$profile_type), ', ', 
+            'num clusters = ', unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = 'depth (m)'
+        )
+    )
+
+  # Repeat for adjusted profiles
+  anomaly_cluster_mean_year %>%
+    filter (profile_type == "adjusted") %>%
+    mutate(year = as.factor(year)) %>%
+    group_split(profile_type, num_clusters) %>%
+    map(
+      ~ ggplot(data = .x, ) +
+        geom_path(aes(
+          x = anomaly_mean,
+          y = depth,
+          col = year
+        )) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ cluster) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
         scale_color_viridis_d() +
         labs(
           title = paste0(
