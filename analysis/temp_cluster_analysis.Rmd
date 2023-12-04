@@ -163,8 +163,10 @@ if (opt_norm_amolaly) {
 
   temp_anomaly_va_id_normalised <- left_join(temp_anomaly_va_id, surf_anomaly)
   
+  #temp_anomaly_va_id_normalised <- temp_anomaly_va_id_normalised %>%
+  #  mutate(anomaly = if_else(abs_sa > 1.0, anomaly/abs_sa, anomaly))
   temp_anomaly_va_id_normalised <- temp_anomaly_va_id_normalised %>%
-    mutate(anomaly = if_else(abs_sa > 1.0, anomaly/abs_sa, anomaly))
+    mutate(anomaly = anomaly/abs_sa)
     
   # wide table with each depth becoming a column
   temp_anomaly_va_wide <- temp_anomaly_va_id_normalised %>%
@@ -804,8 +806,10 @@ if (opt_norm_amolaly){
   temp_anomaly_va_norm <- left_join(temp_anomaly_va_norm, surf_anomaly)
     
   # Carry out the adjustment
-  temp_anomaly_va_norm <- temp_anomaly_va_norm %>%
-    mutate(anomaly = if_else(abs_sa > 1.0, anomaly/abs_sa, anomaly))
+  #temp_anomaly_va_norm <- temp_anomaly_va_norm %>%
+  #  mutate(anomaly = if_else(abs_sa > 1.0, anomaly/abs_sa, anomaly))
+  temp_anomaly_va_id_normalised <- temp_anomaly_va_id_normalised %>%
+    mutate(anomaly = anomaly/abs_sa)
   
   #remove the surface anomaly field
   temp_anomaly_va_norm <- temp_anomaly_va_norm %>% select(-c(abs_sa))
