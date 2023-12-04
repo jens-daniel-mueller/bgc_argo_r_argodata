@@ -511,7 +511,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temperature core cluster analysis</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">27 November, 2023</h4>
+<h4 class="date">04 December, 2023</h4>
 
 </div>
 
@@ -540,7 +540,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-11-27
+<strong>Last updated:</strong> 2023-12-04
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -671,15 +671,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9b1ed7cc7b8a72eb5c41cf3fec0579a4b984ab81targetblank9b1ed7ca">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree1d850afdbd66bf28068547d5ff3da5cd9729978etargetblank1d850afa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9b1ed7cc7b8a72eb5c41cf3fec0579a4b984ab81" target="_blank">9b1ed7c</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/1d850afdbd66bf28068547d5ff3da5cd9729978e" target="_blank">1d850af</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree9b1ed7cc7b8a72eb5c41cf3fec0579a4b984ab81targetblank9b1ed7ca"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree1d850afdbd66bf28068547d5ff3da5cd9729978etargetblank1d850afa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -689,7 +689,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/9b1ed7cc7b8a72eb5c41cf3fec0579a4b984ab81" target="_blank">9b1ed7c</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/1d850afdbd66bf28068547d5ff3da5cd9729978e" target="_blank">1d850af</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -709,14 +709,6 @@ Ignored files:
     Ignored:    output/
 
 Unstaged changes:
-    Modified:   analysis/extreme_compound.Rmd
-    Modified:   analysis/extreme_pH.Rmd
-    Modified:   analysis/extreme_temp.Rmd
-    Modified:   analysis/extreme_temp_core.Rmd
-    Modified:   analysis/load_argo_clim_pH_ucsd.Rmd
-    Modified:   analysis/load_argo_clim_temp_csio.Rmd
-    Modified:   analysis/pH_cluster_analysis.Rmd
-    Modified:   analysis/temp_cluster_analysis.Rmd
     Modified:   code/start_background_job_partial.R
 
 </code></pre>
@@ -764,6 +756,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/1d850afdbd66bf28068547d5ff3da5cd9729978e/analysis/temp_core_cluster_analysis.Rmd" target="_blank">1d850af</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+<td>
+Cluster under surface extreme.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/temp_core_cluster_analysis.html" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -932,16 +958,22 @@ opt_analysis_type &lt;- 2
 
 # opt_num_clusters
 # How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
-opt_num_clusters &lt;- c(8, 8, 8)
+opt_num_clusters_min &lt;- c(8, 8, 7)
+opt_num_clusters_max &lt;- c(8, 8, 8)
 # What is the max depth of each profile_range
 opt_max_depth &lt;- c(600, 1000, 1500)
 # Which profile range is used
 opt_profile_range &lt;- 3
 
-# opt_measure_label, opt_xlim and opt_xbreaks are associated formatting
+# opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
 opt_measure_label &lt;- &quot;temperature anomaly (°C)&quot;
-opt_xlim &lt;- c(-4, 4)
+opt_xlim &lt;- c(-4.5, 4.5)
 opt_xbreaks &lt;- c(-4, -2, 0, 2, 4)
+
+# adjusted to be in scale -1 to 1
+opt_measure_label_adjusted &lt;- &quot;adjusted temperature anomaly&quot;
+opt_xlim_adjusted &lt;- c(-1, 1)
+opt_xbreaks_adjusted &lt;- c(-1.0, -0.5, 0, 0.5, 1.0)
 
 # options relating to cluster analysis
 opt_n_start &lt;- 15
@@ -951,7 +983,21 @@ opt_n_clusters &lt;- 14 # Max number of clusters to try when determining optimal
 # opt_extreme_determination
 # 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
 # 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
-opt_extreme_determination &lt;- 2</code></pre>
+opt_extreme_determination &lt;- 2
+
+# Options associated with profiles under surface extreme conditions
+# Carried out for 1500m profiles
+opt_profile_range = 3
+extreme_type &lt;- c(&#39;L&#39;, &#39;N&#39;, &#39;H&#39;)
+opt_num_clusters_ext_min &lt;- c(5, 5, 5)
+opt_num_clusters_ext_max &lt;- c(6, 6, 6)
+
+# Option related to normalising the anomaly profiles.
+# TRUE - anomaly profiles are normalised by the surface anomaly. Every depth anomaly is divided by the surface anomaly.
+#      - The is only carried out for profiles where the abs(surface temp) &gt; 1.
+#      - This analysis is carried out in addition to the analysis on base anomaly profiles.  
+# FALSE - The normalisation process is not carried out. 
+opt_norm_amolaly &lt;- TRUE</code></pre>
 <pre class="r"><code>theme_set(theme_bw())
 
 map &lt;-
@@ -964,11 +1010,8 @@ map &lt;-
 <div id="preperation" class="section level3">
 <h3>Preperation</h3>
 <p>Prepare data for cluster analysis</p>
-<pre class="r"><code>temp_anomaly_va &lt;- read_rds(file = paste0(path_core_preprocessed, &quot;/temp_anomaly_va.rds&quot;))
-
-
-# select just 1500m profiles
-temp_anomaly_va &lt;- temp_anomaly_va %&gt;% 
+<pre class="r"><code># read and select just 1500m profiles
+temp_anomaly_va &lt;- read_rds(file = paste0(path_core_preprocessed, &quot;/temp_anomaly_va.rds&quot;)) %&gt;% 
   filter(profile_range == opt_profile_range &amp; depth &lt;= opt_max_depth[opt_profile_range])
 
 # Simplified table ready to pivot
@@ -981,31 +1024,6 @@ temp_anomaly_va_id &lt;- temp_anomaly_va %&gt;%
          lat, 
          lon)
 
-# Check duplicate values and remove those profiles
-check_duplicates &lt;- temp_anomaly_va_id %&gt;%
-  group_by(file_id, depth) %&gt;%
-  summarise(count_measures = n()) %&gt;%
-  filter(count_measures &gt; 1) %&gt;%
-  ungroup()
-
-check_duplicates &lt;- check_duplicates %&gt;%
-  select (file_id, count_measures)
-
-temp_anomaly_va_id2 &lt;-
-  full_join(temp_anomaly_va_id, check_duplicates)
-
-temp_anomaly_va_id &lt;- temp_anomaly_va_id2 %&gt;%
-  filter(is.na(count_measures)) %&gt;%
-  select(file_id,
-         depth,
-         anomaly,
-         year,
-         month,
-         lat,
-         lon)
-
-rm(temp_anomaly_va_id2)
-                            
 # wide table with each depth becoming a column
 temp_anomaly_va_wide &lt;- temp_anomaly_va_id %&gt;%
   select(file_id, depth, anomaly) %&gt;%
@@ -1017,7 +1035,43 @@ temp_anomaly_va_wide &lt;- temp_anomaly_va_wide %&gt;%
 
 # Table for cluster analysis
 points &lt;- temp_anomaly_va_wide %&gt;%
-  column_to_rownames(var = &quot;file_id&quot;)</code></pre>
+  column_to_rownames(var = &quot;file_id&quot;)
+
+# normalisation?
+if (opt_norm_amolaly) {
+  
+  surf_anomaly &lt;- abs(temp_anomaly_va_id %&gt;% 
+    filter (depth == 5) %&gt;%
+    select (file_id, abs_sa = anomaly))
+  
+  # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
+  surf_anomaly &lt;- temp_anomaly_va_id %&gt;%
+    group_by(file_id) %&gt;%
+    summarise(abs_sa = max(abs(anomaly))) %&gt;%
+    ungroup() %&gt;%
+    select (file_id, abs_sa)
+
+  temp_anomaly_va_id_normalised &lt;- left_join(temp_anomaly_va_id, surf_anomaly)
+  
+  #temp_anomaly_va_id_normalised &lt;- temp_anomaly_va_id_normalised %&gt;%
+  #  mutate(anomaly = if_else(abs_sa &gt; 1.0, anomaly/abs_sa, anomaly))
+  temp_anomaly_va_id_normalised &lt;- temp_anomaly_va_id_normalised %&gt;%
+    mutate(anomaly = anomaly/abs_sa)
+    
+  # wide table with each depth becoming a column
+  temp_anomaly_va_wide &lt;- temp_anomaly_va_id_normalised %&gt;%
+    select(file_id, depth, anomaly) %&gt;%
+    pivot_wider(names_from = depth, values_from = anomaly)
+  
+  # Drop any rows with missing values N/A caused by gaps in climatology data
+  temp_anomaly_va_wide &lt;- temp_anomaly_va_wide %&gt;% 
+    drop_na()
+  
+  # Table for cluster analysis
+  points_normalised &lt;- temp_anomaly_va_wide %&gt;%
+    column_to_rownames(var = &quot;file_id&quot;)
+
+}</code></pre>
 </div>
 <div id="number-of-clusters" class="section level3">
 <h3>Number of clusters</h3>
@@ -1036,13 +1090,13 @@ points &lt;- temp_anomaly_va_wide %&gt;%
   
 
   # cluster analysis data
-  clusters &lt;-
-    kclusts %&gt;%
-    unnest(cols = c(tidied))
-  
-  assignments &lt;-
-    kclusts %&gt;%
-    unnest(cols = c(augmented))
+  # clusters &lt;-
+  #   kclusts %&gt;%
+  #   unnest(cols = c(tidied))
+  # 
+  # assignments &lt;-
+  #   kclusts %&gt;%
+  #   unnest(cols = c(augmented))
   
   clusterings &lt;-
     kclusts %&gt;%
@@ -1053,42 +1107,119 @@ points &lt;- temp_anomaly_va_wide %&gt;%
   ggplot(aes(k, tot.withinss)) +
     geom_line() +
     geom_point() +
-    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14))
+    scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
+    labs(
+      title = paste0(&#39;within ss by number of clusters: &#39;, opt_max_depth[i_range], &#39; m profiles&#39;),
+      x = &#39;number of clusters&#39;,
+      y = &#39;within ss&#39;
+    )
 
 }</code></pre>
 </div>
 <div id="cluster-analysis-1" class="section level3">
 <h3>Cluster analysis</h3>
+<p>Based on all floats regardless of surface condition.</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
+  
+  for (iType in 1:2) {
+    for (inum_clusters in opt_num_clusters_min[opt_profile_range]:opt_num_clusters_max[opt_profile_range]) {
+      if (iType == 1) {
 
-  set.seed(1)
-  kclusts &lt;-
-    tibble(k = opt_num_clusters[opt_profile_range]) %&gt;%
-    mutate(
-      kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
-      tidied = map(kclust, tidy),
-      glanced = map(kclust, glance),
-      augmented = map(kclust, augment, points)
-    )
-  
-  profile_id &lt;-
-    kclusts %&gt;%
-    unnest(cols = c(augmented)) %&gt;%
-    select(file_id = .rownames,
-           cluster = .cluster) %&gt;% 
-    mutate(file_id = as.numeric(file_id),
-           cluster = as.character(cluster))
-  
-  # Add cluster to temp_anomaly_va
-  temp_anomaly_cluster &lt;- full_join(temp_anomaly_va, profile_id)
+        set.seed(1)
+        kclusts &lt;-
+          tibble(k = inum_clusters) %&gt;%
+          mutate(kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+            tidied = map(kclust, tidy),
+            glanced = map(kclust, glance),
+            augmented = map(kclust, augment, points)
+          )
+        
+        profile_id &lt;-
+          kclusts %&gt;%
+          unnest(cols = c(augmented)) %&gt;%
+          select(file_id = .rownames,
+                 cluster = .cluster) %&gt;%
+          mutate(file_id = as.numeric(file_id),
+                 cluster = as.character(cluster))
+        
+        # Add cluster to temp_anomaly_va
+        temp_anomaly_cluster &lt;-
+          full_join(temp_anomaly_va_id, profile_id)
+        
+        # Add profile_type field
+        temp_anomaly_cluster &lt;- temp_anomaly_cluster %&gt;%
+          mutate(profile_type = &#39;base&#39;)
+        
+        # Check null clusters
+        temp_anomaly_cluster &lt;- temp_anomaly_cluster %&gt;%
+          filter(!is.na(cluster))
+        
+        # Create table to be used for later analysis and Set the number of clusters field
+        if (!exists(&#39;temp_anomaly_cluster_all&#39;)) {
+          temp_anomaly_cluster_all &lt;- temp_anomaly_cluster %&gt;%
+            mutate(num_clusters = inum_clusters)
+        } else {
+          temp_anomaly_cluster_all &lt;-
+            rbind(
+              temp_anomaly_cluster_all,
+              temp_anomaly_cluster %&gt;%
+                mutate(num_clusters = inum_clusters)
+            )
+        }
+        
+      } else if (iType == 2 &amp; opt_norm_amolaly) {
+
+        set.seed(1)
+        kclusts &lt;-
+          tibble(k = inum_clusters) %&gt;%
+          mutate(kclust = map(k, ~ kmeans(points_normalised, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+            tidied = map(kclust, tidy),
+            glanced = map(kclust, glance),
+            augmented = map(kclust, augment, points)
+          )
+        
+        profile_id &lt;-
+          kclusts %&gt;%
+          unnest(cols = c(augmented)) %&gt;%
+          select(file_id = .rownames,
+                 cluster = .cluster) %&gt;%
+          mutate(file_id = as.numeric(file_id),
+                 cluster = as.character(cluster))
+        
+        # Add cluster to temp_anomaly_va
+        temp_anomaly_cluster_norm &lt;-
+          full_join(temp_anomaly_va_id_normalised %&gt;% select(-c(abs_sa)) ,
+                    profile_id)
+        
+        # Add profile_type field
+        temp_anomaly_cluster_norm &lt;- temp_anomaly_cluster_norm %&gt;%
+          mutate(profile_type = &#39;adjusted&#39;)
+        
+        # Check null clusters
+        temp_anomaly_cluster_norm &lt;- temp_anomaly_cluster_norm %&gt;%
+          filter(!is.na(cluster))
+        
+        # Create table to be used for later analysis and Set the number of clusters field
+        if (!exists(&#39;temp_anomaly_cluster_all&#39;)) {
+          temp_anomaly_cluster_all &lt;- temp_anomaly_cluster_norm %&gt;%
+            mutate(num_clusters = inum_clusters)
+        } else {
+          temp_anomaly_cluster_all &lt;-
+            rbind(
+              temp_anomaly_cluster_all,
+              temp_anomaly_cluster_norm %&gt;%
+                mutate(num_clusters = inum_clusters)
+            )
+        }
+        
+      }
+      
+    }
+  }
   
   # Plot cluster mean
-  temp_anomaly_cluster &lt;- temp_anomaly_cluster %&gt;% 
-    filter(!is.na(cluster))
-  
-  # Plot cluster mean
-  anomaly_cluster_mean &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, depth) %&gt;%
+  anomaly_cluster_mean &lt;- temp_anomaly_cluster_all %&gt;%
+    group_by(profile_type, num_clusters, cluster, depth) %&gt;%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -1096,8 +1227,8 @@ points &lt;- temp_anomaly_va_wide %&gt;%
     ) %&gt;%
     ungroup()
   
-  anomaly_cluster_mean_year &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, depth, year) %&gt;%
+  anomaly_cluster_mean_year &lt;- temp_anomaly_cluster_all %&gt;%
+    group_by(profile_type, num_clusters, cluster, depth, year) %&gt;%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -1105,8 +1236,8 @@ points &lt;- temp_anomaly_va_wide %&gt;%
     ) %&gt;%
     ungroup()
   
-  anomaly_year_mean &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, year) %&gt;%
+  anomaly_year_mean &lt;- temp_anomaly_cluster_all %&gt;%
+    group_by(profile_type, num_clusters, cluster, year) %&gt;%
     summarise(
       count_cluster = n(),
       anomaly_mean = mean(anomaly, na.rm = TRUE),
@@ -1115,33 +1246,62 @@ points &lt;- temp_anomaly_va_wide %&gt;%
     ungroup()
   
   anomaly_year_mean &lt;- anomaly_year_mean %&gt;%
-    group_by(year) %&gt;%
+    group_by(profile_type, num_clusters, year) %&gt;%
     summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %&gt;%
     ungroup ()
+
+  # Determine profile count by cluster and year
+  # Count the measurements
+  cluster_by_year &lt;- temp_anomaly_cluster_all %&gt;% 
+    count(profile_type, num_clusters, file_id, cluster, year,
+          name = &quot;count_cluster&quot;)
+
+  # Convert to profiles
+  cluster_by_year &lt;- cluster_by_year %&gt;% 
+    count(profile_type, num_clusters, cluster, year,
+          name = &quot;count_cluster&quot;)
   
-  # create figure
+  # total of each type of cluster
+  cluster_count &lt;- cluster_by_year %&gt;%
+    group_by(profile_type, num_clusters, cluster) %&gt;% 
+    summarise(count_profiles = sum(count_cluster)) %&gt;%
+    ungroup()
+  
+  anomaly_cluster_mean &lt;- left_join(anomaly_cluster_mean, cluster_count)
+  
+  # create figure of cluster mean profiles
   anomaly_cluster_mean %&gt;%
-    ggplot() +
-    geom_path(aes(x = anomaly_mean,
-                  y = depth)) +
-    geom_ribbon(aes(
-      xmax = anomaly_mean + anomaly_sd,
-      xmin = anomaly_mean - anomaly_sd,
-      y = depth
-    ),
-    alpha = 0.2) +
-    geom_vline(xintercept = 0) +
-    scale_y_reverse() +
-    facet_wrap( ~ cluster) +
-    coord_cartesian(xlim = opt_xlim) +
-    scale_x_continuous(breaks = opt_xbreaks) +
-    labs(
-      title = paste0(&#39;Overall mean anomaly profiles by cluster&#39;),
-      x = opt_measure_label,
-      y = &#39;depth (m)&#39;
+    filter (profile_type == &quot;base&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x,) +
+        geom_path(aes(x = anomaly_mean,
+                      y = depth)) +
+        geom_ribbon(
+          aes(
+            xmax = anomaly_mean + anomaly_sd,
+            xmin = anomaly_mean - anomaly_sd,
+            y = depth
+          ),
+          alpha = 0.2
+        ) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;)) +
+        coord_cartesian(xlim = opt_xlim) +
+        scale_x_continuous(breaks = opt_xbreaks) +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = &#39;depth (m)&#39;
+        )
     )
-  
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_analysis_cluster_details-1">
@@ -1191,31 +1351,82 @@ ds2n19
 </table>
 </div>
 </div>
-</div>
-<div id="cluster-mean-by-year" class="section level3">
-<h3>Cluster mean by year</h3>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # repeat for adjusted profiles profiles
+  anomaly_cluster_mean %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x,) +
+        geom_path(aes(x = anomaly_mean,
+                      y = depth)) +
+        geom_ribbon(
+          aes(
+            xmax = anomaly_mean + anomaly_sd,
+            xmin = anomaly_mean - anomaly_sd,
+            y = depth
+          ),
+          alpha = 0.2
+        ) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;)) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label_adjusted,
+          y = &#39;depth (m)&#39;
+        )
+    )
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_analysis_cluster_details_adj-2.png" width="672" style="display: block; margin: auto;" />
+### Cluster mean by year</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
   # cluster means by year
   anomaly_cluster_mean_year %&gt;%
+    filter (profile_type == &quot;base&quot;) %&gt;%
     mutate(year = as.factor(year)) %&gt;%
-    ggplot() +
-    geom_path(aes(x = anomaly_mean,
-                  y = depth,
-                  col = year)) +
-    geom_vline(xintercept = 0) +
-    scale_y_reverse() +
-    facet_wrap( ~ cluster) +
-    coord_cartesian(xlim = opt_xlim) +
-    scale_x_continuous(breaks = opt_xbreaks) +
-    scale_color_viridis_d() +
-    labs(
-      title = paste0(&#39;Overall mean anomaly profiles by cluster&#39;),
-      x = opt_measure_label,
-      y = &#39;depth (m)&#39;
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x, ) +
+        geom_path(aes(
+          x = anomaly_mean,
+          y = depth,
+          col = year
+        )) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ cluster) +
+        coord_cartesian(xlim = opt_xlim) +
+        scale_x_continuous(breaks = opt_xbreaks) +
+        scale_color_viridis_d() +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label,
+          y = &#39;depth (m)&#39;
+        )
     )
-  
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_mean_year-1">
@@ -1254,33 +1465,95 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+  
+  # Repeat for adjusted profiles
+  anomaly_cluster_mean_year %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    mutate(year = as.factor(year)) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x, ) +
+        geom_path(aes(
+          x = anomaly_mean,
+          y = depth,
+          col = year
+        )) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ cluster) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
+        scale_color_viridis_d() +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label_adjusted,
+          y = &#39;depth (m)&#39;
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="cluster-climatology" class="section level3">
+<h3>Cluster climatology</h3>
+<pre class="r"><code># A nice short alternative, uses the package ggpmisc
+anomaly_year_mean %&gt;%
+  ggplot(aes(x = year,
+             y = anomaly_mean)) +
+  stat_poly_line() +
+  stat_poly_eq(use_label(c(&quot;eq&quot;, &quot;R2&quot;,&quot;P&quot;, &quot;n&quot;))) +
+  geom_point()</code></pre>
 </div>
 <div id="cluster-by-year" class="section level3">
 <h3>Cluster by year</h3>
 <p>count of each cluster by year</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
-  # Determine profile count by cluster and year
-  cluster_by_year &lt;- temp_anomaly_cluster %&gt;% 
-    count(cluster, year,
-          name = &quot;count_cluster&quot;)
-
   year_min &lt;- min(cluster_by_year$year)
   year_max &lt;- max(cluster_by_year$year)
   
   # create figure
-  cluster_by_year %&gt;% 
-    ggplot(aes(x = year, y = count_cluster, col = cluster, group=cluster))+
-    geom_point() +
-    geom_line() +
-    scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
-    scale_color_brewer(palette = &#39;Dark2&#39;)+
-    labs(x = &#39;year&#39;, 
-         y = &#39;number of profiles&#39;, 
-         col = &#39;cluster&#39;,
-         title = &#39;Count of profiles by year and cluster&#39;)
-
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;base&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x, aes(
+          x = year,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;Count of profiles by year and cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = &#39;year&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;
+        )
+    )
+  
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_year-1">
@@ -1330,6 +1603,48 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  year_min &lt;- min(cluster_by_year$year)
+  year_max &lt;- max(cluster_by_year$year)
+  
+  # create figure
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(data = .x, aes(
+          x = year,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;Count of profiles by year and cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = &#39;year&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-month" class="section level3">
 <h3>Cluster by month</h3>
@@ -1337,23 +1652,48 @@ ds2n19
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
   # Determine profile count by cluster and year
-  cluster_by_year &lt;- temp_anomaly_cluster %&gt;% 
-    count(cluster, month,
+  # Count the measurements
+  cluster_by_year &lt;- temp_anomaly_cluster_all %&gt;% 
+    count(profile_type, num_clusters, file_id, cluster, month,
+          name = &quot;count_cluster&quot;)
+
+  # Convert to profiles
+  cluster_by_year &lt;- cluster_by_year %&gt;% 
+    count(profile_type, num_clusters, cluster, month,
           name = &quot;count_cluster&quot;)
 
   # create figure
-  cluster_by_year %&gt;% 
-    ggplot(aes(x = month, y = count_cluster, col = cluster, group=cluster))+
-    geom_point() +
-    geom_line() +
-    scale_x_continuous(breaks = seq(1, 12, 2)) +
-    scale_color_brewer(palette = &#39;Dark2&#39;)+
-    labs(x = &#39;month&#39;, 
-         y = &#39;number of profiles&#39;, 
-         col = &#39;cluster&#39;,
-         title = &#39;Count of profiles by month and cluster&#39;)
-
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;base&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(
+        data = .x,
+        aes(
+          x = month,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )
+      ) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(1, 12, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;Count of profiles by month and cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = &#39;month&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;
+        )
+    )
+  
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cluster_by_month-1">
@@ -1403,6 +1743,48 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ ggplot(
+        data = .x,
+        aes(
+          x = month,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )
+      ) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(1, 12, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;Count of profiles by month and cluster \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+          x = &#39;month&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial" class="section level3">
 <h3>Cluster spatial</h3>
@@ -1410,14 +1792,29 @@ ds2n19
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
   # create figure
-map +
-  geom_tile(data = temp_anomaly_cluster, 
-            aes(x = lon, 
-                y = lat, 
-                fill = cluster))+
-  scale_fill_brewer(palette = &#39;Dark2&#39;)+
-  labs(title = &#39;cluster spatial distribution&#39;)
+  temp_anomaly_cluster_all %&gt;%
+    filter (profile_type == &quot;base&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x,
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = cluster
+                  )) +
+        scale_fill_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+        )
+    )
+  
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_01-1">
@@ -1467,6 +1864,40 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure
+  temp_anomaly_cluster_all %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x,
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = cluster
+                  )) +
+        scale_fill_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          ),
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_01_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>location of each cluster on separate maps, spatial analysis</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
@@ -1479,72 +1910,47 @@ map +
   scale_fill_brewer(palette = &#39;Dark2&#39;) +
   facet_wrap( ~ cluster, ncol = 2) +
   labs(title = &#39;cluster spatial distribution&#39;)
+
 }</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_02-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_02-1">
-Past versions of spatial_cluster_02-1.png
-</button>
-</p>
-<div id="fig-spatial_cluster_02-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/55244e475d20263aaf04e5f888f97563f888c9ed/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_02-1.png" target="_blank">55244e4</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_02-1.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 <p>count of measurements for each cluster on separate maps, spatial
 analysis</p>
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
+  # Count profiles    
+  cluster_by_location &lt;- temp_anomaly_cluster_all %&gt;%
+    count(profile_type, num_clusters, file_id, lat, lon, cluster,
+          name = &quot;count_cluster&quot;)
+  
   # create figure
-map +
-  geom_tile(data = temp_anomaly_cluster %&gt;% 
-              count(lat, lon, cluster),
-            aes(x = lon,
-                y = lat,
-                fill = n)) +
-  scale_fill_viridis_c(option = &quot;cividis&quot;, direction = -1, trans = &quot;log10&quot;) +
-  facet_wrap( ~ cluster, ncol = 2) +
-  labs(title = &#39;cluster spatial distribution&#39;)
+  cluster_by_location %&gt;%
+    filter (profile_type == &quot;base&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x %&gt;%
+                    count(lat, lon, cluster),
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = n
+                  )) +
+        scale_fill_viridis_c(
+          option = &quot;cividis&quot;,
+          direction = -1,
+          trans = &quot;log10&quot;
+        ) +
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
 
 }</code></pre>
+<pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_03-1">
@@ -1583,6 +1989,46 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure
+  cluster_by_location %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x %&gt;%
+                    count(lat, lon, cluster),
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = n
+                  )) +
+        scale_fill_viridis_c(
+          option = &quot;cividis&quot;,
+          direction = -1,
+          trans = &quot;log10&quot;
+        ) +
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_03_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial-year" class="section level3">
 <h3>Cluster spatial year</h3>
@@ -1590,8 +2036,8 @@ ds2n19
 <pre class="r"><code>if (opt_analysis_type == 2) {
 
   # create figure
-  temp_anomaly_cluster %&gt;%
-    group_split(year) %&gt;%
+  temp_anomaly_cluster_all %&gt;%
+    group_split(profile_type, num_clusters, year) %&gt;%
     map(
       ~ map +
         geom_tile(data = .x,
@@ -1601,583 +2047,22 @@ ds2n19
                     fill = cluster
                   )) +
         scale_fill_brewer(palette = &#39;Dark2&#39;) +
-        facet_wrap( ~ cluster, ncol = 2) +
-        labs(title = paste0(
-          &#39;cluster spatial distribution &#39;, unique(.x$year)
-        ))
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution &#39;, unique(.x$year), &#39;\n&#39;,
+            &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;num clusters = &#39;, unique(.x$num_clusters)
+          )
+        )
     )
-
+      
 }</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-1">
-Past versions of spatial_cluster_year-1.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-1.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-1.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-2">
-Past versions of spatial_cluster_year-2.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-2.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-2.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-3">
-Past versions of spatial_cluster_year-3.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-3.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-3.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[4]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-4">
-Past versions of spatial_cluster_year-4.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-4.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-4.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[5]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-5.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-5">
-Past versions of spatial_cluster_year-5.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-5" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-5.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-5.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[6]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-6.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-6">
-Past versions of spatial_cluster_year-6.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-6" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-6.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-6.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[7]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-7.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-7">
-Past versions of spatial_cluster_year-7.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-7" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-7.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-7.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[8]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-8.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-8">
-Past versions of spatial_cluster_year-8.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-8" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-8.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-8.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[9]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-9.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-9">
-Past versions of spatial_cluster_year-9.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-9" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-9.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-9.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[10]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-10.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-10">
-Past versions of spatial_cluster_year-10.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-10" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-10.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-10.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[11]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-11.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_year-11">
-Past versions of spatial_cluster_year-11.png
-</button>
-</p>
-<div id="fig-spatial_cluster_year-11" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-11.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/80c16c2abd304ecf06e5528e50b0cdc4ee539568/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_year-11.png" target="_blank">80c16c2</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-15
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 </div>
 <div id="cluster-by-surface-extreme" class="section level2">
 <h2>Cluster by surface Extreme</h2>
-<pre class="r"><code># Carried out for 1500m profiles
-opt_profile_range = 3
-extreme_type &lt;- c(&#39;L&#39;, &#39;N&#39;, &#39;H&#39;)
-num_clusters &lt;- c(5, 6, 5)
-
-# ---------------------------------------------------------------------------------------------
+<pre class="r"><code># ---------------------------------------------------------------------------------------------
 # read data
 # ---------------------------------------------------------------------------------------------
 # load previously created OceanSODA extreme data. date, position and nature of extreme
@@ -2189,6 +2074,67 @@ if (opt_extreme_determination == 1){
     select(lon, lat, date, temp_extreme)
 }
 
+# -------------------------------------------------------------------------------------------------------------
+# Temp - review incidences of extremes based on method.
+# -------------------------------------------------------------------------------------------------------------
+# 
+#   temp_extreme_info_01 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA_SST_anomaly_field_01.rds&quot;)) %&gt;%
+#     select(lon, lat, date, temp_extreme)
+# 
+# temp_extreme_info_01 &lt;- temp_extreme_info_01 %&gt;%
+#   group_by(temp_extreme, date) %&gt;%
+#   summarise(n = n()) %&gt;%
+#   ungroup()
+# 
+# temp_extreme_info_01 %&gt;%
+#   filter (temp_extreme %in% c(&#39;H&#39;, &#39;L&#39;) &amp; date &gt;= &#39;2013-01-01&#39;) %&gt;%
+#   ggplot(aes(
+#            x = date,
+#            y = n,
+#            col = temp_extreme
+#          )) +
+#   geom_point() +
+#   geom_line() +
+#   lims(y = c(0,3200)) +
+#   labs(
+#     x = &#39;date&#39;,
+#     y = &#39;number of extreme pixels&#39;,
+#     col = &#39;extreme type&#39;,
+#     title = paste0(
+#       &#39;Count of extreme pixels - single trend&#39;
+#     )
+#   )
+# 
+# 
+# temp_extreme_info_02 &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/OceanSODA_SST_anomaly_field_02.rds&quot;)) %&gt;%
+#     select(lon, lat, date, temp_extreme)
+# 
+# temp_extreme_info_02 &lt;- temp_extreme_info_02 %&gt;%
+#   group_by(temp_extreme, date) %&gt;%
+#   summarise(n = n()) %&gt;%
+#   ungroup()
+# 
+# temp_extreme_info_02 %&gt;%
+#   filter (temp_extreme %in% c(&#39;H&#39;, &#39;L&#39;) &amp; date &gt;= &#39;2013-01-01&#39;) %&gt;%
+#   ggplot(aes(
+#            x = date,
+#            y = n,
+#            col = temp_extreme
+#          )) +
+#   geom_point() +
+#   geom_line() +
+#   lims(y = c(0,3200)) +
+#   labs(
+#     x = &#39;date&#39;,
+#     y = &#39;number of extreme pixels&#39;,
+#     col = &#39;extreme type&#39;,
+#     title = paste0(
+#       &#39;Count of extreme pixels - monthly trends&#39;
+#     )
+#   )
+#   
+# -------------------------------------------------------------------------------------------------------------
+  
 # read data
 temp_anomaly_va &lt;- read_rds(file = paste0(path_core_preprocessed, &quot;/temp_anomaly_va.rds&quot;)) %&gt;%
   mutate(date = ymd(format(date, &quot;%Y-%m-15&quot;)))
@@ -2196,117 +2142,252 @@ temp_anomaly_va &lt;- read_rds(file = paste0(path_core_preprocessed, &quot;/temp
 # Add the OceanSODA extreme condition
 temp_anomaly_va &lt;- left_join(temp_anomaly_va, temp_extreme)
 
-for (i in 1:3) {
+# If temp_extreme is NA set it to N
+temp_anomaly_va &lt;- temp_anomaly_va %&gt;% replace_na(list(temp_extreme = &#39;N&#39;))
+temp_anomaly_va &lt;- temp_anomaly_va %&gt;% mutate (profile_type = &#39;base&#39;)
 
-  # ---------------------------------------------------------------------------------------------
-  # Preparation
-  # ---------------------------------------------------------------------------------------------
-  # select profile based on profile_range and he appropriate max depth
-  temp_anomaly_va_id &lt;- temp_anomaly_va %&gt;% 
-    filter(profile_range == opt_profile_range &amp; depth &lt;= opt_max_depth[opt_profile_range] &amp; temp_extreme == extreme_type[i])
+# Create a replica data set with profile_type = adjusted 
+if (opt_norm_amolaly){
+  # mark as adjusted
+  temp_anomaly_va_norm &lt;- temp_anomaly_va %&gt;% mutate (profile_type = &#39;adjusted&#39;)
+
+  # Determine surface anomaly for each profile
+  # surf_anomaly &lt;- abs(temp_anomaly_va_norm %&gt;% 
+  #   filter (depth == 5) %&gt;%
+  #   select (file_id, abs_sa = anomaly))
+
+  # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
+  surf_anomaly &lt;- temp_anomaly_va_id %&gt;%
+    group_by(file_id) %&gt;%
+    summarise(abs_sa = max(abs(anomaly))) %&gt;%
+    ungroup() %&gt;%
+    select (file_id, abs_sa)
   
-  # Simplified table ready to pivot
-  temp_anomaly_va_id &lt;- temp_anomaly_va_id %&gt;%
-    select(file_id,
-           depth,
-           anomaly,
-           year, 
-           month, 
-           lat, 
-           lon)
+  temp_anomaly_va_norm &lt;- left_join(temp_anomaly_va_norm, surf_anomaly)
+    
+  # Carry out the adjustment
+  #temp_anomaly_va_norm &lt;- temp_anomaly_va_norm %&gt;%
+  #  mutate(anomaly = if_else(abs_sa &gt; 1.0, anomaly/abs_sa, anomaly))
+  temp_anomaly_va_norm &lt;- temp_anomaly_va_norm %&gt;%
+    mutate(anomaly = anomaly/abs_sa)
   
-  # wide table with each depth becoming a column
-  temp_anomaly_va_wide &lt;- temp_anomaly_va_id %&gt;%
-    select(file_id, depth, anomaly) %&gt;%
-    pivot_wider(names_from = depth, values_from = anomaly)
+  #remove the surface anomaly field
+  temp_anomaly_va_norm &lt;- temp_anomaly_va_norm %&gt;% select(-c(abs_sa))
   
-  # Drop any rows with missing values N/A caused by gaps in climatology data
-  temp_anomaly_va_wide &lt;- temp_anomaly_va_wide %&gt;% 
-    drop_na()
+  # Append to base profiles
+  temp_anomaly_va &lt;- rbind(temp_anomaly_va, temp_anomaly_va_norm)
   
-  # Table for cluster analysis
-  points &lt;- temp_anomaly_va_wide %&gt;%
-    column_to_rownames(var = &quot;file_id&quot;)
+}
+
+profile_types &lt;- c(&#39;adjusted&#39;, &#39;base&#39;)
+
+# loop through profile_type
+for (iprofile_type in 1:2) {
+
+  sel_profile_type = profile_types[iprofile_type]
+    
+  # loop through surface condition
+  for (i in 1:3) {
   
-  # ---------------------------------------------------------------------------------------------
-  # cluster analysis
-  # ---------------------------------------------------------------------------------------------
-  set.seed(1)
-  kclusts &lt;-
-    tibble(k = num_clusters[i]) %&gt;%
-    mutate(
-      kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
-      tidied = map(kclust, tidy),
-      glanced = map(kclust, glance),
-      augmented = map(kclust, augment, points)
-    )
+    # ---------------------------------------------------------------------------------------------
+    # Preparation
+    # ---------------------------------------------------------------------------------------------
+    # select profile based on profile_range and he appropriate max depth
+    temp_anomaly_va_id &lt;- temp_anomaly_va %&gt;% 
+      filter(profile_range == opt_profile_range &amp; depth &lt;= opt_max_depth[opt_profile_range] &amp; temp_extreme == extreme_type[i] &amp; profile_type == sel_profile_type)
+    
+    # Simplified table ready to pivot
+    temp_anomaly_va_id &lt;- temp_anomaly_va_id %&gt;%
+      select(file_id,
+             depth,
+             anomaly,
+             year, 
+             month, 
+             lat, 
+             lon)
+    
+    # wide table with each depth becoming a column
+    temp_anomaly_va_wide &lt;- temp_anomaly_va_id %&gt;%
+      select(file_id, depth, anomaly) %&gt;%
+      pivot_wider(names_from = depth, values_from = anomaly)
+    
+    # Drop any rows with missing values N/A caused by gaps in climatology data
+    temp_anomaly_va_wide &lt;- temp_anomaly_va_wide %&gt;% 
+      drop_na()
+    
+    # Table for cluster analysis
+    points &lt;- temp_anomaly_va_wide %&gt;%
+      column_to_rownames(var = &quot;file_id&quot;)
+    
+    # ---------------------------------------------------------------------------------------------
+    # cluster analysis
+    # ---------------------------------------------------------------------------------------------
+    # loop through number of clusters
+    for (inum_clusters in opt_num_clusters_ext_min[i]:opt_num_clusters_ext_max[i]) {    
   
-  profile_id &lt;-
-    kclusts %&gt;%
-    unnest(cols = c(augmented)) %&gt;%
-    select(file_id = .rownames,
-           cluster = .cluster) %&gt;% 
-    mutate(file_id = as.numeric(file_id),
-           cluster = as.character(cluster))
+      set.seed(1)
+      kclusts &lt;-
+        tibble(k = inum_clusters) %&gt;%
+        mutate(
+          kclust = map(k, ~ kmeans(points, .x, iter.max = opt_max_iterations, nstart = opt_n_start)),
+          tidied = map(kclust, tidy),
+          glanced = map(kclust, glance),
+          augmented = map(kclust, augment, points)
+        )
+      
+      profile_id &lt;-
+        kclusts %&gt;%
+        unnest(cols = c(augmented)) %&gt;%
+        select(file_id = .rownames,
+               cluster = .cluster) %&gt;% 
+        mutate(file_id = as.numeric(file_id),
+               cluster = as.character(cluster))
+      
+      # Add cluster to temp_anomaly_va
+      temp_anomaly_cluster &lt;- full_join(temp_anomaly_va_id, profile_id)
+      
+      # Plot cluster mean
+      temp_anomaly_cluster &lt;- temp_anomaly_cluster %&gt;% 
+        filter(!is.na(cluster))
+      
+      # cluster mean
+      anomaly_cluster_mean &lt;- temp_anomaly_cluster %&gt;%
+        group_by(cluster, depth) %&gt;%
+        summarise(
+          count_cluster = n(),
+          anomaly_mean = mean(anomaly, na.rm = TRUE),
+          anomaly_sd = sd(anomaly, na.rm = TRUE)
+        ) %&gt;%
+        ungroup()
+      
+      anomaly_cluster_mean_year &lt;- temp_anomaly_cluster %&gt;%
+        group_by(cluster, depth, year) %&gt;%
+        summarise(
+          count_cluster = n(),
+          anomaly_mean = mean(anomaly, na.rm = TRUE),
+          anomaly_sd = sd(anomaly, na.rm = TRUE)
+        ) %&gt;%
+        ungroup()
+      
+      anomaly_year_mean &lt;- temp_anomaly_cluster %&gt;%
+        group_by(cluster, year) %&gt;%
+        summarise(
+          count_cluster = n(),
+          anomaly_mean = mean(anomaly, na.rm = TRUE),
+          anomaly_sd = sd(anomaly, na.rm = TRUE)
+        ) %&gt;%
+        ungroup()
+      
+      anomaly_year_mean &lt;- anomaly_year_mean %&gt;%
+        group_by(year) %&gt;%
+        summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %&gt;%
+        ungroup ()
+      
+      if (!exists(&#39;anomaly_cluster_mean_ext&#39;)) {
+        anomaly_cluster_mean_ext &lt;-
+          anomaly_cluster_mean %&gt;% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters,
+            profile_type = sel_profile_type
+          )
+        anomaly_cluster_mean_year_ext &lt;-
+          anomaly_cluster_mean_year %&gt;% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters,
+            profile_type = sel_profile_type
+          )
+        anomaly_year_mean_ext &lt;-
+          anomaly_year_mean %&gt;% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters,
+            profile_type = sel_profile_type
+          )
+        temp_anomaly_cluster_ext &lt;-
+          temp_anomaly_cluster %&gt;% mutate(
+            temp_extreme_order = i,
+            temp_extreme = extreme_type[i],
+            num_clusters = inum_clusters,
+            profile_type = sel_profile_type
+          )
+      } else {
+        anomaly_cluster_mean_ext &lt;-
+          rbind(
+            anomaly_cluster_mean_ext,
+            anomaly_cluster_mean %&gt;% mutate(
+              temp_extreme_order = i,
+              temp_extreme = extreme_type[i],
+              num_clusters = inum_clusters,
+              profile_type = sel_profile_type
+            )
+          )
+        anomaly_cluster_mean_year_ext &lt;-
+          rbind(
+            anomaly_cluster_mean_year_ext,
+            anomaly_cluster_mean_year %&gt;% mutate(
+              temp_extreme_order = i,
+              temp_extreme = extreme_type[i],
+              num_clusters = inum_clusters,
+              profile_type = sel_profile_type
+            )
+          )
+        anomaly_year_mean_ext &lt;-
+          rbind(
+            anomaly_year_mean_ext,
+            anomaly_year_mean %&gt;% mutate(
+              temp_extreme_order = i,
+              temp_extreme = extreme_type[i],
+              num_clusters = inum_clusters,
+              profile_type = sel_profile_type
+            )
+          )
+        temp_anomaly_cluster_ext &lt;-
+          rbind(
+            temp_anomaly_cluster_ext,
+            temp_anomaly_cluster_ext &lt;-
+              temp_anomaly_cluster %&gt;% mutate(
+                temp_extreme_order = i,
+                temp_extreme = extreme_type[i],
+                num_clusters = inum_clusters,
+                profile_type = sel_profile_type
+              )
+          )
+      }
   
-  # Add cluster to temp_anomaly_va
-  temp_anomaly_cluster &lt;- full_join(temp_anomaly_va, profile_id)
-  
-  # Plot cluster mean
-  temp_anomaly_cluster &lt;- temp_anomaly_cluster %&gt;% 
-    filter(!is.na(cluster))
-  
-  # Plot cluster mean
-  anomaly_cluster_mean &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, depth) %&gt;%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %&gt;%
-    ungroup()
-  
-  anomaly_cluster_mean_year &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, depth, year) %&gt;%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %&gt;%
-    ungroup()
-  
-  anomaly_year_mean &lt;- temp_anomaly_cluster %&gt;%
-    group_by(cluster, year) %&gt;%
-    summarise(
-      count_cluster = n(),
-      anomaly_mean = mean(anomaly, na.rm = TRUE),
-      anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %&gt;%
-    ungroup()
-  
-  anomaly_year_mean &lt;- anomaly_year_mean %&gt;%
-    group_by(year) %&gt;%
-    summarise(anomaly_mean = mean(anomaly_mean, na.rm = TRUE)) %&gt;%
-    ungroup ()
-  
-  if (i == 1) {
-    anomaly_cluster_mean_ext &lt;- anomaly_cluster_mean %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    anomaly_cluster_mean_year_ext &lt;- anomaly_cluster_mean_year %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    anomaly_year_mean_ext &lt;- anomaly_year_mean %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-    temp_anomaly_cluster_ext &lt;- temp_anomaly_cluster %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i])
-  } else {
-    anomaly_cluster_mean_ext &lt;- rbind(anomaly_cluster_mean_ext, anomaly_cluster_mean %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    anomaly_cluster_mean_year_ext &lt;- rbind(anomaly_cluster_mean_year_ext, anomaly_cluster_mean_year %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    anomaly_year_mean_ext &lt;- rbind(anomaly_year_mean_ext, anomaly_year_mean %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
-    temp_anomaly_cluster_ext &lt;- rbind(temp_anomaly_cluster_ext, temp_anomaly_cluster_ext &lt;- temp_anomaly_cluster %&gt;% mutate(temp_extreme_order = i, temp_extreme = extreme_type[i]))
+    }
+    
   }
-
+  
 }</code></pre>
 <div id="cluster-mean" class="section level3">
 <h3>Cluster mean</h3>
-<pre class="r"><code># create figure of mean clusters
+<pre class="r"><code># Determine profile count by cluster and year
+# Count the measurements
+cluster_by_year &lt;- temp_anomaly_cluster_ext %&gt;% 
+  count(profile_type, num_clusters, temp_extreme, temp_extreme_order, file_id, cluster, year,
+        name = &quot;count_cluster&quot;)
+
+#cluster_by_year %&gt;% filter (num_clusters == 5 &amp; temp_extreme == &#39;N&#39;)
+
+# Convert to profiles
+cluster_by_year &lt;- cluster_by_year %&gt;% 
+  count(profile_type, num_clusters, temp_extreme, temp_extreme_order, cluster, year,
+        name = &quot;count_cluster&quot;)
+
+# total of each type of cluster
+cluster_count &lt;- cluster_by_year %&gt;%
+  group_by(profile_type, num_clusters, temp_extreme, temp_extreme_order, cluster) %&gt;% 
+  summarise(count_profiles = sum(count_cluster)) %&gt;%
+  ungroup()
+
+anomaly_cluster_mean_ext &lt;- left_join(anomaly_cluster_mean_ext, cluster_count)
+  
+# create figure of cluster mean profiles
 anomaly_cluster_mean_ext %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~  ggplot(data = .x, ) +
       geom_path(aes(x = anomaly_mean,
@@ -2321,14 +2402,16 @@ anomaly_cluster_mean_ext %&gt;%
       ) +
       geom_vline(xintercept = 0) +
       scale_y_reverse() +
-      facet_wrap(~ cluster) +
+      #facet_wrap(~ cluster) +
+      facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;)) +
       coord_cartesian(xlim = opt_xlim) +
       scale_x_continuous(breaks = opt_xbreaks) +
       labs(
         title = paste0(
           &#39;Overall mean anomaly profiles by cluster \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         ),
         x = opt_measure_label,
         y = &#39;depth (m)&#39;
@@ -2358,6 +2441,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-1.png" target="_blank">77cc54e</a>
@@ -2400,6 +2494,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2440,6 +2545,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2453,13 +2569,78 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure of cluster mean profiles
+  anomaly_cluster_mean_ext %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~  ggplot(data = .x, ) +
+        geom_path(aes(x = anomaly_mean,
+                      y = depth)) +
+        geom_ribbon(
+          aes(
+            xmax = anomaly_mean + anomaly_sd,
+            xmin = anomaly_mean - anomaly_sd,
+            y = depth
+          ),
+          alpha = 0.2
+        ) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        #facet_wrap(~ cluster) +
+        facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;)) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label_adjusted,
+          y = &#39;depth (m)&#39;
+        )
+    )
+
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="clusters-mean-by-year" class="section level3">
 <h3>Clusters mean by year</h3>
 <pre class="r"><code># cluster means by year
 anomaly_cluster_mean_year_ext %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
   mutate(year = as.factor(year)) %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~  ggplot(data = .x,) +
       geom_path(aes(
@@ -2476,8 +2657,9 @@ anomaly_cluster_mean_year_ext %&gt;%
       labs(
         title = paste0(
           &#39;Overall mean anomaly profiles by cluster by year \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         ),
         x = opt_measure_label,
         y = &#39;depth (m)&#39;
@@ -2507,6 +2689,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-1.png" target="_blank">77cc54e</a>
@@ -2549,6 +2742,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2589,6 +2793,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2602,6 +2817,66 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # cluster means by year
+  anomaly_cluster_mean_year_ext %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    mutate(year = as.factor(year)) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~  ggplot(data = .x,) +
+        geom_path(aes(
+          x = anomaly_mean,
+          y = depth,
+          col = year
+        )) +
+        geom_vline(xintercept = 0) +
+        scale_y_reverse() +
+        facet_wrap(~ cluster) +
+        coord_cartesian(xlim = opt_xlim_adjusted) +
+        scale_x_continuous(breaks = opt_xbreaks_adjusted) +
+        scale_color_viridis_d() +
+        labs(
+          title = paste0(
+            &#39;Overall mean anomaly profiles by cluster by year \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          ),
+          x = opt_measure_label_adjusted,
+          y = &#39;depth (m)&#39;
+        )
+    )
+
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_mean_year_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-year-1" class="section level3">
 <h3>Cluster by year</h3>
@@ -2609,11 +2884,11 @@ ds2n19
 <pre class="r"><code># Determine profile count by extreme and cluster and year
 # Count the measurements
 cluster_by_year &lt;- temp_anomaly_cluster_ext %&gt;% 
-  count(file_id, temp_extreme_order, temp_extreme, cluster, year,
+  count(file_id, profile_type, num_clusters, temp_extreme_order, temp_extreme, cluster, year,
         name = &quot;count_cluster&quot;)
 # Convert to profiles
 cluster_by_year &lt;- cluster_by_year %&gt;% 
-  count(temp_extreme_order, temp_extreme, cluster, year,
+  count(profile_type, num_clusters, temp_extreme_order, temp_extreme, cluster, year,
         name = &quot;count_cluster&quot;)
 
 year_min &lt;- min(cluster_by_year$year)
@@ -2621,7 +2896,8 @@ year_max &lt;- max(cluster_by_year$year)
 
 # create figure
 cluster_by_year %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~ ggplot(
       data = .x,
@@ -2642,8 +2918,9 @@ cluster_by_year %&gt;%
         col = &#39;cluster&#39;,
         title = paste0(
           &#39;Count of profiles by year and cluster \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         )
       )
   )</code></pre>
@@ -2671,6 +2948,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-1.png" target="_blank">77cc54e</a>
@@ -2713,6 +3001,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2753,6 +3052,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2766,6 +3076,67 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~ ggplot(
+        data = .x,
+        aes(
+          x = year,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )
+      ) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(year_min, year_max, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          x = &#39;year&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;,
+          title = paste0(
+            &#39;Count of profiles by year and cluster \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
+    
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_year_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-by-month-1" class="section level3">
 <h3>Cluster by month</h3>
@@ -2773,16 +3144,17 @@ ds2n19
 <pre class="r"><code># Determine profile count by cluster and year
 # Count the measurements
 cluster_by_year &lt;- temp_anomaly_cluster_ext %&gt;% 
-  count(file_id, temp_extreme_order, temp_extreme, cluster, month,
+  count(file_id, profile_type, num_clusters, temp_extreme_order, temp_extreme, cluster, month,
         name = &quot;count_cluster&quot;)
 # Convert to profiles
 cluster_by_year &lt;- cluster_by_year %&gt;% 
-  count(temp_extreme_order, temp_extreme, cluster, month,
+  count(profile_type, num_clusters, temp_extreme_order, temp_extreme, cluster, month,
         name = &quot;count_cluster&quot;)
 
 # create figure
 cluster_by_year %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~ ggplot(
       data = .x,
@@ -2803,8 +3175,9 @@ cluster_by_year %&gt;%
         col = &#39;cluster&#39;,
         title = paste0(
           &#39;Count of profiles by month and cluster \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         )
       )
   )</code></pre>
@@ -2832,6 +3205,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-1.png" target="_blank">77cc54e</a>
@@ -2874,6 +3258,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2914,6 +3309,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -2927,13 +3333,75 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure
+  cluster_by_year %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~ ggplot(
+        data = .x,
+        aes(
+          x = month,
+          y = count_cluster,
+          col = cluster,
+          group = cluster
+        )
+      ) +
+        geom_point() +
+        geom_line() +
+        scale_x_continuous(breaks = seq(1, 12, 2)) +
+        scale_color_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          x = &#39;month&#39;,
+          y = &#39;number of profiles&#39;,
+          col = &#39;cluster&#39;,
+          title = paste0(
+            &#39;Count of profiles by month and cluster \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
+  
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/cluster_by_month_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="cluster-spatial-1" class="section level3">
 <h3>Cluster spatial</h3>
 <p>location of each cluster on map, spatial analysis</p>
 <pre class="r"><code># create figure combined
 temp_anomaly_cluster_ext %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -2946,8 +3414,9 @@ temp_anomaly_cluster_ext %&gt;%
       labs(
         title = paste0(
           &#39;cluster spatial distribution \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         )
       )
   )</code></pre>
@@ -2975,6 +3444,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-1.png" target="_blank">77cc54e</a>
@@ -3017,6 +3497,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -3057,6 +3548,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -3070,13 +3572,66 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  # create figure combined
+  temp_anomaly_cluster_ext %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x,
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = cluster
+                  )) +
+        scale_fill_brewer(palette = &#39;Dark2&#39;) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
+
+}</code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_combined_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="spatial-by-cluster" class="section level3">
 <h3>Spatial by cluster</h3>
 <p>location of each cluster on map, spatial analysis</p>
 <pre class="r"><code># create figure by cluster
 temp_anomaly_cluster_ext %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~ map +
       geom_tile(data = .x,
@@ -3090,137 +3645,26 @@ temp_anomaly_cluster_ext %&gt;%
       labs(
         title = paste0(
           &#39;cluster spatial distribution \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         )
       )
   )</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_ext-1">
-Past versions of spatial_cluster_ext-1.png
-</button>
-</p>
-<div id="fig-spatial_cluster_ext-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-1.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_ext-2">
-Past versions of spatial_cluster_ext-2.png
-</button>
-</p>
-<div id="fig-spatial_cluster_ext-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-2.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spatial_cluster_ext-3">
-Past versions of spatial_cluster_ext-3.png
-</button>
-</p>
-<div id="fig-spatial_cluster_ext-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_ext-3.png" target="_blank">77cc54e</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-11-24
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="spatial-count" class="section level3">
 <h3>Spatial count</h3>
 <p>location of each cluster on map, spatial analysis</p>
-<pre class="r"><code># create figure
-temp_anomaly_cluster_ext %&gt;%
-  group_split(temp_extreme_order) %&gt;%
+<pre class="r"><code># Count profiles    
+cluster_by_location &lt;- temp_anomaly_cluster_ext %&gt;%
+  count(profile_type, num_clusters, temp_extreme_order, temp_extreme, file_id, lat, lon, cluster,
+        name = &quot;count_cluster&quot;)
+
+
+# create figure
+cluster_by_location %&gt;%
+  filter (profile_type == &quot;base&quot;) %&gt;%
+  group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
   map(
     ~ map +
       geom_tile(data = .x %&gt;%
@@ -3239,8 +3683,9 @@ temp_anomaly_cluster_ext %&gt;%
       labs(
         title = paste0(
           &#39;cluster spatial distribution \n&#39;,
-          &#39;Surface extreme: &#39;,
-          unique(.x$temp_extreme)
+          &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+          &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+          &#39;number clusters: &#39;, unique(.x$num_clusters)
         )
       )
   )</code></pre>
@@ -3268,6 +3713,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-1.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-1.png" target="_blank">77cc54e</a>
@@ -3310,6 +3766,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-2.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-2.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -3350,6 +3817,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/128e47d2adfc8ca6dd42823397c826e81900cbc0/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-3.png" target="_blank">128e47d</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-11-27
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/77cc54ed4a84b82f80add0209d398cfe05ae21e3/docs/figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-3.png" target="_blank">77cc54e</a>
 </td>
 <td>
@@ -3363,6 +3841,64 @@ ds2n19
 </table>
 </div>
 </div>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Adjusted profiles</p>
+<pre class="r"><code>if (opt_norm_amolaly) {
+
+  cluster_by_location %&gt;%
+    filter (profile_type == &quot;adjusted&quot;) %&gt;%
+    group_split(profile_type, num_clusters, temp_extreme_order) %&gt;%
+    map(
+      ~ map +
+        geom_tile(data = .x %&gt;%
+                    count(lat, lon, cluster),
+                  aes(
+                    x = lon,
+                    y = lat,
+                    fill = n
+                  )) +
+        scale_fill_viridis_c(
+          option = &quot;cividis&quot;,
+          direction = -1,
+          trans = &quot;log10&quot;
+        ) +
+        facet_wrap(~ cluster, ncol = 2) +
+        labs(
+          title = paste0(
+            &#39;cluster spatial distribution \n&#39;,
+            &#39;profile type: &#39;, unique(.x$profile_type), &#39;, &#39;, 
+            &#39;surface extreme: &#39;, unique(.x$temp_extreme), &#39;, &#39;, 
+            &#39;number clusters: &#39;, unique(.x$num_clusters)
+          )
+        )
+    )
+    
+}    </code></pre>
+<pre><code>[[1]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/temp_core_cluster_analysis.Rmd/spatial_cluster_count_ext_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
