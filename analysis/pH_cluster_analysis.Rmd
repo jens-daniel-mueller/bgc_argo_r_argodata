@@ -121,7 +121,7 @@ opt_num_clusters_ext_max <- c(6, 6, 6)
 #      - The is only carried out for profiles where the abs(surface pH) > 1.
 #      - This analysis is carried out in addition to the analysis on base anomaly profiles.  
 # FALSE - The normalisation process is not carried out. 
-opt_norm_amolaly <- TRUE
+opt_norm_anomaly <- TRUE
 
 ```
 
@@ -191,7 +191,7 @@ points <- pH_anomaly_va_wide %>%
   column_to_rownames(var = "file_id")
 
 # normalisation?
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   surf_anomaly <- abs(pH_anomaly_va_id %>% 
     filter (depth == 5) %>%
@@ -322,7 +322,7 @@ if (opt_analysis_type == 2) {
             )
         }
         
-      } else if (iType == 2 & opt_norm_amolaly) {
+      } else if (iType == 2 & opt_norm_anomaly) {
 
         set.seed(1)
         kclusts <-
@@ -464,7 +464,7 @@ Adjusted profiles
 
 ```{r cluster_analysis_cluster_details_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   # Repeat for adjusted profiles
   anomaly_cluster_mean %>%
@@ -543,7 +543,7 @@ Adjusted profiles
 
 ```{r cluster_mean_year_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   # Repeat for adjusted profiles
   anomaly_cluster_mean_year %>%
@@ -638,7 +638,7 @@ Adjusted profiles
 
 ```{r cluster_by_year_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
   
   # create figure
   cluster_by_year %>%
@@ -728,7 +728,7 @@ Adjusted profiles
 
 ```{r cluster_by_month_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -802,7 +802,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_01_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   pH_anomaly_cluster_all %>%
@@ -899,7 +899,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_03_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_location %>%
@@ -1348,7 +1348,7 @@ if (opt_measure == 1){
 }
 
 # Create a replica data set with profile_type = adjusted 
-if (opt_norm_amolaly){
+if (opt_norm_anomaly){
   # mark as adjusted
   pH_anomaly_va_norm <- pH_anomaly_va %>% mutate (profile_type = 'adjusted')
 
@@ -1634,7 +1634,7 @@ Adjusted profiles
 
 ```{r cluster_mean_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure of cluster mean profiles
   anomaly_cluster_mean_ext %>%
@@ -1714,7 +1714,7 @@ Adjusted profiles
 
 ```{r cluster_mean_year_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # cluster means by year
   anomaly_cluster_mean_year_ext %>%
@@ -1805,7 +1805,7 @@ Adjusted profiles
 
 ```{r cluster_by_year_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -1895,7 +1895,7 @@ Adjusted profiles
 
 ```{r cluster_by_month_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure
   cluster_by_year %>%
@@ -1968,7 +1968,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_combined_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   # create figure combined
   pH_anomaly_cluster_ext %>%
@@ -2078,7 +2078,7 @@ Adjusted profiles
 
 ```{r spatial_cluster_count_ext_adj}
 
-if (opt_norm_amolaly) {
+if (opt_norm_anomaly) {
 
   cluster_by_location %>%
     filter (profile_type == "adjusted") %>%
