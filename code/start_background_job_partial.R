@@ -39,7 +39,7 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'temp_core_cluster_analysis.Rmd'
+    'extreme_temp.Rmd'
   )
 ),
 message = "Cluster under surface extreme.")

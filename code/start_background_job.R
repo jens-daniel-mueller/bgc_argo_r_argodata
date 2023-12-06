@@ -9,18 +9,14 @@ workflowr::wflow_publish(here::here(
     'load_argo_clim_temp_csio.Rmd',
     'load_argo_clim_pH_ucsd.Rmd',
     'load_OceanSODA.Rmd',
-    'load_broullon_DIC_TA_clim.Rmd',
-    'coverage_timeseries.Rmd',
-    'coverage_maps.Rmd',
     'pH_align_climatology.Rmd',
     'doxy_vertical_align.Rmd',
     'chla_vertical_align.Rmd',
     'nitrate_vertical_align.Rmd',
     'temp_align_climatology.Rmd',
     'temp_core_align_climatology.Rmd',
-    'pH_cluster_analysis.Rmd',
-    'temp_cluster_analysis.Rmd',
-    'temp_core_cluster_analysis.Rmd',
+    'coverage_timeseries.Rmd',
+    'coverage_maps.Rmd',
     'argo_ph.Rmd',
     'argo_oxygen.Rmd',
     'argo_temp.Rmd',
@@ -32,10 +28,15 @@ workflowr::wflow_publish(here::here(
     'extreme_temp_core.Rmd',
     'extreme_compound.Rmd',
     'variability_temp.Rmd',
-    'variability_pH.Rmd'
+    'variability_pH.Rmd',
+    'pH_cluster_analysis.Rmd',
+    'temp_cluster_analysis.Rmd',
+    'temp_core_cluster_analysis.Rmd',
+    'temp_ph_SO_cluster_analysis.Rmd',
+    'temp_core_SO_cluster_analysis.Rmd'
   )
 ),
-message = "Introduction of vertical alignment and cluster analysis.",
+message = "revised coverage analysis and SO focused cluster analysis.",
 republish = TRUE)
 
 #

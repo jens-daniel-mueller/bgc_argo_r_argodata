@@ -129,7 +129,8 @@ Prepare data for cluster analysis
 
 # read and select just 1500m profiles
 temp_anomaly_va <- read_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds")) %>% 
-  filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range])
+  filter (profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range]) %>%
+  filter (lat < -30)
 
 # Simplified table ready to pivot
 temp_anomaly_va_id <- temp_anomaly_va %>%
@@ -1044,6 +1045,7 @@ if (opt_extreme_determination == 1){
   
 # read data
 temp_anomaly_va <- read_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds")) %>%
+  filter (lat < -30) %>%
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 # Add the OceanSODA extreme condition

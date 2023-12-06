@@ -1,5 +1,5 @@
 ---
-title: "Temperature core cluster analysis"
+title: "BGC temperature cluster analysis"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -15,10 +15,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Tasks
 
-This markdown file carries out cluster analysis on previously created core temperature anomaly profiles.
+This markdown file carries out cluster analysis on previously created bgc temperature anomaly profiles.
 
 The cluster_analysis_determine_k chunk is used to give an indication of an appropriate number of clusers and this can then set the option opt_num_clusters. Chunk cluster_analysis_cluster_details carried out the cluster analysis and the results are used in subsequent figures.
-
 
 ```{r loading_libraries, include=FALSE}
 
@@ -41,9 +40,6 @@ location of pre-prepared data
 
 path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
-
-path_core_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
-path_core_preprocessed <- paste0(path_core_argo, "/preprocessed_core_data")
 
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
 
@@ -118,17 +114,26 @@ map <-
                  sep = ""))
 
 ```
-
 ## Cluster analysis
 
-### Preperation
+### Preparation
 
 Prepare data for cluster analysis
 
 ```{r cluster_analysis_prep}
 
-# read and select just 1500m profiles
-temp_anomaly_va <- read_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds")) %>% 
+# SO pH
+# Add restrictions to ensure SO and there is also a pH profile
+# read data
+temp_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds")) %>%
+  filter (lat < -30)
+  
+bgc_ph <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds"))
+
+temp_anomaly_va <- inner_join(temp_anomaly_va, bgc_ph %>% distinct(file_id)) 
+
+# select profile based on profile_range and he appropriate max depth
+temp_anomaly_va <- temp_anomaly_va %>% 
   filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range])
 
 # Simplified table ready to pivot
@@ -230,41 +235,11 @@ if (opt_analysis_type == 1) {
     geom_point() +
     scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
     labs(
-      title = paste0('within ss by number of clusters: ', '1500', ' m profiles'),
+      title = paste0('within ss by number of clusters: ', opt_max_depth[i_range], ' m profiles'),
       x = 'number of clusters',
       y = 'within ss'
     )
 
-  # N_metric <- clusterings %>%
-  #   select (k, N_fit = tot.withinss)
-  # 
-  # N_metric <- N_metric %>%
-  #   mutate (extreme_type = "N",
-  #           fit_measure = N_fit/30177178)
-  # 
-  # fit_metric <- rbind(fit_metric, H_metric %>% select (k, extreme_type, fit_measure))
-  # 
-  # 
-  # theme_set(theme_bw())
-  # HNL_colors <- c("H" = "#b2182b",
-  #               "N" = "#636363",
-  #               "L" = "#2166ac")
-  # 
-  # 
-  # fit_metric %>% 
-  # ggplot(aes(x = k, y = fit_measure, col = extreme_type,
-  #   group = extreme_order)) +
-  #   geom_line(linetype = "dashed") +
-  #   geom_point() +
-  #   scale_x_continuous(breaks = c(2, 4, 6, 8, 10, 12, 14)) +
-  #   labs(
-  #     title = paste0('\'fit\' measure of temperature anomaly profiles'),
-  #     x = 'number of clusters',
-  #     y = '\'fit\' measure',
-  #     col = 'extreme'
-  #   ) + 
-  #   scale_color_manual(values = HNL_colors)
-    
 }
 
 ```
@@ -786,6 +761,7 @@ if (opt_analysis_type == 2) {
                     y = lat,
                     fill = cluster
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_brewer(palette = 'Dark2') +
         labs(
           title = paste0(
@@ -818,6 +794,7 @@ if (opt_norm_anomaly) {
                     y = lat,
                     fill = cluster
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_brewer(palette = 'Dark2') +
         labs(
           title = paste0(
@@ -844,6 +821,7 @@ map +
             aes(x = lon,
                 y = lat,
                 fill = cluster)) +
+  lims(y = c(-85, -30)) +
   scale_fill_brewer(palette = 'Dark2') +
   facet_wrap( ~ cluster, ncol = 2) +
   labs(title = 'cluster spatial distribution')
@@ -875,6 +853,7 @@ if (opt_analysis_type == 2) {
                     y = lat,
                     fill = n
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_viridis_c(
           option = "cividis",
           direction = -1,
@@ -913,6 +892,7 @@ if (opt_norm_anomaly) {
                     y = lat,
                     fill = n
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_viridis_c(
           option = "cividis",
           direction = -1,
@@ -950,6 +930,7 @@ if (opt_analysis_type == 2) {
                     y = lat,
                     fill = cluster
                   )) +
+        #lims(y = c(-85, -30))+
         scale_fill_brewer(palette = 'Dark2') +
         facet_wrap(~ cluster, ncol = 2) +
         labs(
@@ -974,10 +955,10 @@ if (opt_analysis_type == 2) {
 # ---------------------------------------------------------------------------------------------
 # load previously created OceanSODA extreme data. date, position and nature of extreme
 if (opt_extreme_determination == 1){
-  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_01.rds")) %>%
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_01.rds")) %>%
     select(lon, lat, date, temp_extreme)
 } else if (opt_extreme_determination == 2){
-  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_02.rds")) %>%
+  temp_extreme <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_SST_anomaly_field_02.rds")) %>%
     select(lon, lat, date, temp_extreme)
 }
 
@@ -1042,8 +1023,18 @@ if (opt_extreme_determination == 1){
 #   
 # -------------------------------------------------------------------------------------------------------------
   
+# SO pH
+# Add restrictions to ensure SO and there is also a pH profile
 # read data
-temp_anomaly_va <- read_rds(file = paste0(path_core_preprocessed, "/temp_anomaly_va.rds")) %>%
+temp_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds")) %>%
+  filter (lat < -30)
+  
+bgc_ph <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds"))
+
+temp_anomaly_va <- inner_join(temp_anomaly_va, bgc_ph %>% distinct(file_id)) 
+
+# date to match to ocean SODA
+temp_anomaly_va <- temp_anomaly_va %>% 
   mutate(date = ymd(format(date, "%Y-%m-15")))
 
 # Add the OceanSODA extreme condition
@@ -1651,6 +1642,7 @@ temp_anomaly_cluster_ext %>%
                   y = lat,
                   fill = cluster
                 )) +
+      lims(y = c(-85,-30)) +
       scale_fill_brewer(palette = 'Dark2') +
       labs(
         title = paste0(
@@ -1682,6 +1674,7 @@ if (opt_norm_anomaly) {
                     y = lat,
                     fill = cluster
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_brewer(palette = 'Dark2') +
         labs(
           title = paste0(
@@ -1714,6 +1707,7 @@ temp_anomaly_cluster_ext %>%
                   y = lat,
                   fill = cluster
                 )) +
+      lims(y = c(-85,-30)) +
       scale_fill_brewer(palette = 'Dark2') +
       facet_wrap( ~ cluster, ncol = 2) +
       labs(
@@ -1753,6 +1747,7 @@ cluster_by_location %>%
                   y = lat,
                   fill = n
                 )) +
+      lims(y = c(-85,-30)) +
       scale_fill_viridis_c(
         option = "cividis",
         direction = -1,
@@ -1789,6 +1784,7 @@ if (opt_norm_anomaly) {
                     y = lat,
                     fill = n
                   )) +
+        lims(y = c(-85,-30)) +
         scale_fill_viridis_c(
           option = "cividis",
           direction = -1,
