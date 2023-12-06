@@ -512,7 +512,7 @@ div.tocify {
 <h1 class="title toc-ignore">Extreme BGC-Temperature Profiles</h1>
 <h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">04 December, 2023</h4>
+<h4 class="date">06 December, 2023</h4>
 
 </div>
 
@@ -541,7 +541,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-04
+<strong>Last updated:</strong> 2023-12-06
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -672,15 +672,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3cb4b17f090c749bb087b5e859552b1f1540fe37targetblank3cb4b17a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4c83bc4d15d4ce4282e4af8a14b38170baedff4etargetblank4c83bc4a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3cb4b17f090c749bb087b5e859552b1f1540fe37" target="_blank">3cb4b17</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4c83bc4d15d4ce4282e4af8a14b38170baedff4e" target="_blank">4c83bc4</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree3cb4b17f090c749bb087b5e859552b1f1540fe37targetblank3cb4b17a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4c83bc4d15d4ce4282e4af8a14b38170baedff4etargetblank4c83bc4a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -690,7 +690,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/3cb4b17f090c749bb087b5e859552b1f1540fe37" target="_blank">3cb4b17</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4c83bc4d15d4ce4282e4af8a14b38170baedff4e" target="_blank">4c83bc4</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -707,7 +707,6 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/
 
 Unstaged changes:
@@ -758,6 +757,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/4c83bc4d15d4ce4282e4af8a14b38170baedff4e/analysis/extreme_temp.Rmd" target="_blank">4c83bc4</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-06
+</td>
+<td>
+Cluster under surface extreme.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/extreme_temp.html" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -3025,10 +3058,7 @@ full_argo &lt;-
 map &lt;-
   read_rds(paste(path_emlr_utilities,
                  &quot;map_landmask_WOA18.rds&quot;,
-                 sep = &quot;&quot;))
-# restrict base map to Southern Ocean
-map &lt;- map +
-  lims(y = c(-85, -30))</code></pre>
+                 sep = &quot;&quot;))</code></pre>
 </div>
 <div id="regions" class="section level1">
 <h1>Regions</h1>
@@ -3168,11 +3198,6 @@ nm_biomes &lt;- nm_biomes %&gt;%
 #                     col = NA)+
 #   scale_fill_brewer(palette = &#39;Dark2&#39;)+
 #   labs(title = &#39;Mayot biomes (post-grid reduction)&#39;)</code></pre>
-</div>
-<div id="basin-grid-reduction" class="section level2">
-<h2>Basin grid reduction</h2>
-<pre class="r"><code>basinmask &lt;- basinmask %&gt;%
-  filter(lat &lt; -30)</code></pre>
 <pre class="r"><code>map +
   geom_tile(data = basinmask, 
             aes(x = lon, 
@@ -3363,6 +3388,7 @@ OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
 </div>
 <div id="apply-region-masks" class="section level2">
 <h2>Apply region masks</h2>
+<p>Propose not to add biomes as these restrict to SO</p>
 <pre class="r"><code># keep only Southern Ocean data
 # OceanSODA_temp_2x2_SO &lt;- inner_join(OceanSODA_temp_2x2, nm_biomes_2x2 %&gt;% 
                                        # select(-n)) 
@@ -3380,18 +3406,18 @@ OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
 # # no NA clim_diff values 
 
 
-OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp, nm_biomes %&gt;% 
-                                       select(-n)) 
+# OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp, nm_biomes %&gt;% 
+#                                        select(-n)) 
 
 # add in basin separations
-OceanSODA_temp_SO &lt;- inner_join(OceanSODA_temp_SO, basinmask)
+OceanSODA_temp &lt;- inner_join(OceanSODA_temp, basinmask)
 
-OceanSODA_temp_SO &lt;- OceanSODA_temp_SO %&gt;% 
+OceanSODA_temp &lt;- OceanSODA_temp %&gt;% 
    filter(!is.na(temperature))</code></pre>
 </div>
 <div id="maps" class="section level2">
 <h2>Maps</h2>
-<pre class="r"><code>OceanSODA_temp_SO %&gt;% 
+<pre class="r"><code>OceanSODA_temp %&gt;% 
   filter(year == 2020) %&gt;% 
   ggplot(aes(lon_raw, lat_raw, fill = clim_temp)) +
   geom_tile() +
@@ -3480,7 +3506,7 @@ jens-daniel-mueller
 </table>
 </div>
 </div>
-<pre class="r"><code>OceanSODA_temp_SO %&gt;% 
+<pre class="r"><code>OceanSODA_temp %&gt;% 
   group_split(month) %&gt;% 
   #head(1) %&gt;% 
   map(
@@ -5028,7 +5054,7 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre class="r"><code>OceanSODA_temp_SO %&gt;% 
+<pre class="r"><code>OceanSODA_temp %&gt;% 
   group_split(month) %&gt;% 
   #head(1) %&gt;% 
   map(
@@ -6719,13 +6745,13 @@ detection.</p>
 <div id="fit-lr-models" class="section level2">
 <h2>Fit lr models</h2>
 <pre class="r"><code># create a decimal_year column to use are the parameter to the regression function
-OceanSODA_temp_SO &lt;- OceanSODA_temp_SO %&gt;%
+OceanSODA_temp &lt;- OceanSODA_temp %&gt;%
   mutate(decimal_year = decimal_date(date), .after = year)
 
 # fit a linear regression of OceanSODA temp against time (temporal trend)
 # in each lat/lon/month grid, month is used depending on opt_extreme_determination
 if (opt_extreme_determination == 1){
-  OceanSODA_temp_regression &lt;- OceanSODA_temp_SO %&gt;% 
+  OceanSODA_temp_regression &lt;- OceanSODA_temp %&gt;% 
     nest(data = -c(lon, lat)) %&gt;%
     mutate(fit = map(.x = data,
                      .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
@@ -6733,7 +6759,7 @@ if (opt_extreme_determination == 1){
            glanced = map(.x = fit, .f = glance),
            augmented = map(.x = fit, .f = augment)) 
 } else if (opt_extreme_determination == 2){
-  OceanSODA_temp_regression &lt;- OceanSODA_temp_SO %&gt;% 
+  OceanSODA_temp_regression &lt;- OceanSODA_temp %&gt;% 
     nest(data = -c(lon, lat, month)) %&gt;%
     mutate(fit = map(.x = data,
                      .f = ~ lm(clim_diff ~ decimal_year, data = .x)),
@@ -6766,9 +6792,11 @@ OceanSODA_temp_regression_augmented &lt;- bind_cols(
   OceanSODA_temp_regression_augmented,
   OceanSODA_temp_regression_data %&gt;% 
     select(date,
-           basin_AIP, biome_name,
-           temperature, clim_temp, 
-           lat_raw, lon_raw))
+           basin_AIP, 
+           temperature, 
+           clim_temp, 
+           lat_raw, 
+           lon_raw))
 
 OceanSODA_temp_regression_glanced &lt;- OceanSODA_temp_regression %&gt;%
   select(-c(data, fit, tidied, augmented)) %&gt;%
@@ -6833,6 +6861,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_regression_slopes_flat-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_regression_slopes_flat-1.png" target="_blank">15c1d68</a>
@@ -7059,6 +7098,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_map_sigma-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_map_sigma-1.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -7204,14 +7254,14 @@ low, H for abnormally high, and N for normal</p>
 
 # combine observations and regression statistics
 if (opt_extreme_determination == 1){
-  OceanSODA_temp_SO_extreme_grid &lt;-
+  OceanSODA_temp_extreme_grid &lt;-
     full_join(
       OceanSODA_temp_regression_augmented,
       OceanSODA_temp_regression_glanced %&gt;%
         select(lon:lat, sigma)
     )
 } else if (opt_extreme_determination == 2){
-  OceanSODA_temp_SO_extreme_grid &lt;-
+  OceanSODA_temp_extreme_grid &lt;-
     full_join(
       OceanSODA_temp_regression_augmented,
       OceanSODA_temp_regression_glanced %&gt;%
@@ -7221,7 +7271,7 @@ if (opt_extreme_determination == 1){
 # results in 925 056 rows 
 
 # identify observations in anomaly classes
-OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
   mutate(
     temp_extreme = case_when(
       .resid &lt; -sigma*2 ~ &#39;L&#39;,
@@ -7230,17 +7280,17 @@ OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
     )
   ) 
 
-OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
   mutate(temp_extreme = fct_relevel(temp_extreme, &quot;H&quot;, &quot;N&quot;, &quot;L&quot;))
 
 
 # combine with regression coefficients
 
-OceanSODA_temp_SO_extreme_grid &lt;-
-  full_join(OceanSODA_temp_SO_extreme_grid,
+OceanSODA_temp_extreme_grid &lt;-
+  full_join(OceanSODA_temp_extreme_grid,
             OceanSODA_temp_regression_tidied) 
 
-OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
+OceanSODA_temp_extreme_grid &lt;- OceanSODA_temp_extreme_grid %&gt;%
   mutate(year = year(date),
          month = month(date),
          .after = decimal_year)
@@ -7248,17 +7298,31 @@ OceanSODA_temp_SO_extreme_grid &lt;- OceanSODA_temp_SO_extreme_grid %&gt;%
 # 925 056 rows, in line with expectations for 40 lat x 360 lon x 12 months x 8 years (1 382 400 obs minus NA values)</code></pre>
 <div id="write-anomalies-to-file" class="section level3">
 <h3>Write anomalies to file</h3>
-<pre class="r"><code>if (opt_extreme_determination == 1){
+<pre class="r"><code># Restrict to SO by inner join to nm_biomes
+OceanSODA_temp_SO_extreme_grid &lt;- inner_join(OceanSODA_temp_extreme_grid, nm_biomes %&gt;% 
+                                        select(-n)) 
+
+if (opt_extreme_determination == 1){
   OceanSODA_temp_SO_extreme_grid %&gt;%
     write_rds(file = paste0(
       path_argo_preprocessed,
       &quot;/OceanSODA_SST_anomaly_field_01.rds&quot;
+    ))
+  OceanSODA_temp_extreme_grid %&gt;%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      &quot;/OceanSODA_global_SST_anomaly_field_01.rds&quot;
     ))
 } else if (opt_extreme_determination == 2){
   OceanSODA_temp_SO_extreme_grid %&gt;%
     write_rds(file = paste0(
       path_argo_preprocessed,
       &quot;/OceanSODA_SST_anomaly_field_02.rds&quot;
+    ))
+  OceanSODA_temp_extreme_grid %&gt;%
+    write_rds(file = paste0(
+      path_argo_preprocessed,
+      &quot;/OceanSODA_global_SST_anomaly_field_02.rds&quot;
     ))
 }</code></pre>
 <pre class="r"><code>if (opt_extreme_determination == 1){
@@ -7349,6 +7413,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-1.png" target="_blank">15c1d68</a>
@@ -7545,6 +7620,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-2.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -7737,6 +7823,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-3.png" target="_blank">15c1d68</a>
@@ -7933,6 +8030,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-4.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -8127,6 +8235,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-5.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -8319,6 +8438,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/temp_anomaly_test_plot_grid-6.png" target="_blank">15c1d68</a>
@@ -8668,6 +8798,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-1.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -8849,6 +8990,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-2.png" target="_blank">15c1d68</a>
@@ -9034,6 +9186,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-3.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -9215,6 +9378,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-4.png" target="_blank">15c1d68</a>
@@ -9400,6 +9574,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-5.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -9581,6 +9766,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-6.png" target="_blank">15c1d68</a>
@@ -9766,6 +9962,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-7.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-7.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -9947,6 +10154,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-8.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-8.png" target="_blank">15c1d68</a>
@@ -10132,6 +10350,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-9.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-9.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -10280,6 +10509,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-10.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-10.png" target="_blank">15c1d68</a>
@@ -10432,6 +10672,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-11.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-11.png" target="_blank">15c1d68</a>
 </td>
 <td>
@@ -10580,6 +10831,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-12.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/map_temp_extremes_1x1_plot-12.png" target="_blank">15c1d68</a>
@@ -10743,6 +11005,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/extreme_temp_timeseries_grid-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/extreme_temp_timeseries_grid-1.png" target="_blank">15c1d68</a>
@@ -10983,6 +11256,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/extreme_temp_histogram_grid-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/extreme_temp_histogram_grid-1.png" target="_blank">15c1d68</a>
@@ -11311,6 +11595,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -11470,6 +11765,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-2.png" target="_blank">cec2a2a</a>
@@ -11644,6 +11950,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -11814,6 +12131,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-4.png" target="_blank">cec2a2a</a>
@@ -11988,6 +12316,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-5.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -12158,6 +12497,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-6.png" target="_blank">cec2a2a</a>
@@ -12332,6 +12682,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-7.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-7.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -12502,6 +12863,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-8.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-8.png" target="_blank">cec2a2a</a>
@@ -12676,6 +13048,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-9.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-9.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -12846,6 +13229,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-10.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-10.png" target="_blank">cec2a2a</a>
@@ -13020,6 +13414,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-11.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-11.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -13190,6 +13595,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-12.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/map_location_argo_profiles-12.png" target="_blank">cec2a2a</a>
@@ -13410,6 +13826,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -13514,6 +13941,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-2.png" target="_blank">cec2a2a</a>
@@ -13631,6 +14069,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-3.png" target="_blank">cec2a2a</a>
@@ -13761,6 +14210,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-4.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -13889,6 +14349,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-5.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -14004,6 +14475,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_raw_Mayot_biomes-6.png" target="_blank">cec2a2a</a>
@@ -14122,6 +14604,7 @@ map+
                 y = lat,
                 fill = temp_extreme))+
   scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30)) +
   labs(title = &#39;October 2017&#39;,
        fill = &#39;OceanSODA SST \nextreme&#39;)</code></pre>
 <p><img src="figure/extreme_temp.Rmd/select_specific_temp_profiles_2017-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -14147,6 +14630,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/select_specific_temp_profiles_2017-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/15c1d68359da0f239f1e1d2ff8a81c7805c26fe7/docs/figure/extreme_temp.Rmd/select_specific_temp_profiles_2017-1.png" target="_blank">15c1d68</a>
@@ -14324,6 +14818,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/select_specific_temp_profiles_2017-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/select_specific_temp_profiles_2017-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -14440,6 +14945,7 @@ map+
                 y = lat,
                 fill = temp_extreme))+
   scale_fill_manual(values = HNL_colors_map)+
+  lims(y = c(-85, -30)) +
   labs(title = &#39;July 2016&#39;,
        fill = &#39;OceanSODA SST \nextreme&#39;)
 
@@ -14557,6 +15063,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/mean_temp_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/mean_temp_profiles-1.png" target="_blank">cec2a2a</a>
@@ -14862,6 +15379,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/mean_temp_profile_count-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/mean_temp_profile_count-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -15159,6 +15687,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -15441,6 +15980,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -15721,6 +16271,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_mean-3.png" target="_blank">cec2a2a</a>
@@ -16068,6 +16629,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/mean_temp_profiles_season_new_biomes-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/mean_temp_profiles_season_new_biomes-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -16228,6 +16800,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_temp_profiles_season_new_biome-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_temp_profiles_season_new_biome-1.png" target="_blank">cec2a2a</a>
@@ -16395,6 +16978,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -16534,6 +17128,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -16671,6 +17276,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_new_biome-3.png" target="_blank">cec2a2a</a>
@@ -16839,6 +17455,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/mean_basin_temp_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/mean_basin_temp_profiles-1.png" target="_blank">cec2a2a</a>
@@ -17157,6 +17784,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_basin_temp_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_basin_temp_profiles-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -17466,6 +18104,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -17759,6 +18408,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -18050,6 +18710,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_basin-3.png" target="_blank">cec2a2a</a>
@@ -18374,6 +19045,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -18522,6 +19204,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-2.png" target="_blank">cec2a2a</a>
@@ -18674,6 +19367,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -18811,6 +19515,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profiles_new_biomes_basin-4.png" target="_blank">cec2a2a</a>
@@ -18975,6 +19690,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -19102,6 +19828,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-2.png" target="_blank">cec2a2a</a>
@@ -19233,6 +19970,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -19349,6 +20097,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/count_number_of_profiles_season_new_biomes-4.png" target="_blank">cec2a2a</a>
@@ -19502,6 +20261,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -19629,6 +20399,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-2.png" target="_blank">cec2a2a</a>
@@ -19760,6 +20541,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -19887,6 +20679,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-4.png" target="_blank">cec2a2a</a>
@@ -20018,6 +20821,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-5.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -20147,6 +20961,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-6.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -20263,6 +21088,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-7.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-7.png" target="_blank">cec2a2a</a>
@@ -20383,6 +21219,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-8.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-8.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -20499,6 +21346,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-9.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-9.png" target="_blank">cec2a2a</a>
@@ -20619,6 +21477,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-10.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-10.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -20737,6 +21606,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-11.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-11.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -20853,6 +21733,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-12.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/argo_vs_OceanSODA_temp_season_new_biomes-12.png" target="_blank">cec2a2a</a>
@@ -20997,6 +21888,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/temp_profile_season_biome_Atlantic-1.png" target="_blank">cec2a2a</a>
@@ -21273,6 +22175,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/Atlantic_biome_1_spring_mean_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/Atlantic_biome_1_spring_mean_profiles-1.png" target="_blank">cec2a2a</a>
@@ -21635,6 +22548,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -21840,6 +22764,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -22034,6 +22969,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -22226,6 +23172,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-4.png" target="_blank">cec2a2a</a>
@@ -22433,6 +23390,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-5.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -22625,6 +23593,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_raw_profiles_with_clim-6.png" target="_blank">cec2a2a</a>
@@ -22864,6 +23843,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -22979,6 +23969,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-2.png" target="_blank">cec2a2a</a>
@@ -23098,6 +24099,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -23204,6 +24216,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-4.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -23308,6 +24331,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-5.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-5.png" target="_blank">cec2a2a</a>
@@ -23427,6 +24461,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-6.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-6.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -23531,6 +24576,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-7.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-7.png" target="_blank">cec2a2a</a>
@@ -23639,6 +24695,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-8.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-8.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -23743,6 +24810,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-9.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-9.png" target="_blank">cec2a2a</a>
@@ -23851,6 +24929,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-10.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-10.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -23957,6 +25046,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-11.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-11.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -24061,6 +25161,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-12.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_anomaly_profiles-12.png" target="_blank">cec2a2a</a>
@@ -24224,6 +25335,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_overall_mean_clim_removed_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_overall_mean_clim_removed_profiles-1.png" target="_blank">cec2a2a</a>
@@ -24541,6 +25663,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_biome_mean_clim_removed_profiles-1.png" target="_blank">cec2a2a</a>
@@ -24878,6 +26011,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_basin_mean_anomaly_profiles-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -25210,6 +26354,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-1.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-1.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -25437,6 +26592,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-2.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-2.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -25587,6 +26753,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-3.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-3.png" target="_blank">cec2a2a</a>
 </td>
 <td>
@@ -25724,6 +26901,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cf5dd205d34d58a9ee5dcb82e98c7c1dcad941f9/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-4.png" target="_blank">cf5dd20</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/cec2a2a155cd424ba5f9ada050d2eb2685b1f0eb/docs/figure/extreme_temp.Rmd/plot_basin_biome_mean_anomaly_profiles-4.png" target="_blank">cec2a2a</a>
