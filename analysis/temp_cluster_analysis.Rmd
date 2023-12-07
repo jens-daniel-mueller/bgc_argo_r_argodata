@@ -114,9 +114,8 @@ map <-
                  sep = ""))
 
 ```
-## Cluster analysis
 
-### Preparation
+## Preparation
 
 Prepare data for cluster analysis
 
@@ -190,7 +189,7 @@ if (opt_norm_anomaly) {
 
 ```
 
-### Number of clusters
+## Number of clusters
 
 ```{r cluster_analysis_determine_k}
 
@@ -237,7 +236,10 @@ if (opt_analysis_type == 1) {
 
 ```
 
-### Cluster analysis
+
+## Cluster analysis
+
+### Cluster means
 
 Based on all floats regardless of surface condition.
 
@@ -468,6 +470,7 @@ if (opt_norm_anomaly) {
 }
 
 ```
+
 ### Cluster mean by year
 
 ```{r cluster_mean_year}
@@ -545,7 +548,7 @@ if (opt_norm_anomaly) {
     
 ```
 
-### Cluster climatology
+Cluster climatology
 
 ```{r cluster_climatology_shift, eval=FALSE}
 
@@ -822,6 +825,8 @@ map +
 }
 ```
 
+### Cluster spatial counts
+
 count of measurements for each cluster on separate maps, spatial analysis
 
 ```{r spatial_cluster_03}
@@ -904,8 +909,7 @@ if (opt_norm_anomaly) {
 }
 ```
 
-### Cluster spatial year
-
+Cluster spatial year
 location of each cluster on map, spatial analysis by year
 
 ```{r spatial_cluster_year, eval=FALSE}
@@ -1038,7 +1042,7 @@ if (opt_norm_anomaly){
   #   select (file_id, abs_sa = anomaly))
 
   # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
-  surf_anomaly <- temp_anomaly_va_id %>%
+  surf_anomaly <- temp_anomaly_va %>%
     group_by(file_id) %>%
     summarise(abs_sa = max(abs(anomaly))) %>%
     ungroup() %>%
@@ -1244,7 +1248,7 @@ for (iprofile_type in 1:2) {
 }
 ```
 
-### Cluster mean
+### Cluster means
 
 ```{r cluster_mean_ext}
 
@@ -1673,8 +1677,7 @@ if (opt_norm_anomaly) {
 
 ```
 
-### Spatial by cluster
-
+Spatial by cluster
 location of each cluster on map, spatial analysis
 
 ```{r spatial_cluster_ext, eval=FALSE}
@@ -1705,7 +1708,7 @@ temp_anomaly_cluster_ext %>%
 
 ```
 
-### Spatial count
+### Cluster spatial counts
 
 location of each cluster on map, spatial analysis
 

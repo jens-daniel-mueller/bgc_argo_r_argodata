@@ -55,13 +55,13 @@ Define options that are used to determine what analysis is done
 
 # opt_analysis_type
 # opt_analysis_type = 1 do analysis to determine number of clusters to use
-# opt_analysis_type = 2 do cluster analysis and further analysis on the identified clusters clusters
+# opt_analysis_type = 2 do cluster analysis and further analysis on the identified clusters
 opt_analysis_type <- 2
 
 # opt_num_clusters
 # How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
-opt_num_clusters_min <- c(8, 8, 1)
-opt_num_clusters_max <- c(8, 8, 8)
+opt_num_clusters_min <- c(8, 8, 4)
+opt_num_clusters_max <- c(8, 8, 5)
 # What is the max depth of each profile_range
 opt_max_depth <- c(600, 1000, 1500)
 # Which profile range is used
@@ -91,8 +91,8 @@ opt_extreme_determination <- 2
 # Carried out for 1500m profiles
 opt_profile_range = 3
 extreme_type <- c('L', 'N', 'H')
-opt_num_clusters_ext_min <- c(1, 1, 1)
-opt_num_clusters_ext_max <- c(6, 6, 6)
+opt_num_clusters_ext_min <- c(4, 4, 4)
+opt_num_clusters_ext_max <- c(5, 5, 5)
 
 # Option related to normalising the anomaly profiles.
 # TRUE - anomaly profiles are normalised by the surface anomaly. Every depth anomaly is divided by the surface anomaly.
@@ -114,9 +114,8 @@ map <-
                  sep = ""))
 
 ```
-## Cluster analysis
 
-### Preparation
+## Preparation
 
 Prepare data for cluster analysis
 
@@ -197,7 +196,7 @@ if (opt_norm_anomaly) {
 
 ```
 
-### Number of clusters
+## Number of clusters
 
 ```{r cluster_analysis_determine_k}
 
@@ -244,7 +243,9 @@ if (opt_analysis_type == 1) {
 
 ```
 
-### Cluster analysis
+## Cluster analysis
+
+### Cluster means
 
 Based on all floats regardless of surface condition.
 
@@ -475,6 +476,7 @@ if (opt_norm_anomaly) {
 }
 
 ```
+
 ### Cluster mean by year
 
 ```{r cluster_mean_year}
@@ -552,7 +554,7 @@ if (opt_norm_anomaly) {
     
 ```
 
-### Cluster climatology
+Cluster climatology
 
 ```{r cluster_climatology_shift, eval=FALSE}
 
@@ -829,6 +831,8 @@ map +
 }
 ```
 
+### Cluster spatial counts
+
 count of measurements for each cluster on separate maps, spatial analysis
 
 ```{r spatial_cluster_03}
@@ -910,8 +914,6 @@ if (opt_norm_anomaly) {
   
 }
 ```
-
-### Cluster spatial year
 
 location of each cluster on map, spatial analysis by year
 
@@ -1055,7 +1057,7 @@ if (opt_norm_anomaly){
   #   select (file_id, abs_sa = anomaly))
 
   # Get the maximum anomaly for each profile - the normalisation will then fit max to 1
-  surf_anomaly <- temp_anomaly_va_id %>%
+  surf_anomaly <- temp_anomaly_va %>%
     group_by(file_id) %>%
     summarise(abs_sa = max(abs(anomaly))) %>%
     ungroup() %>%
@@ -1081,19 +1083,23 @@ profile_types <- c('adjusted', 'base')
 
 # loop through profile_type
 for (iprofile_type in 1:2) {
-
+  
   sel_profile_type = profile_types[iprofile_type]
     
   # loop through surface condition
   for (i in 1:3) {
-  
+
     # ---------------------------------------------------------------------------------------------
     # Preparation
     # ---------------------------------------------------------------------------------------------
     # select profile based on profile_range and he appropriate max depth
+    # temp_anomaly_va_id <- temp_anomaly_va %>% 
+    #   filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range] & temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
+
+    # select profile based on extreme type and profile_type (base / adjusted)
     temp_anomaly_va_id <- temp_anomaly_va %>% 
-      filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range] & temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
-    
+      filter(temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
+        
     # Simplified table ready to pivot
     temp_anomaly_va_id <- temp_anomaly_va_id %>%
       select(file_id,
@@ -1106,6 +1112,7 @@ for (iprofile_type in 1:2) {
     
     # wide table with each depth becoming a column
     temp_anomaly_va_wide <- temp_anomaly_va_id %>%
+      filter (depth <= 600) %>%
       select(file_id, depth, anomaly) %>%
       pivot_wider(names_from = depth, values_from = anomaly)
     
@@ -1122,7 +1129,7 @@ for (iprofile_type in 1:2) {
     # ---------------------------------------------------------------------------------------------
     # loop through number of clusters
     for (inum_clusters in opt_num_clusters_ext_min[i]:opt_num_clusters_ext_max[i]) {    
-  
+
       set.seed(1)
       kclusts <-
         tibble(k = inum_clusters) %>%
@@ -1261,7 +1268,7 @@ for (iprofile_type in 1:2) {
 }
 ```
 
-### Cluster mean
+### Cluster means
 
 ```{r cluster_mean_ext}
 
@@ -1270,8 +1277,6 @@ for (iprofile_type in 1:2) {
 cluster_by_year <- temp_anomaly_cluster_ext %>% 
   count(profile_type, num_clusters, temp_extreme, temp_extreme_order, file_id, cluster, year,
         name = "count_cluster")
-
-#cluster_by_year %>% filter (num_clusters == 5 & temp_extreme == 'N')
 
 # Convert to profiles
 cluster_by_year <- cluster_by_year %>% 
@@ -1690,8 +1695,6 @@ if (opt_norm_anomaly) {
 
 ```
 
-### Spatial by cluster
-
 location of each cluster on map, spatial analysis
 
 ```{r spatial_cluster_ext, eval=FALSE}
@@ -1722,7 +1725,7 @@ temp_anomaly_cluster_ext %>%
 
 ```
 
-### Spatial count
+### Cluster spatial counts
 
 location of each cluster on map, spatial analysis
 
