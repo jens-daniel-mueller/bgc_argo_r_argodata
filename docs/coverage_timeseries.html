@@ -517,7 +517,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Temporal data coverage</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">06 December, 2023</h4>
+<h4 class="date">07 December, 2023</h4>
 
 </div>
 
@@ -546,7 +546,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-06
+<strong>Last updated:</strong> 2023-12-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -677,15 +677,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -695,7 +695,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -713,6 +713,12 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
+
+Untracked files:
+    Untracked:  code/coverage_maps.Rmd
+
+Unstaged changes:
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -758,6 +764,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6ec79f92572a5b0aedf4a4e9427666a15feb18f4/analysis/coverage_timeseries.Rmd" target="_blank">6ec79f9</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Revised coverage analysis.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/coverage_timeseries.html" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -2039,16 +2079,19 @@ bgc_chla &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va
 </div>
 <div id="core---temperature" class="section level1">
 <h1>Core - temperature</h1>
-<pre class="r"><code>core_temp_count &lt;- core_temp %&gt;%
+<pre class="r"><code># Number of measurements
+core_temp_count &lt;- core_temp %&gt;%
   group_by(year, month, file_id, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
+# Number of profiles
 core_temp_count &lt;- core_temp_count %&gt;%
   group_by(year, month, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
+# Aggregate profile range
 core_temp_count_agg &lt;- core_temp_count %&gt;%
   group_by(year, month) %&gt;%
   summarise(count_profiles = sum(count_profiles)) %&gt;%
@@ -2085,6 +2128,43 @@ core_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete core temperature profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/core_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_by_profile_range-1">
+Past versions of core_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-core_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/core_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (core_temp, core_temp_count, core_temp_count_agg)</code></pre>
 </div>
 <div id="bgc---temperature" class="section level1">
@@ -2135,6 +2215,43 @@ bgc_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temperature profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_temp_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_temp_by_profile_range-1">
+Past versions of bgc_temp_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_temp_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_temp_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_temp_count, bgc_temp_count_agg)</code></pre>
 </div>
 <div id="bgc---ph" class="section level1">
@@ -2185,6 +2302,43 @@ bgc_ph_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc pH profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_ph_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_ph_by_profile_range-1">
+Past versions of bgc_ph_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_ph_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_ph_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_ph_count, bgc_ph_count_agg)</code></pre>
 <div id="bgc---temp-and-ph" class="section level2">
 <h2>BGC - temp AND pH</h2>
@@ -2236,6 +2390,43 @@ bgc_ph_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temperature AND pH profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_temp_ph_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_temp_ph_by_profile_range-1">
+Past versions of bgc_temp_ph_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_temp_ph_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_temp_ph_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_ph_temp, bgc_ph_temp_count, bgc_ph_temp_count_agg)</code></pre>
 </div>
 </div>
@@ -2287,6 +2478,43 @@ bgc_doxy_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc dissolved oxygen profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_doxy_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_doxy_by_profile_range-1">
+Past versions of bgc_doxy_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_doxy_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_doxy_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_doxy_count, bgc_doxy_count_agg)</code></pre>
 <div id="bgc---temp-and-dissolved-oxygen" class="section level2">
 <h2>BGC - temp AND dissolved oxygen</h2>
@@ -2338,6 +2566,43 @@ bgc_doxy_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temperature AND dissolved oxygen profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_temp_doxy_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_temp_doxy_by_profile_range-1">
+Past versions of bgc_temp_doxy_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_temp_doxy_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_temp_doxy_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_doxy_temp, bgc_doxy_temp_count, bgc_doxy_temp_count_agg)</code></pre>
 </div>
 </div>
@@ -2389,6 +2654,43 @@ bgc_nitrate_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc nitrate profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_nitrate_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_nitrate_by_profile_range-1">
+Past versions of bgc_nitrate_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_nitrate_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_nitrate_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_nitrate_count, bgc_nitrate_count_agg)</code></pre>
 <div id="bgc---temp-and-nitrate" class="section level2">
 <h2>BGC - temp AND nitrate</h2>
@@ -2440,11 +2742,48 @@ bgc_nitrate_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temperature AND nitrate profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_temp_nitrate_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_temp_nitrate_by_profile_range-1">
+Past versions of bgc_temp_nitrate_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_temp_nitrate_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_temp_nitrate_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_nitrate_temp, bgc_nitrate_temp_count, bgc_nitrate_temp_count_agg)</code></pre>
 </div>
 </div>
-<div id="bgc---chla" class="section level1">
-<h1>BGC - chla</h1>
+<div id="bgc---chlorophyll-a" class="section level1">
+<h1>BGC - chlorophyll a</h1>
 <pre class="r"><code>bgc_chla_count &lt;- bgc_chla %&gt;%
   group_by(year, month, file_id, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
@@ -2477,7 +2816,7 @@ bgc_chla_count_agg &lt;- rbind(
     filter (profile_range ==3)
 )
 
-# count of chla profiles by year, month and profile range
+# count of chlorophyll a profiles by year, month and profile range
 bgc_chla_count_agg %&gt;% 
   ggplot(aes(x = month, y = count_profiles, col = as.character(profile_range))) +
   geom_line() +
@@ -2491,6 +2830,43 @@ bgc_chla_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc chlorophyll a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_chla_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_chla_by_profile_range-1">
+Past versions of bgc_chla_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_chla_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_chla_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_chla_count, bgc_chla_count_agg)</code></pre>
 <div id="bgc---temp-and-chlorophyll-a" class="section level2">
 <h2>BGC - temp AND chlorophyll a</h2>
@@ -2542,10 +2918,48 @@ bgc_chla_temp_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temperature AND chlorophyll a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_temp_chla_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_temp_chla_by_profile_range-1">
+Past versions of bgc_temp_chla_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_temp_chla_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_temp_chla_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_chla_temp, bgc_chla_temp_count, bgc_chla_temp_count_agg)</code></pre>
 </div>
-<div id="bgc---temp-ph-doxy-nitrate-and-chl-a" class="section level2">
-<h2>BGC - temp, pH, doxy, nitrate AND chl a</h2>
+</div>
+<div id="bgc---temp-ph-doxy-nitrate-and-chl-a" class="section level1">
+<h1>BGC - temp, pH, doxy, nitrate AND chl a</h1>
 <pre class="r"><code>bgc_all &lt;- inner_join(bgc_ph, bgc_temp %&gt;% distinct(file_id)) 
 bgc_all &lt;- inner_join(bgc_all, bgc_doxy %&gt;% distinct(file_id)) 
 bgc_all &lt;- inner_join(bgc_all, bgc_nitrate %&gt;% distinct(file_id)) 
@@ -2597,6 +3011,43 @@ bgc_all_count_agg %&gt;%
        title = &quot;Number of profiles&quot;,
        subtitle = &quot;Complete bgc temp, pH, doxy, nitrate AND chl a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)&quot;)</code></pre>
 <p><img src="figure/coverage_timeseries.Rmd/bgc_all_by_profile_range-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_all_by_profile_range-1">
+Past versions of bgc_all_by_profile_range-1.png
+</button>
+</p>
+<div id="fig-bgc_all_by_profile_range-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/figure/coverage_timeseries.Rmd/bgc_all_by_profile_range-1.png" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>rm (bgc_all, bgc_all_count, bgc_all_count_agg)</code></pre>
 <br>
 <p>
@@ -2655,7 +3106,6 @@ loaded via a namespace (and not attached):
 [61] hms_1.1.2           fastmap_1.1.0       yaml_2.3.6         
 [64] colorspace_2.0-3    gargle_1.2.1        rvest_1.0.3        
 [67] knitr_1.41          haven_2.5.1         sass_0.4.4         </code></pre>
-</div>
 </div>
 </div>
 

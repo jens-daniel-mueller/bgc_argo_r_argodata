@@ -9,7 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Pasqualina Vonlanthen &amp; Jens Daniel Müller" />
+<meta name="author" content="David Stappard &amp; Jens Daniel Müller" />
 
 
 <title>Spatial data coverage</title>
@@ -516,8 +516,8 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">Spatial data coverage</h1>
-<h4 class="author">Pasqualina Vonlanthen &amp; Jens Daniel Müller</h4>
-<h4 class="date">06 December, 2023</h4>
+<h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
+<h4 class="date">07 December, 2023</h4>
 
 </div>
 
@@ -546,7 +546,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-06
+<strong>Last updated:</strong> 2023-12-07
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -677,15 +677,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -695,7 +695,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -713,6 +713,12 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
+
+Untracked files:
+    Untracked:  code/coverage_maps.Rmd
+
+Unstaged changes:
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -758,6 +764,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6ec79f92572a5b0aedf4a4e9427666a15feb18f4/analysis/coverage_maps.Rmd" target="_blank">6ec79f9</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Revised coverage analysis.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/coverage_maps.html" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1690,12 +1730,31 @@ BGC-Argo floats</p>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
-<p>Read the metadata file created in loading_data.html:</p>
-<pre class="r"><code>bgc_metadata &lt;-
-  read_rds(file = paste0(path_argo_preprocessed, &quot;/bgc_metadata.rds&quot;))
+<div id="bgc-argo-data" class="section level2">
+<h2>BGC-Argo data</h2>
+<p>Read the files created in loading_data.html:</p>
+<pre class="r"><code>bgc_temp &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/temp_bgc_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))
 
-core_metadata &lt;- 
-  read_rds(file = paste0(path_argo_core_preprocessed, &quot;/core_metadata.rds&quot;))</code></pre>
+bgc_ph &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/pH_bgc_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))
+
+bgc_doxy &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_bgc_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))
+
+bgc_nitrate &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nitrate_bgc_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))
+
+bgc_chla &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))</code></pre>
+</div>
+<div id="core-argo-data" class="section level2">
+<h2>Core-Argo data</h2>
+<pre class="r"><code>core_temp &lt;- read_rds(file = paste0(path_argo_core_preprocessed, &quot;/temp_core_va.rds&quot;)) %&gt;%
+  filter(!is.na(year))</code></pre>
+</div>
+<div id="map-data" class="section level2">
+<h2>map data</h2>
 <pre class="r"><code>basinmask &lt;-
   read_csv(paste(path_emlr_utilities,
                  &quot;basin_mask_WOA18.csv&quot;,
@@ -1711,1845 +1770,48 @@ map &lt;-
                  &quot;map_landmask_WOA18.rds&quot;,
                  sep = &quot;&quot;))</code></pre>
 </div>
-<div id="spatial-bgc-data-coverage" class="section level1">
-<h1>Spatial BGC-data coverage</h1>
-<div id="count-profiles-bgc-argo" class="section level3">
-<h3>Count profiles (BGC-Argo)</h3>
-<pre class="r"><code>bgc_metadata &lt;- inner_join(
-  bgc_metadata,
-  basinmask
-)
-
-##################################################################
-
-bgc_profile_counts_year &lt;- bgc_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(!is.na(profile_flag),
-         profile_flag != &quot;&quot;) %&gt;% 
-  count(lat, lon, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
-
-
-###################################################################
-# count the number of profiles which have flags A, B, C, D, or E (count the number of profiles which have usable data)
-
-bgc_profile_counts_usable &lt;- bgc_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(!is.na(profile_flag),
-         profile_flag != &quot;&quot;,
-         profile_flag != &#39;F&#39;) %&gt;% 
-  count(lat, lon, parameter, profile_flag)  # count the number of profiles for flags A, B, C, D, and E (usable data) for each lon/lat grid 
-
-
-##################################################################
-# count the number of profiles which have QC flag A (100% of levels contain good data)
-
-bgc_profile_counts_A &lt;- bgc_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(profile_flag == &#39;A&#39;) %&gt;% 
-  count(lat, lon, parameter)
-
-
-#####################################################################
-# count the number of profiles which have a QC flag of F (0% of levels contain good data)
-
-bgc_profile_counts_F &lt;- bgc_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %&gt;% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(profile_flag == &#39;F&#39;) %&gt;% 
-  count(lat, lon, parameter)</code></pre>
 </div>
-<div id="by-year" class="section level3">
-<h3>By Year</h3>
-<p>Map of profile locations for each parameter, per year</p>
-<pre class="r"><code>map +
-  geom_tile(data = bgc_profile_counts_year,
-              aes(lon, lat, fill = n)) +
-  scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                      trans = &quot;log10&quot;) +
-  facet_grid(year ~ parameter)
+<div id="core---temperature" class="section level1">
+<h1>Core - temperature</h1>
+<pre class="r"><code># Number of measurements
+core_count &lt;- core_temp %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
 
+# Number of profiles
+core_count &lt;- core_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
 
-# bgc_profile_counts_year %&gt;%
-#   ggplot() +
-#   geom_sf(data = ne_countries(returnclass = &quot;sf&quot;),
-#           fill = &quot;gray90&quot;,
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = &quot;sf&quot;)) +
-#   geom_tile(aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low=&quot;blue&quot;, high=&quot;red&quot;,
-#                       trans = &quot;log10&quot;) +
-#   theme_bw() +
-#   facet_grid(year ~ parameter)</code></pre>
-<pre class="r"><code># map the location of profiles for each parameter in each year 
-bgc_profile_counts_year %&gt;%
-  group_split(parameter) %&gt;%
+# measurement type
+core_count &lt;- core_count %&gt;%
+  mutate (prof_type = &#39;temperature&#39;)</code></pre>
+<div id="spatial-by-year" class="section level2">
+<h2>spatial by year</h2>
+<pre class="r"><code># map the location of profiles for each profile in each year 
+core_count %&gt;%
+  group_split(prof_type) %&gt;%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\nprofiles&#39;,
-        title = paste(&#39;Parameter:&#39;, unique(.x$parameter))
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
-  )</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profile_maps_year_separate-1">
-Past versions of profile_maps_year_separate-1.png
-</button>
-</p>
-<div id="fig-profile_maps_year_separate-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bdd516daab19b4b6de5bea8181dd508383613b08/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">bdd516d</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-05-23
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/710edd479fc87956f72e0ef85b86dd6b40eaba4f/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">710edd4</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/123e5dbbb1cacc3c54c9262bf8d21bc48c7830d7/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">123e5db</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-07
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bba33bf519a74b13e735c1ddb5d1ea9bbb8d0c62/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">bba33bf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">f7ef44f</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">aa7280d</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/701fffa6aca148e9b13249a8e2bf4b9f82bb5618/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-1.png" target="_blank">701fffa</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profile_maps_year_separate-2">
-Past versions of profile_maps_year_separate-2.png
-</button>
-</p>
-<div id="fig-profile_maps_year_separate-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/123e5dbbb1cacc3c54c9262bf8d21bc48c7830d7/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">123e5db</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-07
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bba33bf519a74b13e735c1ddb5d1ea9bbb8d0c62/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">bba33bf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">f7ef44f</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">aa7280d</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/701fffa6aca148e9b13249a8e2bf4b9f82bb5618/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-2.png" target="_blank">701fffa</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-profile_maps_year_separate-3">
-Past versions of profile_maps_year_separate-3.png
-</button>
-</p>
-<div id="fig-profile_maps_year_separate-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/123e5dbbb1cacc3c54c9262bf8d21bc48c7830d7/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">123e5db</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-07
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bba33bf519a74b13e735c1ddb5d1ea9bbb8d0c62/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">bba33bf</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-26
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f7ef44fd919b7ea93b1972aa1ab17a015bb7a8f9/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">f7ef44f</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/aa7280d3e5330f9f7a99fb8268586e9ce68ce2c5/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">aa7280d</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2021-10-22
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/701fffa6aca148e9b13249a8e2bf4b9f82bb5618/docs/figure/coverage_maps.Rmd/profile_maps_year_separate-3.png" target="_blank">701fffa</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-10-20
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_per_year.png&quot;,
-       width = 7,
-       height = 4)
-
-# bgc_profile_counts_year %&gt;%
-#   group_split(parameter) %&gt;% 
-#   map( 
-#   ~ ggplot() +
-#   geom_sf(data = ne_countries(returnclass = &quot;sf&quot;),
-#           fill = &quot;gray90&quot;,
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = &quot;sf&quot;)) +
-#   geom_tile(data = .x, aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low=&quot;blue&quot;, high=&quot;red&quot;,
-#                       trans = &quot;log10&quot;) +
-#   theme_bw() +
-#   labs(x = &#39;lon&#39;, y = &#39;lat&#39;, fill = &#39;number of profiles&#39;, 
-#        title = paste(&#39;Parameter:&#39;, unique(.x$parameter)))+
-#   facet_grid(. ~ year)
-#   )</code></pre>
-</div>
-<div id="by-qc-flag" class="section level3">
-<h3>By QC Flag</h3>
-<p>Map the profile locations for each profile QC flag of each
-parameter</p>
-<pre class="r"><code># bgc_profile_counts_flag %&gt;%
-#   ggplot() +
-#   geom_sf(data = ne_countries(returnclass = &quot;sf&quot;),
-#           fill = &quot;gray90&quot;,
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = &quot;sf&quot;)) +
-#   geom_tile(aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low=&quot;blue&quot;, high=&quot;red&quot;,
-#                       trans = &quot;log10&quot;) +
-#   theme_bw() +
-#   facet_grid(profile_flag ~ parameter)</code></pre>
-<div id="flags-a-b-c-d-and-e" class="section level4">
-<h4>Flags A, B, C, D, and E</h4>
-<pre class="r"><code># map the location of profiles which contain usable data (profile QC flags A, B, C, D, and E)
-# create a separate plot for each parameter  
-
-bgc_profile_counts_usable %&gt;%
-  group_split(parameter) %&gt;%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\nprofiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flags A, B, C, D, E&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/usable_data_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-usable_data_profiles-1">
-Past versions of usable_data_profiles-1.png
-</button>
-</p>
-<div id="fig-usable_data_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/usable_data_profiles-1.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/usable_data_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-usable_data_profiles-2">
-Past versions of usable_data_profiles-2.png
-</button>
-</p>
-<div id="fig-usable_data_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/usable_data_profiles-2.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/usable_data_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-usable_data_profiles-3">
-Past versions of usable_data_profiles-3.png
-</button>
-</p>
-<div id="fig-usable_data_profiles-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/usable_data_profiles-3.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_usable_data.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-<div id="flag-a" class="section level4">
-<h4>Flag A</h4>
-<pre class="r"><code># map the location of profiles with QC flag A for each parameter 
-# only the highest-quality data, with 100% of levels with good data 
-
-bgc_profile_counts_A %&gt;%
-  group_split(parameter) %&gt;%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\nprofiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flag A&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_A_flag_profiles-1">
-Past versions of map_A_flag_profiles-1.png
-</button>
-</p>
-<div id="fig-map_A_flag_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-1.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_A_flag_profiles-2">
-Past versions of map_A_flag_profiles-2.png
-</button>
-</p>
-<div id="fig-map_A_flag_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-2.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_A_flag_profiles-3">
-Past versions of map_A_flag_profiles-3.png
-</button>
-</p>
-<div id="fig-map_A_flag_profiles-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_A_flag_profiles-3.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_A_flag.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-<div id="flag-f" class="section level4">
-<h4>Flag F</h4>
-<pre class="r"><code># map the location of profiles with QC flag F (not usable data)
-bgc_profile_counts_F %&gt;%
-  group_split(parameter) %&gt;%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\nprofiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flag F&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_F_flag_profiles-1">
-Past versions of map_F_flag_profiles-1.png
-</button>
-</p>
-<div id="fig-map_F_flag_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7a01367ed6852048f198fa401eae74b91c87dd72/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">7a01367</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-12
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-1.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_F_flag_profiles-2">
-Past versions of map_F_flag_profiles-2.png
-</button>
-</p>
-<div id="fig-map_F_flag_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-2.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[3]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-map_F_flag_profiles-3">
-Past versions of map_F_flag_profiles-3.png
-</button>
-</p>
-<div id="fig-map_F_flag_profiles-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/68eff8bb03d504f16b1ef94fd52da1a2d382beb1/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">68eff8b</a>
-</td>
-<td>
-jens-daniel-mueller
-</td>
-<td>
-2022-05-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8805f99ea10fef4a7f7b188bd45df79353237014/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">8805f99</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-04-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7f3cfe780c2d1c4012588b36151b5e0c3dca5d1d/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">7f3cfe7</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-12-17
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6276d6cafbdfd47b37205a4eee9e8321df958b9c/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">6276d6c</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/a103f60f51baf8db626534d2b1a721999626b84e/docs/figure/coverage_maps.Rmd/map_F_flag_profiles-3.png" target="_blank">a103f60</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2021-11-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_flag_F.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-<pre class="r"><code># create a separate plot for each QC flag (instead of multiple panels in one plot) 
-
-# bgc_profile_counts_flag %&gt;%
-#   group_split(profile_flag) %&gt;%
-#   map(
-#     ~ map +
-#       geom_tile(data = .x, aes(
-#         x = lon, y = lat, fill = n
-#       )) +
-#       scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-#                           trans = &quot;log10&quot;) +
-#       labs(
-#         x = &#39;lon&#39;,
-#         y = &#39;lat&#39;,
-#         fill = &#39;number of\nprofiles&#39;,
-#         title = paste(&#39;Profile QC flag&#39;, unique(.x$profile_flag))
-#       ) +
-#       theme(
-#         legend.position = &quot;bottom&quot;,
-#         axis.text = element_blank(),
-#         axis.ticks = element_blank()
-#       ) +
-#       facet_grid(parameter ~ .)
-#   )
-
-ggsave(&quot;output/figures/maps_per_flag.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-<pre class="r"><code>ph_profile_counts_year &lt;- bgc_metadata %&gt;%      # count the number of A-flag pH profiles 
-  select(platform_number, cycle_number, date, lon, lat,
-        profile_ph_in_situ_total_qc) %&gt;% 
-  pivot_longer(profile_ph_in_situ_total_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(profile_flag == &quot;A&quot;) %&gt;% 
-  count(lat, lon, year, parameter)
-
-# map the location of pH profiles with QC flag A each year
-ph_profile_counts_year %&gt;%
-  group_split(parameter) %&gt;%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\nprofiles&#39;,
-        title = paste(&#39;Parameter:&#39;, unique(.x$parameter), &#39;flag A&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
-  )
-
-ggsave(&quot;output/figures/map_pH_flag_A_per_year.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-</div>
-<div id="remove-bgc-data" class="section level2">
-<h2>Remove BGC data</h2>
-<pre class="r"><code>rm(list = ls(pattern = &#39;bgc_&#39;))</code></pre>
-</div>
-</div>
-<div id="spatial-core-data-coverage" class="section level1">
-<h1>Spatial Core-data coverage</h1>
-<div id="count-profiles-core-argo" class="section level2">
-<h2>Count profiles (Core-Argo)</h2>
-<pre class="r"><code>core_metadata &lt;- inner_join(core_metadata, basinmask)
-
-#################################################
-# count the number of core profiles in each lat/lon grid for each year and each parameter (temp and sal)
-
-core_profile_counts_year &lt;- core_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %&gt;% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = &#39;parameter&#39;,
-               values_to = &#39;profile_flag&#39;,
-               names_prefix = &#39;profile_&#39;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(!is.na(profile_flag),
-         profile_flag != &quot;&quot;) %&gt;% 
-  count(lat, lon, year, parameter)
-
-
-#############################################################
-# count the number of profiles with usable data (flags A-E) for each lat/lon grid, per parameter 
-
-core_profile_counts_usable &lt;- core_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %&gt;% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = &#39;parameter&#39;,
-               values_to = &#39;profile_flag&#39;,
-               names_prefix = &#39;profile_&#39;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(!is.na(profile_flag),
-         profile_flag != &quot;&quot;,
-         profile_flag != &#39;F&#39;) %&gt;% 
-  count(lat, lon, parameter, profile_flag)
-
-
-##############################################################
-# count the number of core-profiles with QC flag A for each lat/lon grid, per parameter 
-
-core_profile_counts_A &lt;- core_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %&gt;% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = &#39;parameter&#39;,
-               values_to = &#39;profile_flag&#39;,
-               names_prefix = &#39;profile_&#39;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(profile_flag == &#39;A&#39;) %&gt;% 
-  count(lat, lon, parameter)
-
-
-##############################################################
-# count the number of core-profiles with QC flag A for each lat/lon grid, per parameter 
-
-core_profile_counts_F &lt;- core_metadata %&gt;% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %&gt;% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = &quot;parameter&quot;,
-               values_to = &quot;profile_flag&quot;,
-               names_prefix = &quot;profile_&quot;) %&gt;% 
-  mutate(year = year(date)) %&gt;% 
-  filter(profile_flag == &#39;F&#39;) %&gt;% 
-  count(lat, lon, parameter)</code></pre>
-</div>
-<div id="by-year-1" class="section level2">
-<h2>By Year</h2>
-<pre class="r"><code># map the location of profiles for each parameter in each year 
-core_profile_counts_year %&gt;%
-  group_split(parameter) %&gt;%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\n core profiles&#39;,
-        title = paste(&#39;Parameter:&#39;, unique(.x$parameter))
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
+                        trans = &quot;log10&quot;) +
+    labs(
+      x = &#39;lon&#39;,
+      y = &#39;lat&#39;,
+      fill = &#39;number of\nprofiles&#39;,
+      title = &#39;Core temperature by year and location&#39;
+    ) +
+    theme(
+      legend.position = &quot;bottom&quot;,
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    ) +
+    facet_wrap(~year, ncol = 3)
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/core_profile_maps_year-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -3623,610 +1885,237 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/core_profile_maps_year-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_profile_maps_year-2">
-Past versions of core_profile_maps_year-2.png
-</button>
-</p>
-<div id="fig-core_profile_maps_year-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
 </div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/core_maps_per_year.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-<div id="by-qc-flag-1" class="section level2">
-<h2>By QC Flag</h2>
-<div id="flags-a-e" class="section level3">
-<h3>Flags A-E</h3>
-<pre class="r"><code># map the location of profiles which contain usable data (profile QC flags A, B, C, D, and E)
-# create a separate plot for each parameter  
+<div id="spatial-all-years" class="section level2">
+<h2>spatial all years</h2>
+<pre class="r"><code># sum across years
+core_count &lt;- core_count %&gt;%
+  group_by(prof_type, lat, lon) %&gt;%
+  summarise(count_profiles = sum(count_profiles)) %&gt;%
+  ungroup()
 
-core_profile_counts_usable %&gt;%
-  group_split(parameter) %&gt;%
+# map the location of profiles for each profile in each year 
+core_count %&gt;%
+  group_split(prof_type) %&gt;%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\ncore profiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flags A, B, C, D, E&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
+                        trans = &quot;log10&quot;) +
+    labs(
+      x = &#39;lon&#39;,
+      y = &#39;lat&#39;,
+      fill = &#39;number of\nprofiles&#39;,
+      title = &#39;Core temperature by location&#39;
+    ) +
+    theme(
+      legend.position = &quot;bottom&quot;,
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    )
+  )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/usable_data_core_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-usable_data_core_profiles-1">
-Past versions of usable_data_core_profiles-1.png
-</button>
-</p>
-<div id="fig-usable_data_core_profiles-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-1.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-1.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-1.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/coverage_maps.Rmd/core_profile_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/usable_data_core_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-usable_data_core_profiles-2">
-Past versions of usable_data_core_profiles-2.png
-</button>
-</p>
-<div id="fig-usable_data_core_profiles-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-2.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-2.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/usable_data_core_profiles-2.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_usable_core_data.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-<div id="flag-a-1" class="section level3">
-<h3>Flag A</h3>
-<pre class="r"><code># map the location of profiles with QC flag A for each parameter 
-# only the highest-quality data, with 100% of levels with good data 
+<div id="bgc" class="section level1">
+<h1>BGC</h1>
+<pre class="r"><code># ----------------------------------------------------------------------------------------------
+# temperature 
+# ----------------------------------------------------------------------------------------------
 
-core_profile_counts_A %&gt;%
-  group_split(parameter) %&gt;%
+# Number of measurements
+bgc_temp_count &lt;- bgc_temp %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
+
+# Number of profiles
+bgc_temp_count &lt;- bgc_temp_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
+
+# measurement type
+bgc_temp_count &lt;- bgc_temp_count %&gt;%
+  mutate (prof_order = 1,
+          prof_type = &#39;temperature&#39;)
+
+# ----------------------------------------------------------------------------------------------
+# ph 
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_ph_count &lt;- bgc_ph %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
+
+# Number of profiles
+bgc_ph_count &lt;- bgc_ph_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
+
+# measurement type
+bgc_ph_count &lt;- bgc_ph_count %&gt;%
+  mutate (prof_order = 2,
+          prof_type = &#39;pH&#39;)
+
+# ----------------------------------------------------------------------------------------------
+# doxy
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_doxy_count &lt;- bgc_doxy %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
+
+# Number of profiles
+bgc_doxy_count &lt;- bgc_doxy_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
+
+# measurement type
+bgc_doxy_count &lt;- bgc_doxy_count %&gt;%
+  mutate (prof_order = 3,
+          prof_type = &#39;dissolved oxygen&#39;)
+
+# ----------------------------------------------------------------------------------------------
+# nitrate
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_nitrate_count &lt;- bgc_nitrate %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
+
+# Number of profiles
+bgc_nitrate_count &lt;- bgc_nitrate_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
+
+# measurement type
+bgc_nitrate_count &lt;- bgc_nitrate_count %&gt;%
+  mutate (prof_order = 4,
+          prof_type = &#39;nitrate&#39;)
+
+# ----------------------------------------------------------------------------------------------
+# chla
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_chla_count &lt;- bgc_chla %&gt;%
+  group_by(year, file_id, lat, lon) %&gt;%
+  summarise(count_measures = n()) %&gt;%
+  ungroup()
+
+# Number of profiles
+bgc_chla_count &lt;- bgc_chla_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = n()) %&gt;%
+  ungroup()
+
+# measurement type
+bgc_chla_count &lt;- bgc_chla_count %&gt;%
+  mutate (prof_order = 5,
+          prof_type = &#39;chlorophyll a&#39;)
+
+# combine
+bgc_count &lt;- rbind(bgc_temp_count, bgc_ph_count)
+bgc_count &lt;- rbind(bgc_count, bgc_doxy_count)
+bgc_count &lt;- rbind(bgc_count, bgc_nitrate_count)
+bgc_count &lt;- rbind(bgc_count, bgc_chla_count)</code></pre>
+<div id="spatial-by-year-1" class="section level2">
+<h2>spatial by year</h2>
+<pre class="r"><code># map the location of profiles for each profile in each year 
+bgc_count %&gt;%
+  group_split(prof_order) %&gt;%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\ncore profiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flag A&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
+                        trans = &quot;log10&quot;) +
+    labs(
+      x = &#39;lon&#39;,
+      y = &#39;lat&#39;,
+      fill = &#39;number of\nprofiles&#39;,
+      title = paste0(&#39;BGC &#39;, unique(.x$prof_type), &#39; by year and location&#39;)
+    ) +
+    theme(
+      legend.position = &quot;bottom&quot;,
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    ) +
+    facet_wrap(~year, ncol = 3)
+  )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/flag_A_core_data_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flag_A_core_data_map-1">
-Past versions of flag_A_core_data_map-1.png
-</button>
-</p>
-<div id="fig-flag_A_core_data_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-1.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-1.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-1.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/flag_A_core_data_map-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flag_A_core_data_map-2">
-Past versions of flag_A_core_data_map-2.png
-</button>
-</p>
-<div id="fig-flag_A_core_data_map-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-2.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-2.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/flag_A_core_data_map-2.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_A_flag_core.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-</div>
-<div id="flag-f-1" class="section level3">
-<h3>Flag F</h3>
-<pre class="r"><code>core_profile_counts_F %&gt;%
-  group_split(parameter) %&gt;%
+<div id="spatial-all-years-1" class="section level2">
+<h2>spatial all years</h2>
+<pre class="r"><code># sum across years
+bgc_count &lt;- bgc_count %&gt;%
+  group_by(prof_order, prof_type, lat, lon) %&gt;%
+  summarise(count_profiles = sum(count_profiles)) %&gt;%
+  ungroup()
+
+# map the location of profiles for each profile in each year 
+bgc_count %&gt;%
+  group_split(prof_order) %&gt;%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
-                          trans = &quot;log10&quot;) +
-      labs(
-        x = &#39;lon&#39;,
-        y = &#39;lat&#39;,
-        fill = &#39;number of\ncore profiles&#39;,
-        title = paste(unique(.x$parameter), &#39;Profile Flag F&#39;)
-      ) +
-      theme(
-        legend.position = &quot;bottom&quot;,
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)</code></pre>
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = &quot;blue&quot;, high = &quot;red&quot;,
+                        trans = &quot;log10&quot;) +
+    labs(
+      x = &#39;lon&#39;,
+      y = &#39;lat&#39;,
+      fill = &#39;number of\nprofiles&#39;,
+      title = paste0(&#39;BGC &#39;, unique(.x$prof_type), &#39; by year and location&#39;)
+    ) +
+    theme(
+      legend.position = &quot;bottom&quot;,
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    )
+  )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/flag_F_core_data_map-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flag_F_core_data_map-1">
-Past versions of flag_F_core_data_map-1.png
-</button>
-</p>
-<div id="fig-flag_F_core_data_map-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-1.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-1.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-1.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-1.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/flag_F_core_data_map-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-flag_F_core_data_map-2">
-Past versions of flag_F_core_data_map-2.png
-</button>
-</p>
-<div id="fig-flag_F_core_data_map-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-2.png" target="_blank">770b125</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-11
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-2.png" target="_blank">13ae27f</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-09
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-2.png" target="_blank">6377b31</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-10-02
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/flag_F_core_data_map-2.png" target="_blank">7b3d8c5</a>
-</td>
-<td>
-pasqualina-vonlanthendinenna
-</td>
-<td>
-2022-08-29
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>ggsave(&quot;output/figures/maps_flag_F_core.png&quot;,
-       width = 7,
-       height = 4)</code></pre>
-<pre class="r"><code>rm(list = ls(pattern = &#39;core_&#39;))</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[4]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[5]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-5.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -4275,19 +2164,17 @@ loaded via a namespace (and not attached):
 [34] cachem_1.0.6        withr_2.5.0         cli_3.6.1          
 [37] magrittr_2.0.3      crayon_1.5.2        readxl_1.4.1       
 [40] evaluate_0.18       fs_1.5.2            fansi_1.0.3        
-[43] xml2_1.3.3          textshaping_0.3.6   tools_4.2.2        
-[46] hms_1.1.2           gargle_1.2.1        lifecycle_1.0.3    
-[49] munsell_0.5.0       reprex_2.0.2        compiler_4.2.2     
-[52] jquerylib_0.1.4     RNetCDF_2.6-1       systemfonts_1.0.4  
-[55] rlang_1.1.1         grid_4.2.2          rstudioapi_0.15.0  
-[58] labeling_0.4.2      rmarkdown_2.18      gtable_0.3.1       
-[61] DBI_1.1.3           R6_2.5.1            knitr_1.41         
-[64] fastmap_1.1.0       bit_4.0.5           utf8_1.2.2         
-[67] workflowr_1.7.0     rprojroot_2.0.3     ragg_1.2.4         
-[70] stringi_1.7.8       parallel_4.2.2      Rcpp_1.0.10        
-[73] vctrs_0.6.4         dbplyr_2.2.1        tidyselect_1.2.0   
-[76] xfun_0.35          </code></pre>
-</div>
+[43] xml2_1.3.3          tools_4.2.2         hms_1.1.2          
+[46] gargle_1.2.1        lifecycle_1.0.3     munsell_0.5.0      
+[49] reprex_2.0.2        compiler_4.2.2      jquerylib_0.1.4    
+[52] RNetCDF_2.6-1       rlang_1.1.1         grid_4.2.2         
+[55] rstudioapi_0.15.0   labeling_0.4.2      rmarkdown_2.18     
+[58] gtable_0.3.1        DBI_1.1.3           R6_2.5.1           
+[61] knitr_1.41          fastmap_1.1.0       bit_4.0.5          
+[64] utf8_1.2.2          workflowr_1.7.0     rprojroot_2.0.3    
+[67] stringi_1.7.8       parallel_4.2.2      Rcpp_1.0.10        
+[70] vctrs_0.6.4         dbplyr_2.2.1        tidyselect_1.2.0   
+[73] xfun_0.35          </code></pre>
 </div>
 </div>
 </div>
