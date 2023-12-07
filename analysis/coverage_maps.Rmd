@@ -104,18 +104,54 @@ theme_set(theme_bw())
 
 # Number of measurements
 core_count <- core_temp %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 core_count <- core_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
+# core_count %>%
+#   group_by (year, lat, lon) %>%
+#   summarise(n = n()) %>%
+#   filter (n == 1)
+# 
+# core_count <- rbind(
+#   core_count %>%
+#   filter (year == 2013, lat == -59.5, lon == 141.5),
+#   core_count %>%
+#   filter (year == 2013, lat == -63.5, lon == 149.5),
+#   core_count %>%
+#   filter (year == 2013, lat == -68.5, lon == 233.5))
+
+# Aggregate profile range
+core_count_agg <- core_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = sum(count_profiles)) %>%
+  mutate(profile_range = 1) %>%
+  ungroup()
+
+core_count_agg <- rbind(
+  core_count_agg,
+  core_count %>%
+    filter (profile_range %in% c(2, 3)) %>%
+    group_by(year, lat, lon) %>%
+    summarise(count_profiles = sum(count_profiles)) %>%
+    mutate(profile_range = 2) %>%
+    ungroup()
+)
+
+core_count_agg <- rbind(
+  core_count_agg,
+  core_count %>%
+    filter (profile_range == 3)
+)
+
 # measurement type
-core_count <- core_count %>%
+core_count_agg <- core_count_agg %>%
   mutate (prof_type = 'temperature')
 
 ```
@@ -125,8 +161,8 @@ core_count <- core_count %>%
 ```{r core_profile_maps_year, fig.asp=1.2}
 
 # map the location of profiles for each profile in each year 
-core_count %>%
-  group_split(prof_type) %>%
+core_count_agg %>%
+  group_split(profile_range) %>%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -138,7 +174,9 @@ core_count %>%
       x = 'lon',
       y = 'lat',
       fill = 'number of\nprofiles',
-      title = 'Core temperature by year and location'
+      title = paste0('Core temperature by year and location ',
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ' profiles')
     ) +
     theme(
       legend.position = "bottom",
@@ -155,14 +193,14 @@ core_count %>%
 ```{r core_profile_maps, fig.asp=1.2}
 
 # sum across years
-core_count <- core_count %>%
-  group_by(prof_type, lat, lon) %>%
+core_count_agg <- core_count_agg %>%
+  group_by(profile_range, lat, lon) %>%
   summarise(count_profiles = sum(count_profiles)) %>%
   ungroup()
 
 # map the location of profiles for each profile in each year 
-core_count %>%
-  group_split(prof_type) %>%
+core_count_agg %>%
+  group_split(profile_range) %>%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -174,7 +212,9 @@ core_count %>%
       x = 'lon',
       y = 'lat',
       fill = 'number of\nprofiles',
-      title = 'Core temperature by location'
+      title = paste0('Core temperature by location ',
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ' profiles')
     ) +
     theme(
       legend.position = "bottom",
@@ -195,13 +235,13 @@ core_count %>%
 
 # Number of measurements
 bgc_temp_count <- bgc_temp %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 bgc_temp_count <- bgc_temp_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
@@ -216,13 +256,13 @@ bgc_temp_count <- bgc_temp_count %>%
 
 # Number of measurements
 bgc_ph_count <- bgc_ph %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 bgc_ph_count <- bgc_ph_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
@@ -237,13 +277,13 @@ bgc_ph_count <- bgc_ph_count %>%
 
 # Number of measurements
 bgc_doxy_count <- bgc_doxy %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 bgc_doxy_count <- bgc_doxy_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
@@ -258,13 +298,13 @@ bgc_doxy_count <- bgc_doxy_count %>%
 
 # Number of measurements
 bgc_nitrate_count <- bgc_nitrate %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 bgc_nitrate_count <- bgc_nitrate_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
@@ -279,13 +319,13 @@ bgc_nitrate_count <- bgc_nitrate_count %>%
 
 # Number of measurements
 bgc_chla_count <- bgc_chla %>%
-  group_by(year, file_id, lat, lon) %>%
+  group_by(year, file_id, lat, lon, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
 # Number of profiles
 bgc_chla_count <- bgc_chla_count %>%
-  group_by(year, lat, lon) %>%
+  group_by(year, lat, lon, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
@@ -295,10 +335,30 @@ bgc_chla_count <- bgc_chla_count %>%
           prof_type = 'chlorophyll a')
 
 # combine
-bgc_count <- rbind(bgc_temp_count, bgc_ph_count)
-bgc_count <- rbind(bgc_count, bgc_doxy_count)
-bgc_count <- rbind(bgc_count, bgc_nitrate_count)
-bgc_count <- rbind(bgc_count, bgc_chla_count)
+bgc_count <- rbind(bgc_temp_count, bgc_ph_count, bgc_doxy_count, bgc_nitrate_count, bgc_chla_count)
+
+# Aggregate profile range
+bgc_count_agg <- bgc_count %>%
+  group_by(prof_order, prof_type, year, lat, lon) %>%
+  summarise(count_profiles = sum(count_profiles)) %>%
+  mutate(profile_range = 1) %>%
+  ungroup()
+
+bgc_count_agg <- rbind(
+  bgc_count_agg,
+  bgc_count %>%
+    filter (profile_range %in% c(2, 3)) %>%
+    group_by(prof_order, prof_type, year, lat, lon) %>%
+    summarise(count_profiles = sum(count_profiles)) %>%
+    mutate(profile_range = 2) %>%
+    ungroup()
+)
+
+bgc_count_agg <- rbind(
+  bgc_count_agg,
+  bgc_count %>%
+    filter (profile_range == 3)
+)
 
 ```
 
@@ -307,8 +367,8 @@ bgc_count <- rbind(bgc_count, bgc_chla_count)
 ```{r bgc_profile_maps_year, fig.asp=1.2}
 
 # map the location of profiles for each profile in each year 
-bgc_count %>%
-  group_split(prof_order) %>%
+bgc_count_agg %>%
+  group_split(prof_order, profile_range) %>%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -320,7 +380,11 @@ bgc_count %>%
       x = 'lon',
       y = 'lat',
       fill = 'number of\nprofiles',
-      title = paste0('BGC ', unique(.x$prof_type), ' by year and location')
+      title = paste0('BGC ',
+                     unique(.x$prof_type),
+                     ' by year and location ',
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ' profiles')
     ) +
     theme(
       legend.position = "bottom",
@@ -337,14 +401,14 @@ bgc_count %>%
 ```{r bgc_profile_maps, fig.asp=1.2}
 
 # sum across years
-bgc_count <- bgc_count %>%
-  group_by(prof_order, prof_type, lat, lon) %>%
+bgc_count_agg <- bgc_count_agg %>%
+  group_by(prof_order, prof_type, profile_range, lat, lon) %>%
   summarise(count_profiles = sum(count_profiles)) %>%
   ungroup()
 
 # map the location of profiles for each profile in each year 
-bgc_count %>%
-  group_split(prof_order) %>%
+bgc_count_agg %>%
+  group_split(prof_order, profile_range) %>%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -356,7 +420,11 @@ bgc_count %>%
       x = 'lon',
       y = 'lat',
       fill = 'number of\nprofiles',
-      title = paste0('BGC ', unique(.x$prof_type), ' by year and location')
+      title = paste0('BGC ',
+                     unique(.x$prof_type),
+                     ' by location ',
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ' profiles')
     ) +
     theme(
       legend.position = "bottom",

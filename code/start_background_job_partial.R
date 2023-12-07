@@ -39,11 +39,10 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-     'coverage_timeseries.Rmd',
-     'coverage_maps.Rmd'
+    'coverage_maps.Rmd'
   )
 ),
-message = "Revised coverage analysis.")
+message = "Coverage maps by profile range.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",
