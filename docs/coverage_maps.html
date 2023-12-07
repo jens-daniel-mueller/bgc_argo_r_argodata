@@ -677,15 +677,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree89075e853b1636aa376477f61e510a497b4ff1c9targetblank89075e8a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/89075e853b1636aa376477f61e510a497b4ff1c9" target="_blank">89075e8</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree6ec79f92572a5b0aedf4a4e9427666a15feb18f4targetblank6ec79f9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree89075e853b1636aa376477f61e510a497b4ff1c9targetblank89075e8a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -695,7 +695,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/6ec79f92572a5b0aedf4a4e9427666a15feb18f4" target="_blank">6ec79f9</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/89075e853b1636aa376477f61e510a497b4ff1c9" target="_blank">89075e8</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -713,9 +713,6 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
-
-Untracked files:
-    Untracked:  code/coverage_maps.Rmd
 
 Unstaged changes:
     Modified:   code/start_background_job_partial.R
@@ -764,6 +761,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/89075e853b1636aa376477f61e510a497b4ff1c9/analysis/coverage_maps.Rmd" target="_blank">89075e8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Changes to coverage maps
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/coverage_maps.html" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1775,24 +1806,60 @@ map &lt;-
 <h1>Core - temperature</h1>
 <pre class="r"><code># Number of measurements
 core_count &lt;- core_temp %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 core_count &lt;- core_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
+# core_count %&gt;%
+#   group_by (year, lat, lon) %&gt;%
+#   summarise(n = n()) %&gt;%
+#   filter (n == 1)
+# 
+# core_count &lt;- rbind(
+#   core_count %&gt;%
+#   filter (year == 2013, lat == -59.5, lon == 141.5),
+#   core_count %&gt;%
+#   filter (year == 2013, lat == -63.5, lon == 149.5),
+#   core_count %&gt;%
+#   filter (year == 2013, lat == -68.5, lon == 233.5))
+
+# Aggregate profile range
+core_count_agg &lt;- core_count %&gt;%
+  group_by(year, lat, lon) %&gt;%
+  summarise(count_profiles = sum(count_profiles)) %&gt;%
+  mutate(profile_range = 1) %&gt;%
+  ungroup()
+
+core_count_agg &lt;- rbind(
+  core_count_agg,
+  core_count %&gt;%
+    filter (profile_range %in% c(2, 3)) %&gt;%
+    group_by(year, lat, lon) %&gt;%
+    summarise(count_profiles = sum(count_profiles)) %&gt;%
+    mutate(profile_range = 2) %&gt;%
+    ungroup()
+)
+
+core_count_agg &lt;- rbind(
+  core_count_agg,
+  core_count %&gt;%
+    filter (profile_range == 3)
+)
+
 # measurement type
-core_count &lt;- core_count %&gt;%
+core_count_agg &lt;- core_count_agg %&gt;%
   mutate (prof_type = &#39;temperature&#39;)</code></pre>
 <div id="spatial-by-year" class="section level2">
 <h2>spatial by year</h2>
 <pre class="r"><code># map the location of profiles for each profile in each year 
-core_count %&gt;%
-  group_split(prof_type) %&gt;%
+core_count_agg %&gt;%
+  group_split(profile_range) %&gt;%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -1804,7 +1871,9 @@ core_count %&gt;%
       x = &#39;lon&#39;,
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
-      title = &#39;Core temperature by year and location&#39;
+      title = paste0(&#39;Core temperature by year and location &#39;,
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     &#39; profiles&#39;)
     ) +
     theme(
       legend.position = &quot;bottom&quot;,
@@ -1837,6 +1906,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/core_profile_maps_year-1.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/core_profile_maps_year-1.png" target="_blank">770b125</a>
@@ -1885,18 +1965,105 @@ pasqualina-vonlanthendinenna
 </table>
 </div>
 </div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/core_profile_maps_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_profile_maps_year-2">
+Past versions of core_profile_maps_year-2.png
+</button>
+</p>
+<div id="fig-core_profile_maps_year-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/770b125e608b1a00ab62db725d4c0fe64d56d331/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">770b125</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-11
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/13ae27f27d2c20e3a8306f5f04930da3401c9dec/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">13ae27f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-09
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/6377b31822d41048c5ca0180bf6d0f19ee7dc33c/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">6377b31</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-10-02
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/7b3d8c513f8186b81813c5d82edbea3f8f2beffd/docs/figure/coverage_maps.Rmd/core_profile_maps_year-2.png" target="_blank">7b3d8c5</a>
+</td>
+<td>
+pasqualina-vonlanthendinenna
+</td>
+<td>
+2022-08-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/core_profile_maps_year-3.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="spatial-all-years" class="section level2">
 <h2>spatial all years</h2>
 <pre class="r"><code># sum across years
-core_count &lt;- core_count %&gt;%
-  group_by(prof_type, lat, lon) %&gt;%
+core_count_agg &lt;- core_count_agg %&gt;%
+  group_by(profile_range, lat, lon) %&gt;%
   summarise(count_profiles = sum(count_profiles)) %&gt;%
   ungroup()
 
 # map the location of profiles for each profile in each year 
-core_count %&gt;%
-  group_split(prof_type) %&gt;%
+core_count_agg %&gt;%
+  group_split(profile_range) %&gt;%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -1908,7 +2075,9 @@ core_count %&gt;%
       x = &#39;lon&#39;,
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
-      title = &#39;Core temperature by location&#39;
+      title = paste0(&#39;Core temperature by location &#39;,
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     &#39; profiles&#39;)
     ) +
     theme(
       legend.position = &quot;bottom&quot;,
@@ -1918,6 +2087,49 @@ core_count %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/core_profile_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-core_profile_maps-1">
+Past versions of core_profile_maps-1.png
+</button>
+</p>
+<div id="fig-core_profile_maps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/core_profile_maps-1.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[2]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/core_profile_maps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[3]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/core_profile_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="bgc" class="section level1">
@@ -1928,13 +2140,13 @@ core_count %&gt;%
 
 # Number of measurements
 bgc_temp_count &lt;- bgc_temp %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 bgc_temp_count &lt;- bgc_temp_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
@@ -1949,13 +2161,13 @@ bgc_temp_count &lt;- bgc_temp_count %&gt;%
 
 # Number of measurements
 bgc_ph_count &lt;- bgc_ph %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 bgc_ph_count &lt;- bgc_ph_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
@@ -1970,13 +2182,13 @@ bgc_ph_count &lt;- bgc_ph_count %&gt;%
 
 # Number of measurements
 bgc_doxy_count &lt;- bgc_doxy %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 bgc_doxy_count &lt;- bgc_doxy_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
@@ -1991,13 +2203,13 @@ bgc_doxy_count &lt;- bgc_doxy_count %&gt;%
 
 # Number of measurements
 bgc_nitrate_count &lt;- bgc_nitrate %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 bgc_nitrate_count &lt;- bgc_nitrate_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
@@ -2012,13 +2224,13 @@ bgc_nitrate_count &lt;- bgc_nitrate_count %&gt;%
 
 # Number of measurements
 bgc_chla_count &lt;- bgc_chla %&gt;%
-  group_by(year, file_id, lat, lon) %&gt;%
+  group_by(year, file_id, lat, lon, profile_range) %&gt;%
   summarise(count_measures = n()) %&gt;%
   ungroup()
 
 # Number of profiles
 bgc_chla_count &lt;- bgc_chla_count %&gt;%
-  group_by(year, lat, lon) %&gt;%
+  group_by(year, lat, lon, profile_range) %&gt;%
   summarise(count_profiles = n()) %&gt;%
   ungroup()
 
@@ -2028,15 +2240,35 @@ bgc_chla_count &lt;- bgc_chla_count %&gt;%
           prof_type = &#39;chlorophyll a&#39;)
 
 # combine
-bgc_count &lt;- rbind(bgc_temp_count, bgc_ph_count)
-bgc_count &lt;- rbind(bgc_count, bgc_doxy_count)
-bgc_count &lt;- rbind(bgc_count, bgc_nitrate_count)
-bgc_count &lt;- rbind(bgc_count, bgc_chla_count)</code></pre>
+bgc_count &lt;- rbind(bgc_temp_count, bgc_ph_count, bgc_doxy_count, bgc_nitrate_count, bgc_chla_count)
+
+# Aggregate profile range
+bgc_count_agg &lt;- bgc_count %&gt;%
+  group_by(prof_order, prof_type, year, lat, lon) %&gt;%
+  summarise(count_profiles = sum(count_profiles)) %&gt;%
+  mutate(profile_range = 1) %&gt;%
+  ungroup()
+
+bgc_count_agg &lt;- rbind(
+  bgc_count_agg,
+  bgc_count %&gt;%
+    filter (profile_range %in% c(2, 3)) %&gt;%
+    group_by(prof_order, prof_type, year, lat, lon) %&gt;%
+    summarise(count_profiles = sum(count_profiles)) %&gt;%
+    mutate(profile_range = 2) %&gt;%
+    ungroup()
+)
+
+bgc_count_agg &lt;- rbind(
+  bgc_count_agg,
+  bgc_count %&gt;%
+    filter (profile_range == 3)
+)</code></pre>
 <div id="spatial-by-year-1" class="section level2">
 <h2>spatial by year</h2>
 <pre class="r"><code># map the location of profiles for each profile in each year 
-bgc_count %&gt;%
-  group_split(prof_order) %&gt;%
+bgc_count_agg %&gt;%
+  group_split(prof_order, profile_range) %&gt;%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -2048,7 +2280,11 @@ bgc_count %&gt;%
       x = &#39;lon&#39;,
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
-      title = paste0(&#39;BGC &#39;, unique(.x$prof_type), &#39; by year and location&#39;)
+      title = paste0(&#39;BGC &#39;,
+                     unique(.x$prof_type),
+                     &#39; by year and location &#39;,
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     &#39; profiles&#39;)
     ) +
     theme(
       legend.position = &quot;bottom&quot;,
@@ -2059,30 +2295,245 @@ bgc_count %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-1">
+Past versions of bgc_profile_maps_year-1.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps_year-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-1.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-2">
+Past versions of bgc_profile_maps_year-2.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps_year-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-2.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-3">
+Past versions of bgc_profile_maps_year-3.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps_year-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-3.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-4">
+Past versions of bgc_profile_maps_year-4.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps_year-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-4.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-5">
+Past versions of bgc_profile_maps_year-5.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps_year-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-5.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-15.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="spatial-all-years-1" class="section level2">
 <h2>spatial all years</h2>
 <pre class="r"><code># sum across years
-bgc_count &lt;- bgc_count %&gt;%
-  group_by(prof_order, prof_type, lat, lon) %&gt;%
+bgc_count_agg &lt;- bgc_count_agg %&gt;%
+  group_by(prof_order, prof_type, profile_range, lat, lon) %&gt;%
   summarise(count_profiles = sum(count_profiles)) %&gt;%
   ungroup()
 
 # map the location of profiles for each profile in each year 
-bgc_count %&gt;%
-  group_split(prof_order) %&gt;%
+bgc_count_agg %&gt;%
+  group_split(prof_order, profile_range) %&gt;%
   map(
     ~ map +
     geom_tile(data = .x, aes(
@@ -2094,7 +2545,11 @@ bgc_count %&gt;%
       x = &#39;lon&#39;,
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
-      title = paste0(&#39;BGC &#39;, unique(.x$prof_type), &#39; by year and location&#39;)
+      title = paste0(&#39;BGC &#39;,
+                     unique(.x$prof_type),
+                     &#39; by location &#39;,
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     &#39; profiles&#39;)
     ) +
     theme(
       legend.position = &quot;bottom&quot;,
@@ -2104,18 +2559,233 @@ bgc_count %&gt;%
   )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-1">
+Past versions of bgc_profile_maps-1.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps-1.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-2">
+Past versions of bgc_profile_maps-2.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps-2.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-3">
+Past versions of bgc_profile_maps-3.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps-3.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-4">
+Past versions of bgc_profile_maps-4.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps-4.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-5">
+Past versions of bgc_profile_maps-5.png
+</button>
+</p>
+<div id="fig-bgc_profile_maps-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/9d9224a150b5f80daddf14b22b6487abb3f92898/docs/figure/coverage_maps.Rmd/bgc_profile_maps-5.png" target="_blank">9d9224a</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre><code>
+[[6]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[7]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[8]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[9]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[10]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[11]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[12]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[13]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[14]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>
+[[15]]</code></pre>
+<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-15.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
