@@ -39,10 +39,11 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'extreme_temp.Rmd'
+     'coverage_timeseries.Rmd',
+     'coverage_maps.Rmd'
   )
 ),
-message = "Cluster under surface extreme.")
+message = "Revised coverage analysis.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",
