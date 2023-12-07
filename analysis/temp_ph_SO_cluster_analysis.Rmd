@@ -858,11 +858,9 @@ if (opt_analysis_type == 2) {
                     fill = n
                   )) +
         lims(y = c(-85,-30)) +
-        scale_fill_viridis_c(
-          option = "cividis",
-          direction = -1,
-          trans = "log10"
-        ) +
+        scale_fill_gradient(low = "blue",
+                            high = "red",
+                            trans = "log10") +
         facet_wrap(~ cluster, ncol = 2) +
         labs(
           title = paste0(
@@ -897,11 +895,9 @@ if (opt_norm_anomaly) {
                     fill = n
                   )) +
         lims(y = c(-85,-30)) +
-        scale_fill_viridis_c(
-          option = "cividis",
-          direction = -1,
-          trans = "log10"
-        ) +
+        scale_fill_gradient(low = "blue",
+                            high = "red",
+                            trans = "log10") +
         facet_wrap(~ cluster, ncol = 2) +
         labs(
           title = paste0(
@@ -1093,13 +1089,9 @@ for (iprofile_type in 1:2) {
     # Preparation
     # ---------------------------------------------------------------------------------------------
     # select profile based on profile_range and he appropriate max depth
-    # temp_anomaly_va_id <- temp_anomaly_va %>% 
-    #   filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range] & temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
+    temp_anomaly_va_id <- temp_anomaly_va %>%
+      filter(profile_range == opt_profile_range & depth <= opt_max_depth[opt_profile_range] & temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
 
-    # select profile based on extreme type and profile_type (base / adjusted)
-    temp_anomaly_va_id <- temp_anomaly_va %>% 
-      filter(temp_extreme == extreme_type[i] & profile_type == sel_profile_type)
-        
     # Simplified table ready to pivot
     temp_anomaly_va_id <- temp_anomaly_va_id %>%
       select(file_id,
@@ -1112,7 +1104,6 @@ for (iprofile_type in 1:2) {
     
     # wide table with each depth becoming a column
     temp_anomaly_va_wide <- temp_anomaly_va_id %>%
-      filter (depth <= 600) %>%
       select(file_id, depth, anomaly) %>%
       pivot_wider(names_from = depth, values_from = anomaly)
     
@@ -1751,12 +1742,10 @@ cluster_by_location %>%
                   fill = n
                 )) +
       lims(y = c(-85,-30)) +
-      scale_fill_viridis_c(
-        option = "cividis",
-        direction = -1,
-        trans = "log10"
-      ) +
-      facet_wrap(~ cluster, ncol = 2) +
+      scale_fill_gradient(low = "blue",
+                          high = "red",
+                          trans = "log10") +
+    facet_wrap(~ cluster, ncol = 2) +
       labs(
         title = paste0(
           'cluster spatial distribution \n',
@@ -1788,11 +1777,9 @@ if (opt_norm_anomaly) {
                     fill = n
                   )) +
         lims(y = c(-85,-30)) +
-        scale_fill_viridis_c(
-          option = "cividis",
-          direction = -1,
-          trans = "log10"
-        ) +
+        scale_fill_gradient(low = "blue",
+                            high = "red",
+                            trans = "log10") +
         facet_wrap(~ cluster, ncol = 2) +
         labs(
           title = paste0(
