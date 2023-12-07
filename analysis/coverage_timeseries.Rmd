@@ -22,24 +22,17 @@ Count the number of bgc-argo profiles, and plot their evolution over time.
 library(tidyverse)
 library(argodata)
 library(lubridate)
+
 ```
 
 ```{r set_updata_root_directory, include=FALSE}
 
-# path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
-# path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
-# 
-# path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
-# 
-# path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
-# path_argo_core_preprocessed <- paste0(path_argo_core, 
-#                                       "/preprocessed_core_data")
-# 
 path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 
 path_argo_core <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
+
 ```
 
 # Load data
@@ -85,16 +78,19 @@ theme_set(theme_bw())
 
 ```{r core_by_profile_range}
 
+# Number of measurements
 core_temp_count <- core_temp %>%
   group_by(year, month, file_id, profile_range) %>%
   summarise(count_measures = n()) %>%
   ungroup()
 
+# Number of profiles
 core_temp_count <- core_temp_count %>%
   group_by(year, month, profile_range) %>%
   summarise(count_profiles = n()) %>%
   ungroup()
 
+# Aggregate profile range
 core_temp_count_agg <- core_temp_count %>%
   group_by(year, month) %>%
   summarise(count_profiles = sum(count_profiles)) %>%
@@ -519,7 +515,7 @@ rm (bgc_nitrate_temp, bgc_nitrate_temp_count, bgc_nitrate_temp_count_agg)
 
 ```
 
-# BGC - chla
+# BGC - chlorophyll a
 
 ```{r bgc_chla_by_profile_range}
 
@@ -555,7 +551,7 @@ bgc_chla_count_agg <- rbind(
     filter (profile_range ==3)
 )
 
-# count of chla profiles by year, month and profile range
+# count of chlorophyll a profiles by year, month and profile range
 bgc_chla_count_agg %>% 
   ggplot(aes(x = month, y = count_profiles, col = as.character(profile_range))) +
   geom_line() +
@@ -629,7 +625,7 @@ rm (bgc_chla_temp, bgc_chla_temp_count, bgc_chla_temp_count_agg)
 
 ```
 
-## BGC - temp, pH, doxy, nitrate AND chl a
+# BGC - temp, pH, doxy, nitrate AND chl a
 
 ```{r bgc_all_by_profile_range}
 

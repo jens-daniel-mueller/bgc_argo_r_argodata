@@ -1,6 +1,6 @@
 ---
 title: "Spatial data coverage"
-author: "Pasqualina Vonlanthen & Jens Daniel Müller"
+author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
 editor_options:
@@ -22,24 +22,12 @@ Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo fl
 library(tidyverse)
 library(argodata)
 library(lubridate)
-#library(sf)
-# library(rnaturalearth)
-#library(rnaturalearthdata)
-# # load in coastline data (uses sf and rnaturalearthdata packages)
-# world = ne_coastline(scale = 'medium', returnclass = 'sf')
 
 ```
 
 ```{r set_updata_root_directory, include=FALSE}
 
-path_argo <- '/nfs/kryo/work/updata/bgc_argo_r_argodata'
-path_argo_core <- '/nfs/kryo/work/updata/core_argo_r_argodata'
-
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
-
-path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
-path_argo_core_preprocessed <- paste0(path_argo_core, 
-                                      "/preprocessed_core_data")
 
 path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
@@ -51,17 +39,39 @@ path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 
 # Load data
 
-Read the metadata file created in loading_data.html:
+## BGC-Argo data
 
-```{r load_preprpocessed_data}
+Read the files created in loading_data.html:
 
-bgc_metadata <-
-  read_rds(file = paste0(path_argo_preprocessed, "/bgc_metadata.rds"))
+```{r load_bgc_data}
 
-core_metadata <- 
-  read_rds(file = paste0(path_argo_core_preprocessed, "/core_metadata.rds"))
+bgc_temp <- read_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_va.rds")) %>%
+  filter(!is.na(year))
+
+bgc_ph <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds")) %>%
+  filter(!is.na(year))
+
+bgc_doxy <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds")) %>%
+  filter(!is.na(year))
+
+bgc_nitrate <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_va.rds")) %>%
+  filter(!is.na(year))
+
+bgc_chla <- read_rds(file = paste0(path_argo_preprocessed, "/chla_bgc_va.rds")) %>%
+  filter(!is.na(year))
 
 ```
+
+## Core-Argo data
+
+```{r load_core_temp_data}
+
+core_temp <- read_rds(file = paste0(path_argo_core_preprocessed, "/temp_core_va.rds")) %>%
+  filter(!is.na(year))
+
+```
+
+## map data
 
 ```{r load_map_and_basin_mask}
 
@@ -83,584 +93,277 @@ map <-
 ```
 
 ```{r set_ggplot_theme_global, include = FALSE}
+
 theme_set(theme_bw())
-```
-
-# Spatial BGC-data coverage
-
-### Count profiles (BGC-Argo)
-
-```{r number_profiles_revised}
-
-bgc_metadata <- inner_join(
-  bgc_metadata,
-  basinmask
-)
-
-##################################################################
-
-bgc_profile_counts_year <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(!is.na(profile_flag),
-         profile_flag != "") %>% 
-  count(lat, lon, year, parameter) # count the number of profiles per year in each lon/lat grid for each parameter 
-
-
-###################################################################
-# count the number of profiles which have flags A, B, C, D, or E (count the number of profiles which have usable data)
-
-bgc_profile_counts_usable <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(!is.na(profile_flag),
-         profile_flag != "",
-         profile_flag != 'F') %>% 
-  count(lat, lon, parameter, profile_flag)  # count the number of profiles for flags A, B, C, D, and E (usable data) for each lon/lat grid 
-
-
-##################################################################
-# count the number of profiles which have QC flag A (100% of levels contain good data)
-
-bgc_profile_counts_A <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(profile_flag == 'A') %>% 
-  count(lat, lon, parameter)
-
-
-#####################################################################
-# count the number of profiles which have a QC flag of F (0% of levels contain good data)
-
-bgc_profile_counts_F <- bgc_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_doxy_qc, profile_ph_in_situ_total_qc, profile_nitrate_qc) %>% 
-  pivot_longer(profile_doxy_qc:profile_nitrate_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(profile_flag == 'F') %>% 
-  count(lat, lon, parameter)
-```
-
-### By Year
-
-Map of profile locations for each parameter, per year
-
-```{r profiles_maps_year, eval = FALSE}
-
-map +
-  geom_tile(data = bgc_profile_counts_year,
-              aes(lon, lat, fill = n)) +
-  scale_fill_gradient(low = "blue", high = "red",
-                      trans = "log10") +
-  facet_grid(year ~ parameter)
-
-
-# bgc_profile_counts_year %>%
-#   ggplot() +
-#   geom_sf(data = ne_countries(returnclass = "sf"),
-#           fill = "gray90",
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = "sf")) +
-#   geom_tile(aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low="blue", high="red",
-#                       trans = "log10") +
-#   theme_bw() +
-#   facet_grid(year ~ parameter)
 
 ```
 
-```{r profile_maps_year_separate, fig.asp=1.2}
+# Core - temperature
 
-# map the location of profiles for each parameter in each year 
-bgc_profile_counts_year %>%
-  group_split(parameter) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste('Parameter:', unique(.x$parameter))
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
-  )
+```{r core_profile_counts}
 
-ggsave("output/figures/maps_per_year.png",
-       width = 7,
-       height = 4)
+# Number of measurements
+core_count <- core_temp %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
 
-# bgc_profile_counts_year %>%
-#   group_split(parameter) %>% 
-#   map( 
-#   ~ ggplot() +
-#   geom_sf(data = ne_countries(returnclass = "sf"),
-#           fill = "gray90",
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = "sf")) +
-#   geom_tile(data = .x, aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low="blue", high="red",
-#                       trans = "log10") +
-#   theme_bw() +
-#   labs(x = 'lon', y = 'lat', fill = 'number of profiles', 
-#        title = paste('Parameter:', unique(.x$parameter)))+
-#   facet_grid(. ~ year)
-#   )
+# Number of profiles
+core_count <- core_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+core_count <- core_count %>%
+  mutate (prof_type = 'temperature')
 
 ```
 
-### By QC Flag
-
-Map the profile locations for each profile QC flag of each parameter
-
-```{r profiles_maps_flag, fig.asp=1.2, eval = FALSE}
-
-# bgc_profile_counts_flag %>%
-#   ggplot() +
-#   geom_sf(data = ne_countries(returnclass = "sf"),
-#           fill = "gray90",
-#           color = NA) +
-#   geom_sf(data = ne_coastline(returnclass = "sf")) +
-#   geom_tile(aes(x = lon, y = lat, fill = n)) +
-#   scale_fill_gradient(low="blue", high="red",
-#                       trans = "log10") +
-#   theme_bw() +
-#   facet_grid(profile_flag ~ parameter)
-
-```
-
-#### Flags A, B, C, D, and E
-
-```{r usable_data_profiles}
-
-# map the location of profiles which contain usable data (profile QC flags A, B, C, D, and E)
-# create a separate plot for each parameter  
-
-bgc_profile_counts_usable %>%
-  group_split(parameter) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste(unique(.x$parameter), 'Profile Flags A, B, C, D, E')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-  
-ggsave("output/figures/maps_usable_data.png",
-       width = 7,
-       height = 4)
-
-```
-
-#### Flag A
-
-```{r map_A_flag_profiles}
-
-# map the location of profiles with QC flag A for each parameter 
-# only the highest-quality data, with 100% of levels with good data 
-
-bgc_profile_counts_A %>%
-  group_split(parameter) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste(unique(.x$parameter), 'Profile Flag A')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-
-ggsave("output/figures/maps_A_flag.png",
-       width = 7,
-       height = 4)
-
-
-```
-
-#### Flag F
-
-```{r map_F_flag_profiles}
-
-# map the location of profiles with QC flag F (not usable data)
-bgc_profile_counts_F %>%
-  group_split(parameter) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste(unique(.x$parameter), 'Profile Flag F')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-
-ggsave("output/figures/maps_flag_F.png",
-       width = 7,
-       height = 4)
-
-
-```
-
-```{r profiles_maps_flag_separate, eval = FALSE}
-
-# create a separate plot for each QC flag (instead of multiple panels in one plot) 
-
-# bgc_profile_counts_flag %>%
-#   group_split(profile_flag) %>%
-#   map(
-#     ~ map +
-#       geom_tile(data = .x, aes(
-#         x = lon, y = lat, fill = n
-#       )) +
-#       scale_fill_gradient(low = "blue", high = "red",
-#                           trans = "log10") +
-#       labs(
-#         x = 'lon',
-#         y = 'lat',
-#         fill = 'number of\nprofiles',
-#         title = paste('Profile QC flag', unique(.x$profile_flag))
-#       ) +
-#       theme(
-#         legend.position = "bottom",
-#         axis.text = element_blank(),
-#         axis.ticks = element_blank()
-#       ) +
-#       facet_grid(parameter ~ .)
-#   )
-
-ggsave("output/figures/maps_per_flag.png",
-       width = 7,
-       height = 4)
-
-```
-
-```{r ph_profile_flag_A_location, fig.asp=2, eval = FALSE}
-
-ph_profile_counts_year <- bgc_metadata %>%      # count the number of A-flag pH profiles 
-  select(platform_number, cycle_number, date, lon, lat,
-        profile_ph_in_situ_total_qc) %>% 
-  pivot_longer(profile_ph_in_situ_total_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(profile_flag == "A") %>% 
-  count(lat, lon, year, parameter)
-
-# map the location of pH profiles with QC flag A each year
-ph_profile_counts_year %>%
-  group_split(parameter) %>%
-  map(
-    ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\nprofiles',
-        title = paste('Parameter:', unique(.x$parameter), 'flag A')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
-  )
-
-ggsave("output/figures/map_pH_flag_A_per_year.png",
-       width = 7,
-       height = 4)
-
-```
-
-## Remove BGC data
-
-```{r remove_bgc_data}
-
-rm(list = ls(pattern = 'bgc_'))
-
-```
-
-# Spatial Core-data coverage
-
-## Count profiles (Core-Argo)
-
-```{r number_core_profiles}
-
-core_metadata <- inner_join(core_metadata, basinmask)
-
-#################################################
-# count the number of core profiles in each lat/lon grid for each year and each parameter (temp and sal)
-
-core_profile_counts_year <- core_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %>% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = 'parameter',
-               values_to = 'profile_flag',
-               names_prefix = 'profile_') %>% 
-  mutate(year = year(date)) %>% 
-  filter(!is.na(profile_flag),
-         profile_flag != "") %>% 
-  count(lat, lon, year, parameter)
-
-
-#############################################################
-# count the number of profiles with usable data (flags A-E) for each lat/lon grid, per parameter 
-
-core_profile_counts_usable <- core_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %>% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = 'parameter',
-               values_to = 'profile_flag',
-               names_prefix = 'profile_') %>% 
-  mutate(year = year(date)) %>% 
-  filter(!is.na(profile_flag),
-         profile_flag != "",
-         profile_flag != 'F') %>% 
-  count(lat, lon, parameter, profile_flag)
-
-
-##############################################################
-# count the number of core-profiles with QC flag A for each lat/lon grid, per parameter 
-
-core_profile_counts_A <- core_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %>% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = 'parameter',
-               values_to = 'profile_flag',
-               names_prefix = 'profile_') %>% 
-  mutate(year = year(date)) %>% 
-  filter(profile_flag == 'A') %>% 
-  count(lat, lon, parameter)
-
-
-##############################################################
-# count the number of core-profiles with QC flag A for each lat/lon grid, per parameter 
-
-core_profile_counts_F <- core_metadata %>% 
-  select(platform_number, cycle_number, date, lon, lat,
-         profile_temp_qc, profile_psal_qc) %>% 
-  pivot_longer(profile_temp_qc:profile_psal_qc,
-               names_to = "parameter",
-               values_to = "profile_flag",
-               names_prefix = "profile_") %>% 
-  mutate(year = year(date)) %>% 
-  filter(profile_flag == 'F') %>% 
-  count(lat, lon, parameter)
-```
-
-## By Year
+## spatial by year
 
 ```{r core_profile_maps_year, fig.asp=1.2}
 
-# map the location of profiles for each parameter in each year 
-core_profile_counts_year %>%
-  group_split(parameter) %>%
+# map the location of profiles for each profile in each year 
+core_count %>%
+  group_split(prof_type) %>%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\n core profiles',
-        title = paste('Parameter:', unique(.x$parameter))
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~year, ncol = 3)
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = "blue", high = "red",
+                        trans = "log10") +
+    labs(
+      x = 'lon',
+      y = 'lat',
+      fill = 'number of\nprofiles',
+      title = 'Core temperature by year and location'
+    ) +
+    theme(
+      legend.position = "bottom",
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    ) +
+    facet_wrap(~year, ncol = 3)
   )
 
-ggsave("output/figures/core_maps_per_year.png",
-       width = 7,
-       height = 4)
-
 ```
 
-## By QC Flag
+## spatial all years
 
-### Flags A-E
+```{r core_profile_maps, fig.asp=1.2}
 
-```{r usable_data_core_profiles, fig.asp=1.2}
+# sum across years
+core_count <- core_count %>%
+  group_by(prof_type, lat, lon) %>%
+  summarise(count_profiles = sum(count_profiles)) %>%
+  ungroup()
 
-# map the location of profiles which contain usable data (profile QC flags A, B, C, D, and E)
-# create a separate plot for each parameter  
-
-core_profile_counts_usable %>%
-  group_split(parameter) %>%
+# map the location of profiles for each profile in each year 
+core_count %>%
+  group_split(prof_type) %>%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\ncore profiles',
-        title = paste(unique(.x$parameter), 'Profile Flags A, B, C, D, E')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-  
-ggsave("output/figures/maps_usable_core_data.png",
-       width = 7,
-       height = 4)
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = "blue", high = "red",
+                        trans = "log10") +
+    labs(
+      x = 'lon',
+      y = 'lat',
+      fill = 'number of\nprofiles',
+      title = 'Core temperature by location'
+    ) +
+    theme(
+      legend.position = "bottom",
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    )
+  )
 
 ```
 
-### Flag A
+# BGC
 
-```{r flag_A_core_data_map, fig.asp=1.2}
+```{r bgc_profile_counts}
 
-# map the location of profiles with QC flag A for each parameter 
-# only the highest-quality data, with 100% of levels with good data 
+# ----------------------------------------------------------------------------------------------
+# temperature 
+# ----------------------------------------------------------------------------------------------
 
-core_profile_counts_A %>%
-  group_split(parameter) %>%
+# Number of measurements
+bgc_temp_count <- bgc_temp %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
+
+# Number of profiles
+bgc_temp_count <- bgc_temp_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+bgc_temp_count <- bgc_temp_count %>%
+  mutate (prof_order = 1,
+          prof_type = 'temperature')
+
+# ----------------------------------------------------------------------------------------------
+# ph 
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_ph_count <- bgc_ph %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
+
+# Number of profiles
+bgc_ph_count <- bgc_ph_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+bgc_ph_count <- bgc_ph_count %>%
+  mutate (prof_order = 2,
+          prof_type = 'pH')
+
+# ----------------------------------------------------------------------------------------------
+# doxy
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_doxy_count <- bgc_doxy %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
+
+# Number of profiles
+bgc_doxy_count <- bgc_doxy_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+bgc_doxy_count <- bgc_doxy_count %>%
+  mutate (prof_order = 3,
+          prof_type = 'dissolved oxygen')
+
+# ----------------------------------------------------------------------------------------------
+# nitrate
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_nitrate_count <- bgc_nitrate %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
+
+# Number of profiles
+bgc_nitrate_count <- bgc_nitrate_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+bgc_nitrate_count <- bgc_nitrate_count %>%
+  mutate (prof_order = 4,
+          prof_type = 'nitrate')
+
+# ----------------------------------------------------------------------------------------------
+# chla
+# ----------------------------------------------------------------------------------------------
+
+# Number of measurements
+bgc_chla_count <- bgc_chla %>%
+  group_by(year, file_id, lat, lon) %>%
+  summarise(count_measures = n()) %>%
+  ungroup()
+
+# Number of profiles
+bgc_chla_count <- bgc_chla_count %>%
+  group_by(year, lat, lon) %>%
+  summarise(count_profiles = n()) %>%
+  ungroup()
+
+# measurement type
+bgc_chla_count <- bgc_chla_count %>%
+  mutate (prof_order = 5,
+          prof_type = 'chlorophyll a')
+
+# combine
+bgc_count <- rbind(bgc_temp_count, bgc_ph_count)
+bgc_count <- rbind(bgc_count, bgc_doxy_count)
+bgc_count <- rbind(bgc_count, bgc_nitrate_count)
+bgc_count <- rbind(bgc_count, bgc_chla_count)
+
+```
+
+## spatial by year
+
+```{r bgc_profile_maps_year, fig.asp=1.2}
+
+# map the location of profiles for each profile in each year 
+bgc_count %>%
+  group_split(prof_order) %>%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\ncore profiles',
-        title = paste(unique(.x$parameter), 'Profile Flag A')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-
-ggsave("output/figures/maps_A_flag_core.png",
-       width = 7,
-       height = 4)
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = "blue", high = "red",
+                        trans = "log10") +
+    labs(
+      x = 'lon',
+      y = 'lat',
+      fill = 'number of\nprofiles',
+      title = paste0('BGC ', unique(.x$prof_type), ' by year and location')
+    ) +
+    theme(
+      legend.position = "bottom",
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    ) +
+    facet_wrap(~year, ncol = 3)
+  )
 
 ```
 
-### Flag F
+## spatial all years
 
-```{r flag_F_core_data_map, fig.asp=1.2}
+```{r bgc_profile_maps, fig.asp=1.2}
 
-core_profile_counts_F %>%
-  group_split(parameter) %>%
+# sum across years
+bgc_count <- bgc_count %>%
+  group_by(prof_order, prof_type, lat, lon) %>%
+  summarise(count_profiles = sum(count_profiles)) %>%
+  ungroup()
+
+# map the location of profiles for each profile in each year 
+bgc_count %>%
+  group_split(prof_order) %>%
   map(
     ~ map +
-      geom_tile(data = .x, aes(
-        x = lon, y = lat, fill = n
-      )) +
-      scale_fill_gradient(low = "blue", high = "red",
-                          trans = "log10") +
-      labs(
-        x = 'lon',
-        y = 'lat',
-        fill = 'number of\ncore profiles',
-        title = paste(unique(.x$parameter), 'Profile Flag F')
-      ) +
-      theme(
-        legend.position = "bottom",
-        axis.text = element_blank(),
-        axis.ticks = element_blank()
-      ) +
-      facet_wrap(~ parameter)
-)
-
-ggsave("output/figures/maps_flag_F_core.png",
-       width = 7,
-       height = 4)
-```
-
-```{r remove_core_data}
-
-rm(list = ls(pattern = 'core_'))
+    geom_tile(data = .x, aes(
+      x = lon, y = lat, fill = count_profiles
+    )) +
+    scale_fill_gradient(low = "blue", high = "red",
+                        trans = "log10") +
+    labs(
+      x = 'lon',
+      y = 'lat',
+      fill = 'number of\nprofiles',
+      title = paste0('BGC ', unique(.x$prof_type), ' by year and location')
+    ) +
+    theme(
+      legend.position = "bottom",
+      axis.text = element_blank(),
+      axis.ticks = element_blank()
+    )
+  )
 
 ```
+
