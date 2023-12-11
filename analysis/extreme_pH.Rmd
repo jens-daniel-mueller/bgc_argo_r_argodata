@@ -164,8 +164,8 @@ nm_biomes <- nm_biomes %>%
 
 ```{r filter_southern_ocean_basins}
 
-basinmask <- basinmask %>%
-  filter(lat < -30)
+# basinmask <- basinmask %>%
+#  filter(lat < -30)
 
 ```
 
@@ -175,7 +175,6 @@ map +
             aes(x = lon, 
                 y = lat, 
                 fill = basin_AIP))+
-  lims(y = c(-85, -30))+
   scale_fill_brewer(palette = 'Dark2')
 
 ```
@@ -281,14 +280,14 @@ OceanSODA <- OceanSODA %>%
 # OceanSODA_2x2_SO <- OceanSODA_2x2_SO %>% 
 #   filter(!is.na(ph_total))
 
-# keep only Southern Ocean data
-OceanSODA_SO <- inner_join(OceanSODA, nm_biomes %>% 
-                                       select(-n)) 
+## keep only Southern Ocean data
+# OceanSODA_SO <- inner_join(OceanSODA, nm_biomes %>% 
+#                                       select(-n)) 
 
 # add in basin separations
-OceanSODA_SO <- inner_join(OceanSODA_SO, basinmask)
+OceanSODA <- inner_join(OceanSODA, basinmask)
 
-OceanSODA_SO <- OceanSODA_SO %>% 
+OceanSODA <- OceanSODA %>% 
    filter(!is.na(ph_total))
 
 
@@ -298,7 +297,7 @@ OceanSODA_SO <- OceanSODA_SO %>%
 
 ```{r map_OceanSODA_ph_clim_diff, fig.asp=1.5}
 
-OceanSODA_SO %>% 
+OceanSODA %>% 
   filter(year == 2020) %>% 
   ggplot(aes(lon_raw, lat_raw, fill = clim_ph)) +
   geom_tile() +
@@ -312,7 +311,7 @@ OceanSODA_SO %>%
 ```{r map_OceanSODA_pH_clim, fig.asp=0.4}
 
 # map of climatological OceanSODA pH 
-OceanSODA_SO %>% 
+OceanSODA %>% 
   group_split(month) %>% 
   #head(1) %>% 
   map(
@@ -322,7 +321,6 @@ OceanSODA_SO %>%
                     y = lat_raw,
                     fill = clim_ph))+
       scale_fill_viridis_c()+
-      lims(y = c(-80, -30))+
       labs(title = paste('climatological OceanSODA pH (1995-2020) month:', unique(.x$month)))
   )
 
@@ -333,8 +331,7 @@ OceanSODA_SO %>%
 
 # map of monthly anomaly relative to climatology
 
-OceanSODA_SO %>%
-  filter(year >= 2013) %>%
+OceanSODA %>%
   group_split(month) %>%
   #head(1) %>%
   map(
@@ -346,7 +343,6 @@ OceanSODA_SO %>%
                   fill = clim_diff
                 )) +
       scale_fill_divergent(mid = 'grey80') +
-      lims(y = c(-80, -30)) +
       facet_wrap( ~ year, ncol = 2) +
       labs(
         title = paste(
@@ -369,14 +365,14 @@ OceanSODA_SO %>%
 
 ```{r fit_linear_regression}
 
-OceanSODA_SO <- OceanSODA_SO %>%
+OceanSODA <- OceanSODA %>%
   mutate(decimal_year = decimal_date(date), .after = year)
 
 # fit a linear regression of OceanSODA pH against time (temporal trend)
 # in each lat/lon/month grid
 # in each lat/lon/month grid, month is used depending on opt_extreme_determination
 if (opt_extreme_determination == 1){
-  OceanSODA_regression <- OceanSODA_SO %>%
+  OceanSODA_regression <- OceanSODA %>%
     nest(data = -c(lon, lat)) %>%
     mutate(
       fit = map(
@@ -388,7 +384,7 @@ if (opt_extreme_determination == 1){
       augmented = map(.x = fit, .f = augment)
     )
 } else if (opt_extreme_determination == 2){
-  OceanSODA_regression <- OceanSODA_SO %>%
+  OceanSODA_regression <- OceanSODA %>%
     nest(data = -c(lon, lat, month)) %>%
     mutate(
       fit = map(
@@ -424,7 +420,7 @@ OceanSODA_regression_augmented <- OceanSODA_regression %>%
 OceanSODA_regression_augmented <- bind_cols(
   OceanSODA_regression_augmented,
   OceanSODA_regression_data %>% select(
-    date, basin_AIP, biome_name,  
+    date, basin_AIP,   
     clim_ph, ph_total,
     lon_raw, lat_raw))
 
@@ -476,8 +472,7 @@ if (opt_extreme_determination == 1){
               aes(x = lon,
                   y = lat,
                   fill = slope)) +
-    scale_fill_scico(palette = 'vik', midpoint = 0) +
-    lims(y = c(-85,-30))
+    scale_fill_scico(palette = 'vik', midpoint = 0)
 } else if (opt_extreme_determination == 2){
   map +
     geom_tile(data = OceanSODA_regression_tidied,
@@ -485,7 +480,6 @@ if (opt_extreme_determination == 1){
                   y = lat,
                   fill = slope)) +
     scale_fill_scico(palette = 'vik', midpoint = 0) +
-    lims(y = c(-85,-30)) +
     facet_wrap( ~ month, ncol = 2)
 }
 
@@ -502,7 +496,6 @@ if (opt_extreme_determination == 1){
                   y = lat,
                   fill = sigma)) +
     scale_fill_viridis_c() +
-    lims(y = c(-85, -30)) +
     labs(fill = '1 residual \nst. dev.')
 } else if (opt_extreme_determination == 2){
   map +
@@ -511,7 +504,6 @@ if (opt_extreme_determination == 1){
                   y = lat,
                   fill = sigma)) +
     scale_fill_viridis_c() +
-    lims(y = c(-85, -30)) +
     labs(fill = '1 residual \nst. dev.') +
     facet_wrap(~month, ncol = 2)
 }
@@ -531,14 +523,14 @@ Calculate OceanSODA pH anomalies: L for abnormally low, H for abnormally high, N
 # combine observations and regression statistics
 
 if (opt_extreme_determination == 1){
-  OceanSODA_SO_extreme_grid <-
+  OceanSODA_extreme_grid <-
     full_join(
       OceanSODA_regression_augmented,
       OceanSODA_regression_glanced %>%
         select(lat:lon, sigma)
     )
 } else if (opt_extreme_determination == 2){
-  OceanSODA_SO_extreme_grid <-
+  OceanSODA_extreme_grid <-
     full_join(
       OceanSODA_regression_augmented,
       OceanSODA_regression_glanced %>%
@@ -548,7 +540,7 @@ if (opt_extreme_determination == 1){
 
 # identify observations in anomaly classes
 
-OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
+OceanSODA_extreme_grid <- OceanSODA_extreme_grid %>%
   mutate(
     ph_extreme = case_when(
       .resid < -sigma*2 ~ 'L',
@@ -557,17 +549,17 @@ OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
     )
   ) 
 
-OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
+OceanSODA_extreme_grid <- OceanSODA_extreme_grid %>%
   mutate(ph_extreme = fct_relevel(ph_extreme, "H", "N", "L"))
 
 
 # combine with regression coefficients
 
-OceanSODA_SO_extreme_grid <-
-  full_join(OceanSODA_SO_extreme_grid,
+OceanSODA_extreme_grid <-
+  full_join(OceanSODA_extreme_grid,
             OceanSODA_regression_tidied)
 
-OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
+OceanSODA_extreme_grid <- OceanSODA_extreme_grid %>%
   mutate(year = year(date),
          month = month(date),
          .after = decimal_year)
@@ -578,12 +570,22 @@ OceanSODA_SO_extreme_grid <- OceanSODA_SO_extreme_grid %>%
 
 ```{r write_OceanSODA_pH_anomalies_to_file}
 
+# Restrict to SO by inner join to nm_biomes
+OceanSODA_SO_extreme_grid <- inner_join(OceanSODA_extreme_grid, nm_biomes %>% 
+                                        select(-n)) 
+
+
+
 if (opt_extreme_determination == 1){
   OceanSODA_SO_extreme_grid %>%
     write_rds(file = paste0(path = path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_01.rds"))
+  OceanSODA_extreme_grid %>%
+    write_rds(file = paste0(path = path_argo_preprocessed, "/OceanSODA_global_pH_anomaly_field_01.rds"))
 } else if (opt_extreme_determination == 2){
   OceanSODA_SO_extreme_grid %>%
     write_rds(file = paste0(path = path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_02.rds"))
+  OceanSODA_extreme_grid %>%
+    write_rds(file = paste0(path = path_argo_preprocessed, "/OceanSODA_global_pH_anomaly_field_02.rds"))
 }
   
 ```
