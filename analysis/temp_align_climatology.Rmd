@@ -21,6 +21,17 @@ Base data qc flags are checked to ensure that the float position, pressure measu
 
 The float temperature profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_temp_interpolated_clean. An anomaly file is then created from the vertically aligned profiles and climatology.
 
+Dependencies
+------------
+boa_temp_clim.rds - created by load_argo_clim_temp_csio
+bgc_data, bgc_metadata - created by load_argo
+
+Outputs (BGC preprocessed folder)
+-------
+temp_bgc_va.rds – vertically aligned temperature profiles. 
+temp_clim_va.rds – climatology temperature profiles. 
+temp_anomaly_va.rds – anomaly temperature profiles. 
+
 ```{r loading_libraries, include=FALSE}
 
 library(tidyverse)

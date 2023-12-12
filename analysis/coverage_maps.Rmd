@@ -15,7 +15,23 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Map the location of oxygen, pH, and nitrate observations recorded by BGC-Argo floats
+Map the location of temperature, oxygen, pH, and nitrate observations recorded by core and BGC-Argo floats
+Categories include core temperature, BGC temperature, ph, disolved oxyge, nitrate, chlorophyll a.
+Counts are profiles by profile_range. The profiles have already been check to ensure they only contain good measurements and that the profiles do not contain significant gaps.
+
+Dependencies
+------------
+temp_core_va.rds - core preprocessed folder created by temp_core_align_climatology.Rmd
+temp_bgc_va.rds - bgc preprocessed folder created by temp_align_climatology.Rmd
+pH_bgc_va.rds - bgc preprocessed folder created by pH_align_climatology.Rmd
+doxy_bgc_va.rds - bgc preprocessed folder created by doxy_vertical_align.Rmd
+nitrate_bgc_va.rds - bgc preprocessed folder created by nitrate_vertical_align.Rmd
+chla_bgc_va.rds - bgc preprocessed folder created by chla_vertical_align.Rmd
+
+Outputs
+-------
+None
+
 
 ```{r loading_packages, include=FALSE}
 
@@ -175,7 +191,7 @@ core_count_agg %>%
       y = 'lat',
       fill = 'number of\nprofiles',
       title = paste0('Core temperature by year and location ',
-                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1200m', '1500m')),
                      ' profiles')
     ) +
     theme(
@@ -213,7 +229,7 @@ core_count_agg %>%
       y = 'lat',
       fill = 'number of\nprofiles',
       title = paste0('Core temperature by location ',
-                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1200m', '1500m')),
                      ' profiles')
     ) +
     theme(
@@ -383,7 +399,7 @@ bgc_count_agg %>%
       title = paste0('BGC ',
                      unique(.x$prof_type),
                      ' by year and location ',
-                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ifelse(unique(.x$profile_range) == 1, '600/614m', ifelse(unique(.x$profile_range) == 2, '1200/1225m', '1500/1600m')),
                      ' profiles')
     ) +
     theme(
@@ -423,7 +439,7 @@ bgc_count_agg %>%
       title = paste0('BGC ',
                      unique(.x$prof_type),
                      ' by location ',
-                     ifelse(unique(.x$profile_range) == 1, '600m', ifelse(unique(.x$profile_range) == 2, '1000m', '1500m')),
+                     ifelse(unique(.x$profile_range) == 1, '600/614m', ifelse(unique(.x$profile_range) == 2, '1200/1225m', '1500/1600m')),
                      ' profiles')
     ) +
     theme(

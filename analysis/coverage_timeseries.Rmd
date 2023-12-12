@@ -15,7 +15,22 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-Count the number of bgc-argo profiles, and plot their evolution over time.
+Count the number of profiles, and plot their evolution over time.
+Categories include core temperature, BGC temperature, ph, disolved oxyge, nitrate, chlorophyll a and combinations of BGC properties.
+Counts are profiles by profile_range. The profiles have already been check to ensure they only contain good measurements and that the profiles do not contain significant gaps.
+
+Dependencies
+------------
+temp_core_va.rds - core preprocessed folder created by temp_core_align_climatology.Rmd
+temp_bgc_va.rds - bgc preprocessed folder created by temp_align_climatology.Rmd
+pH_bgc_va.rds - bgc preprocessed folder created by pH_align_climatology.Rmd
+doxy_bgc_va.rds - bgc preprocessed folder created by doxy_vertical_align.Rmd
+nitrate_bgc_va.rds - bgc preprocessed folder created by nitrate_vertical_align.Rmd
+chla_bgc_va.rds - bgc preprocessed folder created by chla_vertical_align.Rmd
+
+Outputs
+-------
+None
 
 ```{r loading_libraries, include=FALSE}
 
@@ -125,7 +140,7 @@ core_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete core temperature profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete core temperature profiles (1 = 600m, 2 = 1,200m, 3 = 1,500m)")
 
 rm (core_temp, core_temp_count, core_temp_count_agg)
 
@@ -179,7 +194,7 @@ bgc_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temperature profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temperature profiles (1 = 600m, 2 = 1,200m, 3 = 1,500m)")
 
 rm (bgc_temp_count, bgc_temp_count_agg)
 
@@ -233,7 +248,7 @@ bgc_ph_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc pH profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc pH profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_ph_count, bgc_ph_count_agg)
 
@@ -289,7 +304,7 @@ bgc_ph_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temperature AND pH profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temperature AND pH profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_ph_temp, bgc_ph_temp_count, bgc_ph_temp_count_agg)
 
@@ -343,7 +358,7 @@ bgc_doxy_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc dissolved oxygen profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc dissolved oxygen profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_doxy_count, bgc_doxy_count_agg)
 
@@ -399,7 +414,7 @@ bgc_doxy_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temperature AND dissolved oxygen profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temperature AND dissolved oxygen profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_doxy_temp, bgc_doxy_temp_count, bgc_doxy_temp_count_agg)
 
@@ -453,7 +468,7 @@ bgc_nitrate_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc nitrate profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc nitrate profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_nitrate_count, bgc_nitrate_count_agg)
 
@@ -509,7 +524,7 @@ bgc_nitrate_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temperature AND nitrate profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temperature AND nitrate profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_nitrate_temp, bgc_nitrate_temp_count, bgc_nitrate_temp_count_agg)
 
@@ -563,7 +578,7 @@ bgc_chla_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc chlorophyll a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc chlorophyll a profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_chla_count, bgc_chla_count_agg)
 
@@ -619,7 +634,7 @@ bgc_chla_temp_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temperature AND chlorophyll a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temperature AND chlorophyll a profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_chla_temp, bgc_chla_temp_count, bgc_chla_temp_count_agg)
 
@@ -678,7 +693,7 @@ bgc_all_count_agg %>%
        y = 'number of profiles',
        col = 'profile range',
        title = "Number of profiles",
-       subtitle = "Complete bgc temp, pH, doxy, nitrate AND chl a profiles (1 = 600m, 2 = 1,000m, 3 = 1,500m)")
+       subtitle = "Complete bgc temp, pH, doxy, nitrate AND chl a profiles (1 = 614m, 2 = 1,225m, 3 = 1,600m)")
 
 rm (bgc_all, bgc_all_count, bgc_all_count_agg)
 
