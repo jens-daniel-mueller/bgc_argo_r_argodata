@@ -518,7 +518,7 @@ div.tocify {
 <h1 class="title toc-ignore">Prepare nitrate data and vertically align
 to same depths as (pH) climatology</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">06 December, 2023</h4>
+<h4 class="date">13 December, 2023</h4>
 
 </div>
 
@@ -547,7 +547,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-06
+<strong>Last updated:</strong> 2023-12-13
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -678,15 +678,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4844d30dd6a33887fa741c4c2fae40e51b95c337targetblank4844d30a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4844d30dd6a33887fa741c4c2fae40e51b95c337" target="_blank">4844d30</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree83269d5044172daee7a7578d97ebcb2ce65e37e8targetblank83269d5a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4844d30dd6a33887fa741c4c2fae40e51b95c337targetblank4844d30a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -696,7 +696,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/83269d5044172daee7a7578d97ebcb2ce65e37e8" target="_blank">83269d5</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4844d30dd6a33887fa741c4c2fae40e51b95c337" target="_blank">4844d30</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -714,6 +714,13 @@ Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
     Ignored:    output/
+
+Untracked files:
+    Untracked:  code/load_clim_nitrate_woa.Rmd
+    Untracked:  code/nitrate_align_climatology.Rmd
+
+Unstaged changes:
+    Modified:   code/load_clim_doxy_woa.Rmd
 
 </code></pre>
 <p>
@@ -760,6 +767,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/acb652317e1167a43091d9d1af6af11b95668d0b/analysis/nitrate_vertical_align.Rmd" target="_blank">acb6523</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-12
+</td>
+<td>
+Added documentation added to tasks section at start of each script.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e60ebd28bc32b3da7d0b3b35872259fbe22181e0/docs/nitrate_vertical_align.html" target="_blank">e60ebd2</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -819,6 +860,16 @@ Profiles are assigned a profile_range field that identifies the depth 1
 <p>The float nitrate profiles are then aligned using the spline function
 to match the depth levels of the climatology resulting in data frame
 bgc_data_nitrate_interpolated_clean.</p>
+<div id="dependencies" class="section level2">
+<h2>Dependencies</h2>
+<p>ucsd_ph_clim.rds - created by load_argo_clim_pH_ucsd. This markdown
+aligns nitrate profile to the same depths as the ph climatology
+bgc_data, bgc_metadata - created by load_argo</p>
+</div>
+<div id="outputs-bgc-preprocessed-folder" class="section level2">
+<h2>Outputs (BGC preprocessed folder)</h2>
+<p>nitrate_bgc_va.rds – vertically aligned ph profiles.</p>
+</div>
 <div id="set-directories" class="section level2">
 <h2>Set directories</h2>
 <p>location of pre-prepared data</p>
@@ -874,8 +925,8 @@ target_depth_levels &lt;-   pH_clim_va %&gt;%
 rm(pH_clim_va)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger  (Mb) max used  (Mb)
-Ncells 1276526 68.2    2476592 132.3  2476592 132.3
-Vcells 2192581 16.8   91951966 701.6 92803109 708.1</code></pre>
+Ncells 1276543 68.2    2476864 132.3  2476864 132.3
+Vcells 2193029 16.8   91952482 701.6 92803557 708.1</code></pre>
 </div>
 <div id="read-nitrate-data" class="section level2">
 <h2>read nitrate data</h2>
@@ -929,8 +980,8 @@ bgc_data_nitrate &lt;- bgc_data_nitrate %&gt;%
 rm(bgc_data, bgc_metadata)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells 1313126 70.2    2476592   132.3    2476592   132.3
-Vcells 9590565 73.2 2796663182 21336.9 3467835783 26457.5</code></pre>
+Ncells 1313143 70.2    2476864   132.3    2476864   132.3
+Vcells 9591009 73.2 2796663693 21336.9 3467836227 26457.5</code></pre>
 </div>
 <div id="profile-limits" class="section level2">
 <h2>Profile limits</h2>
@@ -1024,8 +1075,8 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()</code></pre>
 <pre><code>           used (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1328168 71.0    2476592   132.3    2476592   132.3
-Vcells 10141670 77.4 2237330546 17069.5 3467835783 26457.5</code></pre>
+Ncells  1328185 71.0    2476864   132.3    2476864   132.3
+Vcells 10142114 77.4 2237330955 17069.5 3467836227 26457.5</code></pre>
 </div>
 <div id="vertical-align-nitrate" class="section level2">
 <h2>Vertical align nitrate</h2>
@@ -1047,8 +1098,8 @@ bgc_data_nitrate_clean &lt;- bgc_data_nitrate %&gt;%
 rm(bgc_data_nitrate)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells 1327923 71.0    2476592   132.3    2476592   132.3
-Vcells 8200935 62.6 1789864437 13655.6 3467835783 26457.5</code></pre>
+Ncells 1327940 71.0    2476864   132.3    2476864   132.3
+Vcells 8201379 62.6 1789864764 13655.6 3467836227 26457.5</code></pre>
 <pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid &lt;-
   expand_grid(
@@ -1073,8 +1124,8 @@ bgc_data_nitrate_extended &lt;-
 rm(bgc_data_nitrate_clean)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1330239  71.1    2476592   132.3    2476592   132.3
-Vcells 15642402 119.4 1431891550 10924.5 3467835783 26457.5</code></pre>
+Ncells  1330256  71.1    2476864   132.3    2476864   132.3
+Vcells 15642846 119.4 1431891812 10924.5 3467836227 26457.5</code></pre>
 <pre class="r"><code># predict spline interpolation on adjusted depth grid for nitrate location and month
 bgc_data_nitrate_interpolated &lt;-
   bgc_data_nitrate_extended %&gt;%
@@ -1087,8 +1138,8 @@ bgc_data_nitrate_interpolated &lt;-
 rm(bgc_data_nitrate_extended)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1332014  71.2    2476592  132.3    2476592   132.3
-Vcells 18721328 142.9 1145513240 8739.6 3467835783 26457.5</code></pre>
+Ncells  1332031  71.2    2476864  132.3    2476864   132.3
+Vcells 18721772 142.9 1145513450 8739.6 3467836227 26457.5</code></pre>
 <pre class="r"><code># subset interpolated values on target depth range
 bgc_data_nitrate_interpolated_clean &lt;- 
   inner_join(target_depth_levels, bgc_data_nitrate_interpolated)
@@ -1096,8 +1147,8 @@ bgc_data_nitrate_interpolated_clean &lt;-
 rm(bgc_data_nitrate_interpolated)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells 1332058 71.2    2476592  132.3    2476592   132.3
-Vcells 9793524 74.8  916410592 6991.7 3467835783 26457.5</code></pre>
+Ncells 1332075 71.2    2476864  132.3    2476864   132.3
+Vcells 9793968 74.8  916410760 6991.7 3467836227 26457.5</code></pre>
 <pre class="r"><code># select columns and rename to initial names
 bgc_data_nitrate_interpolated_clean &lt;-
   bgc_data_nitrate_interpolated_clean %&gt;%
@@ -1129,8 +1180,8 @@ nitrate_bgc_va &lt;- bgc_data_nitrate_interpolated_clean
 rm(bgc_data_nitrate_interpolated_clean)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1331859  71.2    2476592  132.3    2476592   132.3
-Vcells 14154178 108.0  733128474 5593.4 3467835783 26457.5</code></pre>
+Ncells  1331876  71.2    2476864  132.3    2476864   132.3
+Vcells 14154626 108.0  733128608 5593.4 3467836227 26457.5</code></pre>
 </div>
 <div id="read-files" class="section level2">
 <h2>read files</h2>

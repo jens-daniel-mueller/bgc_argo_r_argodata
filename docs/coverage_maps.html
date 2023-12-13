@@ -517,7 +517,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Spatial data coverage</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">11 December, 2023</h4>
+<h4 class="date">13 December, 2023</h4>
 
 </div>
 
@@ -546,7 +546,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-11
+<strong>Last updated:</strong> 2023-12-13
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -677,15 +677,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2b98b39c17677d29c8510451836fdd756fb5af4dtargetblank2b98b39a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4844d30dd6a33887fa741c4c2fae40e51b95c337targetblank4844d30a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2b98b39c17677d29c8510451836fdd756fb5af4d" target="_blank">2b98b39</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4844d30dd6a33887fa741c4c2fae40e51b95c337" target="_blank">4844d30</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree2b98b39c17677d29c8510451836fdd756fb5af4dtargetblank2b98b39a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree4844d30dd6a33887fa741c4c2fae40e51b95c337targetblank4844d30a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -695,7 +695,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/2b98b39c17677d29c8510451836fdd756fb5af4d" target="_blank">2b98b39</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/4844d30dd6a33887fa741c4c2fae40e51b95c337" target="_blank">4844d30</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -714,10 +714,12 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
+Untracked files:
+    Untracked:  code/load_clim_nitrate_woa.Rmd
+    Untracked:  code/nitrate_align_climatology.Rmd
+
 Unstaged changes:
-    Modified:   analysis/extreme_pH.Rmd
-    Modified:   analysis/extreme_temp.Rmd
-    Modified:   code/start_background_job_partial.R
+    Modified:   code/load_clim_doxy_woa.Rmd
 
 </code></pre>
 <p>
@@ -763,6 +765,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/acb652317e1167a43091d9d1af6af11b95668d0b/analysis/coverage_maps.Rmd" target="_blank">acb6523</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-12
+</td>
+<td>
+Added documentation added to tasks section at start of each script.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/e62fb2c2d6adc84f8c255dc777707e83b51ddebe/docs/coverage_maps.html" target="_blank">e62fb2c</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-11
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1775,8 +1811,27 @@ adding revised code
 </div>
 <div id="task" class="section level1">
 <h1>Task</h1>
-<p>Map the location of oxygen, pH, and nitrate observations recorded by
-BGC-Argo floats</p>
+<p>Map the location of temperature, oxygen, pH, and nitrate observations
+recorded by core and BGC-Argo floats Categories include core
+temperature, BGC temperature, ph, disolved oxyge, nitrate, chlorophyll
+a. Counts are profiles by profile_range. The profiles have already been
+check to ensure they only contain good measurements and that the
+profiles do not contain significant gaps.</p>
+<div id="dependencies" class="section level2">
+<h2>Dependencies</h2>
+<p>temp_core_va.rds - core preprocessed folder created by
+temp_core_align_climatology.Rmd temp_bgc_va.rds - bgc preprocessed
+folder created by temp_align_climatology.Rmd pH_bgc_va.rds - bgc
+preprocessed folder created by pH_align_climatology.Rmd doxy_bgc_va.rds
+- bgc preprocessed folder created by doxy_vertical_align.Rmd
+nitrate_bgc_va.rds - bgc preprocessed folder created by
+nitrate_vertical_align.Rmd chla_bgc_va.rds - bgc preprocessed folder
+created by chla_vertical_align.Rmd</p>
+</div>
+<div id="outputs" class="section level2">
+<h2>Outputs</h2>
+<p>None</p>
+</div>
 </div>
 <div id="load-data" class="section level1">
 <h1>Load data</h1>
@@ -1891,7 +1946,7 @@ core_count_agg %&gt;%
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
       title = paste0(&#39;Core temperature by year and location &#39;,
-                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1200m&#39;, &#39;1500m&#39;)),
                      &#39; profiles&#39;)
     ) +
     theme(
@@ -2154,7 +2209,7 @@ core_count_agg %&gt;%
       y = &#39;lat&#39;,
       fill = &#39;number of\nprofiles&#39;,
       title = paste0(&#39;Core temperature by location &#39;,
-                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1200m&#39;, &#39;1500m&#39;)),
                      &#39; profiles&#39;)
     ) +
     theme(
@@ -2446,7 +2501,7 @@ bgc_count_agg %&gt;%
       title = paste0(&#39;BGC &#39;,
                      unique(.x$prof_type),
                      &#39; by year and location &#39;,
-                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     ifelse(unique(.x$profile_range) == 1, &#39;600/614m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1200/1225m&#39;, &#39;1500/1600m&#39;)),
                      &#39; profiles&#39;)
     ) +
     theme(
@@ -3070,46 +3125,6 @@ ds2n19
 </table>
 </div>
 </div>
-<pre><code>
-[[15]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps_year-15.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps_year-15">
-Past versions of bgc_profile_maps_year-15.png
-</button>
-</p>
-<div id="fig-bgc_profile_maps_year-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d8fb4456320524a588a5465e8237037c2f0406f/docs/figure/coverage_maps.Rmd/bgc_profile_maps_year-15.png" target="_blank">2d8fb44</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-07
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
 </div>
 <div id="spatial-all-years-1" class="section level2">
 <h2>spatial all years</h2>
@@ -3136,7 +3151,7 @@ bgc_count_agg %&gt;%
       title = paste0(&#39;BGC &#39;,
                      unique(.x$prof_type),
                      &#39; by location &#39;,
-                     ifelse(unique(.x$profile_range) == 1, &#39;600m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1000m&#39;, &#39;1500m&#39;)),
+                     ifelse(unique(.x$profile_range) == 1, &#39;600/614m&#39;, ifelse(unique(.x$profile_range) == 2, &#39;1200/1225m&#39;, &#39;1500/1600m&#39;)),
                      &#39; profiles&#39;)
     ) +
     theme(
@@ -3747,46 +3762,6 @@ Date
 <tr>
 <td>
 <a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d8fb4456320524a588a5465e8237037c2f0406f/docs/figure/coverage_maps.Rmd/bgc_profile_maps-14.png" target="_blank">2d8fb44</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-07
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[15]]</code></pre>
-<p><img src="figure/coverage_maps.Rmd/bgc_profile_maps-15.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bgc_profile_maps-15">
-Past versions of bgc_profile_maps-15.png
-</button>
-</p>
-<div id="fig-bgc_profile_maps-15" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/2d8fb4456320524a588a5465e8237037c2f0406f/docs/figure/coverage_maps.Rmd/bgc_profile_maps-15.png" target="_blank">2d8fb44</a>
 </td>
 <td>
 ds2n19
