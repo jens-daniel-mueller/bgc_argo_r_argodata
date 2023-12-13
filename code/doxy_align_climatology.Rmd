@@ -1,0 +1,823 @@
+---
+title: "Prepare dissolved oxygen data and vertically align to climatology"
+author: "David Stappard & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Task
+
+This markdown file reads previously created dissolved oxygen climatology file and uses that as the definition of the depth levels that the BGC Argo dissolved oxygen data should be aligned to. Previously created BGC data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the BGC preprocessed folder.
+
+Base data qc flags are checked to ensure that the float position, pressure measurements and dissolved oxygen measurements are good. Pressure is used to derive the depth of each measurement. The dissolved oxygen profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 600 m, 2 = 1200 m and 3 = 1500 m.
+
+The float dissolved oxygen profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_doxy_interpolated_clean. An anomaly file is then created from the vertically aligned profiles and climatology.
+
+Dependencies
+------------
+woa_doxy_clim.rds - created by load_argo_clim_doxy_woa
+bgc_data, bgc_metadata - created by load_argo
+
+Outputs (BGC preprocessed folder)
+-------
+doxy_bgc_va.rds – vertically aligned dissolved oxygen profiles. 
+doxy_clim_va.rds – climatology dissolved oxygen profiles. 
+doxy_anomaly_va.rds – anomaly dissolved oxygen profiles. 
+
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
+library(argodata)
+library(lubridate)
+library(gridExtra)
+library(gsw)
+library(ggforce)
+
+```
+
+## Set directories
+
+location of pre-prepared data
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+```
+
+## Set options
+
+Define options that are used to determine profiles that we will us in the ongoing analysis
+
+```{r set_options}
+
+# Options
+
+# opt_profile_depth_range
+# The profile must have at least one dissolved oxygen reading at a depth <= opt_profile_depth_range[1, ]
+# The profile must have at least one dissolved oxygen reading at a depth >= opt_profile_depth_range[2, ].
+# In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 600) it will be removed.
+profile_range <- c(1, 2, 3)
+min_depth <- c(5.0, 5.0, 5.0)
+max_depth <- c(600, 1200, 1500)
+opt_profile_depth_range <- data.frame(profile_range, min_depth, max_depth)
+
+# opt_gap...
+# The profile should not have a gap greater that opt_gap_limit within the range defined by opt_gap_min_depth and opt_gap_max_depth
+opt_gap_limit <- c(28, 55, 110)
+opt_gap_min_depth <- c(0, 400, 1000)
+opt_gap_max_depth <- c(400, 1000, 1500)
+
+# opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
+opt_measure_label <- expression("dissolved oxygen anomaly ( µmol kg"^"-1"~")")
+opt_xlim <- c(-20, 20)
+opt_xbreaks <- c(-20, -10, 0, 10, 20)
+
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
+# opt_exclude_shallower
+# This option will exclude depths from the climatology and subsequent vertically aligned data that are shallower than opt_exclude_shallower.
+# e.g. set to 4.5 to ensure that the top depth of 0.0 m is excluded
+# Set to 0.0 to ensure no depths are excluded.
+opt_exclude_shallower <- 4.5
+
+# opt_shallow_check_perc and opt_shallow_check_diff
+# A check is made to ensure that the pH of the shallowest depth in the profile after vertical alignment is within a limit of the
+# pH of the shallowest depth in the profile before vertical alignment
+# a opt_shallow_check values of 0.01 results in those with greater than a 1% difference will be reported. Set to 0.0 if percentage check is not required.
+# a opt_shallow_report_diff that is non-zero and positive will check that absolute difference. Set to 0.0 if absolute difference check is not required.  
+opt_shallow_check_perc <- 0.05
+opt_shallow_report_perc <- 'profile where shallow check exceeds percentage criteria: '
+opt_shallow_check_diff <- 0.5
+opt_shallow_report_diff <- 'profile where shallow check exceeds absolute difference criteria: '
+
+```
+
+
+## read climatology
+
+read dissolved oxygen climatology and prepare to a set range of depths
+
+```{r read_climatology}
+
+# climatology values (clim_doxy (°C)) available for lat, lon, month and pressure
+woa_doxy_clim <- read_rds(file = paste0(path_argo_preprocessed, '/woa_doxy_clim.rds'))
+
+#What is the max depth we are interested in
+opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
+
+# what are the target depths that we align to
+target_depth_levels <- woa_doxy_clim %>% distinct(depth)
+
+target_depth_levels <-
+  target_depth_levels %>% 
+  filter (depth <= opt_profile_max_depth) %>% 
+  mutate(target_depth = depth) %>% 
+  select(target_depth)
+
+# select variable of interest and prepare target_depth field
+woa_doxy_clim_clean <- woa_doxy_clim %>%
+                          select(
+                            lat,
+                            lon,
+                            month,
+                            depth,
+                            clim_doxy
+                          ) %>%
+                          mutate(
+                            target_depth = depth, .after = depth
+                          )
+
+# Exclude 0.0 m depth from the climatology and target_depth_levels
+target_depth_levels <- target_depth_levels %>% 
+  filter(target_depth > opt_exclude_shallower)
+woa_doxy_clim_clean <- woa_doxy_clim_clean %>% 
+  filter(depth > opt_exclude_shallower)
+  
+# create all possible combinations of location and month climatologies and depth levels for interpolation
+target_depth_grid <-
+  expand_grid(target_depth_levels,
+              woa_doxy_clim_clean %>% distinct(lat, lon, month))
+
+# extend climatology depth vectors with target depths
+woa_doxy_clim_extended <-
+  full_join(woa_doxy_clim_clean, target_depth_grid) %>% 
+  arrange(lat, lon, month, target_depth)
+
+
+# filter where target depths outside range of climatology depths
+# depth is slightly lower than pressure so 1.02 factor is used to ensure bottom value is not lost.
+woa_doxy_clim_extended <-
+  woa_doxy_clim_extended %>%
+  group_by(lat, lon, month) %>%
+  filter(
+    target_depth <= max(depth, na.rm = TRUE),
+    target_depth >= min(depth, na.rm = TRUE)
+  ) %>%
+  ungroup()
+
+# predict spline interpolation on adjusted depth grid for climatology loaction and month
+woa_doxy_clim_interpolated <-
+  woa_doxy_clim_extended %>%
+  group_by(lat, lon, month) %>%
+  mutate(clim_doxy_spline = spline(target_depth, clim_doxy,
+                                       method = "natural",
+                                       xout = target_depth)$y) %>%
+  ungroup()
+
+# subset interpolated values on traget depth grid
+woa_doxy_clim_interpolated_clean <- 
+  inner_join(target_depth_levels, woa_doxy_clim_interpolated)
+
+# select columns and rename to initial names
+woa_doxy_clim_interpolated_clean <-
+  woa_doxy_clim_interpolated_clean %>%
+  select(lat, lon, month,
+         depth = target_depth,
+         clim_doxy = clim_doxy_spline)
+
+# clean up working tables
+rm(woa_doxy_clim_clean, woa_doxy_clim_extended, woa_doxy_clim_interpolated)
+```
+
+## read doxy data
+
+read dissolved oxygen profile and carry out basic checks, good data.
+
+```{r read_profile_doxy_data}
+
+# base data and associated metadata
+bgc_data <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_data.rds'))
+bgc_metadata <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_metadata.rds'))
+
+# Select relevant field from metadata ready to join to bgc_data
+bgc_metadata_select <- bgc_metadata %>%
+  filter (position_qc == 1) %>%
+  select(file_id,
+         date,
+         lat,
+         lon) %>%
+  mutate(year = year(date),
+         month = month(date),
+         .after = date)
+
+# we only want pressure and dissolved oxygen data
+# conditions 
+# n_prof == 1
+# pres_adjusted_qc %in% c(1, 8) - pressure data marked as good
+# doxy_adjusted_qc %in% c(1, 8) - dissolved oxygen data marked as good
+# !is.na(pres_adjusted) - pressure value must be present
+# !is.na(doxy_adjusted) - dissolved oxygen value must be present
+bgc_data_doxy <- bgc_data %>%
+  filter(
+    pres_adjusted_qc %in% c(1, 8) &
+      doxy_adjusted_qc %in% c(1, 8) &
+      n_prof == opt_n_prof_sel &
+      !is.na(pres_adjusted) &
+      !is.na(doxy_adjusted)
+  ) %>%
+  select(file_id,
+         pres_adjusted,
+         doxy_adjusted)
+
+# join with metadata information and calculate depth field
+bgc_data_doxy <-
+  inner_join(bgc_metadata_select %>% select(file_id, lat),
+             bgc_data_doxy) %>%
+  mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
+         .before = pres_adjusted) %>%
+  select(-c(lat, pres_adjusted))
+
+# ensure we have a depth, and doxy_adjusted for all rows in bgc_data_doxy
+bgc_data_doxy <- bgc_data_doxy %>%
+  filter(!is.na(depth) & !is.na(doxy_adjusted))
+
+# clean up working tables
+rm(bgc_data, bgc_metadata)
+gc()
+
+```
+
+## Profile limits
+
+Apply the rules that are determined by options set in set_options.
+Profile must cover a set range and not contain gaps.
+
+```{r profile_limits_doxy}
+
+# Determine profile min and max depths
+bgc_profile_limits <- bgc_data_doxy %>%
+  group_by(file_id) %>%
+  summarise(
+    min_depth = min(depth),
+    max_depth = max(depth),
+  ) %>%
+  ungroup()
+
+# --------------------------------------------------------------------------------------
+# What is the distribution of min depths
+# out <- bgc_profile_limits %>% 
+#   filter(min_depth > 0 & min_depth < 10) %>%
+#   mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
+#   
+# out <- out %>%
+#   group_by(min_bin) %>%
+#   summarise(count_profiles = n())
+# 
+# out %>%
+#   ggplot(aes(min_bin)) +
+#   geom_bar(aes(weight = count_profiles)) +
+#   scale_fill_viridis_d() +
+#   labs(title = "dissolved oxygen profiles minimum depth",
+#        x = "min depth (m)",
+#        y = "profile count")
+# 
+# rm(out)
+# --------------------------------------------------------------------------------------
+
+# The profile much match at least one of teh range criteria
+force_min <- min(opt_profile_depth_range$min_depth)
+force_max <- min(opt_profile_depth_range$max_depth)
+
+# Apply profile min and max restrictions
+bgc_apply_limits <- bgc_profile_limits %>%
+  filter(
+    min_depth <= force_min &
+    max_depth >= force_max
+    )
+
+# Ensure working data set only contains profiles that have conformed to the range test
+bgc_data_doxy <- right_join(bgc_data_doxy,
+                            bgc_apply_limits %>% select(file_id))
+
+# Add profile type field and set all to 1.  
+# All profile that meet the minimum requirements are profile_range = 1
+bgc_data_doxy <- bgc_data_doxy %>%
+  mutate(profile_range = 1)
+
+for (i in 2:nrow(opt_profile_depth_range)) {
+
+  #i = 3
+  range_min <- opt_profile_depth_range[i,'min_depth']
+  range_max <- opt_profile_depth_range[i,'max_depth']
+
+  # Apply profile min and max restrictions
+  bgc_apply_limits <- bgc_profile_limits %>%
+    filter(min_depth <= range_min &
+             max_depth >= range_max) %>%
+    select(file_id) %>%
+    mutate (profile_range = i)
+  
+  # Update profile range to i for these profiles
+  # bgc_data_doxy <- full_join(bgc_data_doxy, bgc_apply_limits) %>%
+  #                         filter(!is.na(min_depth))
+  bgc_data_doxy <-
+    bgc_data_doxy %>% rows_update(bgc_apply_limits, by = "file_id")
+
+}
+
+# Find the gaps within the profiles
+profile_gaps <- full_join(bgc_data_doxy,
+                          opt_profile_depth_range) %>%
+  filter(depth >= min_depth & 
+           depth <= max_depth) %>% 
+  select(file_id,
+         depth) %>%
+  arrange(file_id, depth) %>%
+  group_by(file_id) %>%
+  mutate(gap = depth - lag(depth, default = 0)) %>%
+  ungroup()
+
+# Ensure we do not have gaps in the profile that invalidate it 
+for (i_gap in opt_gap_limit) {
+
+  # The limits to be applied in that pass of for loop
+  # i_gap <- opt_gap_limit[3]
+  i_gap_min = opt_gap_min_depth[which(opt_gap_limit == i_gap)]
+  i_gap_max = opt_gap_max_depth[which(opt_gap_limit == i_gap)]
+  
+  # Which gaps are greater than i_gap
+  profile_gaps_remove <- profile_gaps %>%
+    filter(gap > i_gap) %>%
+    filter(depth >= i_gap_min & depth <= i_gap_max) %>%
+    distinct(file_id) %>% 
+    pull()
+  
+  # Remonve gap-containing profiles from working data set
+  bgc_data_doxy <- bgc_data_doxy %>% 
+    filter(!file_id %in% profile_gaps_remove)
+}
+
+# clean up working tables
+rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
+gc()
+
+# For each profile what is the doxy at the shallowest depth of the profile, this is used in a comparison after vertical alignment
+shallow_doxy_raw <- right_join(
+  bgc_data_doxy,
+  bgc_data_doxy %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>%
+    ungroup()
+) %>%
+  select (file_id, doxy_shallow_raw = doxy_adjusted)
+
+
+# Write file that are observations prior to vertical alignment 
+bgc_data_doxy_full <- left_join(bgc_data_doxy, bgc_metadata_select)
+
+bgc_data_doxy_full %>%
+  select(file_id, lat, lon, date, year, month, depth, doxy_adjusted) %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_observed.rds"))
+
+rm(bgc_data_doxy_full)
+gc()
+
+
+```
+
+## Vertical align doxy
+
+We have a set of dissolved oxygen profiles that match our criteria we now need to align that data set to match the 
+depth that are in target_depth_levels, this will match the range of climatology values in woa_doxy_clim_interpolated_clean
+
+```{r vertical_align_doxy}
+
+# create unique combinations of file_id and profile ranges
+profile_range_file_id <- 
+  bgc_data_doxy %>% 
+  distinct(file_id, profile_range)
+
+
+# select variable of interest and prepare target_depth field
+bgc_data_doxy_clean <- bgc_data_doxy %>%
+  select(-profile_range) %>%
+  mutate(target_depth = depth, .after = depth)
+
+rm(bgc_data_doxy)
+gc()
+
+# create all possible combinations of location, month and depth levels for interpolation
+target_depth_grid <-
+  expand_grid(
+    target_depth_levels,
+    profile_range_file_id
+  )
+
+# Constrain target_depth_grid to profile depth range
+target_depth_grid <-
+  left_join(target_depth_grid, opt_profile_depth_range) %>%
+  filter(target_depth <= max_depth)
+
+target_depth_grid <- target_depth_grid %>%
+  select(target_depth,
+         file_id)
+
+# extend doxy depth vectors with target depths
+bgc_data_doxy_extended <-
+  full_join(bgc_data_doxy_clean, target_depth_grid) %>%
+  arrange(file_id, target_depth)
+
+rm(bgc_data_doxy_clean)
+gc()
+
+# predict spline interpolation on adjusted depth grid for doxy location and month
+bgc_data_doxy_interpolated <-
+  bgc_data_doxy_extended %>%
+  group_by(file_id) %>%
+  mutate(doxy_spline = spline(target_depth, doxy_adjusted,
+                                method = "natural",
+                                xout = target_depth)$y) %>%
+  ungroup()
+
+rm(bgc_data_doxy_extended)
+gc()
+
+# subset interpolated values on target depth range
+bgc_data_doxy_interpolated_clean <- 
+  inner_join(target_depth_levels, bgc_data_doxy_interpolated)
+
+rm(bgc_data_doxy_interpolated)
+gc()
+
+# select columns and rename to initial names
+bgc_data_doxy_interpolated_clean <-
+  bgc_data_doxy_interpolated_clean %>%
+  select(file_id,
+         depth = target_depth,
+         doxy = doxy_spline)
+
+# merge with profile range
+bgc_data_doxy_interpolated_clean <-
+  full_join(bgc_data_doxy_interpolated_clean,
+            profile_range_file_id)
+
+# merge with meta data
+bgc_data_doxy_interpolated_clean <-
+  left_join(bgc_data_doxy_interpolated_clean,
+            bgc_metadata_select)
+
+# For each profile what is the doxy at the shallowest depth of the profile after vertical alignment
+shallow_doxy_va <- right_join(
+  bgc_data_doxy_interpolated_clean,
+  bgc_data_doxy_interpolated_clean %>%
+    group_by(file_id) %>%
+    summarise(depth = min(depth)) %>% 
+    ungroup()
+) %>%
+  select (file_id, doxy_shallow_va = doxy)
+
+```
+
+## Check shallow
+
+A check is made that the shallowest doxy value after the vertical alignment is within a specified percentage of the shallowest doxy value before the vertical alignment
+```{r check_shallow, eval=FALSE}
+
+# Combined dataframe with shallow value pre and post vertical alignment
+shallow_doxy_check <- 
+  full_join(shallow_doxy_raw, shallow_doxy_va)
+
+# Determine those profile that are outside of percentage criteria.
+if (opt_shallow_check_perc > 0.0){
+  shallow_check_report <- shallow_doxy_check %>%
+    filter (abs((doxy_shallow_raw - doxy_shallow_va) / doxy_shallow_raw) > opt_shallow_check_perc)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_perc)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+# Determine those profile that are outside of absolute difference criteria.
+if (opt_shallow_check_diff > 0.0){
+  shallow_check_report <- shallow_doxy_check %>%
+    filter (abs(doxy_shallow_raw - doxy_shallow_va) > opt_shallow_check_diff)
+
+  # Write issues to console
+  if (nrow(shallow_check_report) > 0) {
+    print (opt_shallow_report_diff)
+    shallow_check_report %>% rmarkdown::paged_table()
+  }
+}
+
+
+# remove working files
+rm(shallow_doxy_check, shallow_doxy_raw, shallow_doxy_va, shallow_check_report)
+gc()
+
+```
+
+## Create anomaly profiles
+
+Create anomaly profiles as observed - climatology
+
+```{r anomaly_doxy}
+
+# Create bgc_doxy_anomaly, but only where we have an climatology dissolved oxygen
+bgc_doxy_anomaly <-
+  inner_join(bgc_data_doxy_interpolated_clean, woa_doxy_clim_interpolated_clean)
+
+# Calculate the anomaly dissolved oxygen
+bgc_doxy_anomaly <- bgc_doxy_anomaly %>%
+                      mutate(
+                        anomaly = doxy - clim_doxy
+                      )
+
+# -----------------------------------------------------------------------------
+# Climatology check
+# -----------------------------------------------------------------------------
+# It is possible even though we have observational measures to full depth the climatology may not matach all depth.
+# These profiles will be removed from both doxy_bgc_va and doxy_anomaly_va
+
+# Anomaly max depth
+bgc_doxy_anomaly_depth_check <- bgc_doxy_anomaly %>%
+  group_by(file_id,
+           profile_range) %>%
+  summarise(min_pdepth = min(depth),
+            max_pdepth = max(depth)) %>%
+  ungroup()
+
+# Add the required min depth and max depth
+bgc_doxy_anomaly_depth_check <- left_join(bgc_doxy_anomaly_depth_check, opt_profile_depth_range)
+
+# This profiles do not match the depth required by the profile_range
+# min_depth_check <- min(target_depth_grid$target_depth)
+
+# Please double check if the criterion should be
+# each profile is checked against the min depth specified in min_depth 
+# max depth specified in max_depth. 
+remove_profiles <- bgc_doxy_anomaly_depth_check %>%
+  filter((max_pdepth < max_depth) | (min_pdepth > min_depth)) %>%
+  distinct(file_id)
+
+# remove from both bgc_data_doxy_interpolated_clean and bgc_doxy_anomaly
+bgc_data_doxy_interpolated_clean <-
+  anti_join(bgc_data_doxy_interpolated_clean, remove_profiles)
+
+bgc_doxy_anomaly <- anti_join(bgc_doxy_anomaly, remove_profiles)
+
+```
+
+## Write files
+
+Write the climatology that maps onto depth levels, interpolated dissolved oxygen profiles that map onto depth levels and resulting anomaly files.
+```{r write_doxy_va}
+
+# Write files
+bgc_data_doxy_interpolated_clean %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds"))
+
+woa_doxy_clim_interpolated_clean %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/doxy_clim_va.rds"))
+
+bgc_doxy_anomaly %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/doxy_anomaly_va.rds"))
+
+# Rename so that names match if just reading existing files
+doxy_bgc_va <- bgc_data_doxy_interpolated_clean
+doxy_clim_va <- woa_doxy_clim_interpolated_clean
+doxy_anomaly_va <- bgc_doxy_anomaly
+
+#rm(bgc_data_doxy_interpolated_clean, woa_doxy_clim_interpolated_clean, bgc_doxy_anomaly)
+
+```
+
+## read files
+
+Read files that were previously created ready for analysis
+```{r read_doxy_va}
+
+# read files
+doxy_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds"))
+
+doxy_clim_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_clim_va.rds"))
+
+doxy_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_anomaly_va.rds"))
+
+```
+
+## Analysis
+
+```{r set_global_theme, include=FALSE}
+
+theme_set(theme_bw())
+```
+
+
+## dissolved oxygen anomaly
+
+Details of mean anomaly over analysis period
+```{r plot_overall_mean_anomaly_profiles, fig.asp=1}
+
+max_depth_1 <- opt_profile_depth_range[1, "max_depth"]
+max_depth_2 <- opt_profile_depth_range[2, "max_depth"]
+max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
+
+# Profiles to 600m
+anomaly_overall_mean_1 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  group_by(depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_1 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+  group_by(year, depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# Profiles to 1200m
+anomaly_overall_mean_2 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  group_by(depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_2 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+  group_by(year, depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# Profiles to 1500m
+anomaly_overall_mean_3 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  group_by(depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+anomaly_year_mean_3 <- doxy_anomaly_va %>% 
+  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
+  group_by(year, depth) %>% 
+  summarise(doxy_count = n(),
+            doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            doxy_anomaly_sd = sd(anomaly, na.rm = TRUE))
+
+# All years anomaly
+anomaly_overall_mean_1 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+anomaly_overall_mean_2 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+anomaly_overall_mean_3 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+# yearly anomaly
+anomaly_year_mean_1 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_1, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+anomaly_year_mean_2 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_2, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+anomaly_year_mean_3 %>% 
+  ggplot()+
+  geom_path(aes(x = doxy_anomaly_mean,
+                y = depth))+
+  geom_ribbon(aes(xmax = doxy_anomaly_mean + doxy_anomaly_sd,
+                  xmin = doxy_anomaly_mean - doxy_anomaly_sd,
+                  y = depth),
+              alpha = 0.2)+
+  geom_vline(xintercept = 0)+
+  scale_y_reverse() +
+  facet_wrap(~year)+
+  coord_cartesian(xlim = opt_xlim) +
+  scale_x_continuous(breaks = opt_xbreaks) +
+  labs(
+    title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'),
+    x = opt_measure_label,
+    y = 'depth (m)'
+  )
+
+
+
+#rm(anomaly_overall_mean)
+```
+
+## Profile counts
+
+Details of the number of profiles and to which depths over the analysis period
+```{r doxy_histogram, fig.asp=1}
+
+doxy_histogram <- doxy_bgc_va %>%
+  group_by(year, profile_range = as.character(profile_range)) %>%
+  summarise(num_profiles = n_distinct(file_id)) %>%
+  ungroup()
+
+doxy_histogram %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = year,
+      y = num_profiles,
+      fill = profile_range,
+      group = profile_range
+    ),
+    position = "stack",
+    stat = "identity"
+  ) +
+  scale_fill_viridis_d() +
+  labs(title = "dissolved oxygen profiles per year and profile range",
+       x = "year",
+       y = "profile count",
+       fill = "profile range")
+
+```
