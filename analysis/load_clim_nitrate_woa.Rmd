@@ -1,0 +1,108 @@
+---
+title: "WOA nitrate Climatology"
+author: "David Stappard & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+chunk_output_type: console
+---
+
+# Task 
+
+This script loads the nitrate climatology as described in Garcia et al. (2018). The climatology netCDF has previously been downloaded. The lat and lon fields are harmonised to our requirements, i.e -89.5 ≥ lat ≤ 89.5 and 20.5 ≥ lon ≤ 379.5.
+
+Garcia, H. E., K. Weathers, C. R. Paver, I. Smolyar, T. P. Boyer, R. A. Locarnini, M. M. Zweng, A. V. Mishonov, O. K. Baranova, D. Seidov, and J. R. Reagan, 2018. World Ocean Atlas 2018, Volume 4: Dissolved Inorganic Nutrients (phosphate, nitrate and nitrate+nitrite, silicate). A. Mishonov Technical Ed.; NOAA Atlas NESDIS 84, 35pp.
+
+Dependencies
+------------
+
+WOA nitrate climatology - /nfs/kryo/work/datasets/gridded/ocean/interior/observation/woa/2018/nitrate/all/1.00/woa18_all_n01_01.nc
+
+Outputs (in BGC preprocessed folder)
+-------
+
+woa_nitrate_clim.rds
+
+```{r load_libraries}
+library(tidyverse)
+#library(ggOceanMaps)
+library(oce)
+#library(ncdf4)
+library(stars)
+```
+
+
+
+```{r set_paths}
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+path_WOA_nitrate <-"/nfs/kryo/work/datasets/gridded/ocean/interior/observation/woa/2018/nitrate/all/1.00"
+# monthly files of the form woa18_all_nMM_01.nc where MM = 01,....12
+
+theme_set(theme_bw())
+```
+
+# Read data 
+
+```{r load_climatological_data}
+
+for (i_month in 1:12) {
+
+  fn_WOA_nitrate <- paste0(path_WOA_nitrate, "/woa18_all_n", formatC(i_month, width=2, flag="0"), "_01.nc")
+  
+  nc_nitrate_mean <- read_ncdf(fn_WOA_nitrate, var = c("n_an")) %>% 
+    as_tibble() %>%
+    select(-time)
+  
+  # harmonise data 
+  if (!exists("clim_argo_nitrate")) {
+    clim_argo_nitrate <- nc_nitrate_mean %>%
+      rename(clim_nitrate = "n_an") %>%
+      mutate(month = i_month,
+             lon = if_else(lon < 20, lon + 360, lon))
+  } else {
+    clim_argo_nitrate <- rbind(
+      clim_argo_nitrate,
+      nc_nitrate_mean %>%
+        rename(clim_nitrate = "n_an") %>%
+        mutate(month = i_month,
+               lon = if_else(lon < 20, lon + 360, lon))
+    )
+  }
+
+}
+
+```
+
+# Maps
+```{r plots}
+
+clim_argo_nitrate %>%
+   filter(depth < 30) %>%
+   ggplot() +
+   geom_tile(aes(lon, lat, fill = clim_nitrate)) +
+   facet_wrap(~depth) +
+   scale_fill_viridis_c() +
+   coord_quickmap()
+
+clim_argo_nitrate %>%
+   ggplot(aes(clim_nitrate)) +
+   geom_histogram(binwidth = 2) +
+   facet_wrap(~depth) +
+   scale_y_log10()
+
+```
+
+
+# Write data to file
+
+```{r write_data_to_file}
+
+clim_argo_nitrate %>% 
+  drop_na() %>% 
+  write_rds(file = paste0(path_argo_preprocessed, "/woa_nitrate_clim.rds"))
+
+```
+

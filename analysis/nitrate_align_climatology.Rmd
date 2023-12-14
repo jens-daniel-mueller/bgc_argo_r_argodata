@@ -1,5 +1,5 @@
 ---
-title: "Prepare temperature data and vertically align to climatology"
+title: "Prepare nitrate data and vertically align to climatology"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -15,27 +15,27 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Task
 
-This markdown file reads previously created temperature climatology file and uses that as the definition of the depth levels that the Argo temperature data should be aligned to. As the climatology is based on pressure it is first aligned to standard depths. Previously created BGC data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the BGC preprocessed folder.
+This markdown file reads previously created nitrate climatology file and uses that as the definition of the depth levels that the BGC Argo nitrate data should be aligned to. Previously created BGC data (bgc_data.rds) and metadata (bgc_metadata.rds) are loaded from the BGC preprocessed folder.
 
-Base data qc flags are checked to ensure that the float position, pressure measurements and temperature measurements are good. Pressure is used to derive the depth of each measurement. The temperature profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 600 m, 2 = 1200 m and 3 = 1500 m.
+Base data qc flags are checked to ensure that the float position, pressure measurements and nitrate measurements are good. Pressure is used to derive the depth of each measurement. The nitrate profile is checked to ensure that significant gaps (specified by the opt_gap_limit, opt_gap_min_depth and opt_gap_max_depth) do not exist. Profiles are assigned a profile_range field that identifies the depth 1 = 600 m, 2= 800 m.
 
-The float temperature profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_temp_interpolated_clean. An anomaly file is then created from the vertically aligned profiles and climatology.
+The float nitrate profiles are then aligned using the spline function to match the depth levels of the climatology resulting in data frame bgc_data_nitrate_interpolated_clean. An anomaly file is then created from the vertically aligned profiles and climatology.
 
 Dependencies
 ------------
 
-boa_temp_clim.rds - created by load_argo_clim_temp_csio
+woa_nitrate_clim.rds - created by load_argo_clim_nitrate_woa
 
 bgc_data, bgc_metadata - created by load_argo
 
 Outputs (BGC preprocessed folder)
 -------
 
-temp_bgc_va.rds – vertically aligned temperature profiles. 
+nitrate_bgc_va.rds – vertically aligned nitrate profiles. 
 
-temp_clim_va.rds – climatology temperature profiles. 
+nitrate_clim_va.rds – climatology nitrate profiles. 
 
-temp_anomaly_va.rds – anomaly temperature profiles. 
+nitrate_anomaly_va.rds – anomaly nitrate profiles. 
 
 ```{r loading_libraries, include=FALSE}
 
@@ -68,24 +68,24 @@ Define options that are used to determine profiles that we will us in the ongoin
 # Options
 
 # opt_profile_depth_range
-# The profile must have at least one temperature reading at a depth <= opt_profile_depth_range[1, ]
-# The profile must have at least one temperature reading at a depth >= opt_profile_depth_range[2, ].
-# In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 600) it will be removed.
-profile_range <- c(1, 2, 3)
-min_depth <- c(5.0, 5.0, 5.0)
-max_depth <- c(600, 1200, 1500)
+# The profile must have at least one nitrate reading at a depth <= opt_profile_depth_range[1, ]
+# The profile must have at least one nitrate reading at a depth >= opt_profile_depth_range[2, ].
+# In addition if the profile depth does not exceed the min(opt_profile_depth_range[2, ]) (i.e. 8=600) it will be removed.
+profile_range <- c(1, 2)
+min_depth <- c(5.0, 5.0)
+max_depth <- c(600, 800)
 opt_profile_depth_range <- data.frame(profile_range, min_depth, max_depth)
 
 # opt_gap...
 # The profile should not have a gap greater that opt_gap_limit within the range defined by opt_gap_min_depth and opt_gap_max_depth
-opt_gap_limit <- c(28, 55, 110)
-opt_gap_min_depth <- c(0, 400, 1000)
-opt_gap_max_depth <- c(400, 1000, 1500)
+opt_gap_limit <- c(28, 55)
+opt_gap_min_depth <- c(0, 400)
+opt_gap_max_depth <- c(400, 800)
 
 # opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
-opt_measure_label <- "temperature anomaly (°C)"
-opt_xlim <- c(-4.5, 4.5)
-opt_xbreaks <- c(-4, -2, 0, 2, 4)
+opt_measure_label <- expression("nitrate anomaly ( µmol kg"^"-1"~")")
+opt_xlim <- c(-6, 6)
+opt_xbreaks <- c(-6, -3, 0, 3, 6)
 
 # opt_n_prof_sel
 # The selection criteria that is used against n_prof, here set to 1
@@ -115,88 +115,95 @@ opt_shallow_report_diff <- 'profile where shallow check exceeds absolute differe
 
 ## read climatology
 
-read temperature climatology and prepare to a set range of depths
+read nitrate climatology and prepare to a set range of depths
 
 ```{r read_climatology}
 
-# climatology values (clim_temp (°C)) available for lat, lon, month and pressure
-boa_temp_clim <- read_rds(file = paste0(path_argo_preprocessed, '/boa_temp_clim.rds'))
+# climatology values (clim_nitrate (°C)) available for lat, lon, month and pressure
+woa_nitrate_clim <- read_rds(file = paste0(path_argo_preprocessed, '/woa_nitrate_clim.rds'))
 
 #What is the max depth we are interested in
 opt_profile_max_depth <- max(opt_profile_depth_range$max_depth)
 
-# existing pressure levels become the target depths that we align to
-pressure_range <- unique(boa_temp_clim[c("pres")])
-target_depth_levels <- pressure_range %>% filter (pres <= opt_profile_max_depth) %>% mutate(target_depth = pres) %>% select(target_depth)
+# what are the target depths that we align to
+target_depth_levels <- woa_nitrate_clim %>% distinct(depth)
+
+target_depth_levels <-
+  target_depth_levels %>% 
+  filter (depth <= opt_profile_max_depth) %>% 
+  mutate(target_depth = depth) %>% 
+  select(target_depth)
 
 # select variable of interest and prepare target_depth field
-boa_temp_clim_clean <- boa_temp_clim %>%
+woa_nitrate_clim_clean <- woa_nitrate_clim %>%
                           select(
                             lat,
                             lon,
                             month,
                             depth,
-                            clim_temp
+                            clim_nitrate
                           ) %>%
                           mutate(
                             target_depth = depth, .after = depth
                           )
 
 # Exclude 0.0 m depth from the climatology and target_depth_levels
-target_depth_levels <- target_depth_levels %>% filter(target_depth > opt_exclude_shallower)
-boa_temp_clim_clean <- boa_temp_clim_clean %>% filter(depth > opt_exclude_shallower)
+target_depth_levels <- target_depth_levels %>% 
+  filter(target_depth > opt_exclude_shallower)
+woa_nitrate_clim_clean <- woa_nitrate_clim_clean %>% 
+  filter(depth > opt_exclude_shallower)
   
 # create all possible combinations of location and month climatologies and depth levels for interpolation
 target_depth_grid <-
   expand_grid(target_depth_levels,
-              boa_temp_clim_clean %>% distinct(lat, lon, month))
+              woa_nitrate_clim_clean %>% distinct(lat, lon, month))
 
 # extend climatology depth vectors with target depths
-boa_temp_clim_extended <-
-  full_join(boa_temp_clim_clean, target_depth_grid) %>% 
+woa_nitrate_clim_extended <-
+  full_join(woa_nitrate_clim_clean, target_depth_grid) %>% 
   arrange(lat, lon, month, target_depth)
 
 
 # filter where target depths outside range of climatology depths
 # depth is slightly lower than pressure so 1.02 factor is used to ensure bottom value is not lost.
-boa_temp_clim_extended <-
-  boa_temp_clim_extended %>%
+woa_nitrate_clim_extended <-
+  woa_nitrate_clim_extended %>%
   group_by(lat, lon, month) %>%
   filter(
-    target_depth <= max(depth, na.rm = TRUE)*1.02,
+    target_depth <= max(depth, na.rm = TRUE),
     target_depth >= min(depth, na.rm = TRUE)
   ) %>%
   ungroup()
 
 # predict spline interpolation on adjusted depth grid for climatology loaction and month
-boa_temp_clim_interpolated <-
-  boa_temp_clim_extended %>%
+woa_nitrate_clim_interpolated <-
+  woa_nitrate_clim_extended %>%
   group_by(lat, lon, month) %>%
-  mutate(clim_temp_spline = spline(target_depth, clim_temp,
+  mutate(clim_nitrate_spline = spline(target_depth, clim_nitrate,
                                        method = "natural",
                                        xout = target_depth)$y) %>%
   ungroup()
 
 # subset interpolated values on traget depth grid
-boa_temp_clim_interpolated_clean <- 
-  inner_join(target_depth_levels, boa_temp_clim_interpolated)
+woa_nitrate_clim_interpolated_clean <- 
+  inner_join(target_depth_levels, woa_nitrate_clim_interpolated)
 
 # select columns and rename to initial names
-boa_temp_clim_interpolated_clean <-
-  boa_temp_clim_interpolated_clean %>%
+woa_nitrate_clim_interpolated_clean <-
+  woa_nitrate_clim_interpolated_clean %>%
   select(lat, lon, month,
          depth = target_depth,
-         clim_temp = clim_temp_spline)
+         clim_nitrate = clim_nitrate_spline)
 
 # clean up working tables
-rm(boa_temp_clim_clean, boa_temp_clim_extended, boa_temp_clim_interpolated)
+rm(woa_nitrate_clim_clean, woa_nitrate_clim_extended, woa_nitrate_clim_interpolated)
 ```
 
-## read temp data
+## read nitrate data
 
-read temperature profile and carry out basic checks, good data.
+read nitrate profile and carry out basic checks, good data.
 
-```{r read_profile_temperature_data}
+```{r read_profile_nitrate_data}
 
 # base data and associated metadata
 bgc_data <- read_rds(file = paste0(path_argo_preprocessed, '/bgc_data.rds'))
@@ -213,36 +220,36 @@ bgc_metadata_select <- bgc_metadata %>%
          month = month(date),
          .after = date)
 
-# we only want pressure and temperature data
+# we only want pressure and nitrate data
 # conditions 
 # n_prof == 1
 # pres_adjusted_qc %in% c(1, 8) - pressure data marked as good
-# temp_adjusted_qc %in% c(1, 8) - temperature data marked as good
+# nitrate_adjusted_qc %in% c(1, 8) - nitrate data marked as good
 # !is.na(pres_adjusted) - pressure value must be present
-# !is.na(temp_adjusted) - temperature value must be present
-bgc_data_temp <- bgc_data %>%
+# !is.na(nitrate_adjusted) - nitrate value must be present
+bgc_data_nitrate <- bgc_data %>%
   filter(
     pres_adjusted_qc %in% c(1, 8) &
-      temp_adjusted_qc %in% c(1, 8) &
+      nitrate_adjusted_qc %in% c(1, 8) &
       n_prof == opt_n_prof_sel &
       !is.na(pres_adjusted) &
-      !is.na(temp_adjusted)
+      !is.na(nitrate_adjusted)
   ) %>%
   select(file_id,
          pres_adjusted,
-         temp_adjusted)
+         nitrate_adjusted)
 
 # join with metadata information and calculate depth field
-bgc_data_temp <-
+bgc_data_nitrate <-
   inner_join(bgc_metadata_select %>% select(file_id, lat),
-             bgc_data_temp) %>%
+             bgc_data_nitrate) %>%
   mutate(depth = gsw_z_from_p(pres_adjusted, latitude = lat) * -1.0,
          .before = pres_adjusted) %>%
   select(-c(lat, pres_adjusted))
 
-# ensure we have a depth, and temp_adjusted for all rows in bgc_data_temp
-bgc_data_temp <- bgc_data_temp %>%
-  filter(!is.na(depth) & !is.na(temp_adjusted))
+# ensure we have a depth, and nitrate_adjusted for all rows in bgc_data_nitrate
+bgc_data_nitrate <- bgc_data_nitrate %>%
+  filter(!is.na(depth) & !is.na(nitrate_adjusted))
 
 # clean up working tables
 rm(bgc_data, bgc_metadata)
@@ -255,10 +262,10 @@ gc()
 Apply the rules that are determined by options set in set_options.
 Profile must cover a set range and not contain gaps.
 
-```{r profile_limits_temperature}
+```{r profile_limits_nitrate}
 
 # Determine profile min and max depths
-bgc_profile_limits <- bgc_data_temp %>%
+bgc_profile_limits <- bgc_data_nitrate %>%
   group_by(file_id) %>%
   summarise(
     min_depth = min(depth),
@@ -268,23 +275,23 @@ bgc_profile_limits <- bgc_data_temp %>%
 
 # --------------------------------------------------------------------------------------
 # What is the distribution of min depths
-out <- bgc_profile_limits %>% 
-  filter(min_depth > 0 & min_depth < 10) %>%
-  mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
-  
-out <- out %>%
-  group_by(min_bin) %>%
-  summarise(count_profiles = n())
-
-out %>%
-  ggplot(aes(min_bin)) +
-  geom_bar(aes(weight = count_profiles)) +
-  scale_fill_viridis_d() +
-  labs(title = "temperature profiles minimum depth",
-       x = "min depth (m)",
-       y = "profile count")
-
-rm(out)
+# out <- bgc_profile_limits %>% 
+#   filter(min_depth > 0 & min_depth < 10) %>%
+#   mutate(min_bin = cut(min_depth, breaks = c(seq(0, 10, by = 0.5))))
+#   
+# out <- out %>%
+#   group_by(min_bin) %>%
+#   summarise(count_profiles = n())
+# 
+# out %>%
+#   ggplot(aes(min_bin)) +
+#   geom_bar(aes(weight = count_profiles)) +
+#   scale_fill_viridis_d() +
+#   labs(title = "nitrate profiles minimum depth",
+#        x = "min depth (m)",
+#        y = "profile count")
+# 
+# rm(out)
 # --------------------------------------------------------------------------------------
 
 # The profile much match at least one of teh range criteria
@@ -298,13 +305,13 @@ bgc_apply_limits <- bgc_profile_limits %>%
     max_depth >= force_max
     )
 
-# Ensure working data set only contains profiles that have confrormed to the range test
-bgc_data_temp <- right_join(bgc_data_temp,
+# Ensure working data set only contains profiles that have conformed to the range test
+bgc_data_nitrate <- right_join(bgc_data_nitrate,
                             bgc_apply_limits %>% select(file_id))
 
 # Add profile type field and set all to 1.  
 # All profile that meet the minimum requirements are profile_range = 1
-bgc_data_temp <- bgc_data_temp %>%
+bgc_data_nitrate <- bgc_data_nitrate %>%
   mutate(profile_range = 1)
 
 for (i in 2:nrow(opt_profile_depth_range)) {
@@ -319,17 +326,17 @@ for (i in 2:nrow(opt_profile_depth_range)) {
              max_depth >= range_max) %>%
     select(file_id) %>%
     mutate (profile_range = i)
-  
+
   # Update profile range to i for these profiles
-  # bgc_data_temp <- full_join(bgc_data_temp, bgc_apply_limits) %>%
+  # bgc_data_nitrate <- full_join(bgc_data_nitrate, bgc_apply_limits) %>%
   #                         filter(!is.na(min_depth))
-  bgc_data_temp <-
-    bgc_data_temp %>% rows_update(bgc_apply_limits, by = "file_id")
+  bgc_data_nitrate <-
+    bgc_data_nitrate %>% rows_update(bgc_apply_limits, by = "file_id")
 
 }
 
 # Find the gaps within the profiles
-profile_gaps <- full_join(bgc_data_temp,
+profile_gaps <- full_join(bgc_data_nitrate,
                           opt_profile_depth_range) %>%
   filter(depth >= min_depth & 
            depth <= max_depth) %>% 
@@ -356,7 +363,7 @@ for (i_gap in opt_gap_limit) {
     pull()
   
   # Remonve gap-containing profiles from working data set
-  bgc_data_temp <- bgc_data_temp %>% 
+  bgc_data_nitrate <- bgc_data_nitrate %>% 
     filter(!file_id %in% profile_gaps_remove)
 }
 
@@ -364,49 +371,49 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()
 
-# For each profile what is the temp at the shallowest depth of the profile, this is used in a comparison after vertical alignment
-shallow_temp_raw <- right_join(
-  bgc_data_temp,
-  bgc_data_temp %>%
+# For each profile what is the nitrate at the shallowest depth of the profile, this is used in a comparison after vertical alignment
+shallow_nitrate_raw <- right_join(
+  bgc_data_nitrate,
+  bgc_data_nitrate %>%
     group_by(file_id) %>%
     summarise(depth = min(depth)) %>%
     ungroup()
 ) %>%
-  select (file_id, temp_shallow_raw = temp_adjusted)
+  select (file_id, nitrate_shallow_raw = nitrate_adjusted)
 
 
 # Write file that are observations prior to vertical alignment 
-bgc_data_temp_full <- left_join(bgc_data_temp, bgc_metadata_select)
+bgc_data_nitrate_full <- left_join(bgc_data_nitrate, bgc_metadata_select)
 
-bgc_data_temp_full %>%
-  select(file_id, lat, lon, date, year, month, depth, temp_adjusted) %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_observed.rds"))
+bgc_data_nitrate_full %>%
+  select(file_id, lat, lon, date, year, month, depth, nitrate_adjusted) %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_observed.rds"))
 
-rm(bgc_data_temp_full)
+rm(bgc_data_nitrate_full)
 gc()
 
 
 ```
 
-## Vertical align temp
+## Vertical align nitrate
 
-We have a set of temperature profiles that match our criteria we now need to align that data set to match the 
-depth that are in target_depth_levels, this will match the range of climatology values in boa_temp_clim_interpolated_clean
+We have a set of nitrate profiles that match our criteria we now need to align that data set to match the 
+depth that are in target_depth_levels, this will match the range of climatology values in woa_nitrate_clim_interpolated_clean
 
-```{r vertical_align_temperature}
+```{r vertical_align_nitrate}
 
 # create unique combinations of file_id and profile ranges
 profile_range_file_id <- 
-  bgc_data_temp %>% 
+  bgc_data_nitrate %>% 
   distinct(file_id, profile_range)
 
 
 # select variable of interest and prepare target_depth field
-bgc_data_temp_clean <- bgc_data_temp %>%
+bgc_data_nitrate_clean <- bgc_data_nitrate %>%
   select(-profile_range) %>%
   mutate(target_depth = depth, .after = depth)
 
-rm(bgc_data_temp)
+rm(bgc_data_nitrate)
 gc()
 
 # create all possible combinations of location, month and depth levels for interpolation
@@ -425,75 +432,75 @@ target_depth_grid <- target_depth_grid %>%
   select(target_depth,
          file_id)
 
-# extend temp depth vectors with target depths
-bgc_data_temp_extended <-
-  full_join(bgc_data_temp_clean, target_depth_grid) %>%
+# extend nitrate depth vectors with target depths
+bgc_data_nitrate_extended <-
+  full_join(bgc_data_nitrate_clean, target_depth_grid) %>%
   arrange(file_id, target_depth)
 
-rm(bgc_data_temp_clean)
+rm(bgc_data_nitrate_clean)
 gc()
 
-# predict spline interpolation on adjusted depth grid for temp location and month
-bgc_data_temp_interpolated <-
-  bgc_data_temp_extended %>%
+# predict spline interpolation on adjusted depth grid for nitrate location and month
+bgc_data_nitrate_interpolated <-
+  bgc_data_nitrate_extended %>%
   group_by(file_id) %>%
-  mutate(temp_spline = spline(target_depth, temp_adjusted,
+  mutate(nitrate_spline = spline(target_depth, nitrate_adjusted,
                                 method = "natural",
                                 xout = target_depth)$y) %>%
   ungroup()
 
-rm(bgc_data_temp_extended)
+rm(bgc_data_nitrate_extended)
 gc()
 
 # subset interpolated values on target depth range
-bgc_data_temp_interpolated_clean <- 
-  inner_join(target_depth_levels, bgc_data_temp_interpolated)
+bgc_data_nitrate_interpolated_clean <- 
+  inner_join(target_depth_levels, bgc_data_nitrate_interpolated)
 
-rm(bgc_data_temp_interpolated)
+rm(bgc_data_nitrate_interpolated)
 gc()
 
 # select columns and rename to initial names
-bgc_data_temp_interpolated_clean <-
-  bgc_data_temp_interpolated_clean %>%
+bgc_data_nitrate_interpolated_clean <-
+  bgc_data_nitrate_interpolated_clean %>%
   select(file_id,
          depth = target_depth,
-         temp = temp_spline)
+         nitrate = nitrate_spline)
 
 # merge with profile range
-bgc_data_temp_interpolated_clean <-
-  full_join(bgc_data_temp_interpolated_clean,
+bgc_data_nitrate_interpolated_clean <-
+  full_join(bgc_data_nitrate_interpolated_clean,
             profile_range_file_id)
 
 # merge with meta data
-bgc_data_temp_interpolated_clean <-
-  left_join(bgc_data_temp_interpolated_clean,
+bgc_data_nitrate_interpolated_clean <-
+  left_join(bgc_data_nitrate_interpolated_clean,
             bgc_metadata_select)
 
-# For each profile what is the temp at the shallowest depth of the profile after vertical alignment
-shallow_temp_va <- right_join(
-  bgc_data_temp_interpolated_clean,
-  bgc_data_temp_interpolated_clean %>%
+# For each profile what is the nitrate at the shallowest depth of the profile after vertical alignment
+shallow_nitrate_va <- right_join(
+  bgc_data_nitrate_interpolated_clean,
+  bgc_data_nitrate_interpolated_clean %>%
     group_by(file_id) %>%
     summarise(depth = min(depth)) %>% 
     ungroup()
 ) %>%
-  select (file_id, temp_shallow_va = temp)
+  select (file_id, nitrate_shallow_va = nitrate)
 
 ```
 
 ## Check shallow
 
-A check is made that the shallowest temp value after the vertical alignment is within a specified percentage of the shallowest temp value before the vertical alignment
+A check is made that the shallowest nitrate value after the vertical alignment is within a specified percentage of the shallowest nitrate value before the vertical alignment
 ```{r check_shallow, eval=FALSE}
 
 # Combined dataframe with shallow value pre and post vertical alignment
-shallow_temp_check <- 
-  full_join(shallow_temp_raw, shallow_temp_va)
+shallow_nitrate_check <- 
+  full_join(shallow_nitrate_raw, shallow_nitrate_va)
 
 # Determine those profile that are outside of percentage criteria.
 if (opt_shallow_check_perc > 0.0){
-  shallow_check_report <- shallow_temp_check %>%
-    filter (abs((temp_shallow_raw - temp_shallow_va) / temp_shallow_raw) > opt_shallow_check_perc)
+  shallow_check_report <- shallow_nitrate_check %>%
+    filter (abs((nitrate_shallow_raw - nitrate_shallow_va) / nitrate_shallow_raw) > opt_shallow_check_perc)
 
   # Write issues to console
   if (nrow(shallow_check_report) > 0) {
@@ -504,8 +511,8 @@ if (opt_shallow_check_perc > 0.0){
 
 # Determine those profile that are outside of absolute difference criteria.
 if (opt_shallow_check_diff > 0.0){
-  shallow_check_report <- shallow_temp_check %>%
-    filter (abs(temp_shallow_raw - temp_shallow_va) > opt_shallow_check_diff)
+  shallow_check_report <- shallow_nitrate_check %>%
+    filter (abs(nitrate_shallow_raw - nitrate_shallow_va) > opt_shallow_check_diff)
 
   # Write issues to console
   if (nrow(shallow_check_report) > 0) {
@@ -516,7 +523,7 @@ if (opt_shallow_check_diff > 0.0){
 
 
 # remove working files
-rm(shallow_temp_check, shallow_temp_raw, shallow_temp_va, shallow_check_report)
+rm(shallow_nitrate_check, shallow_nitrate_raw, shallow_nitrate_va, shallow_check_report)
 gc()
 
 ```
@@ -524,26 +531,27 @@ gc()
 ## Create anomaly profiles
 
 Create anomaly profiles as observed - climatology
-```{r anomaly_temperature}
 
-# Create bgc_temp_anomaly, but only where we have an climatology temperature
-bgc_temp_anomaly <-
-  inner_join(bgc_data_temp_interpolated_clean, boa_temp_clim_interpolated_clean)
+```{r anomaly_nitrate}
 
-# Calculate the anomaly temperature
-bgc_temp_anomaly <- bgc_temp_anomaly %>%
+# Create bgc_nitrate_anomaly, but only where we have an climatology nitrate
+bgc_nitrate_anomaly <-
+  inner_join(bgc_data_nitrate_interpolated_clean, woa_nitrate_clim_interpolated_clean)
+
+# Calculate the anomaly nitrate
+bgc_nitrate_anomaly <- bgc_nitrate_anomaly %>%
                       mutate(
-                        anomaly = temp - clim_temp
+                        anomaly = nitrate - clim_nitrate
                       )
 
 # -----------------------------------------------------------------------------
 # Climatology check
 # -----------------------------------------------------------------------------
 # It is possible even though we have observational measures to full depth the climatology may not matach all depth.
-# These profiles will be removed from both temp_bgc_va and temp_anomaly_va
+# These profiles will be removed from both nitrate_bgc_va and nitrate_anomaly_va
 
 # Anomaly max depth
-bgc_temp_anomaly_depth_check <- bgc_temp_anomaly %>%
+bgc_nitrate_anomaly_depth_check <- bgc_nitrate_anomaly %>%
   group_by(file_id,
            profile_range) %>%
   summarise(min_pdepth = min(depth),
@@ -551,7 +559,7 @@ bgc_temp_anomaly_depth_check <- bgc_temp_anomaly %>%
   ungroup()
 
 # Add the required min depth and max depth
-bgc_temp_anomaly_depth_check <- left_join(bgc_temp_anomaly_depth_check, opt_profile_depth_range)
+bgc_nitrate_anomaly_depth_check <- left_join(bgc_nitrate_anomaly_depth_check, opt_profile_depth_range)
 
 # This profiles do not match the depth required by the profile_range
 # min_depth_check <- min(target_depth_grid$target_depth)
@@ -559,53 +567,53 @@ bgc_temp_anomaly_depth_check <- left_join(bgc_temp_anomaly_depth_check, opt_prof
 # Please double check if the criterion should be
 # each profile is checked against the min depth specified in min_depth 
 # max depth specified in max_depth. 
-remove_profiles <- bgc_temp_anomaly_depth_check %>%
+remove_profiles <- bgc_nitrate_anomaly_depth_check %>%
   filter((max_pdepth < max_depth) | (min_pdepth > min_depth)) %>%
   distinct(file_id)
 
-# remove from both bgc_data_temp_interpolated_clean and bgc_temp_anomaly
-bgc_data_temp_interpolated_clean <-
-  anti_join(bgc_data_temp_interpolated_clean, remove_profiles)
+# remove from both bgc_data_nitrate_interpolated_clean and bgc_nitrate_anomaly
+bgc_data_nitrate_interpolated_clean <-
+  anti_join(bgc_data_nitrate_interpolated_clean, remove_profiles)
 
-bgc_temp_anomaly <- anti_join(bgc_temp_anomaly, remove_profiles)
+bgc_nitrate_anomaly <- anti_join(bgc_nitrate_anomaly, remove_profiles)
 
 ```
 
 ## Write files
 
-Write the climatology that maps onto depth levels, interpolated temperature profiles that map onto depth levels and resulting anomaly files.
-```{r write_temperature_va}
+Write the climatology that maps onto depth levels, interpolated nitrate profiles that map onto depth levels and resulting anomaly files.
+```{r write_nitrate_va}
 
 # Write files
-bgc_data_temp_interpolated_clean %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_va.rds"))
+bgc_data_nitrate_interpolated_clean %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_va.rds"))
 
-boa_temp_clim_interpolated_clean %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/temp_clim_va.rds"))
+woa_nitrate_clim_interpolated_clean %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/nitrate_clim_va.rds"))
 
-bgc_temp_anomaly %>%
-  write_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds"))
+bgc_nitrate_anomaly %>%
+  write_rds(file = paste0(path_argo_preprocessed, "/nitrate_anomaly_va.rds"))
 
 # Rename so that names match if just reading existing files
-temp_bgc_va <- bgc_data_temp_interpolated_clean
-temp_clim_va <- boa_temp_clim_interpolated_clean
-temp_anomaly_va <- bgc_temp_anomaly
+nitrate_bgc_va <- bgc_data_nitrate_interpolated_clean
+nitrate_clim_va <- woa_nitrate_clim_interpolated_clean
+nitrate_anomaly_va <- bgc_nitrate_anomaly
 
-#rm(bgc_data_temp_interpolated_clean, boa_temp_clim_interpolated_clean, bgc_temp_anomaly)
+#rm(bgc_data_nitrate_interpolated_clean, woa_nitrate_clim_interpolated_clean, bgc_nitrate_anomaly)
 
 ```
 
 ## read files
 
 Read files that were previously created ready for analysis
-```{r read_temperature_va}
+```{r read_nitrate_va}
 
 # read files
-temp_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_bgc_va.rds"))
+nitrate_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_bgc_va.rds"))
 
-temp_clim_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_clim_va.rds"))
+nitrate_clim_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_clim_va.rds"))
 
-temp_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds"))
+nitrate_anomaly_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_anomaly_va.rds"))
 
 ```
 
@@ -617,67 +625,51 @@ theme_set(theme_bw())
 ```
 
 
-## Temperature anomaly
+## nitrate anomaly
 
 Details of mean anomaly over analysis period
 ```{r plot_overall_mean_anomaly_profiles, fig.asp=1}
 
 max_depth_1 <- opt_profile_depth_range[1, "max_depth"]
 max_depth_2 <- opt_profile_depth_range[2, "max_depth"]
-max_depth_3 <- opt_profile_depth_range[3, "max_depth"]
 
 # Profiles to 600m
-anomaly_overall_mean_1 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+anomaly_overall_mean_1 <- nitrate_anomaly_va %>% 
+  filter(profile_range %in% c(1, 2) & depth <= max_depth_1) %>%
   group_by(depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+  summarise(nitrate_count = n(),
+            nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
-anomaly_year_mean_1 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(1, 2, 3) & depth <= max_depth_1) %>%
+anomaly_year_mean_1 <- nitrate_anomaly_va %>% 
+  filter(profile_range %in% c(1, 2) & depth <= max_depth_1) %>%
   group_by(year, depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+  summarise(nitrate_count = n(),
+            nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
-# Profiles to 1200m
-anomaly_overall_mean_2 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+# Profiles to 900m
+anomaly_overall_mean_2 <- nitrate_anomaly_va %>% 
+  filter(profile_range %in% c(2) & depth <= max_depth_2) %>%
   group_by(depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+  summarise(nitrate_count = n(),
+            nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
-anomaly_year_mean_2 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(2, 3) & depth <= max_depth_2) %>%
+anomaly_year_mean_2 <- nitrate_anomaly_va %>% 
+  filter(profile_range %in% c(2) & depth <= max_depth_2) %>%
   group_by(year, depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
-
-# Profiles to 1500m
-anomaly_overall_mean_3 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
-  group_by(depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
-
-anomaly_year_mean_3 <- temp_anomaly_va %>% 
-  filter(profile_range %in% c(3) & depth <= max_depth_3) %>%
-  group_by(year, depth) %>% 
-  summarise(temp_count = n(),
-            temp_anomaly_mean = mean(anomaly, na.rm = TRUE),
-            temp_anomaly_sd = sd(anomaly, na.rm = TRUE))
+  summarise(nitrate_count = n(),
+            nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+            nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE))
 
 # All years anomaly
 anomaly_overall_mean_1 %>% 
   ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
+  geom_path(aes(x = nitrate_anomaly_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+  geom_ribbon(aes(xmax = nitrate_anomaly_mean + nitrate_anomaly_sd,
+                  xmin = nitrate_anomaly_mean - nitrate_anomaly_sd,
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
@@ -692,10 +684,10 @@ anomaly_overall_mean_1 %>%
 
 anomaly_overall_mean_2 %>% 
   ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
+  geom_path(aes(x = nitrate_anomaly_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+  geom_ribbon(aes(xmax = nitrate_anomaly_mean + nitrate_anomaly_sd,
+                  xmin = nitrate_anomaly_mean - nitrate_anomaly_sd,
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
@@ -708,31 +700,13 @@ anomaly_overall_mean_2 %>%
     y = 'depth (m)'
   )
 
-anomaly_overall_mean_3 %>% 
-  ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse() +
-  coord_cartesian(xlim = opt_xlim) +
-  scale_x_continuous(breaks = opt_xbreaks) +
-  labs(
-    title = paste0('Overall mean anomaly profiles to ', max_depth_3, 'm'),
-    x = opt_measure_label,
-    y = 'depth (m)'
-  )
-
 # yearly anomaly
 anomaly_year_mean_1 %>% 
   ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
+  geom_path(aes(x = nitrate_anomaly_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+  geom_ribbon(aes(xmax = nitrate_anomaly_mean + nitrate_anomaly_sd,
+                  xmin = nitrate_anomaly_mean - nitrate_anomaly_sd,
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
@@ -748,10 +722,10 @@ anomaly_year_mean_1 %>%
 
 anomaly_year_mean_2 %>% 
   ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
+  geom_path(aes(x = nitrate_anomaly_mean,
                 y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
+  geom_ribbon(aes(xmax = nitrate_anomaly_mean + nitrate_anomaly_sd,
+                  xmin = nitrate_anomaly_mean - nitrate_anomaly_sd,
                   y = depth),
               alpha = 0.2)+
   geom_vline(xintercept = 0)+
@@ -765,41 +739,20 @@ anomaly_year_mean_2 %>%
     y = 'depth (m)'
   )
 
-anomaly_year_mean_3 %>% 
-  ggplot()+
-  geom_path(aes(x = temp_anomaly_mean,
-                y = depth))+
-  geom_ribbon(aes(xmax = temp_anomaly_mean + temp_anomaly_sd,
-                  xmin = temp_anomaly_mean - temp_anomaly_sd,
-                  y = depth),
-              alpha = 0.2)+
-  geom_vline(xintercept = 0)+
-  scale_y_reverse() +
-  facet_wrap(~year)+
-  coord_cartesian(xlim = opt_xlim) +
-  scale_x_continuous(breaks = opt_xbreaks) +
-  labs(
-    title = paste0('Yearly mean anomaly profiles to ', max_depth_3, 'm'),
-    x = opt_measure_label,
-    y = 'depth (m)'
-  )
-
-
-
 #rm(anomaly_overall_mean)
 ```
 
 ## Profile counts
 
 Details of the number of profiles and to which depths over the analysis period
-```{r temp_histogram, fig.asp=1}
+```{r nitrate_histogram, fig.asp=1}
 
-temp_histogram <- temp_bgc_va %>%
+nitrate_histogram <- nitrate_bgc_va %>%
   group_by(year, profile_range = as.character(profile_range)) %>%
   summarise(num_profiles = n_distinct(file_id)) %>%
   ungroup()
 
-temp_histogram %>%
+nitrate_histogram %>%
   ggplot() +
   geom_bar(
     aes(
@@ -812,7 +765,7 @@ temp_histogram %>%
     stat = "identity"
   ) +
   scale_fill_viridis_d() +
-  labs(title = "temperature profiles per year and profile range",
+  labs(title = "nitrate profiles per year and profile range",
        x = "year",
        y = "profile count",
        fill = "profile range")
