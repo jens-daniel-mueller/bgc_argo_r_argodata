@@ -57,25 +57,27 @@ What category of data is the cluster analysis related to
 # bgc_ph_hplus based on bgc_ph dataset with analysis carried out on h plus anomalies
 #opt_category <- "bgc_temp"
 #opt_category <- "bgc_temp_withph"
-#opt_category <- "bgc_ph_hplus"
-opt_category <- "bgc_ph_hplus"
+#opt_category <- "bgc_ph_h_plus"
+#opt_category <- "bgc_ph_ph"
+#opt_category <- "bgc_doxy"
+opt_category <- "bgc_ph_h_plus"
 
-# Global
-opt_lat_min <- -90
-opt_lat_max <- 90
-opt_lon_min <- 20
-opt_lon_max <- 380
-
-# spatial restrictions
-# Southern ocean
-opt_lat_min <- -90
-opt_lat_max <- -30
-opt_lon_min <- 20
-opt_lon_max <- 380
-
-# Mapping latitude limits
-opt_map_lat_limit <- c(-85, 85) # global
-opt_map_lat_limit <- c(-85,-30) # SO
+# # Global
+# opt_lat_min <- -90
+# opt_lat_max <- 90
+# opt_lon_min <- 20
+# opt_lon_max <- 380
+# 
+# # spatial restrictions
+# # Southern ocean
+# opt_lat_min <- -90
+# opt_lat_max <- -30
+# opt_lon_min <- 20
+# opt_lon_max <- 380
+# 
+# # Mapping latitude limits
+# opt_map_lat_limit <- c(-85, 85) # global
+# opt_map_lat_limit <- c(-85,-30) # SO
 
 ```
 
@@ -138,7 +140,19 @@ Prepare data for cluster analysis
 ```{r prep_bgc_temp}
 
 if (opt_category == "bgc_temp") {
+
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # Southern ocean
+  opt_lat_min <- -90
+  opt_lat_max <- -30
+  opt_lon_min <- 20
+  opt_lon_max <- 380
   
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85,-30) # SO
+    
   # ---------------------------------------------------------------------------------------------
   # read data - bgc temperature must have a ph profile
   # ---------------------------------------------------------------------------------------------
@@ -177,16 +191,6 @@ if (opt_category == "bgc_temp") {
   # ---------------------------------------------------------------------------------------------
   # Associated data restrictions and formatting
   # ---------------------------------------------------------------------------------------------
-  # spatial restrictions
-  # Southern ocean
-  opt_lat_min <- -90
-  opt_lat_max <- -30
-  opt_lon_min <- 20
-  opt_lon_max <- 380
-  
-  # Mapping latitude limits
-  opt_map_lat_limit <- c(-85,-30) # SO
-  
   # What is the max depth of each profile_range
   opt_max_depth <- c(600, 1000, 1500)
   
@@ -200,6 +204,9 @@ if (opt_category == "bgc_temp") {
   opt_xlim_adjusted <- c(-1, 1)
   opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
 
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
+  
 }
 
 ```
@@ -207,7 +214,19 @@ if (opt_category == "bgc_temp") {
 ```{r prep_bgc_temp_withph}
 
 if (opt_category == "bgc_temp_withph") {
+
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # Southern ocean
+  opt_lat_min <- -90
+  opt_lat_max <- -30
+  opt_lon_min <- 20
+  opt_lon_max <- 380
   
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85,-30) # SO
+    
   # ---------------------------------------------------------------------------------------------
   # read data - bgc temperature must have a ph profile
   # ---------------------------------------------------------------------------------------------
@@ -250,16 +269,6 @@ if (opt_category == "bgc_temp_withph") {
   # ---------------------------------------------------------------------------------------------
   # Associated data restrictions and formatting
   # ---------------------------------------------------------------------------------------------
-  # spatial restrictions
-  # Southern ocean
-  opt_lat_min <- -90
-  opt_lat_max <- -30
-  opt_lon_min <- 20
-  opt_lon_max <- 380
-  
-  # Mapping latitude limits
-  opt_map_lat_limit <- c(-85,-30) # SO
-  
   # What is the max depth of each profile_range
   opt_max_depth <- c(600, 1000, 1500)
   
@@ -273,13 +282,28 @@ if (opt_category == "bgc_temp_withph") {
   opt_xlim_adjusted <- c(-1, 1)
   opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
 
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
+  
 }
 
 ```
 
-```{r prep_bgc_ph_hplus}
+```{r prep_bgc_ph_h_plus}
 
-if (opt_category == "bgc_ph_hplus") {
+if (opt_category == "bgc_ph_h_plus") {
+
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # Southern ocean
+  opt_lat_min <- -90
+  opt_lat_max <- -30
+  opt_lon_min <- 20
+  opt_lon_max <- 380
+  
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85,-30) # SO
   
   # ---------------------------------------------------------------------------------------------
   # read data - ph with analysis based on hplus
@@ -319,16 +343,6 @@ if (opt_category == "bgc_ph_hplus") {
   # ---------------------------------------------------------------------------------------------
   # Associated data restrictions and formatting
   # ---------------------------------------------------------------------------------------------
-  # spatial restrictions
-  # Southern ocean
-  opt_lat_min <- -90
-  opt_lat_max <- -30
-  opt_lon_min <- 20
-  opt_lon_max <- 380
-  
-  # Mapping latitude limits
-  opt_map_lat_limit <- c(-85,-30) # SO
-
   # What is the max depth of each profile_range
   opt_max_depth <- c(614, 1225, 1600)
     
@@ -349,8 +363,12 @@ if (opt_category == "bgc_ph_hplus") {
   
   # oxygen formatting
   opt_doxy_measure_label <- expression("dissolved oxygen ( µmol kg"^"-1"~")")
-  opt_doxy_xlim <- c(50, 350)
-  opt_doxy_xbreaks <- c(50, 100, 150, 200, 250, 300, 350)
+
+  # nitrate formatting
+  opt_nitrate_measure_label <- expression("nitrate ( µmol kg"^"-1"~")")
+
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
   
 }
 
@@ -360,6 +378,18 @@ if (opt_category == "bgc_ph_hplus") {
 
 if (opt_category == "bgc_ph_ph") {
   
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # Southern ocean
+  opt_lat_min <- -90
+  opt_lat_max <- -30
+  opt_lon_min <- 20
+  opt_lon_max <- 380
+  
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85,-30) # SO
+
   # ---------------------------------------------------------------------------------------------
   # read data - ph with analysis based on ph
   # ---------------------------------------------------------------------------------------------
@@ -398,16 +428,6 @@ if (opt_category == "bgc_ph_ph") {
   # ---------------------------------------------------------------------------------------------
   # Associated data restrictions and formatting
   # ---------------------------------------------------------------------------------------------
-  # spatial restrictions
-  # Southern ocean
-  opt_lat_min <- -90
-  opt_lat_max <- -30
-  opt_lon_min <- 20
-  opt_lon_max <- 380
-  
-  # Mapping latitude limits
-  opt_map_lat_limit <- c(-85,-30) # SO
-
   # What is the max depth of each profile_range
   opt_max_depth <- c(614, 1225, 1600)
     
@@ -428,8 +448,74 @@ if (opt_category == "bgc_ph_ph") {
   
   # oxygen formatting
   opt_doxy_measure_label <- expression("dissolved oxygen ( µmol kg"^"-1"~")")
-  opt_doxy_xlim <- c(50, 350)
-  opt_doxy_xbreaks <- c(50, 100, 150, 200, 250, 300, 350)
+
+  # nitrate formatting
+  opt_nitrate_measure_label <- expression("nitrate ( µmol kg"^"-1"~")")
+    
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
+  
+}
+
+```
+
+```{r prep_bgc_doxy}
+
+if (opt_category == "bgc_doxy") {
+  
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # global
+  opt_lat_min <- -90
+  opt_lat_max <- 90
+  opt_lon_min <- 20
+  opt_lon_max <- 380
+  
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85, 85) # global
+  
+  # ---------------------------------------------------------------------------------------------
+  # read data - bgc oxygen must have a ph profile
+  # ---------------------------------------------------------------------------------------------
+  # read data, applying geographical limits and standardize field names.
+  anomaly_va <-
+    read_rds(file = paste0(path_argo_preprocessed, "/doxy_anomaly_va.rds")) %>%
+    filter (lat >= opt_lat_min &
+            lat <= opt_lat_max &
+            lon >= opt_lon_min &
+            lon <= opt_lon_max) %>%
+    select(file_id,
+           date,
+           year,
+           month,
+           lat,
+           lon,
+           profile_range,
+           depth, 
+           prof_measure = doxy,
+           clim_measure = clim_doxy,
+           anomaly
+           )
+  
+  # ---------------------------------------------------------------------------------------------
+  # Associated data restrictions and formatting
+  # ---------------------------------------------------------------------------------------------
+  # What is the max depth of each profile_range
+  opt_max_depth <- c(600, 1000, 1500)
+  
+  # opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
+  opt_measure_label <- expression("dissolved oxygen anomaly ( µmol kg"^"-1"~")")
+  opt_xlim <- c(-20, 20)
+  opt_xbreaks <- c(-20, -10, 0, 10, 20)
+
+  # adjusted to be in scale -1 to 1
+  opt_measure_label_adjusted <- "adjusted oxygen anomaly"
+  opt_xlim_adjusted <- c(-1, 1)
+  opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
+
+  # Under extreme analysis
+  opt_extreme_analysis <- FALSE
   
 }
 
@@ -1123,22 +1209,36 @@ for each cluster identified by pH cluster analysis show  alongside chl-a
 
 ```{r ph_with_chla}
 if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
-  
+
   # Read chl-a data and link to cluster ID
   chla_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/chla_bgc_va.rds"))
-  chla_cluster <- right_join(chla_bgc_va, profile_id)
+  chla_cluster <-
+    full_join(
+      chla_bgc_va,
+      anomaly_cluster_all %>% distinct (file_id, cluster, profile_type, num_clusters)
+    ) %>% filter(!is.na(cluster))
 
   # summarise by cluster
-  chla_cluster_mean <- chla_cluster %>% 
-      group_by(cluster, depth) %>% 
-      summarise(chla_mean = mean(chla, na.rm = TRUE),
-                chla_sd = sd(chla, na.rm = TRUE)) %>%
-      ungroup()
+  chla_cluster_mean <- chla_cluster %>%
+    group_by(cluster, profile_type, num_clusters, depth) %>%
+    summarise(
+      chla_mean = mean(chla, na.rm = TRUE),
+      chla_sd = sd(chla, na.rm = TRUE)
+    ) %>%
+    ungroup() %>%
+    select(
+      cluster,
+      profile_type,
+      num_clusters,
+      chla_depth = depth,
+      chla_mean,
+      chla_sd
+    )
 
   # join pH anomaly with chl-a
   cluster_ph_chla <- full_join(anomaly_cluster_mean, chla_cluster_mean)
   chla_color <- "#69b3a2"
-  
+
   if (opt_category == "bgc_ph_ph"){
     chla_to_ph_factor <- 25
     chla_to_ph_offset <- 1
@@ -1146,7 +1246,10 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
     chla_to_ph_factor <- 1e9
     chla_to_ph_offset <- 1
   }
-  
+
+  # Add the cluster count information
+  cluster_ph_chla <- left_join(cluster_ph_chla, cluster_count)
+
   cluster_ph_chla %>% 
     filter (profile_type == "base") %>%
     group_split(profile_type, num_clusters) %>%
@@ -1162,13 +1265,13 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       alpha = 0.2) +
       geom_path(aes(
         x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
-        y = depth
+        y = chla_depth
       ), color = chla_color) +
       geom_ribbon(
         aes(
           xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
           xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          y = depth
+          y = chla_depth
         ),
         fill = chla_color,
         alpha = 0.2
@@ -1176,7 +1279,7 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       geom_vline(xintercept = 0) +
       scale_y_continuous(trans = trans_reverser("sqrt"),
                          breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-      facet_wrap( ~ cluster,
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
                   strip.position = "right") +
       coord_cartesian(xlim = opt_xlim) +
       scale_x_continuous(
@@ -1234,13 +1337,13 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       alpha = 0.2) +
       geom_path(aes(
         x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
-        y = depth
+        y = chla_depth
       ), color = chla_color) +
       geom_ribbon(
         aes(
           xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
           xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          y = depth
+          y = chla_depth
         ),
         fill = chla_color,
         alpha = 0.2
@@ -1248,7 +1351,7 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       geom_vline(xintercept = 0) +
       scale_y_continuous(trans = trans_reverser("sqrt"),
                          breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
-      facet_wrap( ~ cluster,
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
                   strip.position = "right") +
       coord_cartesian(xlim = opt_xlim_adjusted) +
       scale_x_continuous(
@@ -1278,37 +1381,55 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
 
 ```
 
-### pH and oxygen
+### pH and oxygen anomaly
 
-for each cluster identified by pH cluster analysis show  alongside oxygen
+for each cluster identified by pH cluster analysis show alongside oxygen anomaly
 
 ```{r ph_with_oxygen}
 if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
   
-  # Read chl-a data and link to cluster ID
-  doxy_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_bgc_va.rds"))
-  doxy_cluster <- right_join(doxy_bgc_va, profile_id)
+  # Read oxygen anomaly data and link to cluster information
+  doxy_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/doxy_anomaly_va.rds"))
+  doxy_cluster <-
+    full_join(
+      doxy_bgc_va,
+      anomaly_cluster_all %>% distinct (file_id, cluster, profile_type, num_clusters)
+    ) %>% filter(!is.na(cluster))
+  
+  # summarise by cluster, , profile_type, num_clusters
+  doxy_cluster_mean <- doxy_cluster %>%
+    group_by(cluster, profile_type, num_clusters, depth) %>%
+    summarise(
+      doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+      doxy_anomaly_sd = sd(anomaly, na.rm = TRUE)
+    ) %>%
+    ungroup() %>%
+    select(
+      cluster,
+      profile_type,
+      num_clusters,
+      doxy_depth = depth,
+      doxy_anomaly_mean,
+      doxy_anomaly_sd
+    )
+  
 
-  # summarise by cluster
-  doxy_cluster_mean <- doxy_cluster %>% 
-      group_by(cluster, depth) %>% 
-      summarise(doxy_mean = mean(doxy, na.rm = TRUE),
-                doxy_sd = sd(doxy, na.rm = TRUE)) %>%
-      ungroup()
-
-  # join pH anomaly with chl-a
+  # join pH anomaly with oxygen
+  #anomaly_cluster_mean
   cluster_ph_doxy <- full_join(anomaly_cluster_mean, doxy_cluster_mean)
   doxy_color <- "#5B9BD5"
 
-
   if (opt_category == "bgc_ph_ph"){
-    doxy_to_ph_factor <- 1875
-    doxy_to_ph_offset <- 200
+    doxy_to_ph_factor <- 250
+    doxy_to_ph_offset <- 0
   } else {
-    doxy_to_ph_factor <- 75e9
-    doxy_to_ph_offset <- 200
+    doxy_to_ph_factor <- 1e10
+    doxy_to_ph_offset <- 0
   }
-  
+
+  # Add the cluster count information
+  cluster_ph_doxy <- left_join(cluster_ph_doxy, cluster_count)
+    
   cluster_ph_doxy %>%
     filter (profile_type == "base") %>%
     group_split(profile_type, num_clusters) %>%
@@ -1323,21 +1444,21 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       ),
       alpha = 0.2) +
       geom_path(aes(
-        x = (doxy_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
-        y = depth
+        x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+        y = doxy_depth
       ), color = doxy_color) +
       geom_ribbon(
         aes(
-          xmax = (doxy_mean + doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          xmin = (doxy_mean - doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          y = depth
+          xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+          xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+          y = doxy_depth
         ),
         fill = doxy_color,
         alpha = 0.2
       ) +
       geom_vline(xintercept = 0) +
       scale_y_reverse() +
-      facet_wrap( ~ cluster,
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
                   strip.position = "right") +
       coord_cartesian(xlim = opt_xlim) +
       scale_x_continuous(
@@ -1374,11 +1495,11 @@ Adjusted profiles
 if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
 
   if (opt_category == "bgc_ph_ph"){
-    doxy_to_ph_factor <- 150
-    doxy_to_ph_offset <- 200
+    doxy_to_ph_factor <- 20
+    doxy_to_ph_offset <- 0
   } else {
-    doxy_to_ph_factor <- 150
-    doxy_to_ph_offset <- 200
+    doxy_to_ph_factor <- 20
+    doxy_to_ph_offset <- 0
   }
   
   cluster_ph_doxy %>%
@@ -1395,21 +1516,21 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
       ),
       alpha = 0.2) +
       geom_path(aes(
-        x = (doxy_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
-        y = depth
+        x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+        y = doxy_depth
       ), color = doxy_color) +
       geom_ribbon(
         aes(
-          xmax = (doxy_mean + doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          xmin = (doxy_mean - doxy_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          y = depth
+          xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+          xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+          y = doxy_depth
         ),
         fill = doxy_color,
         alpha = 0.2
       ) +
       geom_vline(xintercept = 0) +
       scale_y_reverse() +
-      facet_wrap( ~ cluster,
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
                   strip.position = "right") +
       coord_cartesian(xlim = opt_xlim_adjusted) +
       scale_x_continuous(
@@ -1438,11 +1559,192 @@ if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
 }
 
 ```
+
+### pH and nitrate anomaly
+
+for each cluster identified by pH cluster analysis show alongside nitrate anomaly
+
+```{r ph_with_nitrate}
+if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
+  
+  # Read oxygen anomaly data and link to cluster information
+  nitrate_bgc_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_anomaly_va.rds"))
+  nitrate_cluster <-
+    full_join(
+      nitrate_bgc_va,
+      anomaly_cluster_all %>% distinct (file_id, cluster, profile_type, num_clusters)
+    ) %>% filter(!is.na(cluster))
+  
+  # summarise by cluster, , profile_type, num_clusters
+  nitrate_cluster_mean <- nitrate_cluster %>%
+    group_by(cluster, profile_type, num_clusters, depth) %>%
+    summarise(
+      nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+      nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE)
+    ) %>%
+    ungroup() %>%
+    select(
+      cluster,
+      profile_type,
+      num_clusters,
+      nitrate_depth = depth,
+      nitrate_anomaly_mean,
+      nitrate_anomaly_sd
+    )
+  
+
+  # join pH anomaly with nitrate
+  #anomaly_cluster_mean
+  cluster_ph_nitrate <- full_join(anomaly_cluster_mean, nitrate_cluster_mean)
+  nitrate_color <- "#ED7D31"
+
+  if (opt_category == "bgc_ph_ph"){
+    nitrate_to_ph_factor <- 75
+    nitrate_to_ph_offset <- 0
+  } else {
+    nitrate_to_ph_factor <- 3e9
+    nitrate_to_ph_offset <- 0
+  }
+  
+  # Add the cluster count information
+  cluster_ph_nitrate <- left_join(cluster_ph_nitrate, cluster_count)
+    
+  cluster_ph_nitrate %>%
+    filter (profile_type == "base") %>%
+    group_split(profile_type, num_clusters) %>%
+    map(
+    ~ ggplot(data = .x,) +
+      geom_path(aes(x = anomaly_mean,
+                    y = depth)) +
+      geom_ribbon(aes(
+        xmax = anomaly_mean + anomaly_sd,
+        xmin = anomaly_mean - anomaly_sd,
+        y = depth
+      ),
+      alpha = 0.2) +
+      geom_path(aes(
+        x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
+        y = nitrate_depth
+      ), color = nitrate_color) +
+      geom_ribbon(
+        aes(
+          xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+          xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+          y = nitrate_depth
+        ),
+        fill = nitrate_color,
+        alpha = 0.2
+      ) +
+      geom_vline(xintercept = 0) +
+      scale_y_reverse() +
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
+                  strip.position = "right") +
+      coord_cartesian(xlim = opt_xlim) +
+      scale_x_continuous(
+        # First axis
+        name = opt_measure_label,
+        breaks = opt_xbreaks,
+        # First axis
+        sec.axis = sec_axis(
+          trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
+          name = opt_nitrate_measure_label
+        )
+      ) +
+      labs(        
+        title = paste0(
+          'Overall mean anomaly profiles by cluster \n',
+          'type = ', unique(.x$profile_type), ', ', 
+          'num clusters = ', unique(.x$num_clusters)
+        ),
+        x = opt_measure_label, 
+        y = 'depth (m)'
+        ) +
+      theme(axis.title.x.top = element_text(color = nitrate_color),
+            axis.text.x.top = element_text(color = nitrate_color))
+    )
+  
+}
+
+```
+
+Adjusted profiles
+
+```{r ph_with_nitrate_adj}
+
+if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
+
+  if (opt_category == "bgc_ph_ph"){
+    nitrate_to_ph_factor <- 6
+    nitrate_to_ph_offset <- 0
+  } else {
+    nitrate_to_ph_factor <- 6
+    nitrate_to_ph_offset <- 0
+  }
+  
+  cluster_ph_nitrate %>%
+    filter (profile_type == "adjusted") %>%
+    group_split(profile_type, num_clusters) %>%
+    map(
+    ~ ggplot(data = .x,) +
+      geom_path(aes(x = anomaly_mean,
+                    y = depth)) +
+      geom_ribbon(aes(
+        xmax = anomaly_mean + anomaly_sd,
+        xmin = anomaly_mean - anomaly_sd,
+        y = depth
+      ),
+      alpha = 0.2) +
+      geom_path(aes(
+        x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
+        y = nitrate_depth
+      ), color = nitrate_color) +
+      geom_ribbon(
+        aes(
+          xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+          xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+          y = nitrate_depth
+        ),
+        fill = nitrate_color,
+        alpha = 0.2
+      ) +
+      geom_vline(xintercept = 0) +
+      scale_y_reverse() +
+      facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
+                  strip.position = "right") +
+      coord_cartesian(xlim = opt_xlim_adjusted) +
+      scale_x_continuous(
+        # First axis
+        name = opt_measure_label_adjusted,
+        breaks = opt_xbreaks_adjusted,
+        # First axis
+        sec.axis = sec_axis(
+          trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
+          name = opt_nitrate_measure_label
+        )
+      ) +
+      labs(        
+        title = paste0(
+          'Overall mean anomaly profiles by cluster \n',
+          'type = ', unique(.x$profile_type), ', ', 
+          'num clusters = ', unique(.x$num_clusters)
+        ),
+        x = opt_measure_label_adjusted, 
+        y = 'depth (m)'
+        ) +
+      theme(axis.title.x.top = element_text(color = nitrate_color),
+            axis.text.x.top = element_text(color = nitrate_color))
+    )
+  
+}
+
+```
   
 ## Cluster by surface Extreme
 
 ```{r cluster_analysis_prep_ext}
 
+if (opt_extreme_analysis){
+  
 # date to match to ocean SODA
 anomaly_va <- anomaly_va %>% 
   mutate(date = ymd(format(date, "%Y-%m-15")))
@@ -1660,11 +1962,15 @@ for (iprofile_type in 1:2) {
   }
   
 }
+}
+
 ```
 
 ### Cluster means
 
 ```{r cluster_mean_ext}
+
+if (opt_extreme_analysis){
 
 # Determine profile count by cluster and year
 # Count the measurements
@@ -1718,12 +2024,15 @@ anomaly_cluster_mean_ext %>%
         y = 'depth (m)'
       )
   )
+}
 
 ```
 
 Adjusted profiles
 
 ```{r cluster_mean_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -1762,12 +2071,15 @@ if (opt_norm_anomaly) {
     )
 
 }
+}
 
 ```
 
 ### Clusters mean by year
 
 ```{r cluster_mean_year_ext}
+
+if (opt_extreme_analysis){
 
 # cluster means by year
 anomaly_cluster_mean_year_ext %>%
@@ -1798,12 +2110,15 @@ anomaly_cluster_mean_year_ext %>%
         y = 'depth (m)'
       )
   )
+}
 
 ```
 
 Adjusted profiles
 
 ```{r cluster_mean_year_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -1838,6 +2153,8 @@ if (opt_norm_anomaly) {
     )
 
 }
+}
+
 ```
 
 ### Cluster by year
@@ -1845,6 +2162,8 @@ if (opt_norm_anomaly) {
 count of each cluster by year
 
 ```{r cluster_by_year_ext}
+
+if (opt_extreme_analysis){
 
 # Determine profile count by extreme and cluster and year
 # Count the measurements
@@ -1889,12 +2208,15 @@ cluster_by_year %>%
         )
       )
   )
+}
 
 ```
 
 Adjusted profiles
 
 ```{r cluster_by_year_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -1930,6 +2252,7 @@ if (opt_norm_anomaly) {
     )
     
 }
+}
 
 ```
 
@@ -1938,6 +2261,8 @@ if (opt_norm_anomaly) {
 count of each cluster by month of year
 
 ```{r cluster_by_month_ext}
+
+if (opt_extreme_analysis){
 
 # Determine profile count by cluster and year
 # Count the measurements
@@ -1979,12 +2304,15 @@ cluster_by_year %>%
         )
       )
   )
+}
 
 ```
 
 Adjusted profiles
 
 ```{r cluster_by_month_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -2020,6 +2348,7 @@ if (opt_norm_anomaly) {
     )
   
 }
+}
 
 ```
 
@@ -2028,6 +2357,8 @@ if (opt_norm_anomaly) {
 location of each cluster on map, spatial analysis
 
 ```{r spatial_cluster_combined_ext}
+
+if (opt_extreme_analysis){
 
 # create figure combined
 anomaly_cluster_ext %>%
@@ -2052,12 +2383,15 @@ anomaly_cluster_ext %>%
         )
       )
   )
+}
 
 ```
 
 Adjusted profiles
 
 ```{r spatial_cluster_combined_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -2086,6 +2420,7 @@ if (opt_norm_anomaly) {
     )
 
 }
+}
 
 ```
 
@@ -2094,6 +2429,8 @@ if (opt_norm_anomaly) {
 location of each cluster on map, spatial analysis
 
 ```{r spatial_cluster_count_ext}
+
+if (opt_extreme_analysis){
 
 # Count profiles    
 cluster_by_location <- anomaly_cluster_ext %>%
@@ -2130,12 +2467,14 @@ cluster_by_location %>%
         )
       )
   )
-
+}
 ```
 
 Adjusted profiles
 
 ```{r spatial_cluster_count_ext_adj}
+
+if (opt_extreme_analysis){
 
 if (opt_norm_anomaly) {
 
@@ -2167,6 +2506,7 @@ if (opt_norm_anomaly) {
     )
     
 }    
-    
+}
+
 ```
 
