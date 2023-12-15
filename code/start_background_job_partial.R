@@ -39,10 +39,10 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'coverage_maps.Rmd'
+    'combined_cluster_analysis.Rmd'
   )
 ),
-message = "Coverage maps by profile range.")
+message = "combined cluster analysis.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",
