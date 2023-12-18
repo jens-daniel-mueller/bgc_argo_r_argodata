@@ -1,0 +1,236 @@
+---
+title: "Combined cluster analysis"
+author: "David Stappard & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Tasks
+
+Carried out cluster analysis having first set options and determined the data sets on which that cluster analysis should be based on.
+
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
+library(argodata)
+library(lubridate)
+library(gridExtra)
+library(gsw)
+library(ggforce)
+library(ggpmisc)
+library(tidymodels)
+
+```
+
+## Set directories
+
+location of pre-prepared data
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
+
+path_core_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
+path_core_preprocessed <- paste0(path_core_argo, "/preprocessed_core_data")
+
+path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
+```
+
+## Category options
+
+What category of data is the cluster analysis related to
+
+```{r set_category_options}
+
+# opt_category
+# bgc_temp_withph based on bgc_temp dataset but must also have ph profile.
+# bgc_ph_hplus based on bgc_ph dataset with analysis carried out on h plus anomalies
+#opt_category <- "bgc_temp"
+#opt_category <- "bgc_temp_withph"
+#opt_category <- "bgc_ph_h_plus"
+#opt_category <- "bgc_ph_ph"
+#opt_category <- "bgc_doxy"
+opt_category <- "bgc_ph_h_plus"
+
+```
+
+## Analysis options
+
+Define options that are used to determine the nature of the cluster analysis that is carried out.
+
+```{r set_cluster_options}
+
+# Options
+
+# opt_num_clusters
+# How many clusters are used in the cluster analysis for each depth 1 (600 m), 2 (1000 m) and 3 (1500 m)
+opt_num_clusters_min <- c(8, 8, 4)
+opt_num_clusters_max <- c(8, 8, 5)
+# Which profile range is used
+opt_profile_range <- 3
+
+# options relating to cluster analysis
+opt_n_start <- 15
+opt_max_iterations <- 500
+opt_n_clusters <- 14 # Max number of clusters to try when determining optimal number of clusters
+
+# opt_extreme_determination
+# 1 - based on the trend of de-seasonal data - we believe this results in more summer extremes where variation tend to be greater.
+# 2 - based on the trend of de-seasonal data by month. grouping is by lat, lon and month.
+opt_extreme_determination <- 2
+
+# Options associated with profiles under surface extreme conditions
+extreme_type <- c('L', 'N', 'H')
+opt_num_clusters_ext_min <- c(4, 4, 4)
+opt_num_clusters_ext_max <- c(5, 5, 5)
+
+# Option related to normalising the anomaly profiles.
+# TRUE - anomaly profiles are normalised by the surface anomaly. Every depth anomaly is divided by the surface anomaly.
+#      - The is only carried out for profiles where the abs(surface temp) > 1.
+#      - This analysis is carried out in addition to the analysis on base anomaly profiles.  
+# FALSE - The normalisation process is not carried out. 
+opt_norm_anomaly <- TRUE
+
+```
+
+
+```{r set_global_theme, include=TRUE}
+
+theme_set(theme_bw())
+
+map <-
+  read_rds(paste(path_emlr_utilities,
+                 "map_landmask_WOA18.rds",
+                 sep = ""))
+
+```
+
+
+## Preparation
+
+Prepare data for cluster analysis
+
+
+
+```{r prep_bgc_ph_h_plus}
+
+if (opt_category == "bgc_ph_h_plus") {
+
+  # ---------------------------------------------------------------------------------------------
+  # spatial restrictions
+  # ---------------------------------------------------------------------------------------------
+  # Southern ocean
+  opt_lat_min <- -90
+  opt_lat_max <- -30
+  opt_lon_min <- 20
+  opt_lon_max <- 380
+  
+  # Mapping latitude limits
+  opt_map_lat_limit <- c(-85,-30) # SO
+  
+  # ---------------------------------------------------------------------------------------------
+  # read data - ph with analysis based on hplus
+  # ---------------------------------------------------------------------------------------------
+  # read data, applying geographical limits and standardize field names.
+  anomaly_va <-
+    read_rds(file = paste0(path_argo_preprocessed, "/pH_anomaly_va.rds")) %>%
+    filter (lat >= opt_lat_min &
+            lat <= opt_lat_max &
+            lon >= opt_lon_min &
+            lon <= opt_lon_max) %>%
+    select(file_id,
+           date,
+           year,
+           month,
+           lat,
+           lon,
+           profile_range,
+           depth, 
+           prof_measure = h_plus,
+           clim_measure = clim_h_plus,
+           anomaly = anomaly_h_plus
+           )
+
+  # ---------------------------------------------------------------------------------------------
+  # read data extreme data for later use
+  # ---------------------------------------------------------------------------------------------
+  # load previously created OceanSODA extreme data. date, position and nature of extreme
+  if (opt_extreme_determination == 1){
+  extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_01.rds")) %>%
+    select(lon, lat, date, extreme_flag = ph_extreme)
+  } else if (opt_extreme_determination == 2){
+  extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_02.rds")) %>%
+    select(lon, lat, date, extreme_flag = ph_extreme)
+  }
+
+  # ---------------------------------------------------------------------------------------------
+  # Associated data restrictions and formatting
+  # ---------------------------------------------------------------------------------------------
+  # What is the max depth of each profile_range
+  opt_max_depth <- c(614, 1225, 1600)
+    
+  # opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
+  opt_measure_label <- expression("[H]"^"+" ~ "anomaly")
+  opt_xlim <- c(-2e-9, 2e-9)
+  opt_xbreaks <- c(-2e-9, -1e-9, 0, 1e-9, 2e-9)
+  
+  # adjusted to be in scale -1 to 1
+  opt_measure_label_adjusted <- expression("adjusted [H]"^"+" ~ "anomaly")
+  opt_xlim_adjusted <- c(-1, 1)
+  opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
+
+  # Chl-a formatting
+  opt_chla_measure_label <- expression("chlorophyll a ( mg m"^"-3"~")")
+  opt_chla_xlim <- c(-0.5, 2.0)
+  opt_chla_xbreaks <- c(-0.5, 0, 0.5, 1.0, 1.5, 2.0)
+  
+  # oxygen formatting
+  opt_doxy_measure_label <- expression("dissolved oxygen ( µmol kg"^"-1"~")")
+
+  # nitrate formatting
+  opt_nitrate_measure_label <- expression("nitrate ( µmol kg"^"-1"~")")
+
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
+  
+}
+
+```
+
+
+```{r source_cluster_analysis_base_child, include = FALSE}
+
+
+cluster_analysis_base <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_base.Rmd")
+  )
+
+
+```
+
+`r knitr::knit(text = unlist(cluster_analysis_base))`
+
+```{r source_cluster_analysis_extreme_child, include = FALSE}
+
+
+cluster_analysis_extreme <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_extreme.Rmd")
+  )
+
+
+```
+
+
+`r knitr::knit(text = unlist(cluster_analysis_extreme))`
