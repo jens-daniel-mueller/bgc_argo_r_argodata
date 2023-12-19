@@ -1,0 +1,193 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
+
+### Overlay nitrate anomaly
+
+for each cluster identified show with second attribute overlayed
+
+```{r overlay_nitrate_prep}
+
+# Read nitrate data
+overlay_va <- read_rds(file = paste0(path_argo_preprocessed, "/nitrate_anomaly_va.rds")) %>%
+  select (file_id,
+          date,
+          year,
+          month,
+          lat,
+          lon,
+          profile_range,
+          measure_depth = depth,
+          measure = anomaly)
+
+if (opt_category == "bgc_ph_ph"){
+  overlay_factor <- 75
+  overlay_offset <- 0
+  overlay_factor_adjusted <- 6
+  overlay_offset_adjusted <- 0
+} else if (opt_category == "bgc_ph_h_plus"){
+  overlay_factor <- 3e9
+  overlay_offset <- 0
+  overlay_factor_adjusted <- 6
+  overlay_offset_adjusted <- 0
+}
+
+overlay_color <- "#ED7D31"
+opt_overlay_measure_label <- opt_nitrate_measure_label
+  
+# link overlay data to cluster details
+overlay_cluster <-
+  full_join(
+    overlay_va,
+    anomaly_cluster_all %>% distinct (file_id, cluster, profile_type, num_clusters)
+  ) %>% filter(!is.na(cluster))
+
+# summarise by cluster
+overlay_cluster_mean <- overlay_cluster %>%
+  group_by(cluster, profile_type, num_clusters, measure_depth) %>%
+  summarise(
+    measure_mean = mean(measure, na.rm = TRUE),
+    measure_sd = sd(measure, na.rm = TRUE)
+  ) %>%
+  ungroup() %>%
+  select(
+    cluster,
+    profile_type,
+    num_clusters,
+    measure_depth,
+    measure_mean,
+    measure_sd
+  )
+
+# join base anomaly with overlay
+cluster_base_overlay <- full_join(anomaly_cluster_mean, overlay_cluster_mean)
+
+# Add the cluster count information
+cluster_base_overlay <- left_join(cluster_base_overlay, cluster_count)
+  
+```
+
+Base profiles
+
+```{r overlay_nitrate_display}
+
+cluster_base_overlay %>% 
+  filter (profile_type == "base") %>%
+  group_split(profile_type, num_clusters) %>%
+  map(
+  ~ ggplot(data = .x,) +
+    geom_path(aes(x = anomaly_mean,
+                  y = depth)) +
+    geom_ribbon(aes(
+      xmax = anomaly_mean + anomaly_sd,
+      xmin = anomaly_mean - anomaly_sd,
+      y = depth
+    ),
+    alpha = 0.2) +
+    geom_path(aes(
+      x = (measure_mean - overlay_offset) / overlay_factor,
+      y = measure_depth
+    ), color = overlay_color) +
+    geom_ribbon(
+      aes(
+        xmax = (measure_mean + measure_sd - overlay_offset) / overlay_factor,
+        xmin = (measure_mean - measure_sd - overlay_offset) / overlay_factor,
+        y = measure_depth
+      ),
+      fill = overlay_color,
+      alpha = 0.2
+    ) +
+    geom_vline(xintercept = 0) +
+    # scale_y_continuous(trans = trans_reverser("sqrt"),
+    #                    breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+    scale_y_reverse() +
+    facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
+                strip.position = "right") +
+    coord_cartesian(xlim = opt_xlim) +
+    scale_x_continuous(
+      # First axis
+      name = opt_measure_label,
+      breaks = opt_xbreaks,
+      # Second axis
+      sec.axis = sec_axis(
+        trans =  ~ . * overlay_factor + overlay_offset,
+        name = opt_overlay_measure_label
+      )
+    ) +
+    labs(
+      title = paste0(
+        'Overall mean anomaly profiles by cluster \n',
+        'type = ', unique(.x$profile_type), ', ', 
+        'num clusters = ', unique(.x$num_clusters)
+      ),
+      x = opt_measure_label,
+      y = 'depth (m)'
+    ) +
+    theme(axis.title.x.top = element_text(color = overlay_color),
+          axis.text.x.top = element_text(color = overlay_color))
+  )
+
+```
+
+Adjusted profiles
+
+```{r overlay_nitrate_display_adj}
+
+cluster_base_overlay %>% 
+  filter (profile_type == "adjusted") %>%
+  group_split(profile_type, num_clusters) %>%
+  map(
+  ~ ggplot(data = .x,) +
+    geom_path(aes(x = anomaly_mean,
+                  y = depth)) +
+    geom_ribbon(aes(
+      xmax = anomaly_mean + anomaly_sd,
+      xmin = anomaly_mean - anomaly_sd,
+      y = depth
+    ),
+    alpha = 0.2) +
+    geom_path(aes(
+      x = (measure_mean - overlay_offset_adjusted) / overlay_factor_adjusted,
+      y = measure_depth
+    ), color = overlay_color) +
+    geom_ribbon(
+      aes(
+        xmax = (measure_mean + measure_sd - overlay_offset_adjusted) / overlay_factor_adjusted,
+        xmin = (measure_mean - measure_sd - overlay_offset_adjusted) / overlay_factor_adjusted,
+        y = measure_depth
+      ),
+      fill = overlay_color,
+      alpha = 0.2
+    ) +
+    geom_vline(xintercept = 0) +
+    # scale_y_continuous(trans = trans_reverser("sqrt"),
+    #                    breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+    scale_y_reverse() +
+    facet_wrap(~ paste0(cluster, " (", formatC(count_profiles, big.mark=",") , ")"),
+                strip.position = "right") +
+    coord_cartesian(xlim = opt_xlim_adjusted) +
+    scale_x_continuous(
+      # First axis
+      name = opt_measure_label_adjusted,
+      breaks = opt_xbreaks_adjusted,
+      # Second axis
+      sec.axis = sec_axis(
+        trans =  ~ . * overlay_factor_adjusted + overlay_offset_adjusted,
+        name = opt_overlay_measure_label
+      )
+    ) +
+    labs(
+      title = paste0(
+        'Overall mean anomaly profiles by cluster \n',
+        'type = ', unique(.x$profile_type), ', ', 
+        'num clusters = ', unique(.x$num_clusters)
+      ),
+      x = opt_measure_label_adjusted,
+      y = 'depth (m)'
+    ) +
+    theme(axis.title.x.top = element_text(color = overlay_color),
+          axis.text.x.top = element_text(color = overlay_color))
+  )
+
+```

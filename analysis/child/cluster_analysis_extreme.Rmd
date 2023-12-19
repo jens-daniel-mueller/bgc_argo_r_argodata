@@ -1,3 +1,8 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
+
 ## Cluster by surface Extreme
 
 ```{r cluster_analysis_prep_ext}
@@ -768,3 +773,22 @@ if (opt_norm_anomaly) {
 }
 
 ```
+
+```{r source_cluster_analysis_extreme_overlay_doxy_child, include = FALSE}
+
+cluster_analysis_extreme_overlay_doxy <- c("", "")
+
+if (opt_category == "bgc_ph_ph" |
+    opt_category == "bgc_ph_h_plus" |
+    opt_category == "bgc_temp" |
+    opt_category == "bgc_temp_SO")
+{
+  cluster_analysis_extreme_overlay_doxy <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_extreme_overlay_doxy.Rmd")
+  )
+}
+
+```
+
+`r knitr::knit(text = unlist(cluster_analysis_extreme_overlay_doxy))`

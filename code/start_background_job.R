@@ -31,11 +31,13 @@ workflowr::wflow_publish(here::here(
     'extreme_compound.Rmd',
     'variability_temp.Rmd',
     'variability_pH.Rmd',
-    'pH_cluster_analysis.Rmd',
+    'ph_ph_cluster_analysis.Rmd',
+    'ph_hplus_cluster_analysis.Rmd',
     'temp_cluster_analysis.Rmd',
     'temp_core_cluster_analysis.Rmd',
-    'temp_ph_SO_cluster_analysis.Rmd',
-    'temp_core_SO_cluster_analysis.Rmd'
+    'temp_SO_cluster_analysis.Rmd',
+    'temp_core_SO_cluster_analysis.Rmd',
+    'doxy_cluster_analysis.Rmd'
   )
 ),
 message = "revised coverage analysis and SO focused cluster analysis.",

@@ -1,3 +1,7 @@
+---
+editor_options: 
+  chunk_output_type: console
+---
 
 ## Data preparation
 
@@ -682,19 +686,57 @@ if (opt_norm_anomaly) {
 ```
 
 
-```{r source_cluster_analysis_overlay_child, include = FALSE}
+```{r source_cluster_analysis_overlay_chla_child, include = FALSE}
 
-cluster_analysis_overlay <- c("", "")
+cluster_analysis_overlay_chla <- c("", "")
 
 if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
 
-  cluster_analysis_overlay <-
+  cluster_analysis_overlay_chla <-
   knitr::knit_expand(
-    file = here::here("analysis/child/cluster_analysis_overlay.Rmd")
+    file = here::here("analysis/child/cluster_analysis_overlay_chla.Rmd")
   )
-  
+
 }
 
 ```
 
-`r knitr::knit(text = unlist(cluster_analysis_overlay))`
+`r knitr::knit(text = unlist(cluster_analysis_overlay_chla))`
+
+
+```{r source_cluster_analysis_overlay_doxy_child, include = FALSE}
+
+cluster_analysis_overlay_doxy <- c("", "")
+
+if (opt_category == "bgc_ph_ph" |
+    opt_category == "bgc_ph_h_plus" |
+    opt_category == "bgc_temp" |
+    opt_category == "bgc_temp_SO")
+{
+  cluster_analysis_overlay_doxy <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_overlay_doxy.Rmd")
+  )
+}
+
+```
+
+`r knitr::knit(text = unlist(cluster_analysis_overlay_doxy))`
+
+
+```{r source_cluster_analysis_overlay_nitrate_child, include = FALSE}
+
+cluster_analysis_overlay_nitrate <- c("", "")
+
+if (opt_category == "bgc_ph_ph" | opt_category == "bgc_ph_h_plus") {
+
+  cluster_analysis_overlay_nitrate <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_overlay_nitrate.Rmd")
+  )
+
+}
+
+```
+
+`r knitr::knit(text = unlist(cluster_analysis_overlay_nitrate))`

@@ -39,10 +39,10 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'temp_core_cluster_analysis.Rmd'
+    'temp_SO_cluster_analysis.Rmd'
   )
 ),
-message = "combined cluster analysis.")
+message = "builing generic cluster analysis.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",

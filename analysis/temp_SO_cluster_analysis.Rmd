@@ -1,5 +1,5 @@
 ---
-title: "ph (h plus) cluster analysis"
+title: "SO BGC temperature cluster analysis"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -15,24 +15,24 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Tasks
 
-This markdown file carries out cluster analysis on previously created bgc ph anomaly profiles.
+This markdown file carries out cluster analysis on previously created bgc temperature anomaly profiles.
 
 The cluster_analysis_determine_k chunk is used to give an indication of an appropriate number of clusers and this can then set the option opt_num_clusters. Chunk cluster_analysis_cluster_details carried out the cluster analysis and the results are used in subsequent figures.
 
 The cluster analysis is carried out on base anomaly profiles and well as adjusted profiles. Adjusted profiles have been normalised by dividing each anomaly in the profile by the max anomaly across the profile. This results in all Adjusted profiles having values in the rage -1 to +1.
 
+A restriction is added that just SO profiles are considered. Also the profile must have a valid pH profile associated.
+
 cluster_analysis_base.Rmd - Child markdown file that does cluster analysis and can if set overlay additional attributes on clusters.
 
 cluster_analysis_extreme.Rmd - Child markdown file that does cluster analysis under surface extremes conditions.
 
-ph is displayed on pH scale
-
 Dependencies
 ------------
 
-pH_anomaly_va.rds - bgc preprocessed folder, created by ph_align_climatology
+temp_anomaly_va.rds - bgc preprocessed folder, created by temp_align_climatology
 
-OceanSODA_pH_anomaly_field_01.rds (or _02.rds) - bgc preprocessed folder, created by extreme_pH
+OceanSODA_global_SST_anomaly_field_01.rds (or _02.rds) - bgc preprocessed folder, created by extreme_temp
 
 ```{r loading_libraries, include=FALSE}
 
@@ -70,14 +70,24 @@ What category of data is the cluster analysis related to
 ```{r set_category_options}
 
 # opt_category
-# bgc_temp_withph based on bgc_temp dataset but must also have ph profile.
-# bgc_ph_hplus based on bgc_ph dataset with analysis carried out on h plus anomalies
-#opt_category <- "bgc_temp"
-#opt_category <- "bgc_temp_withph"
-#opt_category <- "bgc_ph_h_plus"
-#opt_category <- "bgc_ph_ph"
-#opt_category <- "bgc_doxy"
-opt_category <- "bgc_ph_ph"
+opt_category <- "bgc_temp_SO"
+
+# # Global
+# opt_lat_min <- -90
+# opt_lat_max <- 90
+# opt_lon_min <- 20
+# opt_lon_max <- 380
+# 
+# # spatial restrictions
+# # Southern ocean
+# opt_lat_min <- -90
+# opt_lat_max <- -30
+# opt_lon_min <- 20
+# opt_lon_max <- 380
+# 
+# # Mapping latitude limits
+# opt_map_lat_limit <- c(-85, 85) # global
+# opt_map_lat_limit <- c(-85,-30) # SO
 
 ```
 
@@ -137,30 +147,28 @@ map <-
 
 Prepare data for cluster analysis
 
+```{r prep_bgc_temp}
 
-
-```{r prep_bgc_ph_h_plus}
-
-if (opt_category == "bgc_ph_ph") {
+if (opt_category == "bgc_temp_SO") {
 
   # ---------------------------------------------------------------------------------------------
   # spatial restrictions
   # ---------------------------------------------------------------------------------------------
-  # Southern ocean
+  # Southern Ocean
   opt_lat_min <- -90
   opt_lat_max <- -30
   opt_lon_min <- 20
   opt_lon_max <- 380
   
   # Mapping latitude limits
-  opt_map_lat_limit <- c(-85,-30) # SO
-  
+  opt_map_lat_limit <- c(-85, -30) # SO
+    
   # ---------------------------------------------------------------------------------------------
-  # read data - ph with analysis based on hplus
+  # read data - bgc temperature must have a ph profile
   # ---------------------------------------------------------------------------------------------
   # read data, applying geographical limits and standardize field names.
   anomaly_va <-
-    read_rds(file = paste0(path_argo_preprocessed, "/pH_anomaly_va.rds")) %>%
+    read_rds(file = paste0(path_argo_preprocessed, "/temp_anomaly_va.rds")) %>%
     filter (lat >= opt_lat_min &
             lat <= opt_lat_max &
             lon >= opt_lon_min &
@@ -173,55 +181,55 @@ if (opt_category == "bgc_ph_ph") {
            lon,
            profile_range,
            depth, 
-           prof_measure = pH,
-           clim_measure = clim_pH,
-           anomaly = anomaly_pH
+           prof_measure = temp,
+           clim_measure = clim_temp,
+           anomaly
            )
 
+  # Additional ph requirement restriction
+  bgc_ph <- read_rds(file = paste0(path_argo_preprocessed, "/pH_bgc_va.rds"))
+  anomaly_va <- inner_join(anomaly_va, bgc_ph %>% distinct(file_id)) 
+  
   # ---------------------------------------------------------------------------------------------
   # read data extreme data for later use
   # ---------------------------------------------------------------------------------------------
   # load previously created OceanSODA extreme data. date, position and nature of extreme
   if (opt_extreme_determination == 1){
-  extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_01.rds")) %>%
-    select(lon, lat, date, extreme_flag = ph_extreme)
+    extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_01.rds")) %>%
+      select(lon, lat, date, extreme_flag = temp_extreme)
   } else if (opt_extreme_determination == 2){
-  extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_pH_anomaly_field_02.rds")) %>%
-    select(lon, lat, date, extreme_flag = ph_extreme)
+    extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_02.rds")) %>%
+      select(lon, lat, date, extreme_flag = temp_extreme)
   }
 
   # ---------------------------------------------------------------------------------------------
   # Associated data restrictions and formatting
   # ---------------------------------------------------------------------------------------------
   # What is the max depth of each profile_range
-  opt_max_depth <- c(614, 1225, 1600)
-    
+  opt_max_depth <- c(600, 1000, 1500)
+  
   # opt_measure_label, opt_xlim and opt_xbreaks are associated with formatting
-  opt_measure_label <- "pH anomaly"
-  opt_xlim <- c(-0.08, 0.08)
-  opt_xbreaks <- c(-0.08, -0.04, 0, 0.04, 0.08)
+  opt_measure_label <- "temperature anomaly (°C)"
+  opt_xlim <- c(-4.5, 4.5)
+  opt_xbreaks <- c(-4, -2, 0, 2, 4)
   
   # adjusted to be in scale -1 to 1
-  opt_measure_label_adjusted <- "adjusted pH anomaly"
+  opt_measure_label_adjusted <- "adjusted temperature anomaly"
   opt_xlim_adjusted <- c(-1, 1)
   opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
-
-  # Chl-a formatting
-  opt_chla_measure_label <- expression("chlorophyll a ( mg m"^"-3"~")")
 
   # oxygen formatting
   opt_doxy_measure_label <- expression("dissolved oxygen anomaly ( µmol kg"^"-1"~")")
 
-  # nitrate formatting
-  opt_nitrate_measure_label <- expression("nitrate anomaly ( µmol kg"^"-1"~")")
-    
+  # pH formatting
+  opt_ph_h_plus_measure_label <- expression("[H]"^"+" ~ "anomaly")
+
   # Under extreme analysis
   opt_extreme_analysis <- TRUE
   
 }
 
 ```
-
 
 ```{r source_cluster_analysis_base_child, include = FALSE}
 

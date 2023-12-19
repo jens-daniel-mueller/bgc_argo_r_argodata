@@ -1,5 +1,5 @@
 ---
-title: "Combined cluster analysis"
+title: "Global core temperature cluster analysis"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -21,7 +21,9 @@ The cluster_analysis_determine_k chunk is used to give an indication of an appro
 
 The cluster analysis is carried out on base anomaly profiles and well as adjusted profiles. Adjusted profiles have been normalised by dividing each anomaly in the profile by the max anomaly across the profile. This results in all Adjusted profiles having values in the rage -1 to +1.
 
-In addition the cluster analysis is repeated under under surface extremes conditions.
+cluster_analysis_base.Rmd - Child markdown file that does cluster analysis and can if set overlay additional attributes on clusters.
+
+cluster_analysis_extreme.Rmd - Child markdown file that does cluster analysis under surface extremes conditions.
 
 Dependencies
 ------------
@@ -195,6 +197,12 @@ if (opt_category == "core_temp") {
   opt_measure_label_adjusted <- "adjusted temperature anomaly"
   opt_xlim_adjusted <- c(-1, 1)
   opt_xbreaks_adjusted <- c(-1.0, -0.5, 0, 0.5, 1.0)
+
+  # oxygen formatting
+  opt_doxy_measure_label <- expression("dissolved oxygen anomaly ( µmol kg"^"-1"~")")
+
+  # pH formatting
+  opt_ph_h_plus_measure_label <- expression("[H]"^"+" ~ "anomaly")
 
   # Under extreme analysis
   opt_extreme_analysis <- TRUE
