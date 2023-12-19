@@ -15,7 +15,25 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 # Tasks
 
-Carried out cluster analysis having first set options and determined the data sets on which that cluster analysis should be based on.
+This markdown file carries out cluster analysis on previously created bgc ph anomaly profiles.
+
+The cluster_analysis_determine_k chunk is used to give an indication of an appropriate number of clusers and this can then set the option opt_num_clusters. Chunk cluster_analysis_cluster_details carried out the cluster analysis and the results are used in subsequent figures.
+
+The cluster analysis is carried out on base anomaly profiles and well as adjusted profiles. Adjusted profiles have been normalised by dividing each anomaly in the profile by the max anomaly across the profile. This results in all Adjusted profiles having values in the rage -1 to +1.
+
+cluster_analysis_base.Rmd - Child markdown file that does cluster analysis and can if set overlay additional attributes on clusters.
+
+cluster_analysis_extreme.Rmd - In addition the cluster analysis under under surface extremes conditions.
+
+ph is displayed on [H+] scale
+
+Dependencies
+------------
+
+pH_anomaly_va.rds - bgc preprocessed folder, created by ph_align_climatology
+
+OceanSODA_pH_anomaly_field_01.rds (or _02.rds) - bgc preprocessed folder, created by extreme_pH
+
 
 ```{r loading_libraries, include=FALSE}
 
