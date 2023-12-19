@@ -523,7 +523,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Combined cluster analysis</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">18 December, 2023</h4>
+<h4 class="date">19 December, 2023</h4>
 
 </div>
 
@@ -552,7 +552,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-18
+<strong>Last updated:</strong> 2023-12-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -684,15 +684,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree70dd83804314f1a637dc2437e06201fb71aa397ctargetblank70dd838a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree579947fe52885a85385ff1e8a3a689805366a816targetblank579947fa">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/70dd83804314f1a637dc2437e06201fb71aa397c" target="_blank">70dd838</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/579947fe52885a85385ff1e8a3a689805366a816" target="_blank">579947f</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree70dd83804314f1a637dc2437e06201fb71aa397ctargetblank70dd838a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree579947fe52885a85385ff1e8a3a689805366a816targetblank579947fa"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -702,7 +702,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/70dd83804314f1a637dc2437e06201fb71aa397c" target="_blank">70dd838</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/579947fe52885a85385ff1e8a3a689805366a816" target="_blank">579947f</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -719,16 +719,15 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
-    Untracked:  analysis/OLD pH_cluster_analysis.Rmd
-    Untracked:  analysis/child/
-    Untracked:  figure/
+    Untracked:  analysis/child/cluster_analysis_overlayFULL.Rmd
 
 Unstaged changes:
-    Modified:   _workflowr.yml
-    Deleted:    analysis/pH_cluster_analysis.Rmd
+    Modified:   analysis/child/cluster_analysis_base.Rmd
+    Modified:   analysis/child/cluster_analysis_overlay.Rmd
     Modified:   code/start_background_job_partial.R
 
 </code></pre>
@@ -776,6 +775,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/4844017e056a966e60604fb373840d7282b0f37c/docs/ph_hplus_cluster_analysis.html" target="_blank">4844017</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2605,53 +2621,71 @@ ds2n19
 </div>
 </div>
 </div>
-<div id="ph-and-chl-a" class="section level3">
-<h3>pH and Chl-a</h3>
-<p>for each cluster identified by pH cluster analysis show alongside
-chl-a</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
+<div id="overlay" class="section level3">
+<h3>Overlay</h3>
+<p>for each cluster identified show with second attribute overlayed</p>
+<pre class="r"><code>if (opt_overlay == &quot;chla&quot;) {
 
-  # Read chl-a data and link to cluster ID
-  chla_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;))
-  chla_cluster &lt;-
-    full_join(
-      chla_bgc_va,
-      anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
-    ) %&gt;% filter(!is.na(cluster))
-
-  # summarise by cluster
-  chla_cluster_mean &lt;- chla_cluster %&gt;%
-    group_by(cluster, profile_type, num_clusters, depth) %&gt;%
-    summarise(
-      chla_mean = mean(chla, na.rm = TRUE),
-      chla_sd = sd(chla, na.rm = TRUE)
-    ) %&gt;%
-    ungroup() %&gt;%
-    select(
-      cluster,
-      profile_type,
-      num_clusters,
-      chla_depth = depth,
-      chla_mean,
-      chla_sd
-    )
-
-  # join pH anomaly with chl-a
-  cluster_ph_chla &lt;- full_join(anomaly_cluster_mean, chla_cluster_mean)
-  chla_color &lt;- &quot;#69b3a2&quot;
-
+  # Read chl-a data&#39;
+  overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;)) %&gt;%
+    select (file_id,
+            date,
+            year,
+            month,
+            lat,
+            lon,
+            profile_range,
+            measure_depth = depth,
+            measure = chla)
+  
   if (opt_category == &quot;bgc_ph_ph&quot;){
-    chla_to_ph_factor &lt;- 25
-    chla_to_ph_offset &lt;- 1
-  } else {
-    chla_to_ph_factor &lt;- 1e9
-    chla_to_ph_offset &lt;- 1
+    overlay_factor &lt;- 25
+    overlay_offset &lt;- 1
+    overlay_factor_adjusted &lt;- 1
+    overlay_offset_adjusted &lt;- 0.5
+  } else if (opt_category == &quot;bgc_ph_h_plus&quot;){
+    overlay_factor &lt;- 1e9
+    overlay_offset &lt;- 1
+    overlay_factor_adjusted &lt;- 1
+    overlay_offset_adjusted &lt;- 0.5
   }
 
-  # Add the cluster count information
-  cluster_ph_chla &lt;- left_join(cluster_ph_chla, cluster_count)
+  overlay_color &lt;- &quot;#69b3a2&quot;
+  opt_overlay_measure_label &lt;- opt_chla_measure_label
+  
+}
 
-  cluster_ph_chla %&gt;% 
+# link overlay data to cluster details
+overlay_cluster &lt;-
+  full_join(
+    overlay_va,
+    anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
+  ) %&gt;% filter(!is.na(cluster))
+
+# summarise by cluster
+overlay_cluster_mean &lt;- overlay_cluster %&gt;%
+  group_by(cluster, profile_type, num_clusters, measure_depth) %&gt;%
+  summarise(
+    measure_mean = mean(measure, na.rm = TRUE),
+    measure_sd = sd(measure, na.rm = TRUE)
+  ) %&gt;%
+  ungroup() %&gt;%
+  select(
+    cluster,
+    profile_type,
+    num_clusters,
+    measure_depth,
+    measure_mean,
+    measure_sd
+  )
+
+# join base anomaly with overlay
+cluster_base_overlay &lt;- full_join(anomaly_cluster_mean, overlay_cluster_mean)
+
+# Add the cluster count information
+cluster_base_overlay &lt;- left_join(cluster_base_overlay, cluster_count)</code></pre>
+<p>Base profiles</p>
+<pre class="r"><code>  cluster_base_overlay %&gt;% 
     filter (profile_type == &quot;base&quot;) %&gt;%
     group_split(profile_type, num_clusters) %&gt;%
     map(
@@ -2665,21 +2699,22 @@ chl-a</p>
       ),
       alpha = 0.2) +
       geom_path(aes(
-        x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
-        y = chla_depth
-      ), color = chla_color) +
+        x = (measure_mean - overlay_offset) / overlay_factor,
+        y = measure_depth
+      ), color = overlay_color) +
       geom_ribbon(
         aes(
-          xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          y = chla_depth
+          xmax = (measure_mean + measure_sd - overlay_offset) / overlay_factor,
+          xmin = (measure_mean - measure_sd - overlay_offset) / overlay_factor,
+          y = measure_depth
         ),
-        fill = chla_color,
+        fill = overlay_color,
         alpha = 0.2
       ) +
       geom_vline(xintercept = 0) +
-      scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
-                         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+      # scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
+      #                    breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+      scale_y_reverse() +
       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
                   strip.position = &quot;right&quot;) +
       coord_cartesian(xlim = opt_xlim) +
@@ -2689,8 +2724,8 @@ chl-a</p>
         breaks = opt_xbreaks,
         # Second axis
         sec.axis = sec_axis(
-          trans =  ~ . * chla_to_ph_factor + chla_to_ph_offset,
-          name = opt_chla_measure_label
+          trans =  ~ . * overlay_factor + overlay_offset,
+          name = opt_overlay_measure_label
         )
       ) +
       labs(
@@ -2702,102 +2737,16 @@ chl-a</p>
         x = opt_measure_label,
         y = &#39;depth (m)&#39;
       ) +
-      theme(axis.title.x.top = element_text(color = chla_color),
-            axis.text.x.top = element_text(color = chla_color))
-    )
-
-}</code></pre>
+      theme(axis.title.x.top = element_text(color = overlay_color),
+            axis.text.x.top = element_text(color = overlay_color))
+    )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_chla-1">
-Past versions of ph_with_chla-1.png
-</button>
-</p>
-<div id="fig-ph_with_chla-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_chla-2">
-Past versions of ph_with_chla-2.png
-</button>
-</p>
-<div id="fig-ph_with_chla-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
-  
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    chla_to_ph_factor &lt;- 1
-    chla_to_ph_offset &lt;- 0.5
-  } else {
-    chla_to_ph_factor &lt;- 1
-    chla_to_ph_offset &lt;- 0.5
-  }
-  
-  cluster_ph_chla %&gt;% 
+<pre class="r"><code>  cluster_base_overlay %&gt;% 
     filter (profile_type == &quot;adjusted&quot;) %&gt;%
     group_split(profile_type, num_clusters) %&gt;%
     map(
@@ -2811,21 +2760,22 @@ ds2n19
       ),
       alpha = 0.2) +
       geom_path(aes(
-        x = (chla_mean - chla_to_ph_offset) / chla_to_ph_factor,
-        y = chla_depth
-      ), color = chla_color) +
+        x = (measure_mean - overlay_offset_adjusted) / overlay_factor_adjusted,
+        y = measure_depth
+      ), color = overlay_color) +
       geom_ribbon(
         aes(
-          xmax = (chla_mean + chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          xmin = (chla_mean - chla_sd - chla_to_ph_offset) / chla_to_ph_factor,
-          y = chla_depth
+          xmax = (measure_mean + measure_sd - overlay_offset_adjusted) / overlay_factor_adjusted,
+          xmin = (measure_mean - measure_sd - overlay_offset_adjusted) / overlay_factor_adjusted,
+          y = measure_depth
         ),
-        fill = chla_color,
+        fill = overlay_color,
         alpha = 0.2
       ) +
       geom_vline(xintercept = 0) +
-      scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
-                         breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+      # scale_y_continuous(trans = trans_reverser(&quot;sqrt&quot;),
+      #                    breaks = c(10, 100, 250, 500, seq(1000, 5000, 500))) +
+      scale_y_reverse() +
       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
                   strip.position = &quot;right&quot;) +
       coord_cartesian(xlim = opt_xlim_adjusted) +
@@ -2835,8 +2785,8 @@ ds2n19
         breaks = opt_xbreaks_adjusted,
         # Second axis
         sec.axis = sec_axis(
-          trans =  ~ . * chla_to_ph_factor + chla_to_ph_offset,
-          name = opt_chla_measure_label
+          trans =  ~ . * overlay_factor_adjusted + overlay_offset_adjusted,
+          name = opt_overlay_measure_label
         )
       ) +
       labs(
@@ -2848,746 +2798,342 @@ ds2n19
         x = opt_measure_label_adjusted,
         y = &#39;depth (m)&#39;
       ) +
-      theme(axis.title.x.top = element_text(color = chla_color),
-            axis.text.x.top = element_text(color = chla_color))
-    )
-
-}</code></pre>
+      theme(axis.title.x.top = element_text(color = overlay_color),
+            axis.text.x.top = element_text(color = overlay_color))
+    )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_chla_adj-1">
-Past versions of ph_with_chla_adj-1.png
-</button>
-</p>
-<div id="fig-ph_with_chla_adj-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla_adj-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_chla_adj-2">
-Past versions of ph_with_chla_adj-2.png
-</button>
-</p>
-<div id="fig-ph_with_chla_adj-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_chla_adj-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="ph-and-oxygen-anomaly" class="section level3">
-<h3>pH and oxygen anomaly</h3>
-<p>for each cluster identified by pH cluster analysis show alongside
-oxygen anomaly</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
-  
-  # Read oxygen anomaly data and link to cluster information
-  doxy_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_anomaly_va.rds&quot;))
-  doxy_cluster &lt;-
-    full_join(
-      doxy_bgc_va,
-      anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
-    ) %&gt;% filter(!is.na(cluster))
-  
-  # summarise by cluster, , profile_type, num_clusters
-  doxy_cluster_mean &lt;- doxy_cluster %&gt;%
-    group_by(cluster, profile_type, num_clusters, depth) %&gt;%
-    summarise(
-      doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
-      doxy_anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %&gt;%
-    ungroup() %&gt;%
-    select(
-      cluster,
-      profile_type,
-      num_clusters,
-      doxy_depth = depth,
-      doxy_anomaly_mean,
-      doxy_anomaly_sd
-    )
-  
-
-  # join pH anomaly with oxygen
-  #anomaly_cluster_mean
-  cluster_ph_doxy &lt;- full_join(anomaly_cluster_mean, doxy_cluster_mean)
-  doxy_color &lt;- &quot;#5B9BD5&quot;
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    doxy_to_ph_factor &lt;- 250
-    doxy_to_ph_offset &lt;- 0
-  } else {
-    doxy_to_ph_factor &lt;- 1e10
-    doxy_to_ph_offset &lt;- 0
-  }
-
-  # Add the cluster count information
-  cluster_ph_doxy &lt;- left_join(cluster_ph_doxy, cluster_count)
-    
-  cluster_ph_doxy %&gt;%
-    filter (profile_type == &quot;base&quot;) %&gt;%
-    group_split(profile_type, num_clusters) %&gt;%
-    map(
-    ~ ggplot(data = .x,) +
-      geom_path(aes(x = anomaly_mean,
-                    y = depth)) +
-      geom_ribbon(aes(
-        xmax = anomaly_mean + anomaly_sd,
-        xmin = anomaly_mean - anomaly_sd,
-        y = depth
-      ),
-      alpha = 0.2) +
-      geom_path(aes(
-        x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
-        y = doxy_depth
-      ), color = doxy_color) +
-      geom_ribbon(
-        aes(
-          xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          y = doxy_depth
-        ),
-        fill = doxy_color,
-        alpha = 0.2
-      ) +
-      geom_vline(xintercept = 0) +
-      scale_y_reverse() +
-      facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
-                  strip.position = &quot;right&quot;) +
-      coord_cartesian(xlim = opt_xlim) +
-      scale_x_continuous(
-        # First axis
-        name = opt_measure_label,
-        breaks = opt_xbreaks,
-        # First axis
-        sec.axis = sec_axis(
-          trans =  ~ . * doxy_to_ph_factor + doxy_to_ph_offset,
-          name = opt_doxy_measure_label
-        )
-      ) +
-      labs(        
-        title = paste0(
-          &#39;Overall mean anomaly profiles by cluster \n&#39;,
-          &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
-          &#39;num clusters = &#39;, unique(.x$num_clusters)
-        ),
-        x = opt_measure_label, 
-        y = &#39;depth (m)&#39;
-        ) +
-      theme(axis.title.x.top = element_text(color = doxy_color),
-            axis.text.x.top = element_text(color = doxy_color))
-    )
-  
-}</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_oxygen-1">
-Past versions of ph_with_oxygen-1.png
-</button>
-</p>
-<div id="fig-ph_with_oxygen-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_oxygen-2">
-Past versions of ph_with_oxygen-2.png
-</button>
-</p>
-<div id="fig-ph_with_oxygen-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    doxy_to_ph_factor &lt;- 20
-    doxy_to_ph_offset &lt;- 0
-  } else {
-    doxy_to_ph_factor &lt;- 20
-    doxy_to_ph_offset &lt;- 0
-  }
-  
-  cluster_ph_doxy %&gt;%
-    filter (profile_type == &quot;adjusted&quot;) %&gt;%
-    group_split(profile_type, num_clusters) %&gt;%
-    map(
-    ~ ggplot(data = .x,) +
-      geom_path(aes(x = anomaly_mean,
-                    y = depth)) +
-      geom_ribbon(aes(
-        xmax = anomaly_mean + anomaly_sd,
-        xmin = anomaly_mean - anomaly_sd,
-        y = depth
-      ),
-      alpha = 0.2) +
-      geom_path(aes(
-        x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
-        y = doxy_depth
-      ), color = doxy_color) +
-      geom_ribbon(
-        aes(
-          xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
-          y = doxy_depth
-        ),
-        fill = doxy_color,
-        alpha = 0.2
-      ) +
-      geom_vline(xintercept = 0) +
-      scale_y_reverse() +
-      facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
-                  strip.position = &quot;right&quot;) +
-      coord_cartesian(xlim = opt_xlim_adjusted) +
-      scale_x_continuous(
-        # First axis
-        name = opt_measure_label_adjusted,
-        breaks = opt_xbreaks_adjusted,
-        # First axis
-        sec.axis = sec_axis(
-          trans =  ~ . * doxy_to_ph_factor + doxy_to_ph_offset,
-          name = opt_doxy_measure_label
-        )
-      ) +
-      labs(        
-        title = paste0(
-          &#39;Overall mean anomaly profiles by cluster \n&#39;,
-          &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
-          &#39;num clusters = &#39;, unique(.x$num_clusters)
-        ),
-        x = opt_measure_label_adjusted, 
-        y = &#39;depth (m)&#39;
-        ) +
-      theme(axis.title.x.top = element_text(color = doxy_color),
-            axis.text.x.top = element_text(color = doxy_color))
-    )
-  
-}</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_oxygen_adj-1">
-Past versions of ph_with_oxygen_adj-1.png
-</button>
-</p>
-<div id="fig-ph_with_oxygen_adj-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen_adj-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_oxygen_adj-2">
-Past versions of ph_with_oxygen_adj-2.png
-</button>
-</p>
-<div id="fig-ph_with_oxygen_adj-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_oxygen_adj-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="ph-and-nitrate-anomaly" class="section level3">
-<h3>pH and nitrate anomaly</h3>
-<p>for each cluster identified by pH cluster analysis show alongside
-nitrate anomaly</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
-  
-  # Read oxygen anomaly data and link to cluster information
-  nitrate_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nitrate_anomaly_va.rds&quot;))
-  nitrate_cluster &lt;-
-    full_join(
-      nitrate_bgc_va,
-      anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
-    ) %&gt;% filter(!is.na(cluster))
-  
-  # summarise by cluster, , profile_type, num_clusters
-  nitrate_cluster_mean &lt;- nitrate_cluster %&gt;%
-    group_by(cluster, profile_type, num_clusters, depth) %&gt;%
-    summarise(
-      nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
-      nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE)
-    ) %&gt;%
-    ungroup() %&gt;%
-    select(
-      cluster,
-      profile_type,
-      num_clusters,
-      nitrate_depth = depth,
-      nitrate_anomaly_mean,
-      nitrate_anomaly_sd
-    )
-  
-
-  # join pH anomaly with nitrate
-  #anomaly_cluster_mean
-  cluster_ph_nitrate &lt;- full_join(anomaly_cluster_mean, nitrate_cluster_mean)
-  nitrate_color &lt;- &quot;#ED7D31&quot;
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    nitrate_to_ph_factor &lt;- 75
-    nitrate_to_ph_offset &lt;- 0
-  } else {
-    nitrate_to_ph_factor &lt;- 3e9
-    nitrate_to_ph_offset &lt;- 0
-  }
-  
-  # Add the cluster count information
-  cluster_ph_nitrate &lt;- left_join(cluster_ph_nitrate, cluster_count)
-    
-  cluster_ph_nitrate %&gt;%
-    filter (profile_type == &quot;base&quot;) %&gt;%
-    group_split(profile_type, num_clusters) %&gt;%
-    map(
-    ~ ggplot(data = .x,) +
-      geom_path(aes(x = anomaly_mean,
-                    y = depth)) +
-      geom_ribbon(aes(
-        xmax = anomaly_mean + anomaly_sd,
-        xmin = anomaly_mean - anomaly_sd,
-        y = depth
-      ),
-      alpha = 0.2) +
-      geom_path(aes(
-        x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
-        y = nitrate_depth
-      ), color = nitrate_color) +
-      geom_ribbon(
-        aes(
-          xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
-          xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
-          y = nitrate_depth
-        ),
-        fill = nitrate_color,
-        alpha = 0.2
-      ) +
-      geom_vline(xintercept = 0) +
-      scale_y_reverse() +
-      facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
-                  strip.position = &quot;right&quot;) +
-      coord_cartesian(xlim = opt_xlim) +
-      scale_x_continuous(
-        # First axis
-        name = opt_measure_label,
-        breaks = opt_xbreaks,
-        # First axis
-        sec.axis = sec_axis(
-          trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
-          name = opt_nitrate_measure_label
-        )
-      ) +
-      labs(        
-        title = paste0(
-          &#39;Overall mean anomaly profiles by cluster \n&#39;,
-          &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
-          &#39;num clusters = &#39;, unique(.x$num_clusters)
-        ),
-        x = opt_measure_label, 
-        y = &#39;depth (m)&#39;
-        ) +
-      theme(axis.title.x.top = element_text(color = nitrate_color),
-            axis.text.x.top = element_text(color = nitrate_color))
-    )
-  
-}</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_nitrate-1">
-Past versions of ph_with_nitrate-1.png
-</button>
-</p>
-<div id="fig-ph_with_nitrate-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_nitrate-2">
-Past versions of ph_with_nitrate-2.png
-</button>
-</p>
-<div id="fig-ph_with_nitrate-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p>Adjusted profiles</p>
-<pre class="r"><code>if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    nitrate_to_ph_factor &lt;- 6
-    nitrate_to_ph_offset &lt;- 0
-  } else {
-    nitrate_to_ph_factor &lt;- 6
-    nitrate_to_ph_offset &lt;- 0
-  }
-  
-  cluster_ph_nitrate %&gt;%
-    filter (profile_type == &quot;adjusted&quot;) %&gt;%
-    group_split(profile_type, num_clusters) %&gt;%
-    map(
-    ~ ggplot(data = .x,) +
-      geom_path(aes(x = anomaly_mean,
-                    y = depth)) +
-      geom_ribbon(aes(
-        xmax = anomaly_mean + anomaly_sd,
-        xmin = anomaly_mean - anomaly_sd,
-        y = depth
-      ),
-      alpha = 0.2) +
-      geom_path(aes(
-        x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
-        y = nitrate_depth
-      ), color = nitrate_color) +
-      geom_ribbon(
-        aes(
-          xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
-          xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
-          y = nitrate_depth
-        ),
-        fill = nitrate_color,
-        alpha = 0.2
-      ) +
-      geom_vline(xintercept = 0) +
-      scale_y_reverse() +
-      facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
-                  strip.position = &quot;right&quot;) +
-      coord_cartesian(xlim = opt_xlim_adjusted) +
-      scale_x_continuous(
-        # First axis
-        name = opt_measure_label_adjusted,
-        breaks = opt_xbreaks_adjusted,
-        # First axis
-        sec.axis = sec_axis(
-          trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
-          name = opt_nitrate_measure_label
-        )
-      ) +
-      labs(        
-        title = paste0(
-          &#39;Overall mean anomaly profiles by cluster \n&#39;,
-          &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
-          &#39;num clusters = &#39;, unique(.x$num_clusters)
-        ),
-        x = opt_measure_label_adjusted, 
-        y = &#39;depth (m)&#39;
-        ) +
-      theme(axis.title.x.top = element_text(color = nitrate_color),
-            axis.text.x.top = element_text(color = nitrate_color))
-    )
-  
-}</code></pre>
-<pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_nitrate_adj-1">
-Past versions of ph_with_nitrate_adj-1.png
-</button>
-</p>
-<div id="fig-ph_with_nitrate_adj-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate_adj-1.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre><code>
-[[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ph_with_nitrate_adj-2">
-Past versions of ph_with_nitrate_adj-2.png
-</button>
-</p>
-<div id="fig-ph_with_nitrate_adj-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/e5fdcbb420b70d290c876754bc1fa8e2f791b299/docs/figure/ph_hplus_cluster_analysis.Rmd/ph_with_nitrate_adj-2.png" target="_blank">e5fdcbb</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-18
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
+#   
+#   # Read oxygen anomaly data and link to cluster information
+#   doxy_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_anomaly_va.rds&quot;))
+#   doxy_cluster &lt;-
+#     full_join(
+#       doxy_bgc_va,
+#       anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
+#     ) %&gt;% filter(!is.na(cluster))
+#   
+#   # summarise by cluster, , profile_type, num_clusters
+#   doxy_cluster_mean &lt;- doxy_cluster %&gt;%
+#     group_by(cluster, profile_type, num_clusters, depth) %&gt;%
+#     summarise(
+#       doxy_anomaly_mean = mean(anomaly, na.rm = TRUE),
+#       doxy_anomaly_sd = sd(anomaly, na.rm = TRUE)
+#     ) %&gt;%
+#     ungroup() %&gt;%
+#     select(
+#       cluster,
+#       profile_type,
+#       num_clusters,
+#       doxy_depth = depth,
+#       doxy_anomaly_mean,
+#       doxy_anomaly_sd
+#     )
+#   
+# 
+#   # join pH anomaly with oxygen
+#   #anomaly_cluster_mean
+#   cluster_ph_doxy &lt;- full_join(anomaly_cluster_mean, doxy_cluster_mean)
+#   doxy_color &lt;- &quot;#5B9BD5&quot;
+# 
+#   if (opt_category == &quot;bgc_ph_ph&quot;){
+#     doxy_to_ph_factor &lt;- 250
+#     doxy_to_ph_offset &lt;- 0
+#   } else {
+#     doxy_to_ph_factor &lt;- 1e10
+#     doxy_to_ph_offset &lt;- 0
+#   }
+# 
+#   # Add the cluster count information
+#   cluster_ph_doxy &lt;- left_join(cluster_ph_doxy, cluster_count)
+#     
+#   cluster_ph_doxy %&gt;%
+#     filter (profile_type == &quot;base&quot;) %&gt;%
+#     group_split(profile_type, num_clusters) %&gt;%
+#     map(
+#     ~ ggplot(data = .x,) +
+#       geom_path(aes(x = anomaly_mean,
+#                     y = depth)) +
+#       geom_ribbon(aes(
+#         xmax = anomaly_mean + anomaly_sd,
+#         xmin = anomaly_mean - anomaly_sd,
+#         y = depth
+#       ),
+#       alpha = 0.2) +
+#       geom_path(aes(
+#         x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+#         y = doxy_depth
+#       ), color = doxy_color) +
+#       geom_ribbon(
+#         aes(
+#           xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+#           xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+#           y = doxy_depth
+#         ),
+#         fill = doxy_color,
+#         alpha = 0.2
+#       ) +
+#       geom_vline(xintercept = 0) +
+#       scale_y_reverse() +
+#       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
+#                   strip.position = &quot;right&quot;) +
+#       coord_cartesian(xlim = opt_xlim) +
+#       scale_x_continuous(
+#         # First axis
+#         name = opt_measure_label,
+#         breaks = opt_xbreaks,
+#         # First axis
+#         sec.axis = sec_axis(
+#           trans =  ~ . * doxy_to_ph_factor + doxy_to_ph_offset,
+#           name = opt_doxy_measure_label
+#         )
+#       ) +
+#       labs(        
+#         title = paste0(
+#           &#39;Overall mean anomaly profiles by cluster \n&#39;,
+#           &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+#           &#39;num clusters = &#39;, unique(.x$num_clusters)
+#         ),
+#         x = opt_measure_label, 
+#         y = &#39;depth (m)&#39;
+#         ) +
+#       theme(axis.title.x.top = element_text(color = doxy_color),
+#             axis.text.x.top = element_text(color = doxy_color))
+#     )
+#   
+# }</code></pre>
+<pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
+# 
+#   if (opt_category == &quot;bgc_ph_ph&quot;){
+#     doxy_to_ph_factor &lt;- 20
+#     doxy_to_ph_offset &lt;- 0
+#   } else {
+#     doxy_to_ph_factor &lt;- 20
+#     doxy_to_ph_offset &lt;- 0
+#   }
+#   
+#   cluster_ph_doxy %&gt;%
+#     filter (profile_type == &quot;adjusted&quot;) %&gt;%
+#     group_split(profile_type, num_clusters) %&gt;%
+#     map(
+#     ~ ggplot(data = .x,) +
+#       geom_path(aes(x = anomaly_mean,
+#                     y = depth)) +
+#       geom_ribbon(aes(
+#         xmax = anomaly_mean + anomaly_sd,
+#         xmin = anomaly_mean - anomaly_sd,
+#         y = depth
+#       ),
+#       alpha = 0.2) +
+#       geom_path(aes(
+#         x = (doxy_anomaly_mean - doxy_to_ph_offset)  / doxy_to_ph_factor,
+#         y = doxy_depth
+#       ), color = doxy_color) +
+#       geom_ribbon(
+#         aes(
+#           xmax = (doxy_anomaly_mean + doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+#           xmin = (doxy_anomaly_mean - doxy_anomaly_sd - doxy_to_ph_offset) / doxy_to_ph_factor,
+#           y = doxy_depth
+#         ),
+#         fill = doxy_color,
+#         alpha = 0.2
+#       ) +
+#       geom_vline(xintercept = 0) +
+#       scale_y_reverse() +
+#       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
+#                   strip.position = &quot;right&quot;) +
+#       coord_cartesian(xlim = opt_xlim_adjusted) +
+#       scale_x_continuous(
+#         # First axis
+#         name = opt_measure_label_adjusted,
+#         breaks = opt_xbreaks_adjusted,
+#         # First axis
+#         sec.axis = sec_axis(
+#           trans =  ~ . * doxy_to_ph_factor + doxy_to_ph_offset,
+#           name = opt_doxy_measure_label
+#         )
+#       ) +
+#       labs(        
+#         title = paste0(
+#           &#39;Overall mean anomaly profiles by cluster \n&#39;,
+#           &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+#           &#39;num clusters = &#39;, unique(.x$num_clusters)
+#         ),
+#         x = opt_measure_label_adjusted, 
+#         y = &#39;depth (m)&#39;
+#         ) +
+#       theme(axis.title.x.top = element_text(color = doxy_color),
+#             axis.text.x.top = element_text(color = doxy_color))
+#     )
+#   
+# }</code></pre>
+<pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
+#   
+#   # Read oxygen anomaly data and link to cluster information
+#   nitrate_bgc_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/nitrate_anomaly_va.rds&quot;))
+#   nitrate_cluster &lt;-
+#     full_join(
+#       nitrate_bgc_va,
+#       anomaly_cluster_all %&gt;% distinct (file_id, cluster, profile_type, num_clusters)
+#     ) %&gt;% filter(!is.na(cluster))
+#   
+#   # summarise by cluster, , profile_type, num_clusters
+#   nitrate_cluster_mean &lt;- nitrate_cluster %&gt;%
+#     group_by(cluster, profile_type, num_clusters, depth) %&gt;%
+#     summarise(
+#       nitrate_anomaly_mean = mean(anomaly, na.rm = TRUE),
+#       nitrate_anomaly_sd = sd(anomaly, na.rm = TRUE)
+#     ) %&gt;%
+#     ungroup() %&gt;%
+#     select(
+#       cluster,
+#       profile_type,
+#       num_clusters,
+#       nitrate_depth = depth,
+#       nitrate_anomaly_mean,
+#       nitrate_anomaly_sd
+#     )
+#   
+# 
+#   # join pH anomaly with nitrate
+#   #anomaly_cluster_mean
+#   cluster_ph_nitrate &lt;- full_join(anomaly_cluster_mean, nitrate_cluster_mean)
+#   nitrate_color &lt;- &quot;#ED7D31&quot;
+# 
+#   if (opt_category == &quot;bgc_ph_ph&quot;){
+#     nitrate_to_ph_factor &lt;- 75
+#     nitrate_to_ph_offset &lt;- 0
+#   } else {
+#     nitrate_to_ph_factor &lt;- 3e9
+#     nitrate_to_ph_offset &lt;- 0
+#   }
+#   
+#   # Add the cluster count information
+#   cluster_ph_nitrate &lt;- left_join(cluster_ph_nitrate, cluster_count)
+#     
+#   cluster_ph_nitrate %&gt;%
+#     filter (profile_type == &quot;base&quot;) %&gt;%
+#     group_split(profile_type, num_clusters) %&gt;%
+#     map(
+#     ~ ggplot(data = .x,) +
+#       geom_path(aes(x = anomaly_mean,
+#                     y = depth)) +
+#       geom_ribbon(aes(
+#         xmax = anomaly_mean + anomaly_sd,
+#         xmin = anomaly_mean - anomaly_sd,
+#         y = depth
+#       ),
+#       alpha = 0.2) +
+#       geom_path(aes(
+#         x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
+#         y = nitrate_depth
+#       ), color = nitrate_color) +
+#       geom_ribbon(
+#         aes(
+#           xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+#           xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+#           y = nitrate_depth
+#         ),
+#         fill = nitrate_color,
+#         alpha = 0.2
+#       ) +
+#       geom_vline(xintercept = 0) +
+#       scale_y_reverse() +
+#       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
+#                   strip.position = &quot;right&quot;) +
+#       coord_cartesian(xlim = opt_xlim) +
+#       scale_x_continuous(
+#         # First axis
+#         name = opt_measure_label,
+#         breaks = opt_xbreaks,
+#         # First axis
+#         sec.axis = sec_axis(
+#           trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
+#           name = opt_nitrate_measure_label
+#         )
+#       ) +
+#       labs(        
+#         title = paste0(
+#           &#39;Overall mean anomaly profiles by cluster \n&#39;,
+#           &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+#           &#39;num clusters = &#39;, unique(.x$num_clusters)
+#         ),
+#         x = opt_measure_label, 
+#         y = &#39;depth (m)&#39;
+#         ) +
+#       theme(axis.title.x.top = element_text(color = nitrate_color),
+#             axis.text.x.top = element_text(color = nitrate_color))
+#     )
+#   
+# }</code></pre>
+<pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
+# 
+#   if (opt_category == &quot;bgc_ph_ph&quot;){
+#     nitrate_to_ph_factor &lt;- 6
+#     nitrate_to_ph_offset &lt;- 0
+#   } else {
+#     nitrate_to_ph_factor &lt;- 6
+#     nitrate_to_ph_offset &lt;- 0
+#   }
+#   
+#   cluster_ph_nitrate %&gt;%
+#     filter (profile_type == &quot;adjusted&quot;) %&gt;%
+#     group_split(profile_type, num_clusters) %&gt;%
+#     map(
+#     ~ ggplot(data = .x,) +
+#       geom_path(aes(x = anomaly_mean,
+#                     y = depth)) +
+#       geom_ribbon(aes(
+#         xmax = anomaly_mean + anomaly_sd,
+#         xmin = anomaly_mean - anomaly_sd,
+#         y = depth
+#       ),
+#       alpha = 0.2) +
+#       geom_path(aes(
+#         x = (nitrate_anomaly_mean - nitrate_to_ph_offset)  / nitrate_to_ph_factor,
+#         y = nitrate_depth
+#       ), color = nitrate_color) +
+#       geom_ribbon(
+#         aes(
+#           xmax = (nitrate_anomaly_mean + nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+#           xmin = (nitrate_anomaly_mean - nitrate_anomaly_sd - nitrate_to_ph_offset) / nitrate_to_ph_factor,
+#           y = nitrate_depth
+#         ),
+#         fill = nitrate_color,
+#         alpha = 0.2
+#       ) +
+#       geom_vline(xintercept = 0) +
+#       scale_y_reverse() +
+#       facet_wrap(~ paste0(cluster, &quot; (&quot;, formatC(count_profiles, big.mark=&quot;,&quot;) , &quot;)&quot;),
+#                   strip.position = &quot;right&quot;) +
+#       coord_cartesian(xlim = opt_xlim_adjusted) +
+#       scale_x_continuous(
+#         # First axis
+#         name = opt_measure_label_adjusted,
+#         breaks = opt_xbreaks_adjusted,
+#         # First axis
+#         sec.axis = sec_axis(
+#           trans =  ~ . * nitrate_to_ph_factor + nitrate_to_ph_offset,
+#           name = opt_nitrate_measure_label
+#         )
+#       ) +
+#       labs(        
+#         title = paste0(
+#           &#39;Overall mean anomaly profiles by cluster \n&#39;,
+#           &#39;type = &#39;, unique(.x$profile_type), &#39;, &#39;, 
+#           &#39;num clusters = &#39;, unique(.x$num_clusters)
+#         ),
+#         x = opt_measure_label_adjusted, 
+#         y = &#39;depth (m)&#39;
+#         ) +
+#       theme(axis.title.x.top = element_text(color = nitrate_color),
+#             axis.text.x.top = element_text(color = nitrate_color))
+#     )
+#   
+# }</code></pre>
 </div>
 </div>
 <div id="cluster-by-surface-extreme" class="section level2">
