@@ -684,15 +684,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ed03c146f127f11e40ccb4525fd368dcd4a13ebtargetblank8ed03c1a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree93ba35196ecd758ff07573df993ee2725bc84bb8targetblank93ba351a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ed03c146f127f11e40ccb4525fd368dcd4a13eb" target="_blank">8ed03c1</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/93ba35196ecd758ff07573df993ee2725bc84bb8" target="_blank">93ba351</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree8ed03c146f127f11e40ccb4525fd368dcd4a13ebtargetblank8ed03c1a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree93ba35196ecd758ff07573df993ee2725bc84bb8targetblank93ba351a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -702,7 +702,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/8ed03c146f127f11e40ccb4525fd368dcd4a13eb" target="_blank">8ed03c1</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/93ba35196ecd758ff07573df993ee2725bc84bb8" target="_blank">93ba351</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -719,11 +719,12 @@ were generated:
 Ignored files:
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    analysis/figure/
     Ignored:    output/
 
 Untracked files:
     Untracked:  analysis/child/cluster_analysis_overlayFULL.Rmd
+    Untracked:  analysis/child/cluster_analysis_overlay_chla.Rmd
+    Untracked:  analysis/child/cluster_analysis_overlay_doxy.Rmd
 
 Unstaged changes:
     Modified:   analysis/child/cluster_analysis_base.Rmd
@@ -775,6 +776,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/93ba35196ecd758ff07573df993ee2725bc84bb8/docs/ph_hplus_cluster_analysis.html" target="_blank">93ba351</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -2638,69 +2656,35 @@ ds2n19
 </div>
 </div>
 </div>
-<div id="overlay" class="section level3">
-<h3>Overlay</h3>
+<div id="overlay-chla" class="section level3">
+<h3>Overlay chla</h3>
 <p>for each cluster identified show with second attribute overlayed</p>
-<pre class="r"><code>if (opt_overlay == &quot;chla&quot;) {
+<pre class="r"><code># Read chl-a data&#39;
+overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;)) %&gt;%
+  select (file_id,
+          date,
+          year,
+          month,
+          lat,
+          lon,
+          profile_range,
+          measure_depth = depth,
+          measure = chla)
 
-  # Read chl-a data&#39;
-  overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;)) %&gt;%
-    select (file_id,
-            date,
-            year,
-            month,
-            lat,
-            lon,
-            profile_range,
-            measure_depth = depth,
-            measure = chla)
-  
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    overlay_factor &lt;- 25
-    overlay_offset &lt;- 1
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  } else if (opt_category == &quot;bgc_ph_h_plus&quot;){
-    overlay_factor &lt;- 1e9
-    overlay_offset &lt;- 1
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  }
-
-  overlay_color &lt;- &quot;#69b3a2&quot;
-  opt_overlay_measure_label &lt;- opt_chla_measure_label
-  
-} else if (opt_overlay == &quot;doxy&quot;) {
-
-  # Read doxy data
-  overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_anomaly_va.rds&quot;)) %&gt;%
-    select (file_id,
-            date,
-            year,
-            month,
-            lat,
-            lon,
-            profile_range,
-            measure_depth = depth,
-            measure = doxy)
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    overlay_factor &lt;- 250
-    overlay_offset &lt;- 0
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  } else if (opt_category == &quot;bgc_ph_h_plus&quot;){
-    overlay_factor &lt;- 1e10
-    overlay_offset &lt;- 0
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  }
-
-  overlay_color &lt;- &quot;#5B9BD5&quot;
-  opt_overlay_measure_label &lt;- opt_doxy_measure_label
-  
+if (opt_category == &quot;bgc_ph_ph&quot;){
+  overlay_factor &lt;- 25
+  overlay_offset &lt;- 1
+  overlay_factor_adjusted &lt;- 1
+  overlay_offset_adjusted &lt;- 0.5
+} else if (opt_category == &quot;bgc_ph_h_plus&quot;){
+  overlay_factor &lt;- 1e9
+  overlay_offset &lt;- 1
+  overlay_factor_adjusted &lt;- 1
+  overlay_offset_adjusted &lt;- 0.5
 }
 
+overlay_color &lt;- &quot;#69b3a2&quot;
+opt_overlay_measure_label &lt;- opt_chla_measure_label
 
 # link overlay data to cluster details
 overlay_cluster &lt;-
@@ -2788,84 +2772,10 @@ cluster_base_overlay &lt;- left_join(cluster_base_overlay, cluster_count)</code>
             axis.text.x.top = element_text(color = overlay_color))
     )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display-1">
-Past versions of overlay_display-1.png
-</button>
-</p>
-<div id="fig-overlay_display-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display-1.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_chla_display-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display-2">
-Past versions of overlay_display-2.png
-</button>
-</p>
-<div id="fig-overlay_display-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display-2.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_chla_display-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
 <pre class="r"><code>  cluster_base_overlay %&gt;% 
     filter (profile_type == &quot;adjusted&quot;) %&gt;%
@@ -2923,84 +2833,10 @@ ds2n19
             axis.text.x.top = element_text(color = overlay_color))
     )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display_adj-1">
-Past versions of overlay_display_adj-1.png
-</button>
-</p>
-<div id="fig-overlay_display_adj-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-1.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_chla_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display_adj-2">
-Past versions of overlay_display_adj-2.png
-</button>
-</p>
-<div id="fig-overlay_display_adj-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-2.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_chla_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
 #   
 #   # Read oxygen anomaly data and link to cluster information
@@ -3330,70 +3166,36 @@ ds2n19
 #   
 # }</code></pre>
 </div>
-<div id="overlay-1" class="section level3">
-<h3>Overlay</h3>
+<div id="overlay-oxygen" class="section level3">
+<h3>Overlay oxygen</h3>
 <p>for each cluster identified show with second attribute overlayed</p>
-<pre class="r"><code>if (opt_overlay == &quot;chla&quot;) {
+<pre class="r"><code># Read doxy data
+overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_anomaly_va.rds&quot;)) %&gt;%
+  select (file_id,
+          date,
+          year,
+          month,
+          lat,
+          lon,
+          profile_range,
+          measure_depth = depth,
+          measure = doxy)
 
-  # Read chl-a data&#39;
-  overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/chla_bgc_va.rds&quot;)) %&gt;%
-    select (file_id,
-            date,
-            year,
-            month,
-            lat,
-            lon,
-            profile_range,
-            measure_depth = depth,
-            measure = chla)
-  
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    overlay_factor &lt;- 25
-    overlay_offset &lt;- 1
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  } else if (opt_category == &quot;bgc_ph_h_plus&quot;){
-    overlay_factor &lt;- 1e9
-    overlay_offset &lt;- 1
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  }
-
-  overlay_color &lt;- &quot;#69b3a2&quot;
-  opt_overlay_measure_label &lt;- opt_chla_measure_label
-  
-} else if (opt_overlay == &quot;doxy&quot;) {
-
-  # Read doxy data
-  overlay_va &lt;- read_rds(file = paste0(path_argo_preprocessed, &quot;/doxy_anomaly_va.rds&quot;)) %&gt;%
-    select (file_id,
-            date,
-            year,
-            month,
-            lat,
-            lon,
-            profile_range,
-            measure_depth = depth,
-            measure = doxy)
-
-  if (opt_category == &quot;bgc_ph_ph&quot;){
-    overlay_factor &lt;- 250
-    overlay_offset &lt;- 0
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  } else if (opt_category == &quot;bgc_ph_h_plus&quot;){
-    overlay_factor &lt;- 1e10
-    overlay_offset &lt;- 0
-    overlay_factor_adjusted &lt;- 1
-    overlay_offset_adjusted &lt;- 0.5
-  }
-
-  overlay_color &lt;- &quot;#5B9BD5&quot;
-  opt_overlay_measure_label &lt;- opt_doxy_measure_label
-  
+if (opt_category == &quot;bgc_ph_ph&quot;){
+  overlay_factor &lt;- 250
+  overlay_offset &lt;- 0
+  overlay_factor_adjusted &lt;- 1
+  overlay_offset_adjusted &lt;- 0.5
+} else if (opt_category == &quot;bgc_ph_h_plus&quot;){
+  overlay_factor &lt;- 1e10
+  overlay_offset &lt;- 0
+  overlay_factor_adjusted &lt;- 1
+  overlay_offset_adjusted &lt;- 0.5
 }
 
-
+overlay_color &lt;- &quot;#5B9BD5&quot;
+opt_overlay_measure_label &lt;- opt_doxy_measure_label
+  
 # link overlay data to cluster details
 overlay_cluster &lt;-
   full_join(
@@ -3480,84 +3282,10 @@ cluster_base_overlay &lt;- left_join(cluster_base_overlay, cluster_count)</code>
             axis.text.x.top = element_text(color = overlay_color))
     )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display-1">
-Past versions of overlay_display-1.png
-</button>
-</p>
-<div id="fig-overlay_display-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display-1.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_doxy_display-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display-2">
-Past versions of overlay_display-2.png
-</button>
-</p>
-<div id="fig-overlay_display-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display-2.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_doxy_display-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>Adjusted profiles</p>
 <pre class="r"><code>  cluster_base_overlay %&gt;% 
     filter (profile_type == &quot;adjusted&quot;) %&gt;%
@@ -3615,84 +3343,10 @@ ds2n19
             axis.text.x.top = element_text(color = overlay_color))
     )</code></pre>
 <pre><code>[[1]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display_adj-1">
-Past versions of overlay_display_adj-1.png
-</button>
-</p>
-<div id="fig-overlay_display_adj-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-1.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_doxy_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>
 [[2]]</code></pre>
-<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-overlay_display_adj-2">
-Past versions of overlay_display_adj-2.png
-</button>
-</p>
-<div id="fig-overlay_display_adj-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/8ed03c146f127f11e40ccb4525fd368dcd4a13eb/docs/figure/ph_hplus_cluster_analysis.Rmd/overlay_display_adj-2.png" target="_blank">8ed03c1</a>
-</td>
-<td>
-ds2n19
-</td>
-<td>
-2023-12-19
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/ph_hplus_cluster_analysis.Rmd/overlay_doxy_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># if (opt_category == &quot;bgc_ph_ph&quot; | opt_category == &quot;bgc_ph_h_plus&quot;) {
 #   
 #   # Read oxygen anomaly data and link to cluster information
