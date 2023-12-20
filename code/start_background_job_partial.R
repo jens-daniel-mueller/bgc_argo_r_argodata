@@ -39,7 +39,7 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'temp_SO_cluster_analysis.Rmd'
+    'doxy_cluster_analysis.Rmd'
   )
 ),
 message = "builing generic cluster analysis.")
