@@ -361,9 +361,6 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
-    </li>
-    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -472,7 +469,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="pH_cluster_analysis.html">BGC pH</a>
+      <a href="ph_ph_cluster_analysis.html">BGC pH (pH)</a>
+    </li>
+    <li>
+      <a href="ph_hplus_cluster_analysis.html">BGC pH ([H+])</a>
     </li>
     <li>
       <a href="temp_cluster_analysis.html">BGC temperature</a>
@@ -481,10 +481,13 @@ div.tocify {
       <a href="temp_core_cluster_analysis.html">Core temperature</a>
     </li>
     <li>
-      <a href="temp_ph_SO_cluster_analysis.html">BGC temperature SO</a>
+      <a href="temp_SO_cluster_analysis.html">BGC temperature SO</a>
     </li>
     <li>
       <a href="temp_core_SO_cluster_analysis.html">Core temperature SO</a>
+    </li>
+    <li>
+      <a href="doxy_cluster_analysis.html">Oxygen</a>
     </li>
   </ul>
 </li>
@@ -685,15 +688,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11610c7d79270683a820b17a631979ac9e0e2e31targetblank11610c7a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11610c7d79270683a820b17a631979ac9e0e2e31" target="_blank">11610c7</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree11610c7d79270683a820b17a631979ac9e0e2e31targetblank11610c7a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -703,7 +706,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/11610c7d79270683a820b17a631979ac9e0e2e31" target="_blank">11610c7</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -722,18 +725,8 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  analysis/child/cluster_analysis_extreme_overlay_doxy.Rmd
-    Untracked:  analysis/child/cluster_analysis_overlay_chla.Rmd
-    Untracked:  analysis/child/cluster_analysis_overlay_doxy.Rmd
-    Untracked:  analysis/child/cluster_analysis_overlay_nitrate.Rmd
-
 Unstaged changes:
-    Modified:   analysis/child/cluster_analysis_base.Rmd
-    Modified:   analysis/child/cluster_analysis_extreme.Rmd
-    Deleted:    analysis/child/cluster_analysis_overlay.Rmd
-    Modified:   analysis/ph_ph_cluster_analysis.Rmd
-    Modified:   code/start_background_job_partial.R
+    Modified:   code/start_background_job.R
 
 </code></pre>
 <p>
@@ -779,6 +772,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca/analysis/temp_cluster_analysis.Rmd" target="_blank">f895ac9</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+<td>
+change to cluster analysis code to introduce child markdown files.
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/354592f114a5d29b68c6e79b406dfff592246dc9/docs/temp_cluster_analysis.html" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1499,8 +1526,8 @@ each anomaly in the profile by the max anomaly across the profile. This
 results in all Adjusted profiles having values in the rage -1 to +1.</p>
 <p>cluster_analysis_base.Rmd - Child markdown file that does cluster
 analysis and can if set overlay additional attributes on clusters.</p>
-<p>cluster_analysis_extreme.Rmd - In addition the cluster analysis under
-under surface extremes conditions.</p>
+<p>cluster_analysis_extreme.Rmd - Child markdown file that does cluster
+analysis under surface extremes conditions.</p>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
 <p>temp_anomaly_va.rds - bgc preprocessed folder, created by
@@ -1647,11 +1674,9 @@ map &lt;-
   # oxygen formatting
   opt_doxy_measure_label &lt;- expression(&quot;dissolved oxygen anomaly ( µmol kg&quot;^&quot;-1&quot;~&quot;)&quot;)
 
+  # pH formatting
   opt_ph_h_plus_measure_label &lt;- expression(&quot;[H]&quot;^&quot;+&quot; ~ &quot;anomaly&quot;)
-  # opt_xlim &lt;- c(-2e-9, 2e-9)
-  # opt_xbreaks &lt;- c(-2e-9, -1e-9, 0, 1e-9, 2e-9)
-  
-    
+
   # Under extreme analysis
   opt_extreme_analysis &lt;- TRUE
   
@@ -5032,7 +5057,7 @@ if (opt_category == &quot;bgc_ph_ph&quot;){
   overlay_offset &lt;- 0
   overlay_factor_adjusted &lt;- 20
   overlay_offset_adjusted &lt;- 0
-} else if (opt_category == &quot;bgc_temp&quot;){
+} else if (opt_category == &quot;bgc_temp&quot; | opt_category == &quot;bgc_temp_SO&quot;){
   overlay_factor &lt;- 5
   overlay_offset &lt;- 0
   overlay_factor_adjusted &lt;- 20
@@ -16133,7 +16158,7 @@ if (opt_category == &quot;bgc_ph_ph&quot;){
   overlay_offset &lt;- 0
   overlay_factor_adjusted &lt;- 20
   overlay_offset_adjusted &lt;- 0
-} else if (opt_category == &quot;bgc_temp&quot;){
+} else if (opt_category == &quot;bgc_temp&quot; | opt_category == &quot;bgc_temp_SO&quot;){
   overlay_factor &lt;- 5
   overlay_offset &lt;- 0
   overlay_factor_adjusted &lt;- 20
@@ -16233,21 +16258,243 @@ cluster_base_overlay &lt;- full_join(anomaly_cluster_mean_ext, overlay_cluster_m
     )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-1">
+Past versions of extreme_overlay_doxy_display-1.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-1.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-2">
+Past versions of extreme_overlay_doxy_display-2.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-2.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-3">
+Past versions of extreme_overlay_doxy_display-3.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-3.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-4">
+Past versions of extreme_overlay_doxy_display-4.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-4.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-5">
+Past versions of extreme_overlay_doxy_display-5.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-5.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display-6">
+Past versions of extreme_overlay_doxy_display-6.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display-6.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Adjusted profiles</p>
 <pre class="r"><code>  cluster_base_overlay %&gt;% 
     filter (profile_type == &quot;adjusted&quot;) %&gt;%
@@ -16307,21 +16554,243 @@ cluster_base_overlay &lt;- full_join(anomaly_cluster_mean_ext, overlay_cluster_m
     )</code></pre>
 <pre><code>[[1]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-1">
+Past versions of extreme_overlay_doxy_display_adj-1.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-1.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[2]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-2">
+Past versions of extreme_overlay_doxy_display_adj-2.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-2.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[3]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-3">
+Past versions of extreme_overlay_doxy_display_adj-3.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-3.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[4]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-4">
+Past versions of extreme_overlay_doxy_display_adj-4.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-4.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[5]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-5">
+Past versions of extreme_overlay_doxy_display_adj-5.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-5.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre><code>
 [[6]]</code></pre>
 <p><img src="figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-extreme_overlay_doxy_display_adj-6">
+Past versions of extreme_overlay_doxy_display_adj-6.png
+</button>
+</p>
+<div id="fig-extreme_overlay_doxy_display_adj-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/354592f114a5d29b68c6e79b406dfff592246dc9/docs/figure/temp_cluster_analysis.Rmd/extreme_overlay_doxy_display_adj-6.png" target="_blank">354592f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">

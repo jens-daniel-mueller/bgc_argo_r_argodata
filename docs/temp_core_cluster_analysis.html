@@ -12,7 +12,7 @@
 <meta name="author" content="David Stappard &amp; Jens Daniel Müller" />
 
 
-<title>Combined cluster analysis</title>
+<title>Global core temperature cluster analysis</title>
 
 <script src="site_libs/header-attrs-2.18/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -361,9 +361,6 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
-    </li>
-    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -472,7 +469,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="pH_cluster_analysis.html">BGC pH</a>
+      <a href="ph_ph_cluster_analysis.html">BGC pH (pH)</a>
+    </li>
+    <li>
+      <a href="ph_hplus_cluster_analysis.html">BGC pH ([H+])</a>
     </li>
     <li>
       <a href="temp_cluster_analysis.html">BGC temperature</a>
@@ -481,10 +481,13 @@ div.tocify {
       <a href="temp_core_cluster_analysis.html">Core temperature</a>
     </li>
     <li>
-      <a href="temp_ph_SO_cluster_analysis.html">BGC temperature SO</a>
+      <a href="temp_SO_cluster_analysis.html">BGC temperature SO</a>
     </li>
     <li>
       <a href="temp_core_SO_cluster_analysis.html">Core temperature SO</a>
+    </li>
+    <li>
+      <a href="doxy_cluster_analysis.html">Oxygen</a>
     </li>
   </ul>
 </li>
@@ -521,9 +524,10 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Combined cluster analysis</h1>
+<h1 class="title toc-ignore">Global core temperature cluster
+analysis</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">18 December, 2023</h4>
+<h4 class="date">19 December, 2023</h4>
 
 </div>
 
@@ -552,7 +556,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-18
+<strong>Last updated:</strong> 2023-12-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -684,15 +688,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeaa2fb1e2c34c5b518385df0b967e828ebb7ea5bftargetblankaa2fb1ea">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/aa2fb1e2c34c5b518385df0b967e828ebb7ea5bf" target="_blank">aa2fb1e</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeaa2fb1e2c34c5b518385df0b967e828ebb7ea5bftargetblankaa2fb1ea"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -702,7 +706,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/aa2fb1e2c34c5b518385df0b967e828ebb7ea5bf" target="_blank">aa2fb1e</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -721,15 +725,8 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  analysis/OLD pH_cluster_analysis.Rmd
-    Untracked:  analysis/child/
-    Untracked:  figure/
-
 Unstaged changes:
-    Modified:   _workflowr.yml
-    Deleted:    analysis/pH_cluster_analysis.Rmd
-    Modified:   code/start_background_job_partial.R
+    Modified:   code/start_background_job.R
 
 </code></pre>
 <p>
@@ -776,6 +773,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca/analysis/temp_core_cluster_analysis.Rmd" target="_blank">f895ac9</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-19
+</td>
+<td>
+change to cluster analysis code to introduce child markdown files.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/579947fe52885a85385ff1e8a3a689805366a816/analysis/temp_core_cluster_analysis.Rmd" target="_blank">579947f</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-18
+</td>
+<td>
+rework cluster analysis based on child documents
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/a17aa980dad9b1beaf3fd62d9d96ecf568ce95d8/docs/temp_core_cluster_analysis.html" target="_blank">a17aa98</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-18
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1221,8 +1269,10 @@ cluster analysis and the results are used in subsequent figures.</p>
 as adjusted profiles. Adjusted profiles have been normalised by dividing
 each anomaly in the profile by the max anomaly across the profile. This
 results in all Adjusted profiles having values in the rage -1 to +1.</p>
-<p>In addition the cluster analysis is repeated under under surface
-extremes conditions.</p>
+<p>cluster_analysis_base.Rmd - Child markdown file that does cluster
+analysis and can if set overlay additional attributes on clusters.</p>
+<p>cluster_analysis_extreme.Rmd - Child markdown file that does cluster
+analysis under surface extremes conditions.</p>
 <div id="dependencies" class="section level2">
 <h2>Dependencies</h2>
 <p>temp_anomaly_va.rds - core preprocessed folder, created by
@@ -1255,7 +1305,7 @@ opt_profile_range &lt;- 3
 
 # options relating to cluster analysis
 opt_n_start &lt;- 15
-opt_max_iterations &lt;- 100 # given size of data set reduce this to 100
+opt_max_iterations &lt;- 500
 opt_n_clusters &lt;- 14 # Max number of clusters to try when determining optimal number of clusters
 
 # opt_extreme_determination
@@ -1348,6 +1398,12 @@ map &lt;-
   opt_measure_label_adjusted &lt;- &quot;adjusted temperature anomaly&quot;
   opt_xlim_adjusted &lt;- c(-1, 1)
   opt_xbreaks_adjusted &lt;- c(-1.0, -0.5, 0, 0.5, 1.0)
+
+  # oxygen formatting
+  opt_doxy_measure_label &lt;- expression(&quot;dissolved oxygen anomaly ( µmol kg&quot;^&quot;-1&quot;~&quot;)&quot;)
+
+  # pH formatting
+  opt_ph_h_plus_measure_label &lt;- expression(&quot;[H]&quot;^&quot;+&quot; ~ &quot;anomaly&quot;)
 
   # Under extreme analysis
   opt_extreme_analysis &lt;- TRUE

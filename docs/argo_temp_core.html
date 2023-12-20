@@ -361,9 +361,6 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
-    </li>
-    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -472,7 +469,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="pH_cluster_analysis.html">BGC pH</a>
+      <a href="ph_ph_cluster_analysis.html">BGC pH (pH)</a>
+    </li>
+    <li>
+      <a href="ph_hplus_cluster_analysis.html">BGC pH ([H+])</a>
     </li>
     <li>
       <a href="temp_cluster_analysis.html">BGC temperature</a>
@@ -481,10 +481,13 @@ div.tocify {
       <a href="temp_core_cluster_analysis.html">Core temperature</a>
     </li>
     <li>
-      <a href="temp_ph_SO_cluster_analysis.html">BGC temperature SO</a>
+      <a href="temp_SO_cluster_analysis.html">BGC temperature SO</a>
     </li>
     <li>
       <a href="temp_core_SO_cluster_analysis.html">Core temperature SO</a>
+    </li>
+    <li>
+      <a href="doxy_cluster_analysis.html">Oxygen</a>
     </li>
   </ul>
 </li>
@@ -524,7 +527,7 @@ div.tocify {
 <h1 class="title toc-ignore">Core-Argo Temperature Data</h1>
 <h4 class="author">Pasqualina Vonlanthen, David Stappard &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">14 December, 2023</h4>
+<h4 class="date">19 December, 2023</h4>
 
 </div>
 
@@ -553,7 +556,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-14
+<strong>Last updated:</strong> 2023-12-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -562,7 +565,8 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+<strong>Knit directory:</strong>
+<code>bgc_argo_r_argodata/analysis/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -684,15 +688,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64fd104bab3b5f905b0ec1740fe845da75077e5ctargetblank64fd104a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64fd104bab3b5f905b0ec1740fe845da75077e5c" target="_blank">64fd104</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64fd104bab3b5f905b0ec1740fe845da75077e5ctargetblank64fd104a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -702,7 +706,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64fd104bab3b5f905b0ec1740fe845da75077e5c" target="_blank">64fd104</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -721,17 +725,7 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  code/doxy_vertical_align.Rmd
-    Untracked:  code/nitrate_vertical_align.Rmd
-    Untracked:  nitrate_align_climatology.Rmd
-
 Unstaged changes:
-    Modified:   analysis/_site.yml
-    Deleted:    analysis/doxy_vertical_align.Rmd
-    Deleted:    analysis/nitrate_vertical_align.Rmd
-    Deleted:    code/doxy_align_climatology.Rmd
-    Deleted:    code/load_clim_doxy_woa.Rmd
     Modified:   code/start_background_job.R
 
 </code></pre>
@@ -778,6 +772,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/argo_temp_core.html" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd

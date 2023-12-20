@@ -361,9 +361,6 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
-      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
-    </li>
-    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -472,7 +469,10 @@ div.tocify {
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="pH_cluster_analysis.html">BGC pH</a>
+      <a href="ph_ph_cluster_analysis.html">BGC pH (pH)</a>
+    </li>
+    <li>
+      <a href="ph_hplus_cluster_analysis.html">BGC pH ([H+])</a>
     </li>
     <li>
       <a href="temp_cluster_analysis.html">BGC temperature</a>
@@ -481,10 +481,13 @@ div.tocify {
       <a href="temp_core_cluster_analysis.html">Core temperature</a>
     </li>
     <li>
-      <a href="temp_ph_SO_cluster_analysis.html">BGC temperature SO</a>
+      <a href="temp_SO_cluster_analysis.html">BGC temperature SO</a>
     </li>
     <li>
       <a href="temp_core_SO_cluster_analysis.html">Core temperature SO</a>
+    </li>
+    <li>
+      <a href="doxy_cluster_analysis.html">Oxygen</a>
     </li>
   </ul>
 </li>
@@ -524,7 +527,7 @@ div.tocify {
 <h1 class="title toc-ignore">Prepare dissolved oxygen data and
 vertically align to climatology</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">14 December, 2023</h4>
+<h4 class="date">19 December, 2023</h4>
 
 </div>
 
@@ -553,7 +556,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-14
+<strong>Last updated:</strong> 2023-12-19
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -562,7 +565,8 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7
 aria-hidden="true"></span> 0
 </p>
 <p>
-<strong>Knit directory:</strong> <code>bgc_argo_r_argodata/</code> <span
+<strong>Knit directory:</strong>
+<code>bgc_argo_r_argodata/analysis/</code> <span
 class="glyphicon glyphicon-question-sign" aria-hidden="true"
 title="This is the local directory in which the code in this file was executed.">
 </span>
@@ -684,15 +688,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64fd104bab3b5f905b0ec1740fe845da75077e5ctargetblank64fd104a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64fd104bab3b5f905b0ec1740fe845da75077e5c" target="_blank">64fd104</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatree64fd104bab3b5f905b0ec1740fe845da75077e5ctargetblank64fd104a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -702,7 +706,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/64fd104bab3b5f905b0ec1740fe845da75077e5c" target="_blank">64fd104</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -721,17 +725,7 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    output/
 
-Untracked files:
-    Untracked:  code/doxy_vertical_align.Rmd
-    Untracked:  code/nitrate_vertical_align.Rmd
-    Untracked:  nitrate_align_climatology.Rmd
-
 Unstaged changes:
-    Modified:   analysis/_site.yml
-    Deleted:    analysis/doxy_vertical_align.Rmd
-    Deleted:    analysis/nitrate_vertical_align.Rmd
-    Deleted:    code/doxy_align_climatology.Rmd
-    Deleted:    code/load_clim_doxy_woa.Rmd
     Modified:   code/start_background_job.R
 
 </code></pre>
@@ -779,6 +773,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/doxy_align_climatology.html" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1022,8 +1033,8 @@ bgc_data_doxy &lt;- bgc_data_doxy %&gt;%
 rm(bgc_data, bgc_metadata)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1351261   72.2    3980265   212.6    4975331   265.8
-Vcells 402205748 3068.6 3524640410 26890.9 4339470561 33107.6</code></pre>
+Ncells   1351605   72.2    3980708   212.6    4975884   265.8
+Vcells 402206452 3068.6 3524641085 26890.9 4339471265 33107.6</code></pre>
 </div>
 <div id="profile-limits" class="section level2">
 <h2>Profile limits</h2>
@@ -1136,8 +1147,8 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358512   72.6    3980265   212.6    4975331   265.8
-Vcells 401227685 3061.2 2819712328 21512.7 4339470561 33107.6</code></pre>
+Ncells   1358856   72.6    3980708   212.6    4975884   265.8
+Vcells 401228389 3061.2 2819712868 21512.8 4339471265 33107.6</code></pre>
 <pre class="r"><code># For each profile what is the doxy at the shallowest depth of the profile, this is used in a comparison after vertical alignment
 shallow_doxy_raw &lt;- right_join(
   bgc_data_doxy,
@@ -1159,8 +1170,8 @@ bgc_data_doxy_full %&gt;%
 rm(bgc_data_doxy_full)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358930   72.6    3980265   212.6    4975331   265.8
-Vcells 401312711 3061.8 2255769863 17210.2 4339470561 33107.6</code></pre>
+Ncells   1359274   72.6    3980708   212.6    4975884   265.8
+Vcells 401313415 3061.8 2255770295 17210.2 4339471265 33107.6</code></pre>
 </div>
 <div id="vertical-align-doxy" class="section level2">
 <h2>Vertical align doxy</h2>
@@ -1182,8 +1193,8 @@ bgc_data_doxy_clean &lt;- bgc_data_doxy %&gt;%
 rm(bgc_data_doxy)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358404   72.6    3980265   212.6    4975331   265.8
-Vcells 382035081 2914.7 1804615891 13768.2 4339470561 33107.6</code></pre>
+Ncells   1358748   72.6    3980708   212.6    4975884   265.8
+Vcells 382035785 2914.8 1804616236 13768.2 4339471265 33107.6</code></pre>
 <pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid &lt;-
   expand_grid(
@@ -1208,8 +1219,8 @@ bgc_data_doxy_extended &lt;-
 rm(bgc_data_doxy_clean)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358500   72.6    3980265   212.6    4975331   265.8
-Vcells 318211237 2427.8 1443692713 11014.6 4339470561 33107.6</code></pre>
+Ncells   1358844   72.6    3980708   212.6    4975884   265.8
+Vcells 318211941 2427.8 1443692989 11014.6 4339471265 33107.6</code></pre>
 <pre class="r"><code># predict spline interpolation on adjusted depth grid for doxy location and month
 bgc_data_doxy_interpolated &lt;-
   bgc_data_doxy_extended %&gt;%
@@ -1222,8 +1233,8 @@ bgc_data_doxy_interpolated &lt;-
 rm(bgc_data_doxy_extended)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells   1358526   72.6    3980265  212.6    4975331   265.8
-Vcells 340254183 2596.0 1154954171 8811.7 4339470561 33107.6</code></pre>
+Ncells   1358870   72.6    3980708  212.6    4975884   265.8
+Vcells 340254887 2596.0 1154954392 8811.7 4339471265 33107.6</code></pre>
 <pre class="r"><code># subset interpolated values on target depth range
 bgc_data_doxy_interpolated_clean &lt;- 
   inner_join(target_depth_levels, bgc_data_doxy_interpolated)
@@ -1231,8 +1242,8 @@ bgc_data_doxy_interpolated_clean &lt;-
 rm(bgc_data_doxy_interpolated)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells   1358570   72.6    3980265  212.6    4975331   265.8
-Vcells 253134815 1931.3  923963337 7049.3 4339470561 33107.6</code></pre>
+Ncells   1358914   72.6    3980708  212.6    4975884   265.8
+Vcells 253135519 1931.3  923963514 7049.3 4339471265 33107.6</code></pre>
 <pre class="r"><code># select columns and rename to initial names
 bgc_data_doxy_interpolated_clean &lt;-
   bgc_data_doxy_interpolated_clean %&gt;%
@@ -1450,6 +1461,43 @@ anomaly_overall_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-1">
+Past versions of plot_overall_mean_anomaly_profiles-1.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-1.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>anomaly_overall_mean_2 %&gt;% 
   ggplot()+
   geom_path(aes(x = doxy_anomaly_mean,
@@ -1468,6 +1516,43 @@ anomaly_overall_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-2">
+Past versions of plot_overall_mean_anomaly_profiles-2.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-2.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>anomaly_overall_mean_3 %&gt;% 
   ggplot()+
   geom_path(aes(x = doxy_anomaly_mean,
@@ -1486,6 +1571,43 @@ anomaly_overall_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-3">
+Past versions of plot_overall_mean_anomaly_profiles-3.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-3.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code># yearly anomaly
 anomaly_year_mean_1 %&gt;% 
   ggplot()+
@@ -1506,6 +1628,43 @@ anomaly_year_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-4">
+Past versions of plot_overall_mean_anomaly_profiles-4.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-4.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>anomaly_year_mean_2 %&gt;% 
   ggplot()+
   geom_path(aes(x = doxy_anomaly_mean,
@@ -1525,6 +1684,43 @@ anomaly_year_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-5">
+Past versions of plot_overall_mean_anomaly_profiles-5.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-5.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>anomaly_year_mean_3 %&gt;% 
   ggplot()+
   geom_path(aes(x = doxy_anomaly_mean,
@@ -1544,6 +1740,43 @@ anomaly_year_mean_1 %&gt;%
     y = &#39;depth (m)&#39;
   )</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot_overall_mean_anomaly_profiles-6">
+Past versions of plot_overall_mean_anomaly_profiles-6.png
+</button>
+</p>
+<div id="fig-plot_overall_mean_anomaly_profiles-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/plot_overall_mean_anomaly_profiles-6.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>#rm(anomaly_overall_mean)</code></pre>
 </div>
 <div id="profile-counts" class="section level2">
@@ -1573,6 +1806,43 @@ doxy_histogram %&gt;%
        y = &quot;profile count&quot;,
        fill = &quot;profile range&quot;)</code></pre>
 <p><img src="figure/doxy_align_climatology.Rmd/doxy_histogram-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-doxy_histogram-1">
+Past versions of doxy_histogram-1.png
+</button>
+</p>
+<div id="fig-doxy_histogram-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/fa6cf38b6600873483da5f483a54e1a538e0ee5e/docs/figure/doxy_align_climatology.Rmd/doxy_histogram-1.png" target="_blank">fa6cf38</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-14
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
