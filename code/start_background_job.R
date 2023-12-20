@@ -40,7 +40,7 @@ workflowr::wflow_publish(here::here(
     'doxy_cluster_analysis.Rmd'
   )
 ),
-message = "revised coverage analysis and SO focused cluster analysis.",
+message = "revised cluster analysis to include child markdown files and extended analysis.",
 republish = TRUE)
 
 #
