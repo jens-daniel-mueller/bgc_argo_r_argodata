@@ -1,5 +1,5 @@
 ---
-title: "Combined cluster analysis"
+title: "Oxygen cluster analysis"
 author: "David Stappard & Jens Daniel Müller"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: workflowr::wflow_html
@@ -190,3 +190,44 @@ cluster_analysis_base <-
 ```
 
 `r knitr::knit(text = unlist(cluster_analysis_base))`
+
+## Under temp extreme
+
+Cluster analysis of oxygen profiles under temperature extremes
+
+```{r prep_bgc_doxy_extreme}
+
+if (opt_category == "bgc_doxy") {
+  
+  # ---------------------------------------------------------------------------------------------
+  # read data extreme data for later use
+  # ---------------------------------------------------------------------------------------------
+  # load previously created OceanSODA extreme data. date, position and nature of extreme
+  if (opt_extreme_determination == 1){
+    extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_01.rds")) %>%
+      select(lon, lat, date, extreme_flag = temp_extreme)
+  } else if (opt_extreme_determination == 2){
+    extreme_data <- read_rds(file = paste0(path_argo_preprocessed, "/OceanSODA_global_SST_anomaly_field_02.rds")) %>%
+      select(lon, lat, date, extreme_flag = temp_extreme)
+  }
+
+  # Under extreme analysis
+  opt_extreme_analysis <- TRUE
+  
+}
+
+```
+
+
+```{r source_cluster_analysis_extreme_child, include = FALSE}
+
+
+cluster_analysis_extreme <-
+  knitr::knit_expand(
+    file = here::here("analysis/child/cluster_analysis_extreme.Rmd")
+  )
+
+
+```
+
+`r knitr::knit(text = unlist(cluster_analysis_extreme))`
