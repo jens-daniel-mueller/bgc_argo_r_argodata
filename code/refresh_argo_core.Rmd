@@ -1,0 +1,173 @@
+---
+title: "refresh Core-Argo Data"
+author: "David Stappard, Pasqualina Vonlanthen & Jens Daniel Müller"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+chunk_output_type: console
+---
+
+
+```{r set_options_global, include=FALSE}
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+```
+
+# Task
+
+Makes use of argodata libraries to load argo profile related data, stages load index, data and metadata files. Cache files (saved in /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata and dac subdirectory) are used, set option opt_refresh_cache to TRUE to force a refresh – This process takes considerable time. 
+
+The load process described in this paragraph is carried out for each year and the files are saved to the core preprocessed.  core_index data frame is created based on delayed mode files and a supplied date range. The index file is then used to load profile data into core_data and associated meta data into core_metadata. core_data is segregated into core_data_temp and core_data_psal. core_data_temp, core_data_psal and core_metadata are filtered by n_prof == opt_n_prof_sel. Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the following is from that page. The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+
+On completion combined all year core_data_temp, core_data_psal and core_metadata that incorporate all years. core_data_temp, core_data_psal and core_metadata initially contain a string field file that uniquely identifies the profile and links the two data frames. An additional data from core_fileid is created with a unique list file fields along with a numeric file_id field. The file fields in core_data and core_metadata are then replaced with file_id. 
+
+core_temp_flag_A and core_temp_flag_AB are created that support prior analysis. In addition, a data frame core_measure_summary is created that is used for load level reporting figures.
+
+Files are written to the core preprocessed folder for ongoing analysis.
+
+Dependencies
+------------
+Cache files - /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/ core_argo_r_argodata
+
+Outputs (in core preprocessed folder)
+-------
+core_index.rds – Copy of the index file that was used in the selection of data and meta data files.
+
+core_data_temp.rds – The main core temperature profile data.
+
+core_data_psal.rds – The main core salinity profile data.
+
+core_metadata.rds – The associated meta data information.
+
+core_fileid.rds – A lookup from file_id to file.
+
+Each of the below files are used in prior analysis and maintained to support that analysis.
+
+core_temp_flag_A.rds
+
+core_temp_flag_AB.rds
+
+
+```{r loading_libraries, include=FALSE}
+
+library(tidyverse)
+# remotes::install_github('ArgoCanada/argodata')
+library(argodata)
+library(ggplot2)
+library(lubridate)
+# install.packages('sf')
+# install.packages("oce")
+library(sf)
+library(oce)
+library(gsw)
+# install.packages('ggspatial')
+# devtools::install_github("MikkoVihtakari/ggOceanMapsData")
+# devtools::install_github("MikkoVihtakari/ggOceanMaps")
+# library(ggspatial)
+# library(ggOceanMaps)
+```
+
+
+```{r set_updata_root_directory, include=FALSE}
+
+path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
+path_argo_core <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
+path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
+
+```
+
+## Set load options
+
+Determine if files are refreshed from dac or cache directory is used. 
+Are metadata, temperature and salinity year files renewed?
+Are the consolidated all year files created from the individual year files?
+
+```{r set_load_options}
+
+# opt_refresh_cache
+#   FALSE = do not refresh cache.
+#   TRUE  = refresh cache. (any none zero value will force a refresh)
+opt_refresh_cache = TRUE
+
+# opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_metadata
+#   FALSE = do not refresh the yearly files. (any value <> 1 will omit annual refresh)
+#   TRUE  = refresh yearly files for given parameter.
+#   year to be refreshed are set by opt_min_year and opt_max_year
+opt_refresh_years_temp = TRUE
+opt_refresh_years_psal = TRUE
+opt_refresh_years_metadata = TRUE
+opt_min_year = 2013
+opt_max_year = 2023
+
+# opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_metadata
+# Yearly files must have already been created!
+#   FALSE = do not build consolidated file from previously written yearly files. (any value <> 1 will omit consolidation)
+#   TRUE  = build consolidated file from previously written yearly files for given parameter.
+#   year to be included in the consolidation are set by opt_min_year and opt_max_year
+opt_consolidate_temp = TRUE
+opt_consolidate_psal = TRUE
+opt_consolidate_metadata = TRUE
+
+# opt_A_AB_files
+# consolidated temp files must have already been created!
+#   FALSE = do not build temp_A and temp_AB file from previously written consolidated files. (any value <> 1 will omit A and AB files)
+#   TRUE  = build temp_A and temp_AB file from previously written consolidated files.
+opt_A_AB_files = TRUE
+
+# opt_review_mode
+# if set (TRUE) the processing will take place in a sub-directory opt_review_dir and only process 10 days of profiles per year to reduce size
+# of output and processing time
+opt_review_mode = FALSE
+opt_review_dir = "/review_mode"
+
+#if (opt_review_mode) {
+#  path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data", opt_review_dir)
+#}
+
+
+# opt_qc_only
+# Avoids reprocessing files and ensures qc summary plots are created from a previous run!
+#   FALSE = carry out reprocessing based on options set above and create QC summaries.
+#   TRUE  = do NOT reprocessing files and just create QC summaries from previous loads.
+opt_qc_only = FALSE
+
+# opt_n_prof_sel
+# The selection criteria that is used against n_prof, here set to 1
+# Description of n_prof usage is provided at https://argo.ucsd.edu/data/data-faq/version-3-profile-files/ the next two lines are from that page.
+#     The main Argo CTD profile is stored in N_PROF=1. All other parameters (including biogeochemical parameters) that are measured 
+#     with the same vertical sampling scheme and at the same location and time as the main Argo CTD profile are also stored in N_PROF=1.
+opt_n_prof_sel = 1
+
+```
+
+## Set cache directory 
+
+Directory where the core-Argo profile files are stored. Either use the cached files or force a refresh from dac (long process)
+
+```{r set_core_cache_directory}
+
+if (!opt_qc_only) {
+  # set cache directory
+  argo_set_cache_dir(cache_dir = path_argo_core)
+  
+  # check cache directory
+  argo_cache_dir()
+  
+  # check argo mirror
+  argo_mirror()
+  
+  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates
+  # files that have been in the cache for more than 30 minutes, etc.
+  if (opt_refresh_cache){
+    argo_update_global(max_global_cache_age = -Inf)  
+    argo_update_data(max_data_cache_age = -Inf)
+  } else {
+    argo_update_global(max_global_cache_age = Inf)  
+    argo_update_data(max_data_cache_age = Inf)
+  }
+}
+```
+
