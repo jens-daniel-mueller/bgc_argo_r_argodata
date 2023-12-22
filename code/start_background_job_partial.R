@@ -39,10 +39,10 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'doxy_cluster_analysis.Rmd'
+    'load_argo_core.Rmd'
   )
 ),
-message = "builing generic cluster analysis.")
+message = "Refresh our Argo data.")
 
 # workflowr::wflow_publish(here::here(
 #   "analysis",

@@ -1,7 +1,7 @@
 workflowr::wflow_publish(here::here(
   "analysis",
   c(
-    'load_argo.Rmd'
+    'load_argo_core.Rmd'
   )
 ),
-message = "Addition of Chl-a to dataset.")
+message = "core dataset refresh.")
