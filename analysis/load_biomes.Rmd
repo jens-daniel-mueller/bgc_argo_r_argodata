@@ -58,6 +58,7 @@ path_updata <- '/nfs/kryo/work/updata'
 path_argo_preprocessed <- paste0(path_argo, "/preprocessed_bgc_data")
 path_basin_mask <- "/nfs/kryo/work/updata/reccap2/"
 path_emlr_utilities <- "/nfs/kryo/work/jenmueller/emlr_cant/utilities/files/"
+
 ```
 
 # RECCAP-2 Biome Separations 
@@ -69,6 +70,7 @@ region_masks_all <-
     path_basin_mask, "RECCAP2_region_masks_all_v20210412.nc", sep = "")) %>%
   as_tibble() %>% 
   mutate(seamask = as.factor(seamask))
+
 ```
 
 ## Harmonise RECCAP biomes
@@ -129,6 +131,7 @@ ph_surface_2x2 <- read_rds(file = paste0(path_argo_preprocessed, "/ph_surface_2x
 
 ph_surface_2x2 <- inner_join(ph_surface_2x2, region_masks_all_2x2)
 ph_surface_1x1 <- inner_join(ph_surface_1x1, region_masks_all_1x1)
+
 ```
 
 ## Maps of Southern Ocean RECCAP biomes 
@@ -222,10 +225,12 @@ nm_biomes <- tidync::hyper_tibble(paste0(path_argo, "/SouthernOcean_mask_NM.nc")
 
 # table(nm_regions$LATITUDE) # 1 degree intervals
 # table((nm_regions$LONGITUDE)) # 1 degree longitude intervals
+
 ```
 
 ## Harmonise Mayot biomes
 ```{r harmonise_Mayot_biomes}
+
 nm_biomes <- nm_biomes %>% 
   rename(lon = LONGITUDE,
          lat = LATITUDE) %>% 
@@ -242,11 +247,13 @@ nm_biomes <- nm_biomes %>%
 nm_biomes <- nm_biomes %>% 
   filter(biome_mask==1,
          lat <= -30)
+
 ```
 
 ## Maps of Southern Ocean Mayot biomes
 
 ```{r map_Mayot_biomes, fig.asp=0.4}
+
 map+
   geom_tile(data = nm_biomes,
             aes(x = lon,
@@ -254,6 +261,7 @@ map+
                 fill = biome_name))+
   scale_fill_brewer(palette = 'Dark2')+
   labs(title = 'Mayot biomes')
+
 ```
 
 ```{r Mayot_biomes_polar_projection}
@@ -272,10 +280,11 @@ basemap(limits = -30)+
 
 ## Write Mayot biomes to file
 ```{r write_Mayot_biomes_to_file}
-# write data to file 
 
+# write data to file 
 nm_biomes %>% 
   write_rds(file = paste0(path_argo_preprocessed, "/nm_biomes.rds"))
+
 ```
 
 
