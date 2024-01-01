@@ -361,6 +361,9 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -527,7 +530,7 @@ div.tocify {
 <h1 class="title toc-ignore">Prepare chla data and vertically align to
 same depths as (pH) climatology</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">19 December, 2023</h4>
+<h4 class="date">01 January, 2024</h4>
 
 </div>
 
@@ -556,7 +559,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-19
+<strong>Last updated:</strong> 2024-01-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -688,15 +691,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -706,7 +709,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -727,6 +730,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -772,6 +776,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/07d4eb855954f79e58751b23a7e1ff2584622a3f/docs/chla_vertical_align.html" target="_blank">07d4eb8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -982,8 +1003,8 @@ target_depth_levels &lt;-   pH_clim_va %&gt;%
 rm(pH_clim_va)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger  (Mb) max used  (Mb)
-Ncells 1276658 68.2    2476952 132.3  2476952 132.3
-Vcells 2193509 16.8   91953029 701.6 92804037 708.1</code></pre>
+Ncells 1276661 68.2    2477241 132.3  2477241 132.3
+Vcells 2193639 16.8   91953185 701.6 92804167 708.1</code></pre>
 </div>
 <div id="read-chla-data" class="section level2">
 <h2>read chla data</h2>
@@ -1037,8 +1058,8 @@ bgc_data_chla &lt;- bgc_data_chla %&gt;%
 rm(bgc_data, bgc_metadata)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1313242  70.2    2476952   132.3    2476952   132.3
-Vcells 60101396 458.6 3356061074 25604.8 3478896916 26541.9</code></pre>
+Ncells  1313245  70.2    2477241   132.3    2477241   132.3
+Vcells 62413650 476.2 3621276137 27628.2 3768306655 28749.9</code></pre>
 </div>
 <div id="profile-limits" class="section level2">
 <h2>Profile limits</h2>
@@ -1132,8 +1153,8 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1328296  71.0    2476952   132.3    2476952   132.3
-Vcells 38809588 296.1 2684848860 20483.8 3478896916 26541.9</code></pre>
+Ncells  1328296  71.0    2477241   132.3    2477241   132.3
+Vcells 40686410 310.5 2897020910 22102.6 3768306655 28749.9</code></pre>
 </div>
 <div id="vertical-align-chla" class="section level2">
 <h2>Vertical align chla</h2>
@@ -1154,8 +1175,8 @@ bgc_data_chla_clean &lt;- bgc_data_chla %&gt;%
 rm(bgc_data_chla)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1328054  71.0    2476952   132.3    2476952   132.3
-Vcells 28674951 218.8 2147879088 16387.1 3478896916 26541.9</code></pre>
+Ncells  1328057  71.0    2477241   132.3    2477241   132.3
+Vcells 30028892 229.2 2317616728 17682.1 3768306655 28749.9</code></pre>
 <pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid &lt;-
   expand_grid(
@@ -1180,8 +1201,8 @@ bgc_data_chla_extended &lt;-
 rm(bgc_data_chla_clean)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1330370  71.1    2476952   132.3    2476952   132.3
-Vcells 43725475 333.6 1718303271 13109.7 3478896916 26541.9</code></pre>
+Ncells  1330373  71.1    2477241   132.3    2477241   132.3
+Vcells 45785442 349.4 1854093383 14145.7 3768306655 28749.9</code></pre>
 <pre class="r"><code># predict spline interpolation on adjusted depth grid for chla location and month
 bgc_data_chla_interpolated &lt;-
   bgc_data_chla_extended %&gt;%
@@ -1194,8 +1215,8 @@ bgc_data_chla_interpolated &lt;-
 rm(bgc_data_chla_extended)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1332145  71.2    2476952   132.3    2476952   132.3
-Vcells 54878673 418.7 1374642617 10487.7 3478896916 26541.9</code></pre>
+Ncells  1332148  71.2    2477241   132.3    2477241   132.3
+Vcells 57499362 438.7 1483274707 11316.5 3768306655 28749.9</code></pre>
 <pre class="r"><code># subset interpolated values on target depth range
 bgc_data_chla_interpolated_clean &lt;- 
   inner_join(target_depth_levels, bgc_data_chla_interpolated)
@@ -1203,8 +1224,8 @@ bgc_data_chla_interpolated_clean &lt;-
 rm(bgc_data_chla_interpolated)
 gc()</code></pre>
 <pre><code>          used (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells 1332189 71.2    2476952  132.3    2476952   132.3
-Vcells 9093277 69.4 1099714094 8390.2 3478896916 26541.9</code></pre>
+Ncells 1332192 71.2    2477241  132.3    2477241   132.3
+Vcells 9354184 71.4 1186619766 9053.2 3768306655 28749.9</code></pre>
 <pre class="r"><code># select columns and rename to initial names
 bgc_data_chla_interpolated_clean &lt;-
   bgc_data_chla_interpolated_clean %&gt;%
@@ -1234,9 +1255,9 @@ chla_bgc_va &lt;- bgc_data_chla_interpolated_clean
 
 rm(bgc_data_chla_interpolated_clean)
 gc()</code></pre>
-<pre><code>           used (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1331990 71.2    2476952  132.3    2476952   132.3
-Vcells 12988720 99.1  879771276 6712.2 3478896916 26541.9</code></pre>
+<pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
+Ncells  1331993  71.2    2477241  132.3    2477241   132.3
+Vcells 13394927 102.2  949295813 7242.6 3768306655 28749.9</code></pre>
 </div>
 <div id="read-files" class="section level2">
 <h2>read files</h2>

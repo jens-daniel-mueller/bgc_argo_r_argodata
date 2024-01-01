@@ -363,6 +363,9 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -529,7 +532,7 @@ div.tocify {
 <h1 class="title toc-ignore">Prepare pH data and vertically align to
 climatology</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">19 December, 2023</h4>
+<h4 class="date">01 January, 2024</h4>
 
 </div>
 
@@ -558,7 +561,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-19
+<strong>Last updated:</strong> 2024-01-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -690,15 +693,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -708,7 +711,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -729,6 +732,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -774,6 +778,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/07d4eb855954f79e58751b23a7e1ff2584622a3f/docs/pH_align_climatology.html" target="_blank">07d4eb8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1099,8 +1120,8 @@ bgc_data_pH &lt;- bgc_data_pH %&gt;%
 rm(bgc_data, bgc_metadata)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1313121  70.2    2477787   132.4    2477787   132.4
-Vcells 49766473 379.7 2842685966 21688.0 3507778222 26762.3</code></pre>
+Ncells  1313124  70.2    2477858   132.4    2477858   132.4
+Vcells 50194414 383.0 3063698511 23374.2 3781992122 28854.4</code></pre>
 </div>
 <div id="profile-limits" class="section level2">
 <h2>Profile limits</h2>
@@ -1250,8 +1271,8 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1470645  78.6    2477787   132.4    2477787   132.4
-Vcells 52003952 396.8 2274148773 17350.4 3507778222 26762.3</code></pre>
+Ncells  1470648  78.6    2477858   132.4    2477858   132.4
+Vcells 52584722 401.2 2450958809 18699.4 3781992122 28854.4</code></pre>
 <pre class="r"><code># For each profile what is the pH at the shallowest depth of the profile, this is used in a comparison after vertical alignment
 shallow_pH_raw &lt;- right_join(
   bgc_data_pH,
@@ -1283,8 +1304,8 @@ bgc_data_pH_full %&gt;%
 rm(bgc_data_pH_full)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1471120  78.6    2477787   132.4    2477787   132.4
-Vcells 52027658 397.0 1819319019 13880.4 3507778222 26762.3</code></pre>
+Ncells  1471123  78.6    2477858   132.4    2477858   132.4
+Vcells 52609026 401.4 1960767048 14959.5 3781992122 28854.4</code></pre>
 </div>
 <div id="vertical-align-ph" class="section level2">
 <h2>Vertical align pH</h2>
@@ -1305,8 +1326,8 @@ bgc_data_pH_clean &lt;- bgc_data_pH %&gt;%
 rm(bgc_data_pH)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells  1460244  78.0    2477787   132.4    2477787   132.4
-Vcells 49563438 378.2 1455455216 11104.3 3507778222 26762.3</code></pre>
+Ncells  1460247  78.0    2477858   132.4    2477858   132.4
+Vcells 49991309 381.5 1568613639 11967.6 3781992122 28854.4</code></pre>
 <pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid &lt;-
   expand_grid(
@@ -1331,8 +1352,8 @@ bgc_data_pH_extended &lt;-
 rm(bgc_data_pH_clean)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1462382  78.1    2477787  132.4    2477787   132.4
-Vcells 54865530 418.6 1164364173 8883.4 3507778222 26762.3</code></pre>
+Ncells  1462385  78.1    2477858  132.4    2477858   132.4
+Vcells 55523171 423.7 1254890912 9574.1 3781992122 28854.4</code></pre>
 <pre class="r"><code># predict spline interpolation on adjusted depth grid for pH location and month
 bgc_data_pH_interpolated &lt;-
   bgc_data_pH_extended %&gt;%
@@ -1345,8 +1366,8 @@ bgc_data_pH_interpolated &lt;-
 rm(bgc_data_pH_extended)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1464153  78.2    2477787  132.4    2477787   132.4
-Vcells 57889191 441.7  931491339 7106.8 3507778222 26762.3</code></pre>
+Ncells  1464156  78.2    2477858  132.4    2477858   132.4
+Vcells 58716062 448.0 1003912730 7659.3 3781992122 28854.4</code></pre>
 <pre class="r"><code># subset interpolated values on target depth range
 bgc_data_pH_interpolated_clean &lt;- 
   inner_join(target_depth_levels, bgc_data_pH_interpolated)
@@ -1354,8 +1375,8 @@ bgc_data_pH_interpolated_clean &lt;-
 rm(bgc_data_pH_interpolated)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1464197  78.2    2477787  132.4    2477787   132.4
-Vcells 46865850 357.6  745193072 5685.4 3507778222 26762.3</code></pre>
+Ncells  1464200  78.2    2477858  132.4    2477858   132.4
+Vcells 46999293 358.6  803130184 6127.4 3781992122 28854.4</code></pre>
 <pre class="r"><code># select columns and rename to initial names
 bgc_data_pH_interpolated_clean &lt;-
   bgc_data_pH_interpolated_clean %&gt;%
@@ -1407,9 +1428,14 @@ if (opt_shallow_check_perc &gt; 0.0){
     print (opt_shallow_report_perc)
     shallow_check_report %&gt;% rmarkdown::paged_table()
   }
-}
-
-# Determine those profile that are outside of absolute difference criteria.
+}</code></pre>
+<pre><code>[1] &quot;profile where shallow check exceeds percentage criteria: &quot;</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["file_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["pH_shallow_raw"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["pH_shallow_va"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"143434","2":"8.065799","3":"8.178453"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<pre class="r"><code># Determine those profile that are outside of absolute difference criteria.
 if (opt_shallow_check_diff &gt; 0.0){
   shallow_check_report &lt;- shallow_ph_check %&gt;%
     filter (abs(pH_shallow_raw - pH_shallow_va) &gt; opt_shallow_check_diff)
@@ -1423,15 +1449,15 @@ if (opt_shallow_check_diff &gt; 0.0){
 <pre><code>[1] &quot;profile where shallow check exceeds absolute difference criteria: &quot;</code></pre>
 <div data-pagedtable="false">
 <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["file_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["pH_shallow_raw"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["pH_shallow_va"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1297","2":"8.061716","3":"8.089645"},{"1":"2625","2":"8.043931","3":"8.098146"},{"1":"3086","2":"8.045094","3":"7.984750"},{"1":"28696","2":"7.995929","3":"8.027213"},{"1":"57792","2":"8.039729","3":"7.977300"},{"1":"64962","2":"8.262453","3":"8.299431"},{"1":"135660","2":"8.265985","3":"8.298760"},{"1":"135688","2":"8.160913","3":"8.097445"},{"1":"135692","2":"8.136723","3":"8.081069"},{"1":"135731","2":"8.328749","3":"8.297583"},{"1":"135736","2":"8.213264","3":"8.273813"},{"1":"135747","2":"8.100714","3":"8.126879"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+{"columns":[{"label":["file_id"],"name":[1],"type":["int"],"align":["right"]},{"label":["pH_shallow_raw"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["pH_shallow_va"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"1300","2":"8.061716","3":"8.089645"},{"1":"2665","2":"8.043931","3":"8.098146"},{"1":"3129","2":"8.045094","3":"7.984750"},{"1":"28871","2":"7.995929","3":"8.027213"},{"1":"58021","2":"8.039729","3":"7.977300"},{"1":"65230","2":"8.262453","3":"8.299431"},{"1":"141362","2":"8.265985","3":"8.298760"},{"1":"141390","2":"8.160913","3":"8.097445"},{"1":"141394","2":"8.136723","3":"8.081069"},{"1":"141433","2":"8.328749","3":"8.297583"},{"1":"141438","2":"8.213264","3":"8.273813"},{"1":"141449","2":"8.100714","3":"8.126879"},{"1":"143422","2":"8.243637","3":"8.271568"},{"1":"143426","2":"8.264181","3":"8.294333"},{"1":"143428","2":"8.159867","3":"8.207336"},{"1":"143434","2":"8.065799","3":"8.178453"},{"1":"143442","2":"8.113472","3":"8.146042"},{"1":"143584","2":"8.166445","3":"8.194664"},{"1":"143590","2":"8.109921","3":"8.159073"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
   </script>
 </div>
 <pre class="r"><code># remove working files
 rm(shallow_ph_check, shallow_pH_raw, shallow_pH_va, shallow_check_report)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1468680  78.5    2477787  132.4    2477787   132.4
-Vcells 49700166 379.2  596154458 4548.3 3507778222 26762.3</code></pre>
+Ncells  1469318  78.5    2477858  132.4    2477858   132.4
+Vcells 49911417 380.8  642504148 4902.0 3781992122 28854.4</code></pre>
 </div>
 <div id="create-anomaly-profiles" class="section level2">
 <h2>Create anomaly profiles</h2>
@@ -1504,8 +1530,8 @@ pH_anomaly_va &lt;- bgc_pH_anomaly
 rm(bgc_data_pH_interpolated_clean, ucsd_clim, bgc_pH_anomaly)
 gc()</code></pre>
 <pre><code>           used  (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells  1469782  78.5    2477787  132.4    2477787   132.4
-Vcells 54585683 416.5  476923567 3638.7 3507778222 26762.3</code></pre>
+Ncells  1470452  78.6    2477858  132.4    2477858   132.4
+Vcells 54817509 418.3  514003319 3921.6 3781992122 28854.4</code></pre>
 </div>
 <div id="read-files" class="section level2">
 <h2>read files</h2>

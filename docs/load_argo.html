@@ -361,6 +361,9 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -527,7 +530,7 @@ div.tocify {
 <h1 class="title toc-ignore">Load BGC-Argo Data</h1>
 <h4 class="author">David Stappard, Pasqualina Vonlanthen &amp; Jens
 Daniel Müller</h4>
-<h4 class="date">19 December, 2023</h4>
+<h4 class="date">01 January, 2024</h4>
 
 </div>
 
@@ -556,7 +559,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-19
+<strong>Last updated:</strong> 2024-01-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -688,15 +691,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -706,7 +709,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -727,6 +730,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -772,6 +776,57 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/76ebe5b807b4db636f24ded4302cad4176f68320/analysis/load_argo.Rmd" target="_blank">76ebe5b</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2024-01-01
+</td>
+<td>
+load refresh end Dec 2023
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/blob/bcfbf21ad005afd3c3f3535fc3b7c875c7b6b4e7/analysis/load_argo.Rmd" target="_blank">bcfbf21</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-22
+</td>
+<td>
+updated BGC Argo load
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/07d4eb855954f79e58751b23a7e1ff2584622a3f/docs/load_argo.html" target="_blank">07d4eb8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1356,7 +1411,7 @@ Are the consolidated all year files created from the individual year
 files?</p>
 <pre class="r"><code># opt_refresh_cache
 #   FALSE = do not refresh cache.
-#   TRUE  = refresh cache. (any none zero value will force a refresh)
+#   TRUE  = refresh cache. 
 opt_refresh_cache = FALSE
 
 # opt_min_year and opt_max_year
@@ -1400,9 +1455,16 @@ the cached files or force a refresh from dac (long process)</p>
   argo_cache_dir()
   
   # check argo mirror
+  # Server options are available.
+  # https://data-argo.ifremer.fr -  This is the default. Downloads are quick but when carrying out a refresh in Dec   
+  #                                 2023 the process would halt part way through and not continue.
+  # ftp://ftp.ifremer.fr/ifremer/argo - Progress does not seem as fast as the HTTPS server but as yet the halting
+  #                                     issue has not occured.
+  # https://usgodae.org/pub/outgoing/argo - alternative HTTPS
+  argo_set_mirror(&quot;https://data-argo.ifremer.fr&quot;)
   argo_mirror()
   
-  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # age argument:  age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
   # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates 
   # files that have been in the cache for more than 30 minutes, etc.
   if (opt_refresh_cache){

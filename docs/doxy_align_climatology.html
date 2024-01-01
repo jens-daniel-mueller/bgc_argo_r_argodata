@@ -361,6 +361,9 @@ div.tocify {
       <a href="load_argo_clim_temp_csio.html">Argo Temperature Climatology</a>
     </li>
     <li>
+      <a href="load_broullon_DIC_TA_clim.html">Broullón DIC/TA Climatology</a>
+    </li>
+    <li>
       <a href="load_OceanSODA.html">OceanSODA</a>
     </li>
     <li>
@@ -527,7 +530,7 @@ div.tocify {
 <h1 class="title toc-ignore">Prepare dissolved oxygen data and
 vertically align to climatology</h1>
 <h4 class="author">David Stappard &amp; Jens Daniel Müller</h4>
-<h4 class="date">19 December, 2023</h4>
+<h4 class="date">01 January, 2024</h4>
 
 </div>
 
@@ -556,7 +559,7 @@ class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2023-12-19
+<strong>Last updated:</strong> 2024-01-01
 </p>
 <p>
 <strong>Checks:</strong> <span
@@ -688,15 +691,15 @@ project makes it easier to run your code on other machines.</p>
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a">
 <span class="glyphicon glyphicon-ok text-success"
 aria-hidden="true"></span> <strong>Repository version:</strong>
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>
 </a>
 </p>
 </div>
 <div
-id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreef895ac9a5fd3a1e96e3a824f27b0533fc7cb92catargetblankf895ac9a"
+id="strongRepositoryversionstrongahrefhttpsgithubcomjensdanielmuellerbgcargorargodatatreeda3be73fda51cbfc71fbaba929c9c9e6b22bc510targetblankda3be73a"
 class="panel-collapse collapse">
 <div class="panel-body">
 <p>
@@ -706,7 +709,7 @@ reproducibility.
 </p>
 <p>
 The results in this page were generated with repository version
-<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/f895ac9a5fd3a1e96e3a824f27b0533fc7cb92ca" target="_blank">f895ac9</a>.
+<a href="https://github.com/jens-daniel-mueller/bgc_argo_r_argodata/tree/da3be73fda51cbfc71fbaba929c9c9e6b22bc510" target="_blank">da3be73</a>.
 See the <em>Past versions</em> tab to see a history of the changes made
 to the R Markdown and HTML files.
 </p>
@@ -727,6 +730,7 @@ Ignored files:
 
 Unstaged changes:
     Modified:   code/start_background_job.R
+    Modified:   code/start_background_job_partial.R
 
 </code></pre>
 <p>
@@ -773,6 +777,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/jens-daniel-mueller/bgc_argo_r_argodata/07d4eb855954f79e58751b23a7e1ff2584622a3f/docs/doxy_align_climatology.html" target="_blank">07d4eb8</a>
+</td>
+<td>
+ds2n19
+</td>
+<td>
+2023-12-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -1033,8 +1054,8 @@ bgc_data_doxy &lt;- bgc_data_doxy %&gt;%
 rm(bgc_data, bgc_metadata)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1351605   72.2    3980708   212.6    4975884   265.8
-Vcells 402206452 3068.6 3524641085 26890.9 4339471265 33107.6</code></pre>
+Ncells   1351605   72.2    3980652   212.6    4975815   265.8
+Vcells 412970151 3150.8 3613464000 27568.6 4496475440 34305.4</code></pre>
 </div>
 <div id="profile-limits" class="section level2">
 <h2>Profile limits</h2>
@@ -1147,8 +1168,8 @@ for (i_gap in opt_gap_limit) {
 rm(bgc_profile_limits, profile_gaps, profile_gaps_remove, bgc_apply_limits)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358856   72.6    3980708   212.6    4975884   265.8
-Vcells 401228389 3061.2 2819712868 21512.8 4339471265 33107.6</code></pre>
+Ncells   1358862   72.6    3980652   212.6    4975815   265.8
+Vcells 415727212 3171.8 2890771200 22054.9 4496475440 34305.4</code></pre>
 <pre class="r"><code># For each profile what is the doxy at the shallowest depth of the profile, this is used in a comparison after vertical alignment
 shallow_doxy_raw &lt;- right_join(
   bgc_data_doxy,
@@ -1170,8 +1191,8 @@ bgc_data_doxy_full %&gt;%
 rm(bgc_data_doxy_full)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1359274   72.6    3980708   212.6    4975884   265.8
-Vcells 401313415 3061.8 2255770295 17210.2 4339471265 33107.6</code></pre>
+Ncells   1359277   72.6    3980652   212.6    4975815   265.8
+Vcells 415821008 3172.5 2312616960 17643.9 4496475440 34305.4</code></pre>
 </div>
 <div id="vertical-align-doxy" class="section level2">
 <h2>Vertical align doxy</h2>
@@ -1193,8 +1214,8 @@ bgc_data_doxy_clean &lt;- bgc_data_doxy %&gt;%
 rm(bgc_data_doxy)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358748   72.6    3980708   212.6    4975884   265.8
-Vcells 382035785 2914.8 1804616236 13768.2 4339471265 33107.6</code></pre>
+Ncells   1358751   72.6    3980652   212.6    4975815   265.8
+Vcells 392421474 2994.0 1850093568 14115.1 4496475440 34305.4</code></pre>
 <pre class="r"><code># create all possible combinations of location, month and depth levels for interpolation
 target_depth_grid &lt;-
   expand_grid(
@@ -1219,8 +1240,8 @@ bgc_data_doxy_extended &lt;-
 rm(bgc_data_doxy_clean)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger    (Mb)   max used    (Mb)
-Ncells   1358844   72.6    3980708   212.6    4975884   265.8
-Vcells 318211941 2427.8 1443692989 11014.6 4339471265 33107.6</code></pre>
+Ncells   1358847   72.6    3980652   212.6    4975815   265.8
+Vcells 334288369 2550.5 1480074855 11292.1 4496475440 34305.4</code></pre>
 <pre class="r"><code># predict spline interpolation on adjusted depth grid for doxy location and month
 bgc_data_doxy_interpolated &lt;-
   bgc_data_doxy_extended %&gt;%
@@ -1233,8 +1254,8 @@ bgc_data_doxy_interpolated &lt;-
 rm(bgc_data_doxy_extended)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells   1358870   72.6    3980708  212.6    4975884   265.8
-Vcells 340254887 2596.0 1154954392 8811.7 4339471265 33107.6</code></pre>
+Ncells   1358873   72.6    3980652  212.6    4975815   265.8
+Vcells 360774006 2752.5 1184059884 9033.7 4496475440 34305.4</code></pre>
 <pre class="r"><code># subset interpolated values on target depth range
 bgc_data_doxy_interpolated_clean &lt;- 
   inner_join(target_depth_levels, bgc_data_doxy_interpolated)
@@ -1242,8 +1263,8 @@ bgc_data_doxy_interpolated_clean &lt;-
 rm(bgc_data_doxy_interpolated)
 gc()</code></pre>
 <pre><code>            used   (Mb) gc trigger   (Mb)   max used    (Mb)
-Ncells   1358914   72.6    3980708  212.6    4975884   265.8
-Vcells 253135519 1931.3  923963514 7049.3 4339471265 33107.6</code></pre>
+Ncells   1358917   72.6    3980652  212.6    4975815   265.8
+Vcells 255066583 1946.1  947247908 7227.0 4496475440 34305.4</code></pre>
 <pre class="r"><code># select columns and rename to initial names
 bgc_data_doxy_interpolated_clean &lt;-
   bgc_data_doxy_interpolated_clean %&gt;%
