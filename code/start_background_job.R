@@ -40,7 +40,7 @@ workflowr::wflow_publish(here::here(
     'doxy_cluster_analysis.Rmd'
   )
 ),
-message = "revised cluster analysis to include child markdown files and extended analysis.",
+message = "rebuild after full refresh of Argo files Dec 2023.",
 republish = TRUE)
 
 #
