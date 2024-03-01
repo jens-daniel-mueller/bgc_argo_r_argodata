@@ -72,8 +72,8 @@ library(gsw)
 
 ```{r set_updata_root_directory, include=FALSE}
 
-path_argo <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo'
-path_argo_core <- '/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata'
+path_argo <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo"
+path_argo_core <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata"
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 
 ```
@@ -89,7 +89,7 @@ Are the consolidated all year files created from the individual year files?
 # opt_refresh_cache
 #   FALSE = do not refresh cache.
 #   TRUE  = refresh cache. (any none zero value will force a refresh)
-opt_refresh_cache = FALSE
+opt_refresh_cache = TRUE
 
 # opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_metadata
 #   FALSE = do not refresh the yearly files. (any value <> 1 will omit annual refresh)
@@ -99,7 +99,7 @@ opt_refresh_years_temp = TRUE
 opt_refresh_years_psal = TRUE
 opt_refresh_years_metadata = TRUE
 opt_min_year = 2013
-opt_max_year = 2023
+opt_max_year = 2024
 
 # opt_consolidate_temp, opt_consolidate_psal, opt_consolidate_metadata
 # Yearly files must have already been created!
@@ -131,7 +131,7 @@ opt_review_dir = "/review_mode"
 # Avoids reprocessing files and ensures qc summary plots are created from a previous run!
 #   FALSE = carry out reprocessing based on options set above and create QC summaries.
 #   TRUE  = do NOT reprocessing files and just create QC summaries from previous loads.
-opt_qc_only = TRUE
+opt_qc_only = FALSE
 
 # opt_n_prof_sel
 # The selection criteria that is used against n_prof, here set to 1
@@ -149,29 +149,33 @@ Directory where the core-Argo profile files are stored. Either use the cached fi
 ```{r set_core_cache_directory}
 
 if (!opt_qc_only) {
+  print("first if") 
   # set cache directory
   argo_set_cache_dir(cache_dir = path_argo_core)
   
   # check cache directory
   argo_cache_dir()
   
-  # check argo mirror
   # Server options are available.
   # https://data-argo.ifremer.fr -  This is the default. Downloads are quick but when carrying out a refresh in Dec   
   #                                 2023 the process would halt part way through and not continue.
   # ftp://ftp.ifremer.fr/ifremer/argo - Progress does not seem as fast as the HTTPS server but as yet the halting
   #                                     issue has not occured.
   # https://usgodae.org/pub/outgoing/argo - alternative HTTPS
-  argo_set_mirror("https://data-argo.ifremer.fr")
-  argo_mirror()
+  argo_set_mirror("https://usgodae.org/pub/outgoing/argo")
   
-  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # check argo mirror
+  argo_mirror()
+
+    # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
   # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates
   # files that have been in the cache for more than 30 minutes, etc.
   if (opt_refresh_cache){
+    print("second if") 
     argo_update_global(max_global_cache_age = -Inf)  
     argo_update_data(max_data_cache_age = -Inf)
   } else {
+    print("else") 
     argo_update_global(max_global_cache_age = Inf)  
     argo_update_data(max_data_cache_age = Inf)
   }
