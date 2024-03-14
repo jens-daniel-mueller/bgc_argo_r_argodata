@@ -73,7 +73,7 @@ library(gsw)
 ```{r set_updata_root_directory, include=FALSE}
 
 path_argo <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo"
-path_argo_core <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata"
+path_argo_core <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata" #core_argo_r_argodata_2024-03-13
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 
 ```
@@ -147,9 +147,10 @@ opt_n_prof_sel = 1
 Directory where the core-Argo profile files are stored. Either use the cached files or force a refresh from dac (long process)
 
 ```{r set_core_cache_directory}
+# argo package: https://rdrr.io/github/ArgoCanada/argodata/man/
 
 if (!opt_qc_only) {
-  print("first if") 
+  print("Defining settings") 
   # set cache directory
   argo_set_cache_dir(cache_dir = path_argo_core)
   
@@ -158,24 +159,24 @@ if (!opt_qc_only) {
   
   # Server options are available.
   # https://data-argo.ifremer.fr -  This is the default. Downloads are quick but when carrying out a refresh in Dec   
-  #                                 2023 the process would halt part way through and not continue.
+  #                                 2023 the process would halt part way through and not continue. -- SAME in March 2024
   # ftp://ftp.ifremer.fr/ifremer/argo - Progress does not seem as fast as the HTTPS server but as yet the halting
-  #                                     issue has not occured.
-  # https://usgodae.org/pub/outgoing/argo - alternative HTTPS
-  argo_set_mirror("https://data-argo.ifremer.fr")
+  #                                     issue has not occurred.
+  # https://usgodae.org/pub/outgoing/argo - alternative HTTPS 
+  argo_set_mirror("https://usgodae.org/pub/outgoing/argo")
   
   # check argo mirror
   argo_mirror()
 
-    # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
+  # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
   # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates
   # files that have been in the cache for more than 30 minutes, etc.
   if (opt_refresh_cache){
-    print("second if") 
-    argo_update_global(max_global_cache_age = -Inf)  
+    print("Updating files from website -- in progress") 
+    argo_update_global(max_global_cache_age = -Inf)  #-72*24
     argo_update_data(max_data_cache_age = -Inf)
   } else {
-    print("else") 
+    print("Retreiving files from server") 
     argo_update_global(max_global_cache_age = Inf)  
     argo_update_data(max_data_cache_age = Inf)
   }
@@ -193,6 +194,9 @@ Builds yearly files for temperature, salinity and metadata that can be consolida
 #------------------------------------------------------------------------------
 if (!opt_qc_only) {
   for (target_year in opt_min_year:opt_max_year) {
+    
+    cat("year being processed:", target_year, "\n")
+    
     # for manual testing of the loop
     # target_year <- 2014
     
