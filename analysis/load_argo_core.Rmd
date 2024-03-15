@@ -73,7 +73,7 @@ library(gsw)
 ```{r set_updata_root_directory, include=FALSE}
 
 path_argo <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/bgc_argo"
-path_argo_core <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata" #core_argo_r_argodata_2024-03-13
+path_argo_core <- "/nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata_2024-03-13" #core_argo_r_argodata
 path_argo_core_preprocessed <- paste0(path_argo_core, "/preprocessed_core_data")
 
 ```
@@ -89,7 +89,7 @@ Are the consolidated all year files created from the individual year files?
 # opt_refresh_cache
 #   FALSE = do not refresh cache.
 #   TRUE  = refresh cache. (any none zero value will force a refresh)
-opt_refresh_cache = TRUE
+opt_refresh_cache = FALSE
 
 # opt_refresh_years_temp, opt_refresh_years_psal, opt_refresh_years_metadata
 #   FALSE = do not refresh the yearly files. (any value <> 1 will omit annual refresh)
@@ -147,7 +147,7 @@ opt_n_prof_sel = 1
 Directory where the core-Argo profile files are stored. Either use the cached files or force a refresh from dac (long process)
 
 ```{r set_core_cache_directory}
-# argo package: https://rdrr.io/github/ArgoCanada/argodata/man/
+# argodata package: https://rdrr.io/github/ArgoCanada/argodata/man/
 
 if (!opt_qc_only) {
   print("Defining settings") 
@@ -173,12 +173,19 @@ if (!opt_qc_only) {
   # files that have been in the cache for more than 30 minutes, etc.
   if (opt_refresh_cache){
     print("Updating files from website -- in progress") 
-    argo_update_global(max_global_cache_age = -Inf)  #-72*24
-    argo_update_data(max_data_cache_age = -Inf)
+    
+    # Terminal command for synchronization with dynamic ARGO archive -- about 12h of computation
+    command <- 'rsync -avzh --delete vdmzrs.ifremer.fr::argo/ /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata_2024-13-03/dac'
+    system(command)
+    
+    # argodata function to update data -- facing some writing permission issues as the entire database has to be redownload each time (dynamic archive)
+    # argo_update_global(max_global_cache_age = -Inf)
+    # argo_update_data(max_data_cache_age = -Inf)
+    
   } else {
-    print("Retreiving files from server") 
+    print("Retreiving files from local server") 
     argo_update_global(max_global_cache_age = Inf)  
-    argo_update_data(max_data_cache_age = Inf)
+    argo_update_data(max_data_cache_age = Inf) 
   }
 }
 ```
