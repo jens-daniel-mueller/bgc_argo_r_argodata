@@ -168,6 +168,10 @@ if (!opt_qc_only) {
   # check argo mirror
   argo_mirror()
 
+  # Download index files (metadata)
+  # command_index <- "rsync -avzh –delete vdmzrs.ifremer.fr::argo/ar_index_global_meta.txt.gz /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata_2024-13-03"
+  # system(command_index)
+  # 
   # age argument: age of the cached files to update in hours (Inf means always use the cached file, and -Inf means always download from the server) 
   # ex: max_global_cache_age = 5 updates files that have been in the cache for more than 5 hours, max_global_cache_age = 0.5 updates
   # files that have been in the cache for more than 30 minutes, etc.
@@ -181,9 +185,9 @@ if (!opt_qc_only) {
     # argodata function to update data -- facing some writing permission issues as the entire database has to be redownload each time (dynamic archive)
     # argo_update_global(max_global_cache_age = -Inf)
     # argo_update_data(max_data_cache_age = -Inf)
-    
+
   } else {
-    print("Retreiving files from local server") 
+    message("Retreiving files from local server") 
     argo_update_global(max_global_cache_age = Inf)  
     argo_update_data(max_data_cache_age = Inf) 
   }
@@ -192,7 +196,6 @@ if (!opt_qc_only) {
 
 
 ## Load by year
-
 Builds yearly files for temperature, salinity and metadata that can be consolidated in the next code chunk (consolidate_into_allyears)
 
 ```{r load_core_by_year}
@@ -200,18 +203,17 @@ Builds yearly files for temperature, salinity and metadata that can be consolida
 # Important - file are loaded for the given year processed and the files written to disk.
 #------------------------------------------------------------------------------
 if (!opt_qc_only) {
-  for (target_year in opt_min_year:opt_max_year) {
-    
-    cat("year being processed:", target_year, "\n")
-    
+  # for (target_year in opt_min_year:opt_max_year) {
     # for manual testing of the loop
-    # target_year <- 2014
+    
+    target_year <- 2023
+    cat("year being processed:", target_year, "\n")
     
     # if updating any year files it will be based on the initial index file core_index
     if (opt_refresh_years_temp |
         opt_refresh_years_psal | opt_refresh_years_metadata)
     {
-      # if working in reiew mode only consider first 10 days of the year
+      # if working in review mode only consider first 10 days of the year
       if (opt_review_mode) {
         core_index <- argo_global_prof() %>%
           argo_filter_data_mode(data_mode = 'delayed') %>%
@@ -219,20 +221,56 @@ if (!opt_qc_only) {
             date_min = paste0(target_year, "-01-01"),
             date_max = paste0(target_year, "-01-05")
           )
-      } else {
+      } 
+      else {
+        #We select the delayed mode file, but in case there is not enough files (<2500), we add the realtime-mode files, in order to have good data coverage
+        #Delayed-mode -- default 
         core_index <- argo_global_prof() %>%
-          argo_filter_data_mode(data_mode = 'delayed') %>%
-          argo_filter_date(
-            date_min = paste0(target_year, "-01-01"),
-            date_max = paste0(target_year, "-12-31")
-          )
+            argo_filter_data_mode(data_mode = 'delayed') %>%
+            argo_filter_date(
+                date_min = paste0(target_year, "-01-01"),
+                date_max = paste0(target_year, "-12-31")           
+            )
+        
+        # Calculate number of file per month
+        monthly_counts <- core_index %>%
+            mutate(month = format(date, "%B")) %>%
+            group_by(month) %>%
+            summarize(total_rows = n())
+        
+        #If less than 2500 files per month, add realtime mode files
+        less_than_2500 <- monthly_counts$total_rows < 2500
+        
+        if (any(less_than_2500)) {
+        print("Add realtime files")
+        for (month in monthly_counts$month[less_than_2500]) {
+          print(month)
+          month_date <- as.Date(paste0(target_year, "-", match(month, month.name), "-01"))
+
+            tryCatch({
+              #Download realtime files for current month
+              realtime_files <- argo_global_prof() %>%
+                argo_filter_data_mode(data_mode = 'realtime') %>%
+                argo_filter_date(
+                    date_min = paste0(target_year, "-", format(month_date, "%m"), "-01"),
+                    date_max = paste0(target_year, "-", format(month_date, "%m"), "-", days_in_month(month_date))
+                )
+
+              #Combine realtime and delayed files
+              core_index <- bind_rows(core_index, realtime_files)
+              }, error = function(e) {
+                cat("Error downloading realtime files for month:", month, "\n")
+        })
+            }
+        }
       }
-    }
+      }
+    
     
     # if temp or psal are being updated get the profile data
-    if (opt_refresh_years_temp | opt_refresh_years_psal)
-    {
-      # read in the profiles (takes a while)
+    if (opt_refresh_years_temp | opt_refresh_years_psal){
+      
+      #Reading profiles (takes a while)
       core_data_yr <- argo_prof_levels(
         path = core_index,
         vars =
@@ -382,8 +420,8 @@ if (!opt_qc_only) {
           count_measures = c(0, 0, 0, 0, 0, 0, 0, 0)
         )
       core_measure_summary = rbind(core_measure_summary, qc_defaults)
-      
-      # Build summary of qc flags for salinity and update core_measure_summary
+
+     # Build summary of qc flags for salinity and update core_measure_summary
       agg_tbl <-
         core_data_yr %>% group_by(
           year = target_year,
@@ -396,7 +434,7 @@ if (!opt_qc_only) {
         rows_update(core_measure_summary,
                     agg_tbl,
                     by = c('year', 'measure_order', 'measure_qc'))
-      
+      print(core_measure_summary)
       rm(agg_tbl)
       
     }
@@ -459,6 +497,9 @@ if (!opt_qc_only) {
         filter(pres_adjusted_qc %in% c(1, 8) &
                  temp_adjusted_qc %in% c(1, 8)) %>%
         select(-contains(c("_qc", "psal")))
+
+      print("Writing temperature file")
+      print(core_data_temp_yr)
       
       # write this years file
       core_data_temp_yr %>%
@@ -468,7 +509,7 @@ if (!opt_qc_only) {
           target_year,
           "_core_data_temp.rds"
         ))
-      
+
     }
     
     # ------------------------------------------------------------------------------
@@ -481,6 +522,9 @@ if (!opt_qc_only) {
         filter(pres_adjusted_qc %in% c(1, 8) &
                  psal_adjusted_qc %in% c(1, 8)) %>%
         select(-contains(c("_qc", "temp")))
+     
+      print("Writing salinity file")
+      print(core_data_psal_yr)
       
       # write this years file
       core_data_psal_yr %>%
@@ -510,7 +554,7 @@ if (!opt_qc_only) {
           lon = cut(lon, seq(20, 380, 1), seq(20.5, 379.5, 1)),
           lon = as.numeric(as.character(lon))
         )
-      
+
       # Select just the columns we are interested in
       core_metadata_yr <- core_metadata_yr %>%
         select (
@@ -526,6 +570,10 @@ if (!opt_qc_only) {
           profile_psal_qc
         )
       
+      print("Writing metadata file")
+      print(core_metadata_yr)
+      
+            
       # write this years file
       core_metadata_yr %>%
         write_rds(file = paste0(
@@ -534,17 +582,23 @@ if (!opt_qc_only) {
           target_year,
           "_core_metadata.rds"
         ))
-      
+
     }
     
-  }
+  # }
   
-  # write measure summary file
+  #Write measure summary file
+  print("Writing summary file")
+  print(core_measure_summary)
+      
   core_measure_summary %>%
     write_rds(file = paste0(path_argo_core_preprocessed, "/core_measure_summary.rds"))
+  
   rm(core_measure_summary)
-}
+
+  }
 ```
+
 
 ## Consolidate years
 
@@ -596,8 +650,10 @@ if (!opt_qc_only) {
   if (opt_consolidate_temp){
     consolidated_created = 0
     
-    for (target_year in opt_min_year:opt_max_year) {
-  
+    # for (target_year in opt_min_year:opt_max_year) {
+      target_year<-2023
+      cat("year being processed ", target_year, "\n")
+      
       # read the yearly file based on target_year
       core_data_temp_yr <-
       read_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_data_temp.rds"))
@@ -609,7 +665,7 @@ if (!opt_qc_only) {
       } else {
         core_data_temp <- rbind(core_data_temp, core_data_temp_yr)
       }
-    }
+    # }
 
   }
   
@@ -619,8 +675,10 @@ if (!opt_qc_only) {
   if (opt_consolidate_psal){
     consolidated_created = 0
     
-    for (target_year in opt_min_year:opt_max_year) {
-  
+    # for (target_year in opt_min_year:opt_max_year) {
+      target_year<-2023
+      cat("year being processed ", target_year, "\n")
+      
       # read the yearly file based on target_year
       core_data_psal_yr <-
       read_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_data_psal.rds"))
@@ -632,7 +690,7 @@ if (!opt_qc_only) {
       } else {
         core_data_psal <- rbind(core_data_psal, core_data_psal_yr)
       }
-    }
+    # }
 
   }
   
@@ -642,8 +700,10 @@ if (!opt_qc_only) {
   if (opt_consolidate_metadata){
     consolidated_created = 0
     
-    for (target_year in opt_min_year:opt_max_year) {
-  
+    # for (target_year in opt_min_year:opt_max_year) {      
+      target_year<-2023
+      cat("year being processed ", target_year, "\n")
+
       # read the yearly file based on target_year
       core_metadata_yr <-
       read_rds(file = paste0(path_argo_core_preprocessed, "/", target_year, "_core_metadata.rds"))
@@ -655,7 +715,7 @@ if (!opt_qc_only) {
       } else {
         core_metadata <- rbind(core_metadata, core_metadata_yr)
       }
-    }
+    # }
 
   }
   
@@ -884,3 +944,207 @@ core_measure_summary %>%
 
 ```
 
+## Delayed mode VS Real time mode
+```{r delayed_realtime}
+delayed_files <- argo_global_prof() %>% 
+  argo_filter_data_mode(data_mode = 'delayed') 
+
+realtime_files <- argo_global_prof() %>% 
+  argo_filter_data_mode(data_mode = 'realtime') 
+
+#Files difference
+realtime_files_count_per_year <- realtime_files %>% 
+  count(year(date)) %>% 
+  rename(realtime_mode = n)%>% 
+  rename(year=`year(date)`)
+
+delayed_files_count_per_year <- delayed_files %>% 
+  count(year(date))%>% 
+  rename(delayed_mode = n) %>% 
+  rename(year=`year(date)`)
+
+files_diff_per_year <- merge(realtime_files_count_per_year, delayed_files_count_per_year, by = "year", all = TRUE) %>% 
+  filter(!is.na(year))
+
+ggplot(files_diff_per_year, aes(x = year)) +
+  geom_bar(aes(y = realtime_mode , fill = "realtime_mode "), stat = "identity") +
+  geom_bar(aes(y = delayed_mode, fill = "delayed_mode"), stat = "identity", position = "stack") +
+  labs(x = "Year", y = "Number of Files", fill = NULL) +
+  ggtitle("Number of files in delayed and realtime mode per year") +
+  theme_minimal()+
+  scale_x_continuous(breaks = files_diff_per_year$year, labels = files_diff_per_year$year) +
+  scale_fill_manual(values = c("realtime_mode " = "cyan", "delayed_mode" = "orange"), 
+                    labels = c("realtime_mode " = "Real Time mode ", "delayed_mode" = "Delayed mode")) +
+  theme(axis.text.x = element_text(angle = 40, hjust = 1), 
+        legend.position = "right") 
+
+
+#Difference between adjusted anr "realtime" variables
+plot_diff <- function(file_path) {
+  # Load data for the given file
+  test <- with_argo_example_cache({
+    argo_prof_levels(file_path)
+  })
+  
+  # Extract profile ID and file name
+  profile_id <- sub(".*/([0-9]+)/profiles/.*", "\\1", file_path)
+  file_name <- sub(".*/profiles/(.*)", "\\1", file_path)
+  
+  # Create individual plots
+  temp <- ggplot(test, aes(x = temp, y = temp_adjusted)) +
+    geom_point(size = 0.5) +
+    labs(x = "Temperature", y = "Adjusted Temperature") +
+    ggtitle("Temperature") +
+    theme_minimal()
+  
+  pres <- ggplot(test, aes(x = pres, y = pres_adjusted)) +
+    geom_point(size = 0.5) +
+    labs(x = "Pressure", y = "Adjusted Pressure") +
+    ggtitle("Pressure") +
+    theme_minimal()
+  
+  sal <- ggplot(test, aes(x = psal, y = psal_adjusted)) +
+    geom_point(size = 0.5) +
+    labs(x = "Salinity", y = "Adjusted Salinity") +
+    ggtitle("Salinity") +
+    theme_minimal()
+  
+  main_title <- ggplot() + 
+    geom_text(aes(label = paste("Profile:", profile_id, ", File:", file_name)), 
+              x = 0.5, y = 0.5, hjust = 0.5, vjust = 0.5, size = 5) +
+    theme_void()
+  
+  # Arrange plots
+  grid.arrange(main_title, temp, pres, sal, ncol = 1, heights = c(0.1, 0.5, 0.5, 0.5))
+}
+
+# List of file paths
+file_paths <- c(
+  paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_001.nc"),
+  paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_012.nc"),
+  paste0(path_argo_core,"/dac/csio/2900313/profiles/D2900313_001.nc")
+)
+
+# Create plots for each file
+for (file_path in file_paths) {
+  plot_diff(file_path)
+}
+```
+
+### Looking at number fo files in 2023 and 2024
+```{r delayed_realtime_monthly}
+#Filter delayed mode files for the year 2023 and 2024
+filter_year<-function(files){
+  #Filter files for the year 2023 and 2024
+  files_2023<-files %>% 
+    filter(year(date) == 2023)
+ files_2024<-files %>% 
+    filter(year(date) == 2024)
+ 
+  #Group by month and count the number of delayed mode files
+  files_month_2023 <- files_2023 %>%
+    group_by(month = format(date, "%B")) %>%
+    summarize(files_count = n())
+  
+  files_month_2024 <- files_2024 %>%
+    group_by(month = format(date, "%B")) %>%
+    summarize(files_count = n())
+  
+  #Order months
+  month_order <- c("January", "February", "March", "April", "May", "June", 
+                 "July", "August", "September", "October", "November", "December")
+  files_month_2023$month <- factor(files_month_2023$month, levels = month_order)
+  files_month_2024$month <- factor(files_month_2024$month, levels = month_order)
+  
+  return(list(files_month_2023 = files_month_2023, files_month_2024 = files_month_2024))
+}
+
+delayed_files_month_2023<-filter_year(delayed_files)$files_month_2023
+delayed_files_month_2024<-filter_year(delayed_files)$files_month_2024
+
+realtime_files_month_2023<-filter_year(realtime_files)$files_month_2023
+realtime_files_month_2024<-filter_year(realtime_files)$files_month_2024
+
+#Plots
+max_files_count <- max(max(delayed_files_month_2023$files_count), max(realtime_files_month_2023$files_count))
+
+delayed_plot<- ggplot() +
+  geom_bar(data = delayed_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
+  geom_bar(data = delayed_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
+    scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
+  labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
+  ylim(0, max_files_count) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+realtime_plot<- ggplot() +
+  geom_bar(data = realtime_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
+  geom_bar(data = realtime_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
+    scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
+  labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
+  ylim(0, max_files_count) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+combined_plot <- delayed_plot + realtime_plot
+print(combined_plot)
+```
+
+## Looking at profiles
+```{r profiles_vizualisation}
+library(RColorBrewer)
+library(patchwork)
+
+#Read data
+read_argo_data <- function(file_path) {
+    data <- tryCatch({
+    with_argo_example_cache({argo_prof_levels(file_path)})
+      }, error = function(e) {
+    # If an error occurs (e.g., file not found), return NULL
+    return(NULL)
+  })
+    return(data)
+}
+
+base_path <- paste0(path_argo_core, "/dac/aoml/3902561/profiles/")
+file_names <- sprintf("D3902561_%03d.nc", 1:12)
+file_paths <- paste0(base_path, file_names)
+
+all_data <- lapply(file_paths, read_argo_data)
+combined_data <- do.call(rbind, all_data)
+
+combined_data$file_index <- as.numeric(factor(combined_data$file))
+
+#---Plots 
+colors <- rev(brewer.pal(11, "Spectral")) # RdYlBu palette with 11 colors
+
+#T°C vs Pressure
+temp_press_plt<-ggplot(combined_data, aes(x = temp_adjusted , y = pres_adjusted, color=file_index, group = file_index)) +
+                  geom_point() +
+                  geom_path() +
+                  labs(x = "Temperature (°C)", y = "Pressure (dbar)", title = "Temperature vs Pressure")+
+                  scale_y_continuous(trans = "reverse") + 
+                  scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +  
+                  theme(legend.position = "none")
+
+#Salinity vs Pressure
+sal_press_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = pres_adjusted, color=file_index, group=file_index)) +
+                geom_point() +
+                geom_path()+
+                labs(x = "Salinity (psu)", y = "Pressure (dbar)", title = "Salinity vs Pressure")+
+                scale_y_continuous(trans = "reverse") + 
+                scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
+                theme(legend.position = "none") 
+
+#T/S Diagram
+sal_temp_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = temp_adjusted, color=file_index, group=file_index)) +
+                geom_point() +
+                geom_path()+
+                labs(x = "Salinity (psu)", y = "Temperature (°C)", title = "T/S Diagram")+
+                scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
+                theme(legend.position = "right") 
+
+(temp_press_plt + sal_press_plt) / sal_temp_plt 
+
+```
