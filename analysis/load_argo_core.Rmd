@@ -29,7 +29,7 @@ Files are written to the core preprocessed folder for ongoing analysis.
 
 Dependencies
 ------------
-Cache files - /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/ core_argo_r_argodata
+Cache files - /nfs/kryo/work/datasets/ungridded/3d/ocean/floats/core_argo_r_argodata_2024-03-13
 
 Outputs (in core preprocessed folder)
 -------
@@ -188,8 +188,8 @@ if (!opt_qc_only) {
 
   } else {
     message("Retreiving files from local server") 
-    argo_update_global(max_global_cache_age = Inf)  
-    argo_update_data(max_data_cache_age = Inf) 
+    # argo_update_global(max_global_cache_age = Inf)  
+    # argo_update_data(max_data_cache_age = Inf) 
   }
 }
 ```
@@ -945,7 +945,7 @@ core_measure_summary %>%
 ```
 
 ## Delayed mode VS Real time mode
-```{r delayed_realtime}
+```{r delayed_realtime, fig.asp=0.6}
 delayed_files <- argo_global_prof() %>% 
   argo_filter_data_mode(data_mode = 'delayed') 
 
@@ -979,172 +979,172 @@ ggplot(files_diff_per_year, aes(x = year)) +
         legend.position = "right") 
 
 
-#Difference between adjusted anr "realtime" variables
-plot_diff <- function(file_path) {
-  # Load data for the given file
-  test <- with_argo_example_cache({
-    argo_prof_levels(file_path)
-  })
-  
-  # Extract profile ID and file name
-  profile_id <- sub(".*/([0-9]+)/profiles/.*", "\\1", file_path)
-  file_name <- sub(".*/profiles/(.*)", "\\1", file_path)
-  
-  # Create individual plots
-  temp <- ggplot(test, aes(x = temp, y = temp_adjusted)) +
-    geom_point(size = 0.5) +
-    labs(x = "Temperature", y = "Adjusted Temperature") +
-    ggtitle("Temperature") +
-    theme_minimal()
-  
-  pres <- ggplot(test, aes(x = pres, y = pres_adjusted)) +
-    geom_point(size = 0.5) +
-    labs(x = "Pressure", y = "Adjusted Pressure") +
-    ggtitle("Pressure") +
-    theme_minimal()
-  
-  sal <- ggplot(test, aes(x = psal, y = psal_adjusted)) +
-    geom_point(size = 0.5) +
-    labs(x = "Salinity", y = "Adjusted Salinity") +
-    ggtitle("Salinity") +
-    theme_minimal()
-  
-  main_title <- ggplot() + 
-    geom_text(aes(label = paste("Profile:", profile_id, ", File:", file_name)), 
-              x = 0.5, y = 0.5, hjust = 0.5, vjust = 0.5, size = 5) +
-    theme_void()
-  
-  # Arrange plots
-  grid.arrange(main_title, temp, pres, sal, ncol = 1, heights = c(0.1, 0.5, 0.5, 0.5))
-}
-
-# List of file paths
-file_paths <- c(
-  paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_001.nc"),
-  paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_012.nc"),
-  paste0(path_argo_core,"/dac/csio/2900313/profiles/D2900313_001.nc")
-)
-
-# Create plots for each file
-for (file_path in file_paths) {
-  plot_diff(file_path)
-}
+# #Difference between adjusted anr "realtime" variables
+# plot_diff <- function(file_path) {
+#   # Load data for the given file
+#   test <- with_argo_example_cache({
+#     argo_prof_levels(file_path)
+#   })
+#   
+#   # Extract profile ID and file name
+#   profile_id <- sub(".*/([0-9]+)/profiles/.*", "\\1", file_path)
+#   file_name <- sub(".*/profiles/(.*)", "\\1", file_path)
+#   
+#   # Create individual plots
+#   temp <- ggplot(test, aes(x = temp, y = temp_adjusted)) +
+#     geom_point(size = 0.5) +
+#     labs(x = "Temperature", y = "Adjusted Temperature") +
+#     ggtitle("Temperature") +
+#     theme_minimal()
+#   
+#   pres <- ggplot(test, aes(x = pres, y = pres_adjusted)) +
+#     geom_point(size = 0.5) +
+#     labs(x = "Pressure", y = "Adjusted Pressure") +
+#     ggtitle("Pressure") +
+#     theme_minimal()
+#   
+#   sal <- ggplot(test, aes(x = psal, y = psal_adjusted)) +
+#     geom_point(size = 0.5) +
+#     labs(x = "Salinity", y = "Adjusted Salinity") +
+#     ggtitle("Salinity") +
+#     theme_minimal()
+#   
+#   main_title <- ggplot() + 
+#     geom_text(aes(label = paste("Profile:", profile_id, ", File:", file_name)), 
+#               x = 0.5, y = 0.5, hjust = 0.5, vjust = 0.5, size = 5) +
+#     theme_void()
+#   
+#   # Arrange plots
+#   grid.arrange(main_title, temp, pres, sal, ncol = 1, heights = c(0.1, 0.5, 0.5, 0.5))
+# }
+# 
+# # List of file paths
+# file_paths <- c(
+#   paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_001.nc"),
+#   paste0(path_argo_core,"/dac/aoml/3902561/profiles/D3902561_012.nc"),
+#   paste0(path_argo_core,"/dac/csio/2900313/profiles/D2900313_001.nc")
+# )
+# 
+# # Create plots for each file
+# for (file_path in file_paths) {
+#   plot_diff(file_path)
+# }
 ```
 
 ### Looking at number fo files in 2023 and 2024
-```{r delayed_realtime_monthly}
-#Filter delayed mode files for the year 2023 and 2024
-filter_year<-function(files){
-  #Filter files for the year 2023 and 2024
-  files_2023<-files %>% 
-    filter(year(date) == 2023)
- files_2024<-files %>% 
-    filter(year(date) == 2024)
- 
-  #Group by month and count the number of delayed mode files
-  files_month_2023 <- files_2023 %>%
-    group_by(month = format(date, "%B")) %>%
-    summarize(files_count = n())
-  
-  files_month_2024 <- files_2024 %>%
-    group_by(month = format(date, "%B")) %>%
-    summarize(files_count = n())
-  
-  #Order months
-  month_order <- c("January", "February", "March", "April", "May", "June", 
-                 "July", "August", "September", "October", "November", "December")
-  files_month_2023$month <- factor(files_month_2023$month, levels = month_order)
-  files_month_2024$month <- factor(files_month_2024$month, levels = month_order)
-  
-  return(list(files_month_2023 = files_month_2023, files_month_2024 = files_month_2024))
-}
-
-delayed_files_month_2023<-filter_year(delayed_files)$files_month_2023
-delayed_files_month_2024<-filter_year(delayed_files)$files_month_2024
-
-realtime_files_month_2023<-filter_year(realtime_files)$files_month_2023
-realtime_files_month_2024<-filter_year(realtime_files)$files_month_2024
-
-#Plots
-max_files_count <- max(max(delayed_files_month_2023$files_count), max(realtime_files_month_2023$files_count))
-
-delayed_plot<- ggplot() +
-  geom_bar(data = delayed_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
-  geom_bar(data = delayed_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
-    scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
-  labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
-  ylim(0, max_files_count) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-realtime_plot<- ggplot() +
-  geom_bar(data = realtime_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
-  geom_bar(data = realtime_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
-    scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
-  labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
-  ylim(0, max_files_count) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-
-
-combined_plot <- delayed_plot + realtime_plot
-print(combined_plot)
+```{r delayed_realtime_monthly, fig.asp=0.6}
+# #Filter delayed mode files for the year 2023 and 2024
+# filter_year<-function(files){
+#   #Filter files for the year 2023 and 2024
+#   files_2023<-files %>% 
+#     filter(year(date) == 2023)
+#  files_2024<-files %>% 
+#     filter(year(date) == 2024)
+#  
+#   #Group by month and count the number of delayed mode files
+#   files_month_2023 <- files_2023 %>%
+#     group_by(month = format(date, "%B")) %>%
+#     summarize(files_count = n())
+#   
+#   files_month_2024 <- files_2024 %>%
+#     group_by(month = format(date, "%B")) %>%
+#     summarize(files_count = n())
+#   
+#   #Order months
+#   month_order <- c("January", "February", "March", "April", "May", "June", 
+#                  "July", "August", "September", "October", "November", "December")
+#   files_month_2023$month <- factor(files_month_2023$month, levels = month_order)
+#   files_month_2024$month <- factor(files_month_2024$month, levels = month_order)
+#   
+#   return(list(files_month_2023 = files_month_2023, files_month_2024 = files_month_2024))
+# }
+# 
+# delayed_files_month_2023<-filter_year(delayed_files)$files_month_2023
+# delayed_files_month_2024<-filter_year(delayed_files)$files_month_2024
+# 
+# realtime_files_month_2023<-filter_year(realtime_files)$files_month_2023
+# realtime_files_month_2024<-filter_year(realtime_files)$files_month_2024
+# 
+# #Plots
+# max_files_count <- max(max(delayed_files_month_2023$files_count), max(realtime_files_month_2023$files_count))
+# 
+# delayed_plot<- ggplot() +
+#   geom_bar(data = delayed_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
+#   geom_bar(data = delayed_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
+#     scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
+#   labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
+#   ylim(0, max_files_count) +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# 
+# realtime_plot<- ggplot() +
+#   geom_bar(data = realtime_files_month_2023, aes(x = month, y = files_count, fill = "2023"), stat = "identity") +
+#   geom_bar(data = realtime_files_month_2024, aes(x = month, y = files_count, fill = "2024"), stat = "identity") +
+#     scale_fill_manual(values = c("2023" = "skyblue", "2024" = "lightgreen")) +
+#   labs(title = "Number of delayed-mode Files per Month in 2023",  x = "Month",  y = "Number of Files") +
+#   ylim(0, max_files_count) +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# 
+# 
+# combined_plot <- delayed_plot + realtime_plot
+# print(combined_plot)
 ```
 
 ## Looking at profiles
-```{r profiles_vizualisation}
-library(RColorBrewer)
-library(patchwork)
-
-#Read data
-read_argo_data <- function(file_path) {
-    data <- tryCatch({
-    with_argo_example_cache({argo_prof_levels(file_path)})
-      }, error = function(e) {
-    # If an error occurs (e.g., file not found), return NULL
-    return(NULL)
-  })
-    return(data)
-}
-
-base_path <- paste0(path_argo_core, "/dac/aoml/3902561/profiles/")
-file_names <- sprintf("D3902561_%03d.nc", 1:12)
-file_paths <- paste0(base_path, file_names)
-
-all_data <- lapply(file_paths, read_argo_data)
-combined_data <- do.call(rbind, all_data)
-
-combined_data$file_index <- as.numeric(factor(combined_data$file))
-
-#---Plots 
-colors <- rev(brewer.pal(11, "Spectral")) # RdYlBu palette with 11 colors
-
-#T°C vs Pressure
-temp_press_plt<-ggplot(combined_data, aes(x = temp_adjusted , y = pres_adjusted, color=file_index, group = file_index)) +
-                  geom_point() +
-                  geom_path() +
-                  labs(x = "Temperature (°C)", y = "Pressure (dbar)", title = "Temperature vs Pressure")+
-                  scale_y_continuous(trans = "reverse") + 
-                  scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +  
-                  theme(legend.position = "none")
-
-#Salinity vs Pressure
-sal_press_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = pres_adjusted, color=file_index, group=file_index)) +
-                geom_point() +
-                geom_path()+
-                labs(x = "Salinity (psu)", y = "Pressure (dbar)", title = "Salinity vs Pressure")+
-                scale_y_continuous(trans = "reverse") + 
-                scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
-                theme(legend.position = "none") 
-
-#T/S Diagram
-sal_temp_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = temp_adjusted, color=file_index, group=file_index)) +
-                geom_point() +
-                geom_path()+
-                labs(x = "Salinity (psu)", y = "Temperature (°C)", title = "T/S Diagram")+
-                scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
-                theme(legend.position = "right") 
-
-(temp_press_plt + sal_press_plt) / sal_temp_plt 
+```{r profiles_vizualisation, fig.asp=0.6}
+# library(RColorBrewer)
+# library(patchwork)
+# 
+# #Read data
+# read_argo_data <- function(file_path) {
+#     data <- tryCatch({
+#     with_argo_example_cache({argo_prof_levels(file_path)})
+#       }, error = function(e) {
+#     # If an error occurs (e.g., file not found), return NULL
+#     return(NULL)
+#   })
+#     return(data)
+# }
+# 
+# base_path <- paste0(path_argo_core, "/dac/aoml/3902561/profiles/")
+# file_names <- sprintf("D3902561_%03d.nc", 1:12)
+# file_paths <- paste0(base_path, file_names)
+# 
+# all_data <- lapply(file_paths, read_argo_data)
+# combined_data <- do.call(rbind, all_data)
+# 
+# combined_data$file_index <- as.numeric(factor(combined_data$file))
+# 
+# #---Plots 
+# colors <- rev(brewer.pal(11, "Spectral")) # RdYlBu palette with 11 colors
+# 
+# #T°C vs Pressure
+# temp_press_plt<-ggplot(combined_data, aes(x = temp_adjusted , y = pres_adjusted, color=file_index, group = file_index)) +
+#                   geom_point() +
+#                   geom_path() +
+#                   labs(x = "Temperature (°C)", y = "Pressure (dbar)", title = "Temperature vs Pressure")+
+#                   scale_y_continuous(trans = "reverse") + 
+#                   scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +  
+#                   theme(legend.position = "none")
+# 
+# #Salinity vs Pressure
+# sal_press_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = pres_adjusted, color=file_index, group=file_index)) +
+#                 geom_point() +
+#                 geom_path()+
+#                 labs(x = "Salinity (psu)", y = "Pressure (dbar)", title = "Salinity vs Pressure")+
+#                 scale_y_continuous(trans = "reverse") + 
+#                 scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
+#                 theme(legend.position = "none") 
+# 
+# #T/S Diagram
+# sal_temp_plt<- ggplot(combined_data, aes(x = psal_adjusted, y = temp_adjusted, color=file_index, group=file_index)) +
+#                 geom_point() +
+#                 geom_path()+
+#                 labs(x = "Salinity (psu)", y = "Temperature (°C)", title = "T/S Diagram")+
+#                 scale_color_gradientn(colors = colors, name = "File Index", breaks = seq(min(combined_data$file_index), max(combined_data$file_index), by = 1)) +
+#                 theme(legend.position = "right") 
+# 
+# (temp_press_plt + sal_press_plt) / sal_temp_plt 
 
 ```
